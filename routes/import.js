@@ -28,7 +28,14 @@ router.put('/', async function (req, res) {
     }
 
     let countSql = "SELECT id FROM manifest WHERE container_id = $1";
-    let result = await pool.query(countSql, [root.id]);
+    try {
+        let result = await pool.query(countSql, [root.id]);
+    } catch (e) {
+        res.status(400);
+        res.send({error: e.message});
+        return;
+    }
+
     let status = 200;
 
     if (result.rowCount > 0) {
