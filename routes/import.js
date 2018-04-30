@@ -28,8 +28,22 @@ router.put('/', async function (req, res) {
     }
 
     let countSql = "SELECT id FROM manifest WHERE container_id = $1";
-    let result = await pool.query(countSql, [root.id]);
+    let result;
+    try {
+        result = await pool.query(countSql, [root.id]);
+    } catch (e) {
+        res.status(400);
+        res.send({error: e.message});
+        return;
+    }
+
     let status = 200;
+
+    if (result === undefined) {
+        res.status(400);
+        res.send({error: 'error'});
+        return
+    }
 
     if (result.rowCount > 0) {
         status = 201;
@@ -109,9 +123,24 @@ router.put('/', async function (req, res) {
             p.push(item.original.name);
             p.push(item.original.resolver);
             p.push(item.original.pronom);
-            p.push(item.access.name);
-            p.push(item.access.resolver);
-            p.push(item.access.pronom);
+
+            if (item.access !== undefined && item.access.name !== undefined) {
+                p.push(item.access.name);
+            } else {
+                p.push(null);
+            }
+
+            if (item.access !== undefined && item.access.resolver !== undefined) {
+                p.push(item.access.resolver);
+            } else {
+                p.push(null);
+            }
+
+            if (item.access !== undefined && item.access.pronom !== undefined) {
+                p.push(item.access.pronom);
+            } else {
+                p.push(null);
+            }
 
         }
 

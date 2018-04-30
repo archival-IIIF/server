@@ -1,2 +1,10 @@
 imageServerUrl: "http://localhost:8080/loris/"
 port: 3333
+defaultLang: de
+logo: https://example.com/logo
+database:
+  user: database_user
+  host: localhost
+  database: database_name
+  password: database_password
+  port: 5432
