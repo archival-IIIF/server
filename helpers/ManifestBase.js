@@ -35,8 +35,13 @@ class ManifestBase {
         return Object.values(label)[0]
     }
 
-    getPresentationUrl(id) {
-        return config.getBaseUrl() + "/iiif/manifest/" + id;
+    getPresentationUrl(id, version) {
+
+        if (version === undefined) {
+            version = "v2";
+        }
+
+        return config.getBaseUrl() + "/iiif/" + version + "/manifest/" + id;
     }
 
 

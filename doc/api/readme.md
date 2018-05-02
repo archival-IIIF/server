@@ -67,7 +67,7 @@ http://example.com/iiif/image/abcd1234/full/100,100/0/default.jpg
 [IIIF Presentation API 2.1.1](http://iiif.io/api/image/2.1/)
 
 ````
-GET: /iiif/manifest/<manifest_id>
+GET: /iiif/v2/manifest/<manifest_id>
 ````
 
 __Input parameters__
@@ -80,8 +80,8 @@ IIIF image manifast file
 
 __Example__
 
- * http://example.com/iiif/manifest/abcd1234
- * http://example.com/iiif/manifest/abcd1234/info.json
+ * http://example.com/iiif/v2/manifest/abcd1234
+ * http://example.com/iiif/v2/manifest/abcd1234/info.json
 
 
 ## File
