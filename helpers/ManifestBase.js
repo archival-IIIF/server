@@ -47,7 +47,9 @@ class ManifestBase {
 
 
     getImageUrl(accessFileName) {
-        return config.getBaseUrl() + "/iiif/image/" + accessFileName;
+        return config.getBaseUrl() + "/iiif/image/" + this.id;
+        // ToDo: The line above breaks loris
+        // return config.getBaseUrl() + "/iiif/image/" + accessFileName;
     }
 
     setParent(id) {

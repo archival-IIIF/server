@@ -1,3 +1,5 @@
+# If imageServerUrl is missing the internal iiif image server will be used.
+# Use loris, sipi  or another server for better performance
 imageServerUrl: "http://localhost:8080/loris/"
 port: 3333
 defaultLang: de

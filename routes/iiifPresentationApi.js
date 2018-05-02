@@ -8,7 +8,7 @@ const manifestBuilder = require('../helpers/ManifestBuilder');
 
 /* GET users listing. */
 router.get('/iiif/v2/manifest/:id', show);
-router.get('/ifff/v2/:id/manifest.json', show);
+router.get('/iiif/v2/manifest/:id/manifest.json', show);
 
 function show(req, res) {
 
