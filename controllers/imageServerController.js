@@ -67,7 +67,6 @@ exports.renderImage = function(req, res) {
         }
 
         buildImage.toFile(cachePath, (err, info) => {
-            console.log("zzz", err);
             sendImage(res, cachePath);
         });
     });
@@ -165,13 +164,10 @@ exports.renderInfo = function(req, res) {
         ],
         "protocol": "http://iiif.io/api/image",
         "sizes": [],
-        //"_auth_rules": {},
         "width": 1840,
         "height": 1450,
-        //"_src_format": "jpg",
         "@context": "http://iiif.io/api/image/2/context.json",
         "@id": config.getBaseUrl() + "/iiif/image/" + req.params.id,
-        //"_src_img_fp": "/Users/Fabian/loris/source/0a13b08d-d1b2-4b61-b7ff-a98333de6a9c-DSC02398.JPG"
     };
 
     fs.writeFile(cachePath, JSON.stringify(info), function () {
