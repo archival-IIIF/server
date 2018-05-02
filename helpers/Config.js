@@ -9,7 +9,7 @@ class Config {
     getImageServerUrl() {
 
         if (!this.config.hasOwnProperty("imageServerUrl")) {
-            throw "imageServerUrl is not defined in config/config.yaml!"
+            return false;
         }
 
         return this.config.imageServerUrl;
