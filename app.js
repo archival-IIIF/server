@@ -47,7 +47,7 @@ app.use(function(req, res, next) {
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/iiif/auth', iiifAuthRouter);
-app.use('/iiif/manifest', iiifPresentationApiRouter);
+app.use('/', iiifPresentationApiRouter);
 app.use('/iiif/image', iiifImageApiRouter);
 app.use('/import', importRouter);
 app.use('/file', fileApiRouter);

@@ -1,19 +1,20 @@
-var express = require('express');
-var router = express.Router();
-let fs = require('fs');
+const express = require('express');
+const router = express.Router();
+const fs = require('fs');
+const path = require('path');
+const mkdirp = require('mkdirp');
 const pool = require('../helpers/DB');
 const manifestBuilder = require('../helpers/ManifestBuilder');
 
 /* GET users listing. */
-router.get('/:id', show);
-router.get('/:id/manifest.json', show);
+router.get('/iiif/v2/manifest/:id', show);
+router.get('/ifff/v2/:id/manifest.json', show);
 
 function show(req, res) {
 
-    let path = './cache/manifest/'+req.params.id+'.json';
-    console.log(path);
+    let manifestPath = './cache/iiif/v2/manifest/'+req.params.id+'.json';
 
-    fs.readFile(path, 'utf8', function (err, fileData) {
+    fs.readFile(manifestPath, 'utf8', function (err, fileData) {
         if(err) {
 
             let sql =
@@ -45,9 +46,16 @@ function show(req, res) {
 
                 res.send(output);
 
-                /*fs.writeFile(path, JSON.stringify(output), function () {
-                    console.log("done")
-                });*/
+                let dirName = path.dirname(manifestPath);
+                if (fs.existsSync(dirName)){
+                    fs.writeFile(manifestPath, JSON.stringify(output), function () {});
+                } else {
+                    mkdirp(dirName, function (err) {
+                        if (!err) {
+                            fs.writeFile(manifestPath, JSON.stringify(output), function () {});
+                        }
+                    });
+                }
 
             });
 
