@@ -35,9 +35,9 @@ app.use(session({
         maxAge: 600000
     }
 }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/file-icons', express.static(path.join(__dirname, 'public/file-icons')));
+app.use('/public', express.static(config.publicFolder));
 app.use(function(req, res, next) {
-    config.setBaseUrl(req.protocol + '://' + req.get('host'));
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     next();
@@ -68,5 +68,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+app.listen(config.port);
 
 module.exports = app;

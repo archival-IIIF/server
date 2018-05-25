@@ -70,7 +70,7 @@ class Manifest extends manifestBase {
 
     setFileTypeThumbnail(url) {
         this.data.thumbnail = {
-            "@id":  config.getBaseUrl() + '/' + url
+            "@id":  config.baseUrl + '/' + url
         }
     }
 
@@ -165,7 +165,7 @@ class Manifest extends manifestBase {
     }
 
     getFileUrl(id) {
-        return config.getBaseUrl() + "/file/" + id;
+        return config.baseUrl + "/file/" + id;
     }
 
 }

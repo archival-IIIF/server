@@ -1,2 +1,5 @@
+/.idea
+/node_modules
 /cache/*
-/config/config.yaml
+.env
+*.iml

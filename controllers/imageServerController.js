@@ -167,7 +167,7 @@ exports.renderInfo = function(req, res) {
         "width": 1840,
         "height": 1450,
         "@context": "http://iiif.io/api/image/2/context.json",
-        "@id": config.getBaseUrl() + "/iiif/image/" + req.params.id,
+        "@id": config.baseUrl + "/iiif/image/" + req.params.id,
     };
 
     fs.writeFile(cachePath, JSON.stringify(info), function () {

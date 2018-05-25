@@ -1,65 +1,50 @@
-let yaml = require('js-yaml');
-let fs = require('fs');
+if (process.env.NODE_ENV !== 'production')
+    require('dotenv').load();
 
-class Config {
-    constructor() {
-        this.config = yaml.safeLoad(fs.readFileSync('./config/config.yaml', 'utf8'));
-    }
+module.exports = {
+    imageServerUrl: (() => {
+        return process.env.IIIF_SERVER_IMAGE_SERVER_URL;
+    })(),
 
-    getImageServerUrl() {
+    logo: (() => {
+        return process.env.IIIF_SERVER_LOGO;
+    })(),
 
-        if (!this.config.hasOwnProperty("imageServerUrl")) {
-            return false;
-        }
+    port: (() => {
+        const port = parseInt(process.env.IIIF_SERVER_PORT);
+        return (port >= 0) ? port : 3333;
+    })(),
 
-        return this.config.imageServerUrl;
-    }
+    defaultLang: (() => {
+        if (!process.env.IIIF_SERVER_DEFAULT_LANG)
+            throw "defaultLang is not defined";
+        return process.env.IIIF_SERVER_DEFAULT_LANG;
+    })(),
 
+    database: (() => {
+        const host = process.env.IIIF_SERVER_DATABASE_HOST
+            ? process.env.IIIF_SERVER_DATABASE_HOST : 'localhost';
+        const port = parseInt(process.env.IIIF_SERVER_DATABASE_PORT) > 0
+            ? parseInt(process.env.IIIF_SERVER_DATABASE_PORT) : 5432;
+        const user = process.env.IIIF_SERVER_DATABASE_USER
+            ? process.env.IIIF_SERVER_DATABASE_USER : 'pgadmin';
+        const password = process.env.IIIF_SERVER_DATABASE_PASSWORD
+            ? process.env.IIIF_SERVER_DATABASE_PASSWORD : 'pgadmin';
+        const database = process.env.IIIF_SERVER_DATABASE_DB
+            ? process.env.IIIF_SERVER_DATABASE_DB : 'iiif-server';
 
-    getLogo() {
+        return {host, port, user, password, database};
+    })(),
 
-        if (!this.config.hasOwnProperty("logo")) {
-            return false;
-        }
+    baseUrl: (() => {
+        if (!process.env.IIIF_BASE_URL)
+            throw "base url is not defined";
+        return process.env.IIIF_BASE_URL;
+    })(),
 
-        return this.config.logo;
-    }
-
-    getPort() {
-
-        let port = parseInt(this.config.port, 10);
-        if (port >= 0) {
-            return port;
-        }
-
-        return 3333;
-    }
-
-    getDefaultLang() {
-        if (!this.config.hasOwnProperty("defaultLang")) {
-            throw "defaultLang is not defined in config/config.yaml!"
-        }
-
-        return this.config.defaultLang;
-    }
-
-    getDatabase() {
-        if (!this.config.hasOwnProperty("database")) {
-            throw "database is not defined in config/config.yaml!"
-        }
-
-        return this.config.database;
-    }
-
-    setBaseUrl(baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
-    getBaseUrl() {
-        return this.baseUrl;
-    }
-}
-
-module.exports = new Config();
+    publicFolder: (() => {
+        return process.env.IIIF_SERVER_PUBLIC_FOLDER;
+    })()
+};
 
 

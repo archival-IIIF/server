@@ -27,7 +27,7 @@ class ManifestBase {
 
     // Can be removed with IIIF Image Api 3.0
     getLabel(label) {
-        let defaultLang = config.getImageServerUrl();
+        let defaultLang = config.imageServerUrl;
         if (label.hasOwnProperty(defaultLang)) {
             return label[defaultLang];
         }
@@ -47,7 +47,7 @@ class ManifestBase {
 
 
     getImageUrl(accessFileName) {
-        return config.getBaseUrl() + "/iiif/image/" + this.id;
+        return config.baseUrl + "/iiif/image/" + this.id;
         // ToDo: The line above breaks loris
         // return config.getBaseUrl() + "/iiif/image/" + accessFileName;
     }

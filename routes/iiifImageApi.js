@@ -9,7 +9,7 @@ router.get('/:id', renderInfo);
 router.get('/:id/info.json', renderInfo);
 
 function renderInfo(req, res) {
-    let imageServerUrl = config.getImageServerUrl();
+    let imageServerUrl = config.imageServerUrl;
     if (imageServerUrl === false) {
         imageServer.renderInfo(req, res);
     } else {
@@ -20,7 +20,7 @@ function renderInfo(req, res) {
 router.get('/:id/:region/:size/:rotation/:quality.:format', renderImage);
 
 function renderImage(req, res) {
-    let imageServerUrl = config.getImageServerUrl();
+    let imageServerUrl = config.imageServerUrl;
     if (imageServerUrl === false) {
         imageServer.renderImage(req, res);
     } else {
