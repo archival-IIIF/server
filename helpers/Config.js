@@ -2,6 +2,8 @@ if (process.env.NODE_ENV !== 'production')
     require('dotenv').load();
 
 module.exports = {
+    env: process.env.NODE_ENV,
+
     imageServerUrl: (() => {
         return process.env.IIIF_SERVER_IMAGE_SERVER_URL;
     })(),
@@ -37,13 +39,17 @@ module.exports = {
     })(),
 
     baseUrl: (() => {
-        if (!process.env.IIIF_BASE_URL)
+        if (!process.env.IIIF_SERVER_BASE_URL)
             throw "base url is not defined";
-        return process.env.IIIF_BASE_URL;
+        return process.env.IIIF_SERVER_BASE_URL;
     })(),
 
     publicFolder: (() => {
         return process.env.IIIF_SERVER_PUBLIC_FOLDER;
+    })(),
+
+    logLevel: (() => {
+        return process.env.IIIF_SERVER_LOG_LEVEL ? process.env.IIIF_SERVER_LOG_LEVEL : 'debug';
     })()
 };
 

@@ -3,7 +3,8 @@ let express = require('express');
 const config = require('./helpers/Config.js');
 let path = require('path');
 let cookieParser = require('cookie-parser');
-let logger = require('morgan');
+const logger = require('./helpers/Logger.js');
+let morgan = require('morgan');
 let session = require('express-session');
 
 let indexRouter = require('./routes/index');
@@ -21,7 +22,9 @@ app.set('view engine', 'jade');
 
 app.use(express.json({limit: '50mb'}));
 
-app.use(logger('dev'));
+if (config.env !== 'production')
+    app.use(morgan('short', {'stream': logger.stream}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
