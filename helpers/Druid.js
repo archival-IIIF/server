@@ -4,7 +4,7 @@ var xpath = require('xpath'), dom = require('xmldom').DOMParser;
 class Druid {
     constructor() {
         this.cache = {};
-        let xml = fs.readFileSync('./config/DROID_SignatureFile_V93.xml', 'utf8');
+        let xml = fs.readFileSync(__dirname + '/../config/DROID_SignatureFile_V93.xml', 'utf8');
         this.druid = new dom().parseFromString(xml);
     }
 

@@ -3,24 +3,29 @@ if (process.env.NODE_ENV !== 'production')
 
 module.exports = {
     env: process.env.NODE_ENV,
-
-    imageServerUrl: (() => {
-        return process.env.IIIF_SERVER_IMAGE_SERVER_URL;
-    })(),
-
-    logo: (() => {
-        return process.env.IIIF_SERVER_LOGO;
-    })(),
+    logo: process.env.IIIF_SERVER_LOGO,
+    publicFolder: process.env.IIIF_SERVER_PUBLIC_FOLDER,
+    imageServerUrl: process.env.IIIF_SERVER_IMAGE_SERVER_URL,
 
     port: (() => {
         const port = parseInt(process.env.IIIF_SERVER_PORT);
         return (port >= 0) ? port : 3333;
     })(),
 
+    logLevel: (() => {
+        return process.env.IIIF_SERVER_LOG_LEVEL ? process.env.IIIF_SERVER_LOG_LEVEL : 'debug';
+    })(),
+
     defaultLang: (() => {
         if (!process.env.IIIF_SERVER_DEFAULT_LANG)
             throw "defaultLang is not defined";
         return process.env.IIIF_SERVER_DEFAULT_LANG;
+    })(),
+
+    baseUrl: (() => {
+        if (!process.env.IIIF_SERVER_BASE_URL)
+            throw "base url is not defined";
+        return process.env.IIIF_SERVER_BASE_URL;
     })(),
 
     database: (() => {
@@ -36,20 +41,6 @@ module.exports = {
             ? process.env.IIIF_SERVER_DATABASE_DB : 'iiif-server';
 
         return {host, port, user, password, database};
-    })(),
-
-    baseUrl: (() => {
-        if (!process.env.IIIF_SERVER_BASE_URL)
-            throw "base url is not defined";
-        return process.env.IIIF_SERVER_BASE_URL;
-    })(),
-
-    publicFolder: (() => {
-        return process.env.IIIF_SERVER_PUBLIC_FOLDER;
-    })(),
-
-    logLevel: (() => {
-        return process.env.IIIF_SERVER_LOG_LEVEL ? process.env.IIIF_SERVER_LOG_LEVEL : 'debug';
     })()
 };
 

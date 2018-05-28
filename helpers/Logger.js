@@ -7,7 +7,7 @@ const logger = new winston.Logger({
     transports: [
         new winston.transports.File({
             level: config.logLevel,
-            filename: './application.log',
+            filename: __dirname + '/../application.log',
             handleExceptions: true,
             json: false,
             maxsize: 5242880, // 5 MB
