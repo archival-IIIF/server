@@ -1,7 +1,9 @@
 const Router = require('koa-router');
 const mime = require('mime-types');
 const pool = require('../helpers/DB');
+const config = require('../helpers/Config');
 const fs = require('fs');
+const path = require('path');
 const {promisify} = require('util');
 
 const statAsync = promisify(fs.stat);
@@ -24,6 +26,9 @@ router.get('/:id', async ctx => {
         if (!accessResolver) {
             accessName = data.rows[0].original_name;
             accessResolver = data.rows[0].original_resolver;
+        }
+        if (accessResolver) {
+            accessResolver = path.join(config.dataPath, accessResolver);
         }
 
         const file = fs.createReadStream(accessResolver);

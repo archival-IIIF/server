@@ -1,3 +1,4 @@
+const path = require('path');
 const Router = require('koa-router');
 const request = require('request-promise-native');
 const config = require('../helpers/Config');
@@ -18,6 +19,9 @@ router.get('/:id/info.json', async ctx => {
         let accessResolver = data.rows[0].access_resolver;
         if (!accessResolver) {
             accessResolver = data.rows[0].original_resolver;
+        }
+        if (accessResolver) {
+            accessResolver = path.join(config.dataPath, accessResolver);
         }
 
         const url = `${config.imageServerUrl}/${accessResolver}/info.json`;
@@ -52,6 +56,9 @@ router.get('/:id/:region/:size/:rotation/:quality.:format', async ctx => {
     let accessResolver = data.rows[0].access_resolver;
     if (!accessResolver) {
         accessResolver = data.rows[0].original_resolver;
+    }
+    if (accessResolver) {
+        accessResolver = path.join(config.dataPath, accessResolver);
     }
 
     const url = `${config.imageServerUrl}/${accessResolver}/${ctx.params.region}/${ctx.params.size}/${ctx.params.rotation}/${ctx.params.quality}.${ctx.params.format}`;

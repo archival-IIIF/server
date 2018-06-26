@@ -35,6 +35,12 @@ module.exports = {
         return process.env.IIIF_SERVER_CACHE_PATH;
     })(),
 
+    dataPath: (() => {
+        if (!process.env.IIIF_SERVER_DATA_PATH)
+            throw "data path is not defined";
+        return process.env.IIIF_SERVER_DATA_PATH;
+    })(),
+
     database: (() => {
         const host = process.env.IIIF_SERVER_DATABASE_HOST
             ? process.env.IIIF_SERVER_DATABASE_HOST : 'localhost';
