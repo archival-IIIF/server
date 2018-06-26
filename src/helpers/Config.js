@@ -4,7 +4,8 @@ if (process.env.NODE_ENV !== 'production')
 module.exports = {
     env: process.env.NODE_ENV,
     logo: process.env.IIIF_SERVER_LOGO,
-    publicFolder: process.env.IIIF_SERVER_PUBLIC_FOLDER,
+    universalViewerPath: process.env.IIIF_SERVER_UNIVERSAL_VIEWER_PATH,
+    archivalViewerPath: process.env.IIIF_SERVER_ARCHIVAL_VIEWER_PATH,
     imageServerUrl: process.env.IIIF_SERVER_IMAGE_SERVER_URL,
 
     port: (() => {
@@ -26,6 +27,12 @@ module.exports = {
         if (!process.env.IIIF_SERVER_BASE_URL)
             throw "base url is not defined";
         return process.env.IIIF_SERVER_BASE_URL;
+    })(),
+
+    cachePath: (() => {
+        if (!process.env.IIIF_SERVER_CACHE_PATH)
+            throw "cache path is not defined";
+        return process.env.IIIF_SERVER_CACHE_PATH;
     })(),
 
     database: (() => {

@@ -1,22 +1,17 @@
-const manifestBase = require('../helpers/ManifestBase');
-const config = require('../helpers/Config');
+const ManifestBase = require('./ManifestBase');
+const config = require('./Config');
 
 /***
  * See http://iiif.io/api/presentation/2.1/
  */
-class Manifest extends manifestBase {
-
-
+class Manifest extends ManifestBase {
     constructor(id, label) {
         super(id, label);
-
         this.data["@type"] = "sc:Manifest";
     }
 
-
     setImage(accessFileBaseName) {
-
-        let canvas = this.getPresentationUrl(this.id) + "/canvas/c0";
+        const canvas = this.getPresentationUrl(this.id) + "/canvas/c0";
 
         this.data.sequences = [
             {
@@ -55,9 +50,7 @@ class Manifest extends manifestBase {
         this.setThumbnail(accessFileBaseName);
     }
 
-
     setThumbnail(accessFileBaseName) {
-
         this.data.thumbnail = {
             "service": {
                 "@id": this.getImageUrl(accessFileBaseName),
@@ -65,15 +58,13 @@ class Manifest extends manifestBase {
                 "profile": "http://iiif.io/api/image/2/level1.json"
             }
         }
-
     }
 
     setFileTypeThumbnail(url) {
         this.data.thumbnail = {
-            "@id":  config.baseUrl + '/' + url
+            "@id": config.baseUrl + '/' + url
         }
     }
-
 
     setAudio() {
         this.setAudioVideo("audio/mp3", "dctypes:Sound");
@@ -103,12 +94,10 @@ class Manifest extends manifestBase {
                 ]
             }
         ];
-
     }
 
     setPdf(url) {
-
-        let canvas = this.getPresentationUrl(this.id) + "/canvas/c0";
+        const canvas = this.getPresentationUrl(this.id) + "/canvas/c0";
 
         this.data.sequences = [
             {
@@ -144,7 +133,7 @@ class Manifest extends manifestBase {
     }
 
     setFileDownload() {
-        let mime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        const mime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
         this.data.mediaSequences = [
             {
@@ -167,9 +156,6 @@ class Manifest extends manifestBase {
     getFileUrl(id) {
         return config.baseUrl + "/file/" + id;
     }
-
 }
-
-
 
 module.exports = Manifest;
