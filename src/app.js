@@ -24,7 +24,7 @@ app.use(json({pretty: false, param: 'pretty'}));
 app.use(bodyParser({jsonLimit: '50mb'}));
 
 app.use(serve({rootDir: path.join(__dirname, 'public/file-icons'), rootPath: '/file-icons'}));
-app.use(serve({rootDir: config.universalViewerPath, rootPath: '/universalviewer'}));
+app.use(serve({rootDir: config.universalViewerPath, rootPath: '/universalviewer', index: 'uv.html'}));
 app.use(serve({rootDir: config.archivalViewerPath, rootPath: '/archivalviewer'}));
 
 app.use(async (ctx, next) => {
