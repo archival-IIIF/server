@@ -1,5 +1,5 @@
 const ManifestBase = require('./ManifestBase');
-const config = require('./Config');
+const config = require('../lib/Config');
 
 /***
  * See http://iiif.io/api/presentation/2.1/

@@ -6,14 +6,14 @@ const bodyParser = require('koa-bodyparser');
 
 const path = require('path');
 
-const logger = require('./helpers/Logger.js');
-const config = require('./helpers/Config.js');
+const logger = require('./lib/Logger.js');
+const config = require('./lib/Config.js');
 
-const iiifImageRouter = require('./routes/iiifImage');
-const iiifPresentationRouter = require('./routes/iiifPresentation');
-const iiifAuthRouter = require('./routes/iiifAuth');
-const fileRouter = require('./routes/file');
-const importRouter = require('./routes/import');
+const iiifImageRouter = require('./image/router');
+const iiifPresentationRouter = require('./presentation/router');
+const iiifAuthRouter = require('./authentication/router');
+const fileRouter = require('./file/router');
+const importRouter = require('./import/router');
 
 const app = new Koa();
 

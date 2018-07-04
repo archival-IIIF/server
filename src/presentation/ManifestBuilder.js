@@ -1,6 +1,6 @@
 const Collection = require('./Collection');
 const Manifest = require('./Manifest');
-const Druid = require('./Druid');
+const Druid = require('../lib/Druid');
 
 const fileIcons = {
     "fmt/40": "file-icons/Microsoft-Word.svg",
@@ -12,8 +12,8 @@ class ManifestBuilder {
         const root = items[0];
 
         this.m = (root.type === "folder")
-            ? new Collection(root.id, root.original_name)
-            : new Manifest(root.id, root.original_name);
+            ? new Collection(root.id, root.original_name ? root.original_name : root.access_name)
+            : new Manifest(root.id, root.original_name ? root.original_name : root.access_name);
 
         if (root.metadata)
             this.m.addMetadata(root.metadata);

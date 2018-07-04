@@ -5,12 +5,12 @@ const path = require('path');
 const {promisify} = require('util');
 const mkdirp = require('mkdirp-promise');
 
-const pool = require('../helpers/DB');
-const config = require('../helpers/Config');
-const ManifestBuilder = require('../helpers/ManifestBuilder');
+const pool = require('../lib/DB');
+const config = require('../lib/Config');
+const ManifestBuilder = require('./ManifestBuilder');
 
 const readFileAsync = promisify(fs.readFile);
-const existsAsync = promisify(fs.exists);
+const existsAsync = s => new Promise(resolve => fs.access(s, fs.constants.F_OK, e => resolve(!e)));
 const writeFileAsync = promisify(fs.writeFile);
 
 const router = new Router({prefix: '/iiif/presentation'});

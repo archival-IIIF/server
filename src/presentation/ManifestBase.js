@@ -1,4 +1,4 @@
-const config = require('./Config');
+const config = require('../lib/Config');
 
 /***
  * See http://iiif.io/api/presentation/2.1/
@@ -35,7 +35,7 @@ class ManifestBase {
     }
 
     getImageUrl(accessFileName) {
-        return `{config.baseUrl}/iiif/image/${this.id}`;
+        return `${config.baseUrl}/iiif/image/${this.id}`;
         // ToDo: The line above breaks loris
         // return config.getBaseUrl() + "/iiif/image/" + accessFileName;
     }

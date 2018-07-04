@@ -1,5 +1,5 @@
 const Router = require('koa-router');
-const pool = require('../helpers/DB');
+const pool = require('../lib/DB');
 const fs = require('fs');
 const {promisify} = require('util');
 
