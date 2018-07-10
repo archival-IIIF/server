@@ -1,4 +1,3 @@
-const path = require('path');
 const request = require('request-promise-native');
 const config = require('../lib/Config');
 const pool = require('../lib/DB');
@@ -16,8 +15,6 @@ async function getInfo(id) {
     let accessResolver = data.rows[0].access_resolver;
     if (!accessResolver)
         accessResolver = data.rows[0].original_resolver;
-    if (accessResolver)
-        accessResolver = path.join(config.dataPath, accessResolver);
 
     const url = `${config.imageServerUrl}/${accessResolver}/info.json`;
     const response = await request({uri: url, json: true, resolveWithFullResponse: true, simple: false});
@@ -48,8 +45,6 @@ async function getImage(id, region, size, rotation, quality, format) {
     let accessResolver = data.rows[0].access_resolver;
     if (!accessResolver)
         accessResolver = data.rows[0].original_resolver;
-    if (accessResolver)
-        accessResolver = path.join(config.dataPath, accessResolver);
 
     const url = `${config.imageServerUrl}/${accessResolver}/${region}/${size}/${rotation}/${quality}.${format}`;
     const response = await request({uri: url, encoding: null, resolveWithFullResponse: true, simple: false});
