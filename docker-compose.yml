@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    restart: always
+    ports:
+      - "80:3333"
+    volumes:
+      - collections:/data/collections
+      - app-conf:/opt/iiif-server/config.yaml
+    networks:
+      - front-tier
+      - back-tier
+
+  image:
+    image: wellcome/loris
+    restart: always
+    ports:
+      - "8080:8888"
+    volumes:
+      - collections:/data/collections
+      - loris-conf:/opt/loris/etc/loris2.conf
+    networks:
+      - back-tier
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - back-tier
+
+volumes:
+  app-conf:
+  loris-conf:
+  collections:
+  db-data:
+
+networks:
+  front-tier:
+  back-tier:
