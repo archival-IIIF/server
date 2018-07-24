@@ -7,6 +7,7 @@ module.exports = {
     universalViewerPath: process.env.IIIF_SERVER_UNIVERSAL_VIEWER_PATH,
     archivalViewerPath: process.env.IIIF_SERVER_ARCHIVAL_VIEWER_PATH,
     imageServerUrl: process.env.IIIF_SERVER_IMAGE_SERVER_URL,
+    cachePath: process.env.IIIF_SERVER_CACHE_PATH,
 
     port: (() => {
         const port = parseInt(process.env.IIIF_SERVER_PORT);
@@ -19,25 +20,19 @@ module.exports = {
 
     defaultLang: (() => {
         if (!process.env.IIIF_SERVER_DEFAULT_LANG)
-            throw "defaultLang is not defined";
+            throw new Error("defaultLang is not defined");
         return process.env.IIIF_SERVER_DEFAULT_LANG;
     })(),
 
     baseUrl: (() => {
         if (!process.env.IIIF_SERVER_BASE_URL)
-            throw "base url is not defined";
+            throw new Error("base url is not defined");
         return process.env.IIIF_SERVER_BASE_URL;
-    })(),
-
-    cachePath: (() => {
-        if (!process.env.IIIF_SERVER_CACHE_PATH)
-            throw "cache path is not defined";
-        return process.env.IIIF_SERVER_CACHE_PATH;
     })(),
 
     dataPath: (() => {
         if (!process.env.IIIF_SERVER_DATA_PATH)
-            throw "data path is not defined";
+            throw new Error("data path is not defined");
         return process.env.IIIF_SERVER_DATA_PATH;
     })(),
 

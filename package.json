@@ -16,7 +16,8 @@
     "libxmljs": "0.19.0",
     "pg": "7.4.3",
     "request": "2.87.0",
-    "request-promise-native": "1.0.5"
+    "request-promise-native": "1.0.5",
+    "file-icon-vectors": "0.8.1"
   },
   "devDependencies": {
     "sharp": "0.20.5"

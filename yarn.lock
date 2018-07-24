@@ -365,6 +365,10 @@ fast-json-stable-stringify@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/fast-json-stable-stringify/-/fast-json-stable-stringify-2.0.0.tgz#d5142c0caee6b1189f87d3a76111064f86c8bbf2"
 
+file-icon-vectors@0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/file-icon-vectors/-/file-icon-vectors-0.8.1.tgz#1d3df846565c9d6643c602341f57e6f84a3d6ee0"
+
 forever-agent@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"

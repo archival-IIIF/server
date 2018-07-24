@@ -11,30 +11,20 @@ router.get('/:id', ctx => {
 });
 
 router.get('/:id/info.json', async ctx => {
-    try {
-        const imageInfo = await imageServer.getInfo(ctx.params.id);
+    const imageInfo = await imageServer.getInfo(ctx.params.id);
 
-        ctx.body = imageInfo.info;
-        ctx.status = imageInfo.status;
-    }
-    catch (err) {
-        ctx.throw(404, err.message);
-    }
+    ctx.body = imageInfo.info;
+    ctx.status = imageInfo.status;
 });
 
 router.get('/:id/:region/:size/:rotation/:quality.:format', async ctx => {
-    try {
-        const image = await imageServer.getImage(ctx.params.id, ctx.params.region,
-            ctx.params.size, ctx.params.rotation, ctx.params.quality, ctx.params.format);
+    const image = await imageServer.getImage(ctx.params.id, ctx.params.region,
+        ctx.params.size, ctx.params.rotation, ctx.params.quality, ctx.params.format);
 
-        ctx.body = image.image;
-        ctx.status = image.status;
-        ctx.set('Content-Type', image.contentType);
-        ctx.set('Content-Length', image.contentLength);
-    }
-    catch (err) {
-        ctx.throw(404, err.message);
-    }
+    ctx.body = image.image;
+    ctx.status = image.status;
+    ctx.set('Content-Type', image.contentType);
+    ctx.set('Content-Length', image.contentLength);
 });
 
 module.exports = router;

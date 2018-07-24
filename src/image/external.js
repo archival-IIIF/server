@@ -1,22 +1,10 @@
 const request = require('request-promise-native');
 const config = require('../lib/Config');
-const pool = require('../lib/DB');
+const file = require('../lib/File');
 
 async function getInfo(id) {
-    const sql = `
-        SELECT access_resolver, original_resolver
-        FROM manifest 
-        WHERE id = $1;`;
-
-    const data = await pool.query(sql, [id]);
-    if (data.rows.length === 0)
-        throw 'Not found';
-
-    let accessResolver = data.rows[0].access_resolver;
-    if (!accessResolver)
-        accessResolver = data.rows[0].original_resolver;
-
-    const url = `${config.imageServerUrl}/${accessResolver}/info.json`;
+    const path = await file.getRelativePath(id);
+    const url = `${config.imageServerUrl}/${path}/info.json`;
     const response = await request({uri: url, json: true, resolveWithFullResponse: true, simple: false});
 
     const result = {
@@ -25,7 +13,7 @@ async function getInfo(id) {
     };
 
     if (response.statusCode === 200) {
-        response.body['@id'] = `${config.baseUrl}/iiif/image/${ctx.params.id}`;
+        response.body['@id'] = `${config.baseUrl}/iiif/image/${id}`;
         result.info = response.body;
     }
 
@@ -33,20 +21,8 @@ async function getInfo(id) {
 }
 
 async function getImage(id, region, size, rotation, quality, format) {
-    const sql = `
-            SELECT access_resolver, original_resolver
-            FROM manifest 
-            WHERE id = $1;`;
-
-    const data = await pool.query(sql, [id]);
-    if (data.rows.length === 0)
-        throw 'Not found';
-
-    let accessResolver = data.rows[0].access_resolver;
-    if (!accessResolver)
-        accessResolver = data.rows[0].original_resolver;
-
-    const url = `${config.imageServerUrl}/${accessResolver}/${region}/${size}/${rotation}/${quality}.${format}`;
+    const path = await file.getRelativePath(id);
+    const url = `${config.imageServerUrl}/${path}/${region}/${size}/${rotation}/${quality}.${format}`;
     const response = await request({uri: url, encoding: null, resolveWithFullResponse: true, simple: false});
 
     const result = {

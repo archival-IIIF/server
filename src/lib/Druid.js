@@ -23,13 +23,12 @@ class Druid {
         }
 
         const id = node.attr("ID").value();
-        const extension = node.get('./p:Extension', namespaces).text();
-
         const result = {
             id: id,
             name: node.attr("Name").value(),
             url: `https://www.nationalarchives.gov.uk/PRONOM/Format/proFormatSearch.aspx?status=detailReport&id=${id}`,
-            extension: extension
+            extensions: node.find('./p:Extension', namespaces).map(ext => ext.text()),
+            mime: node.attr("MIMEType") ? node.attr("MIMEType").value() : null
         };
         this.cache[puid] = result;
 

@@ -1,39 +1,32 @@
-const ManifestBase = require('./ManifestBase');
-const Manifest = require('./Manifest');
+const Base = require('./Base');
 
-/**
- * See http://iiif.io/api/presentation/2.1/
- */
-class Collection extends ManifestBase {
+class Collection extends Base {
     constructor(id, label) {
-        super(id, label);
-        this.data["@type"] = "sc:Collection";
+        super(id, 'sc:Collection', label);
     }
 
-    addChild(id, type, label, thumbnail, fileIcon) {
-        if (type === "folder") {
-            let child = new Collection(id, label);
-            if (this.data.collections === undefined) {
-                this.data.collections = [];
-            }
-            this.data.collections.push(child.get());
-        }
-        else {
-            let child = new Manifest(id, label);
-            if (this.data.manifests === undefined) {
-                this.data.manifests = [];
-            }
+    addCollection(collection) {
+        if (!this.collections)
+            this.collections = [];
 
-            if (thumbnail) {
-                child.setThumbnail(thumbnail);
-            }
+        this.collections.push({
+            "@id": collection['@id'],
+            "@type": "sc:Collection",
+            "label": collection.label,
+            "thumbnail": collection.thumbnail
+        });
+    }
 
-            if (fileIcon) {
-                child.setFileTypeThumbnail(fileIcon);
-            }
+    addManifest(manifest) {
+        if (!this.manifests)
+            this.manifests = [];
 
-            this.data.manifests.push(child.get());
-        }
+        this.manifests.push({
+            "@id": manifest['@id'],
+            "@type": "sc:Manifest",
+            "label": manifest.label,
+            "thumbnail": manifest.thumbnail
+        });
     }
 }
 

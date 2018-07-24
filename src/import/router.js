@@ -1,5 +1,6 @@
 const Router = require('koa-router');
 const pool = require('../lib/DB');
+const HttpError = require('../lib/HttpError');
 const fs = require('fs');
 const {promisify} = require('util');
 
@@ -115,7 +116,7 @@ router.put('/', async ctx => {
         ctx.body = "Done"
     }
     catch (err) {
-        ctx.throw(400, err.message);
+        throw new HttpError(400, err.message);
     }
 });
 
