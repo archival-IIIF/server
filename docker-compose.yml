@@ -34,6 +34,12 @@ services:
     networks:
       - back-tier
 
+  redis:
+    image: redis
+    restart: always
+    networks:
+      - back-tier
+
 volumes:
   app-conf:
   loris-conf:

@@ -5,9 +5,9 @@ const MediaSequence = require('./MediaSequence');
 const Canvas = require('./Canvas');
 const Annotation = require('./Annotation');
 const Resource = require('./Resource');
-const pool = require('../lib/DB');
+const db = require('../lib/DB');
 const config = require('../lib/Config');
-const Druid = require('../lib/Druid');
+const getPronomInfo = require('../lib/Pronom');
 const imageServer = config.imageServerUrl ? require('../image/external') : require('../image/internal');
 
 const fs = require('fs');
@@ -32,11 +32,11 @@ const collectionSql = `
 const manifestSql = "SELECT * FROM manifest WHERE id = $1 AND type <> 'folder';";
 
 async function getCollection(id) {
-    const data = await pool.query(collectionSql, [id]);
-    if (data.rows.length === 0)
+    const data = await db.query(collectionSql, [id]);
+    if (data.length === 0)
         return null;
 
-    const root = data.rows[0];
+    const root = data[0];
     const collection = new Collection(`${prefixPresentationUrl}/collection/${root.id}`, root.label);
 
     addLogo(collection);
@@ -45,7 +45,7 @@ async function getCollection(id) {
     if (root.parent_id)
         collection.setParent(`${prefixPresentationUrl}/collection/${root.parent_id}`);
 
-    data.rows.forEach(child => {
+    data.forEach(child => {
         if (child.child_type === 'folder') {
             const childCollection = new Collection(`${prefixPresentationUrl}/collection/${child.child_id}`, child.child_label);
             addFileTypeThumbnail(childCollection, null, 'folder');
@@ -62,11 +62,11 @@ async function getCollection(id) {
 }
 
 async function getManifest(id) {
-    const data = await pool.query(manifestSql, [id]);
-    if (data.rows.length === 0)
+    const data = await db.query(manifestSql, [id]);
+    if (data.length === 0)
         return null;
 
-    const root = data.rows[0];
+    const root = data[0];
     const manifest = new Manifest(`${prefixPresentationUrl}/${root.id}/manifest`, root.label);
 
     addLogo(manifest);
@@ -136,7 +136,7 @@ function addPdf(manifest, item) {
 
 function addOther(manifest, item) {
     const pronom = item.access_pronom || item.original_pronom;
-    const pronomData = Druid.getByPuid(pronom);
+    const pronomData = getPronomInfo(pronom);
 
     const resource = new Resource(`${prefixFileUrl}/${item.id}`, null, null, pronomData ? pronomData.mime : null, 'foaf:Document');
     const mediaSequence = new MediaSequence(`${prefixPresentationUrl}/${item.id}/sequence/0`, resource);
@@ -153,7 +153,7 @@ function addThumbnail(base, id, imageInfo) {
 function addFileTypeThumbnail(base, pronom, type) {
     let icon = (type === 'folder') ? defaultFolderIcon : defaultFileIcon;
 
-    const pronomData = Druid.getByPuid(pronom);
+    const pronomData = getPronomInfo(pronom);
     if (pronomData && pronomData.extensions)
         icon = pronomData.extensions.find(
             ext => fs.existsSync(path.join(__dirname, '../../node_modules/file-icon-vectors/dist/icons/vivid', `${ext}.svg`))) || defaultFileIcon;
@@ -167,7 +167,7 @@ function addMetadata(base, root) {
         base.addMetadata(root.metadata);
 
     if (root.original_pronom) {
-        const pronomData = Druid.getByPuid(root.original_pronom);
+        const pronomData = getPronomInfo(root.original_pronom);
         base.addMetadata(
             'File type',
             `<a href="${pronomData.url}">${pronomData.name} (${pronomData.extensions.map(ext => `.${ext}`).join(', ')})</a>`

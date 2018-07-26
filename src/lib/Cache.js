@@ -1,35 +1,42 @@
-const fs = require('fs');
-const path = require('path');
 const {promisify} = require('util');
+const {client} = require('../lib/Redis');
 const config = require('../lib/Config');
-const mkdirp = require('mkdirp-promise');
 
-const readFileAsync = promisify(fs.readFile);
-const writeFileAsync = promisify(fs.writeFile);
-const existsAsync = file => new Promise(resolve => fs.access(file, fs.F_OK, e => resolve(!e)));
+const getAsync = promisify(client.get).bind(client);
+const setAsync = promisify(client.set).bind(client);
+const saddAsync = promisify(client.sadd).bind(client);
+const smembersAsync = promisify(client.smembers).bind(client);
+const delAsync = promisify(client.del).bind(client);
 
-async function cache(type, id, content) {
-    if (!config.cachePath)
+async function cache(type, group, id, content, secondsToExpire = 86400) {
+    if (config.cacheDisabled)
         return await content();
 
-    const cacheDirName = path.join(config.cachePath, type);
-    const cachePath = path.join(cacheDirName, id);
-
-    if (!await existsAsync(cacheDirName))
-        await mkdirp(cacheDirName);
-
-    if (await existsAsync(cachePath)) {
-        const cached = await readFileAsync(cachePath, {encoding: 'utf8'});
-        return JSON.parse(cached);
-    }
+    const key = `${type}:${group}:${id}`;
+    const cachedValue = await getAsync(key);
+    if (cachedValue)
+        return JSON.parse(cachedValue);
 
     const toBeCached = await content();
     if (toBeCached) {
-        await writeFileAsync(cachePath, JSON.stringify(toBeCached));
+        await setAsync(key, JSON.stringify(toBeCached), 'EX', secondsToExpire);
+
+        const groupKey = `${type}:${group}`;
+        await saddAsync(groupKey, key);
+
         return toBeCached;
     }
 
     return null;
 }
 
-module.exports = cache;
+async function evictCache(type, group) {
+    if (config.cacheDisabled)
+        return;
+
+    const groupKey = `${type}:${group}`;
+    const keysToRemove = await smembersAsync(groupKey);
+    await delAsync(groupKey, ...keysToRemove);
+}
+
+module.exports = {cache, evictCache};

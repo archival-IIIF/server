@@ -7,7 +7,23 @@ module.exports = {
     universalViewerPath: process.env.IIIF_SERVER_UNIVERSAL_VIEWER_PATH,
     archivalViewerPath: process.env.IIIF_SERVER_ARCHIVAL_VIEWER_PATH,
     imageServerUrl: process.env.IIIF_SERVER_IMAGE_SERVER_URL,
-    cachePath: process.env.IIIF_SERVER_CACHE_PATH,
+
+    cacheDisabled: (() => {
+        const cacheDiasbled = process.env.IIIF_SERVER_CACHE_DISABLED;
+        return (cacheDiasbled && (cacheDiasbled.toLowerCase() === 'true' || cacheDiasbled === '1'));
+    })(),
+
+    services: (() => {
+        if (!process.env.IIIF_SERVER_SERVICES)
+            throw new Error("services is not defined");
+        return process.env.IIIF_SERVER_SERVICES;
+    })(),
+
+    accessToken: (() => {
+        if (!process.env.IIIF_SERVER_ACCESS_TOKEN)
+            throw new Error("accessToken is not defined");
+        return process.env.IIIF_SERVER_ACCESS_TOKEN;
+    })(),
 
     port: (() => {
         const port = parseInt(process.env.IIIF_SERVER_PORT);
@@ -16,12 +32,6 @@ module.exports = {
 
     logLevel: (() => {
         return process.env.IIIF_SERVER_LOG_LEVEL ? process.env.IIIF_SERVER_LOG_LEVEL : 'debug';
-    })(),
-
-    defaultLang: (() => {
-        if (!process.env.IIIF_SERVER_DEFAULT_LANG)
-            throw new Error("defaultLang is not defined");
-        return process.env.IIIF_SERVER_DEFAULT_LANG;
     })(),
 
     baseUrl: (() => {
@@ -49,6 +59,15 @@ module.exports = {
             ? process.env.IIIF_SERVER_DATABASE_DB : 'iiif-server';
 
         return {host, port, user, password, database};
+    })(),
+
+    redis: (() => {
+        const host = process.env.IIIF_SERVER_REDIS_HOST
+            ? process.env.IIIF_SERVER_REDIS_HOST : 'localhost';
+        const port = parseInt(process.env.IIIF_SERVER_REDIS_PORT) > 0
+            ? parseInt(process.env.IIIF_SERVER_REDIS_PORT) : 6379;
+
+        return {host, port};
     })()
 };
 

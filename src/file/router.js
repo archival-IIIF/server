@@ -22,21 +22,16 @@ router.get('/logo', async ctx => {
 });
 
 router.get('/:id', async ctx => {
-    try {
-        const fullPath = await file.getFullPath(ctx.params.id);
-        const name = path.basename(fullPath);
-        const stat = await statAsync(fullPath);
-        const stream = fs.createReadStream(fullPath);
+    const fullPath = await file.getFullPath(ctx.params.id);
+    const name = path.basename(fullPath);
+    const stat = await statAsync(fullPath);
+    const stream = fs.createReadStream(fullPath);
 
-        ctx.set('Content-Length', stat.size);
-        ctx.set('Content-Type', mime.contentType(name));
-        ctx.set('Content-Disposition', `inline; filename="${name}"`);
+    ctx.set('Content-Length', stat.size);
+    ctx.set('Content-Type', mime.contentType(name));
+    ctx.set('Content-Disposition', `inline; filename="${name}"`);
 
-        ctx.body = stream;
-    }
-    catch (err) {
-        ctx.throw(404, err.message);
-    }
+    ctx.body = stream;
 });
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const { Pool } = require('pg');
+const pg = require('pg-promise')();
 const config = require('./Config');
 
-module.exports = new Pool(config.database);
+module.exports = pg(config.database);
