@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+#
+# PostgreSQL Client Authentication Configuration File
+# ===================================================
+#
+
+# Database administrative login by Unix domain socket
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+{% for key, value in hba_rules.iteritems() %}
+# {{ key }}
+{% for item in value %}{{ item }}    {% endfor %}
+
+{% endfor %}

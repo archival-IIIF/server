@@ -1,0 +1,45 @@
+---
+- hosts: database
+  become: yes
+  pre_tasks:
+    - include: tasks/load-vars.yml
+      tags: "pre_tasks"
+  roles:
+    - role: "postgresql"
+      tags: postgresql
+
+- hosts: backend
+  become: yes
+  pre_tasks:
+    - include: tasks/load-vars.yml
+      tags: "pre_tasks"
+  roles:
+    - role: "nodejs"
+      tags: nodejs
+
+    - role: "viewer"
+      tags: viewer
+
+    - role: "universalviewer"
+      tags: universalviewer
+
+    - role: "server"
+      tags: server
+
+- hosts: image
+  become: yes
+  pre_tasks:
+    - include: tasks/load-vars.yml
+      tags: "pre_tasks"
+  roles:
+    - role: "loris"
+      tags: loris
+
+- hosts: redis
+  become: yes
+  pre_tasks:
+    - include: tasks/load-vars.yml
+      tags: "pre_tasks"
+  roles:
+    - role: "redis"
+      tags: redis

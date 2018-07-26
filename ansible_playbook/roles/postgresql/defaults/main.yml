@@ -1,0 +1,14 @@
+---
+
+postgresql:
+  listen_addresses: "'*'"
+
+system_hba_rules:
+  "Database administrative login by Unix domain socket": ['local', 'all', 'postgres', 'peer']
+  "local is for Unix domain socket connections only": ['local', 'all', 'all', 'peer']
+  "IPv4 local connections": ['host', 'all', 'all', '127.0.0.1/32', 'md5']
+  "IPv6 local connections": ['host', 'all', 'all', '::1/128', 'md5']
+
+custom_hba_rules:
+  "iiif": ['host', 'iiif', 'iiif', '127.0.0.1/32', 'md5']
+  "iiif": ['host', 'iiif', 'iiif', '127.0.0.1/32', 'md5']

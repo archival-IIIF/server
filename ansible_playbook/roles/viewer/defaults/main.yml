@@ -1,0 +1,4 @@
+---
+  iiif_viewer_git: https://github.com/archival-IIIF/viewer.git
+
+  iiif_viewer_path: /opt/iiif-viewer

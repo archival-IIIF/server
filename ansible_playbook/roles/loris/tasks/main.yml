@@ -1,0 +1,84 @@
+---
+- name: install apt packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python-pip
+    - python-setuptools
+    - libjpeg-turbo8-dev
+    - libfreetype6-dev
+    - zlib1g-dev
+    - liblcms2-dev
+    - liblcms2-utils
+    - libtiff5-dev
+    - libffi-dev
+    - libssl-dev
+    - python-dev
+    - libwebp-dev
+    - apache2
+    - libapache2-mod-wsgi
+
+- name: install pip packages
+  pip:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - Pillow
+
+- name: obtain the package
+  git:
+    repo: "{{ loris_git }}"
+    dest: "{{ loris_path }}"
+    force: "yes"
+    version: v2.3.3
+
+- name: create user
+  user:
+    name: loris
+    system: "yes"
+    home: "{{ loris_path }}"
+
+- name: set user permissions
+  file:
+      path: "{{ loris_path }}"
+      owner: loris
+      group: loris
+      recurse: "yes"
+
+- name: run setup.py
+  command: "./setup.py install --config-dir {{ loris_path }}"
+  args:
+    chdir: "{{ loris_path }}"
+
+- name: set loris config
+  template:
+    src: loris2.conf.j2
+    dest: "{{ loris_path }}/loris2.conf"
+
+- name: enable apache modules
+  apache2_module:
+    name={{ item }}
+    state=present
+  with_items:
+    - headers
+    - expires
+  notify: restart apache
+
+- name: set apache port
+  lineinfile:
+    dest=/etc/apache2/ports.conf
+    state=present
+    regexp='^Listen 80'
+    line='Listen {{ apache_port }}'
+  notify: restart apache
+
+- name: set vhost configuration
+  template:
+    src=000-default.conf.j2
+    dest=/etc/apache2/sites-available/000-default.conf
+    owner=root
+    group=root
+    mode=0644
+  notify: restart apache
+

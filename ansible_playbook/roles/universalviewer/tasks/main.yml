@@ -1,0 +1,25 @@
+---
+- name: install apt packages
+  apt:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - git
+
+- name: obtain the package
+  git:
+    repo: "{{ universalviewer_git }}"
+    dest: "{{ universalviewer_path }}"
+    force: "yes"
+
+- name: install npm packages globally
+  npm: name={{item}} global=yes
+  with_items:
+    - grunt-cli
+
+- name: install packages
+  npm:
+    path: "{{ universalviewer_path }}"
+
+- name: run grunt install
+  command: "grunt build --gruntfile {{ universalviewer_path }}/Gruntfile.js --dist"

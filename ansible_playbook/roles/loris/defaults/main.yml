@@ -1,0 +1,10 @@
+---
+  loris_git: https://github.com/loris-imageserver/loris.git
+
+  loris_path: /opt/loris
+  loris_tmp_path: "{{ cache_path }}/loris"
+  loris_image_root_path: "{{ collections_path }}"
+  loris_image_cache_path: "{{ cache_path }}/image"
+  loris_info_cache_path: "{{ cache_path }}/info"
+
+  apache_port: 8080
