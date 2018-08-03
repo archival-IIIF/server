@@ -7,6 +7,7 @@ module.exports = {
     universalViewerPath: process.env.IIIF_SERVER_UNIVERSAL_VIEWER_PATH,
     archivalViewerPath: process.env.IIIF_SERVER_ARCHIVAL_VIEWER_PATH,
     imageServerUrl: process.env.IIIF_SERVER_IMAGE_SERVER_URL,
+    imageTierSeparator: process.env.IIIF_SERVER_IMAGE_TIER_SEPARATOR,
 
     cacheDisabled: (() => {
         const cacheDiasbled = process.env.IIIF_SERVER_CACHE_DISABLED;
@@ -16,7 +17,7 @@ module.exports = {
     services: (() => {
         if (!process.env.IIIF_SERVER_SERVICES)
             throw new Error("services is not defined");
-        return process.env.IIIF_SERVER_SERVICES;
+        return process.env.IIIF_SERVER_SERVICES.split(',');
     })(),
 
     accessToken: (() => {
@@ -44,6 +45,17 @@ module.exports = {
         if (!process.env.IIIF_SERVER_DATA_PATH)
             throw new Error("data path is not defined");
         return process.env.IIIF_SERVER_DATA_PATH;
+    })(),
+
+    internalIpAddresses: (() => {
+        if (!process.env.IIIF_SERVER_INTERNAL_IP_ADDRESSES)
+            return [];
+        return process.env.IIIF_SERVER_INTERNAL_IP_ADDRESSES.split(',');
+    })(),
+
+    loginDisabled: (() => {
+        const loginDisabled = process.env.IIIF_SERVER_LOGIN_DISABLED;
+        return (loginDisabled && (loginDisabled.toLowerCase() === 'true' || loginDisabled === '1'));
     })(),
 
     database: (() => {

@@ -1,10 +1,11 @@
-const logger = require('./lib/Logger.js');
-const config = require('./lib/Config.js');
+const config = require('./lib/Config');
+const logger = require('./lib/Logger');
+const {servicesRunning} = require('./lib/Service');
 
-config.services.split(',').forEach(function initService(service) {
-    if (service === 'web')
+servicesRunning.forEach(function initService(service) {
+    if (service.runAs === 'web')
         startWeb();
-    else
+    else if (service.runAs === 'worker')
         startWorker(service);
 });
 
@@ -16,6 +17,7 @@ function startWeb() {
     const bodyParser = require('koa-bodyparser');
 
     const path = require('path');
+    const {fileIconsPath} = require('./lib/FileIcon');
 
     const iiifImageRouter = require('./image/router');
     const iiifPresentationRouter = require('./presentation/router');
@@ -48,12 +50,9 @@ function startWeb() {
         app.use(morgan('short', {'stream': logger.stream}));
 
     app.use(json({pretty: false, param: 'pretty'}));
-    app.use(bodyParser({jsonLimit: '50mb'}));
+    app.use(bodyParser());
 
-    app.use(serve({
-        rootDir: path.join(__dirname, '../node_modules/file-icon-vectors/dist/icons/vivid'),
-        rootPath: '/file-icon'
-    }));
+    app.use(serve({rootDir: fileIconsPath, rootPath: '/file-icon'}));
     app.use(serve({rootDir: config.universalViewerPath, rootPath: '/universalviewer', index: 'uv.html'}));
     app.use(serve({rootDir: config.archivalViewerPath, rootPath: '/archivalviewer'}));
 
@@ -64,21 +63,11 @@ function startWeb() {
     app.use(fileRouter.routes());
     app.use(adminRouter.routes());
 
+    app.proxy = true;
     app.listen(config.port);
 }
 
-function startWorker(serviceName) {
+function startWorker(service) {
     const onTask = require('./lib/Worker.js');
-
-    let type, service;
-    switch (serviceName) {
-        case 'archivematica-import':
-            type = 'import';
-            service = require('./service/archivematica_import');
-            break;
-        default:
-            throw Error(`No service found with the name ${serviceName}`);
-    }
-
-    onTask(type, service);
+    onTask(service.type, service.getService());
 }

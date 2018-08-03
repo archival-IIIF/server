@@ -1,10 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 const {promisify} = require('util');
+const moment = require('moment');
 const libxmljs = require('libxmljs');
-const pg = require('pg-promise')();
 
-const db = require('../lib/DB');
+const {db, pg} = require('../lib/DB');
 const {evictCache} = require('../lib/Cache');
 const {getTypeForPronom, pronomByExtension} = require('./util/archivematica_pronom_data');
 
@@ -15,6 +15,10 @@ const namespaces = {
     'mets': 'http://www.loc.gov/METS/',
     'premis': 'info:lc/xmlns/premis-v2',
     'premisv3': 'http://www.loc.gov/premis/v3',
+    'mediainfo': 'https://mediaarea.net/mediainfo',
+    'fits': 'http://hul.harvard.edu/ois/xml/ns/fits/fits_output',
+    'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+    'File': 'http://ns.exiftool.ca/File/1.0/'
 };
 
 const columnSet = new pg.helpers.ColumnSet([
@@ -24,6 +28,10 @@ const columnSet = new pg.helpers.ColumnSet([
     "metadata",
     "type",
     "label",
+    "size",
+    "created_at",
+    "width",
+    "height",
     "original_resolver",
     "original_pronom",
     "access_resolver",
@@ -60,6 +68,10 @@ async function processDip({dipPath}) {
         "metadata": null,
         "type": 'folder',
         "label": id,
+        "size": null,
+        "created_at": null,
+        "width": null,
+        "height": null,
         "original_resolver": null,
         "original_pronom": null,
         "access_resolver": null,
@@ -74,9 +86,9 @@ async function processDip({dipPath}) {
 }
 
 async function cleanup(id) {
-    const result = await db.result("SELECT id FROM manifest WHERE container_id = $1", [id]);
+    const result = await db.result("SELECT id FROM items WHERE container_id = $1", [id]);
     if (result.rowCount > 0) {
-        await db.none("DELETE FROM manifest WHERE container_id = $1;", [id]);
+        await db.none("DELETE FROM items WHERE container_id = $1;", [id]);
 
         await evictCache('collection', id);
         await evictCache('manifest', id);
@@ -131,6 +143,10 @@ function readFolder(rootId, mets, node, nodePhysical, parent) {
             "metadata": null,
             "type": 'folder',
             "label": name,
+            "size": null,
+            "created_at": null,
+            "width": null,
+            "height": null,
             "original_resolver": null,
             "original_pronom": null,
             "access_resolver": null,
@@ -153,11 +169,22 @@ function readFile(rootId, mets, objects, relativeRootPath, node, nodePhysical, p
         const id = premisObj.get('./premis:objectIdentifier/premis:objectIdentifierType[text()="UUID"]/../premis:objectIdentifierValue', namespaces).text();
 
         const objCharacteristics = premisObj.get('./premis:objectCharacteristics', namespaces);
-        const creationDate = objCharacteristics.get('.//premis:creatingApplication/premis:dateCreatedByApplication', namespaces).text();
-        const size = objCharacteristics.get('./premis:size', namespaces).text();
+        const objCharacteristicsExt = objCharacteristics.get('./premis:objectCharacteristicsExtension', namespaces);
+
+        const size = Number.parseInt(objCharacteristics.get('./premis:size', namespaces).text());
+
+        const dateCreatedByApplication = objCharacteristics.get('.//premis:creatingApplication/premis:dateCreatedByApplication', namespaces).text();
+        const creationDate = moment(dateCreatedByApplication, 'YYYY-MM-DD').toDate();
+
         const pronomKeyElem = objCharacteristics.get('./premis:format/premis:formatRegistry/premis:formatRegistryName[text()="PRONOM"]/../premis:formatRegistryKey', namespaces);
         const pronomKey = pronomKeyElem ? pronomKeyElem.text() : null;
         const name = path.basename(originalName);
+
+        const type = getTypeForPronom(pronomKey);
+
+        const resolution = (type === 'image' || type === 'video')
+            ? determineResolution(objCharacteristicsExt)
+            : {width: null, height: null};
 
         const file = objects.find(f => f.startsWith(id));
         const isOriginal = file.endsWith(label);
@@ -167,9 +194,13 @@ function readFile(rootId, mets, objects, relativeRootPath, node, nodePhysical, p
             "id": id,
             "parent_id": parent || rootId,
             "container_id": rootId,
-            "metadata": {'Creation date': creationDate, 'Size': size},
-            "type": getTypeForPronom(pronomKey),
+            "metadata": null,
+            "type": type,
             "label": name,
+            "size": size,
+            "created_at": creationDate,
+            "width": resolution.width,
+            "height": resolution.height,
             "original_resolver": isOriginal ? path.join(relativeRootPath, file) : null,
             "original_pronom": pronomKey,
             "access_resolver": !isOriginal ? path.join(relativeRootPath, file) : null,
@@ -181,8 +212,55 @@ function readFile(rootId, mets, objects, relativeRootPath, node, nodePhysical, p
     return null;
 }
 
+function determineResolution(objCharacteristicsExt) {
+    const mediaInfo = objCharacteristicsExt.get('./mediainfo:MediaInfo/mediainfo:media/mediainfo:track[@type="Image" or @type="Video"]', namespaces);
+    if (mediaInfo) {
+        const resolution = getResolution(
+            mediaInfo.get('./mediainfo:Width', namespaces).text(),
+            mediaInfo.get('./mediainfo:Height', namespaces).text()
+        );
+        if (resolution) return resolution;
+    }
+
+    const ffprobe = objCharacteristicsExt.get('./ffprobe/streams/stream[@codec_type="video"]', namespaces);
+    if (ffprobe) {
+        const resolution = getResolution(ffprobe.attr('width'), ffprobe.attr('height'));
+        if (resolution) return resolution;
+    }
+
+    const exifTool = objCharacteristicsExt.get('./rdf:RDF/rdf:Description', namespaces);
+    if (exifTool) {
+        const resolution = getResolution(
+            exifTool.get('./File:ImageWidth', namespaces).text(),
+            exifTool.get('./File:ImageHeight', namespaces).text()
+        );
+        if (resolution) return resolution;
+    }
+
+    const fitsExifTool = objCharacteristicsExt.get('./fits:fits/fits:toolOutput/fits:tool[@name="Exiftool"]/exiftool', namespaces);
+    if (fitsExifTool) {
+        const resolution = getResolution(
+            fitsExifTool.get('./ImageWidth', namespaces).text(),
+            fitsExifTool.get('./ImageHeight', namespaces).text()
+        );
+        if (resolution) return resolution;
+    }
+
+    return {width: null, height: null};
+}
+
+function getResolution(width, height) {
+    if (width && height) {
+        return {
+            width: Number.parseInt(width),
+            height: Number.parseInt(height)
+        };
+    }
+    return null;
+}
+
 async function writeItems(items) {
-    const sql = pg.helpers.insert(items, columnSet, 'manifest');
+    const sql = pg.helpers.insert(items, columnSet, 'items');
     await db.none(sql, items);
 }
 

@@ -1,15 +1,12 @@
 class Base {
     constructor(id, type, label) {
-        this["@id"] = id;
-        this["@type"] = type;
-
-        if (label)
-            this.label = label;
+        if (id) this["@id"] = id;
+        if (type) this["@type"] = type;
+        if (label) this.label = label;
     }
 
-    get(context) {
+    setContext(context) {
         this["@context"] = context || 'http://iiif.io/api/presentation/2/context.json';
-        return this;
     }
 
     setThumbnail(resource) {
@@ -20,6 +17,19 @@ class Base {
         this.within = id;
     }
 
+    setLogo(logo) {
+        this.logo = logo;
+    }
+
+    setService(service) {
+        if (!this.service)
+            this.service = service;
+        else if (Array.isArray(this.service))
+            this.service.push(service);
+        else
+            this.service = [this.service, service];
+    }
+
     addMetadata(label, value) {
         if (!this.metadata)
             this.metadata = [];
@@ -28,10 +38,6 @@ class Base {
             this.metadata = Object.entries(label).map(md => ({label: md[0], value: md[1]}));
         else
             this.metadata.push({"label": label, "value": value});
-    }
-
-    addLogo(logo) {
-        this.logo = logo;
     }
 }
 

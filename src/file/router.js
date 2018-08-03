@@ -1,10 +1,13 @@
 const Router = require('koa-router');
 const mime = require('mime-types');
 const path = require('path');
-const file = require('../lib/File');
-const config = require('../lib/Config');
 const fs = require('fs');
 const {promisify} = require('util');
+
+const config = require('../lib/Config');
+const HttpError = require('../lib/HttpError');
+const {hasAccess} = require('../lib/Security');
+const {getItem, getFullPath} = require('../lib/Item');
 
 const statAsync = promisify(fs.stat);
 const readFileAsync = promisify(fs.readFile);
@@ -17,21 +20,28 @@ router.get('/logo', async ctx => {
         ctx.body = await readFileAsync(config.logo);
     }
     catch (err) {
-        ctx.throw(404, err.message);
+        throw new HttpError(404, 'No logo');
     }
 });
 
 router.get('/:id', async ctx => {
-    const fullPath = await file.getFullPath(ctx.params.id);
-    const name = path.basename(fullPath);
-    const stat = await statAsync(fullPath);
-    const stream = fs.createReadStream(fullPath);
+    const item = await getItem(ctx.params.id);
+    const access = await hasAccess(ctx, item);
+    if (access) {
+        const fullPath = getFullPath(item);
+        const name = path.basename(fullPath);
+        const stat = await statAsync(fullPath);
+        const stream = fs.createReadStream(fullPath);
 
-    ctx.set('Content-Length', stat.size);
-    ctx.set('Content-Type', mime.contentType(name));
-    ctx.set('Content-Disposition', `inline; filename="${name}"`);
+        ctx.set('Content-Length', stat.size);
+        ctx.set('Content-Type', mime.contentType(name));
+        ctx.set('Content-Disposition', `inline; filename="${name}"`);
 
-    ctx.body = stream;
+        ctx.body = stream;
+    }
+    else {
+        throw new HttpError(401, 'Access denied');
+    }
 });
 
 module.exports = router;

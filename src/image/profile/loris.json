@@ -1,0 +1,24 @@
+[
+  "http://iiif.io/api/image/2/level2.json",
+  {
+    "supports": [
+      "canonicalLinkHeader",
+      "profileLinkHeader",
+      "mirroring",
+      "rotationArbitrary",
+      "regionSquare"
+    ],
+    "qualities": [
+      "default",
+      "color",
+      "gray",
+      "bitonal"
+    ],
+    "formats": [
+      "jpg",
+      "png",
+      "gif",
+      "webp"
+    ]
+  }
+]

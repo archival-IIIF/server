@@ -1,4 +1,6 @@
 const pg = require('pg-promise')();
 const config = require('./Config');
 
-module.exports = pg(config.database);
+const db = pg(config.database);
+
+module.exports = {pg, db};

@@ -1,51 +1,7 @@
 const sharp = require('sharp');
-const config = require('../lib/Config');
-const file = require('../lib/File');
+const {getItem, getFullPath} = require('../lib/Item');
 
-async function getInfo(id) {
-    const result = {
-        info: null,
-        status: 200
-    };
-
-    result.info = {
-        "profile": [
-            "http://iiif.io/api/image/2/level2.json",
-            {
-                "supports": [
-                    "canonicalLinkHeader",
-                    "profileLinkHeader",
-                    "mirroring",
-                    "rotationArbitrary",
-                    "regionSquare",
-                    "sizeAboveFull"
-                ],
-                "qualities": [
-                    "default",
-                    "color",
-                    "gray",
-                    "bitonal"
-                ],
-                "formats": [
-                    "jpg",
-                    "png",
-                    "gif",
-                    "webp"
-                ]
-            }
-        ],
-        "protocol": "http://iiif.io/api/image",
-        "sizes": [],
-        "width": 1840,
-        "height": 1450,
-        "@context": "http://iiif.io/api/image/2/context.json",
-        "@id": `${config.baseUrl}/iiif/image/${id}`,
-    };
-
-    return result;
-}
-
-async function getImage(id, region, size, rotation, quality, format) {
+async function serveImage(id, {region, size, rotation, quality, format}) {
     const result = {
         image: null,
         status: 200,
@@ -53,7 +9,8 @@ async function getImage(id, region, size, rotation, quality, format) {
         contentLength: null
     };
 
-    const fullPath = await file.getFullPath(id);
+    const item = await getItem(id);
+    const fullPath = getFullPath(item);
     const buildImage = sharp(fullPath);
 
     if (size.includes(',')) {
@@ -123,4 +80,4 @@ function isNormalInteger(str) {
     return n !== Infinity && String(n) === str && n >= 0;
 }
 
-module.exports = {getInfo, getImage};
+module.exports = serveImage;

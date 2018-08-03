@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Access collection</title>
+  <style>
+    body {
+      background: #f1f1f1;
+      background: -webkit-linear-gradient(right, #FFFFFF, #f1f1f1);
+      background: -moz-linear-gradient(right, #FFFFFF, #f1f1f1);
+      background: -o-linear-gradient(right, #FFFFFF, #f1f1f1);
+      background: linear-gradient(to left, #FFFFFF, #f1f1f1);
+      font-family: sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+      width: 500px;
+      padding: 50px 0 0;
+      margin: auto;
+    }
+
+    .form {
+      position: relative;
+      background: #FFFFFF;
+      margin: 0 auto;
+      padding: 45px;
+      text-align: center;
+      box-shadow: 0 0 20px 0 #b3b3b3;
+    }
+
+    .form .logo {
+      margin: 0 0 45px;
+    }
+
+    .form input {
+      background: #f1f1f1;
+      width: 100%;
+      border: 0;
+      margin: 0 0 15px;
+      padding: 15px;
+      color: #484848;
+      box-sizing: border-box;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .form button {
+      text-transform: uppercase;
+      background: #f1f1f1;
+      width: 100%;
+      border: 0;
+      padding: 15px;
+      color: #484848;
+      font-size: 14px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .form button:hover, .form button:active, .form button:focus {
+      box-shadow: 0 0 5px 0 #b3b3b3;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="form">
+    <div class="logo">
+      <img src="/file/logo"/>
+    </div>
+
+    <form method="post">
+      <input type="text" name="token" placeholder="Provide your access token"/>
+      <button type="submit">Access collection</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>

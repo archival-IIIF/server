@@ -1,6 +1,7 @@
 const Router = require('koa-router');
 const config = require('../lib/Config');
 const {runTask} = require('../lib/Task');
+const registerToken = require('./register_token');
 
 const router = new Router({prefix: '/admin'});
 
@@ -14,16 +15,19 @@ router.use((ctx, next) => {
     }
 });
 
-router.get('/import', async ctx => {
-    if (!ctx.query.identifier || !ctx.query.dip_path) {
+router.post('/import', async ctx => {
+    if (!ctx.query.dip_path) {
         ctx.status = 400;
-        ctx.body = 'Please provide an identifier and a dip_path';
+        ctx.body = 'Please provide a dip_path';
         return;
     }
 
-    runTask('import', ctx.query.identifier, {dipPath: ctx.query.dip_path});
+    runTask('import', {dipPath: ctx.query.dip_path});
     ctx.body = 'Import is sent to the queue';
 });
 
-module.exports = router;
+router.post('/register_token', async ctx => {
+    ctx.body = await registerToken(ctx.query.token, ctx.query.container, ctx.query.from, ctx.query.to);
+});
 
+module.exports = router;
