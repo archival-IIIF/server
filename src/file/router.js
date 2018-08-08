@@ -26,14 +26,12 @@ router.get('/logo', async ctx => {
 
 router.get('/:id', async ctx => {
     const item = await getItem(ctx.params.id);
-    const access = await hasAccess(ctx, item);
-    if (access) {
+    if (await hasAccess(ctx, item)) {
         const fullPath = getFullPath(item);
         const name = path.basename(fullPath);
-        const stat = await statAsync(fullPath);
         const stream = fs.createReadStream(fullPath);
 
-        ctx.set('Content-Length', stat.size);
+        ctx.set('Content-Length', item.size);
         ctx.set('Content-Type', mime.contentType(name));
         ctx.set('Content-Disposition', `inline; filename="${name}"`);
 

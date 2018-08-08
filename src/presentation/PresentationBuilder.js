@@ -15,7 +15,7 @@ const {db} = require('../lib/DB');
 const config = require('../lib/Config');
 const getPronomInfo = require('../lib/Pronom');
 const {iconsByExtension} = require('../lib/FileIcon');
-const {enabledAuthServices, requiresAuthentication} = require('../lib/Security');
+const {enabledAuthServices, requiresAuthentication, getAuthTexts} = require('../lib/Security');
 
 const path = require('path');
 
@@ -94,27 +94,27 @@ async function getManifest(id) {
 
     switch (root.type) {
         case "image":
-            addImage(manifest, root);
-            addThumbnail(manifest, root);
+            await addImage(manifest, root);
+            await addThumbnail(manifest, root);
             break;
         case "audio":
-            addAudio(manifest, root);
+            await addAudio(manifest, root);
             break;
         case "video":
-            addVideo(manifest, root);
+            await addVideo(manifest, root);
             break;
         case "pdf":
-            addPdf(manifest, root);
+            await addPdf(manifest, root);
             break;
         default:
-            addOther(manifest, root);
+            await addOther(manifest, root);
     }
 
     return manifest;
 }
 
-function addImage(manifest, item) {
-    const resource = getImageResource(item);
+async function addImage(manifest, item) {
+    const resource = await getImageResource(item);
     const annotation = new Annotation(`${prefixPresentationUrl}/${item.id}/annotation/0`, resource);
     const canvas = new Canvas(`${prefixPresentationUrl}/${item.id}/canvas/0`, annotation);
     const sequence = new Sequence(`${prefixPresentationUrl}/${item.id}/sequence/0`, canvas);
@@ -123,37 +123,62 @@ function addImage(manifest, item) {
     manifest.setSequence(sequence);
 }
 
-function addAudio(manifest, item) {
-    addMediaSequence(manifest, item, 'audio/mp3', 'dctypes:Sound');
+async function addAudio(manifest, item) {
+    await addMediaSequence(manifest, item, 'audio/mp3', 'dctypes:Sound');
 }
 
-function addVideo(manifest, item) {
-    addMediaSequence(manifest, item, 'video/mp4', 'dctypes:MovingImage');
+async function addVideo(manifest, item) {
+    await addMediaSequence(manifest, item, 'video/mp4', 'dctypes:MovingImage');
 }
 
-function addPdf(manifest, item) {
-    addMediaSequence(manifest, item, 'application/pdf', 'foaf:Document');
+async function addPdf(manifest, item) {
+    await addMediaSequence(manifest, item, 'application/pdf', 'foaf:Document');
 }
 
-function addOther(manifest, item) {
+async function addOther(manifest, item) {
     const pronom = item.access_pronom || item.original_pronom;
     const pronomData = getPronomInfo(pronom);
-    addMediaSequence(manifest, item, pronomData ? pronomData.mime : null, 'foaf:Document');
+    await addMediaSequence(manifest, item, pronomData ? pronomData.mime : null, 'foaf:Document');
 }
 
-function addMediaSequence(manifest, item, mime, type) {
+async function addMediaSequence(manifest, item, mime, type) {
     const itemId = `${prefixFileUrl}/${item.id}`;
     const rendering = new Rendering(itemId, mime);
     const resource = new Resource(itemId, null, null, mime, type, rendering);
     const mediaSequence = new MediaSequence(`${prefixPresentationUrl}/${item.id}/sequence/0`, resource);
 
-    setAuthenticationServices(item, rendering);
+    await setAuthenticationServices(item, rendering);
     manifest.setMediaSequence(mediaSequence);
 }
 
-function addThumbnail(base, item) {
-    const resource = getImageResource(item, '!100,100');
+async function addThumbnail(base, item) {
+    const resource = await getImageResource(item, '!100,100');
     base.setThumbnail(resource);
+}
+
+async function setAuthenticationServices(item, base) {
+    if (await requiresAuthentication(item)) {
+        await Promise.all(enabledAuthServices.map(async type => {
+            const authTexts = await getAuthTexts(item, type);
+            base.setService(AuthService.getAuthenticationService(prefixAuthUrl, authTexts, type));
+        }));
+    }
+}
+
+async function getImageResource(item, size = 'full') {
+    const id = (size === 'full')
+        ? `${prefixImageUrl}/${item.id}/full/${size}/0/default.jpg`
+        : `${prefixImageUrl}/${item.id}/full/${size}/0/default.jpg`;
+
+    const image = new Image(`${prefixImageUrl}/${item.id}`, item.width, item.height);
+    image.setProfile(Array.isArray(getProfile()) ? getProfile()[0] : getProfile());
+    await setAuthenticationServices(item, image);
+
+    const resource = new Resource(id, (size === 'full') ? item.width : null, (size === 'full') ? item.height : null,
+        'image/jpeg', 'dctypes:Image');
+    resource.setService(image);
+
+    return resource;
 }
 
 function addFileTypeThumbnail(base, pronom, fileExtension, type) {
@@ -185,28 +210,6 @@ function addMetadata(base, root) {
 
 function addLogo(base) {
     base.setLogo(`${prefixFileUrl}/logo`);
-}
-
-function setAuthenticationServices(item, base) {
-    if (requiresAuthentication(item))
-        enabledAuthServices.forEach(
-            type => base.setService(AuthService.getAuthenticationService(prefixAuthUrl, type)));
-}
-
-function getImageResource(item, size = 'full') {
-    const id = (size === 'full')
-        ? `${prefixImageUrl}/${item.id}/full/${size}/0/default.jpg`
-        : `${prefixImageUrl}/${item.id}/full/${size}/0/default.jpg`;
-
-    const image = new Image(`${prefixImageUrl}/${item.id}`, item.width, item.height);
-    image.setProfile(Array.isArray(getProfile()) ? getProfile()[0] : getProfile());
-    setAuthenticationServices(item, image);
-
-    const resource = new Resource(id, (size === 'full') ? item.width : null, (size === 'full') ? item.height : null,
-        'image/jpeg', 'dctypes:Image');
-    resource.setService(image);
-
-    return resource;
 }
 
 module.exports = {getCollection, getManifest};

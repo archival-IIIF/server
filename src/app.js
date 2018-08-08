@@ -42,7 +42,7 @@ function startWeb() {
             ctx.body = (e.status && e.status < 500) ? e.message : 'Internal Server Error';
 
             if (!e.status || e.status >= 500)
-                logger.error(e.message);
+                throw e;
         }
     });
 

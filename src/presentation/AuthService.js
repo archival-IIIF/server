@@ -16,33 +16,25 @@ class AuthService extends Base {
         if (authTexts.failureDescription) this.failureDescription = authTexts.failureDescription;
     }
 
-    static getAuthenticationService(prefixAuthUrl, type = 'login') {
+    static getAuthenticationService(prefixAuthUrl, authTexts, type = 'login') {
+        let service = null;
         switch (type) {
             case 'login':
-                const loginService = new AuthService(`${prefixAuthUrl}/login`,
+                service = new AuthService(`${prefixAuthUrl}/login`,
                     'http://iiif.io/api/auth/1/login', 'http://iiif.io/api/auth/1/context.json');
-                loginService.setAuthTexts({
-                    label: "Login to Example Institution",
-                    header: "Please Log In",
-                    description: "Example Institution requires that you log in with your example account to view this content.",
-                    confirmLabel: "Login",
-                    failureHeader: "Authentication Failed",
-                    failureDescription: "<a href=\"http://example.org/policy\">Access Policy</a>",
-                });
-                loginService.setService(AuthService.getAccessTokenService(prefixAuthUrl));
-                return loginService;
+                break;
             case 'external':
-                const externalService = new AuthService(null,
+                service = new AuthService(null,
                     'http://iiif.io/api/auth/1/external', 'http://iiif.io/api/auth/1/context.json');
-                externalService.setAuthTexts({
-                    failureHeader: "Authentication Failed",
-                    failureDescription: "<a href=\"http://example.org/policy\">Access Policy</a>",
-                });
-                externalService.setService(AuthService.getAccessTokenService(prefixAuthUrl));
-                return externalService;
+                break;
             default:
                 return null;
         }
+
+        service.setAuthTexts(authTexts);
+        service.setService(AuthService.getAccessTokenService(prefixAuthUrl));
+
+        return service;
     }
 
     static getAccessTokenService(prefixAuthUrl) {

@@ -1,33 +1,39 @@
-const winston = require('winston');
+const {createLogger, transports, format} = require('winston');
 const config = require('./Config.js');
 
-winston.emitErrs = true;
-
-const logger = new winston.Logger({
+const logger = createLogger({
     transports: [
-        new winston.transports.File({
+        new transports.File({
             level: config.logLevel,
             filename: __dirname + '/../../application.log',
             handleExceptions: true,
-            json: false,
             maxsize: 5242880, // 5 MB
             maxFiles: 5,
-            colorize: false
+            tailable: true,
+            format: format.combine(
+                format.timestamp({format: 'YYYY-MM-DD HH:mm:ss'}),
+                format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
+            )
         }),
-        new winston.transports.Console({
+        new transports.Console({
             level: config.logLevel,
             handleExceptions: true,
-            json: false,
-            colorize: true
+            format: format.combine(
+                format.colorize(),
+                format.timestamp({format: 'YYYY-MM-DD HH:mm:ss'}),
+                format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
+            )
         })
     ],
     exitOnError: false
 });
 
-module.exports = logger;
+logger.emitErrs = false;
 
-module.exports.stream = {
-    write: function (message, encoding) {
+logger.stream = {
+    write: function (message) {
         logger.debug(message.trim());
     }
 };
+
+module.exports = logger;

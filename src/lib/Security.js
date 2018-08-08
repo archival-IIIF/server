@@ -35,6 +35,10 @@ async function requiresAuthentication(item) {
     return true;
 }
 
+async function getAuthTexts(item, type) {
+    return await runTaskWithResponse('auth-texts', {item, type});
+}
+
 function isIpInRange(ip) {
     if (config.internalIpAddresses.length > 0) {
         const foundMatch = config.internalIpAddresses.find(ipRange => rangeCheck.inRange(ip, ipRange));
@@ -103,6 +107,7 @@ module.exports = {
     enabledAuthServices,
     hasAccess,
     requiresAuthentication,
+    getAuthTexts,
     isIpInRange,
     checkTokenDb,
     setAccessIdForIdentity,

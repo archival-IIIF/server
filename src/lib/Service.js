@@ -15,6 +15,11 @@ const allServices = [{
     type: 'access',
     runAs: 'lib',
     getService: () => require('../service/iish_access')
+}, {
+    name: 'iish-auth-texts',
+    type: 'auth-texts',
+    runAs: 'lib',
+    getService: () => require('../service/iish_auth_texts')
 }];
 
 const servicesRunning = config.services.map(name => {

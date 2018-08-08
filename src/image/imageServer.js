@@ -1,7 +1,7 @@
 const Image = require('./Image');
 const config = require('../lib/Config');
 const AuthService = require('../presentation/AuthService');
-const {enabledAuthServices, requiresAuthentication} = require('../lib/Security');
+const {enabledAuthServices, requiresAuthentication, getAuthTexts} = require('../lib/Security');
 const serveImage = config.imageServerUrl ? require('./external') : require('./internal');
 
 async function getInfo(item, tier) {
@@ -9,9 +9,12 @@ async function getInfo(item, tier) {
     imageInfo.setContext('http://iiif.io/api/image/2/context.json');
     imageInfo.setProfile(getProfile());
 
-    if (requiresAuthentication(item))
-        enabledAuthServices.forEach(
-            type => imageInfo.setService(AuthService.getAuthenticationService(`${config.baseUrl}/iiif/auth`, type)));
+    if (await requiresAuthentication(item)) {
+        await Promise.all(enabledAuthServices.map(async type => {
+            const authTexts = await getAuthTexts(item, type);
+            imageInfo.setService(AuthService.getAuthenticationService(`${config.baseUrl}/iiif/auth`, authTexts, type));
+        }));
+    }
 
     if (tier)
         imageInfo.setTier(tier, config.imageTierSeparator);
