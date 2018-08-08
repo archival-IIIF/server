@@ -15,8 +15,8 @@ function startWeb() {
     const json = require('koa-json');
     const serve = require('koa-static-server');
     const bodyParser = require('koa-bodyparser');
+    const range = require('koa-range');
 
-    const path = require('path');
     const {fileIconsPath} = require('./lib/FileIcon');
 
     const iiifImageRouter = require('./image/router');
@@ -51,6 +51,7 @@ function startWeb() {
 
     app.use(json({pretty: false, param: 'pretty'}));
     app.use(bodyParser());
+    app.use(range);
 
     app.use(serve({rootDir: fileIconsPath, rootPath: '/file-icon'}));
     app.use(serve({rootDir: config.universalViewerPath, rootPath: '/universalviewer', index: 'uv.html'}));

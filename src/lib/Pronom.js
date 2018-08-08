@@ -18,13 +18,19 @@ function getPronomInfo(puid) {
     }
 
     const id = node.attr("ID").value();
-    const result = {
-        id: id,
-        name: node.attr("Name").value(),
-        url: `https://www.nationalarchives.gov.uk/PRONOM/Format/proFormatSearch.aspx?status=detailReport&id=${id}`,
-        extensions: node.find('./p:Extension', namespaces).map(ext => ext.text()),
-        mime: node.attr("MIMEType") ? node.attr("MIMEType").value() : null
-    };
+    const name = node.attr("Name").value();
+    const url = `https://www.nationalarchives.gov.uk/PRONOM/Format/proFormatSearch.aspx?status=detailReport&id=${id}`;
+    const extensions = node.find('./p:Extension', namespaces).map(ext => ext.text());
+    const mimes = node.attr("MIMEType") ? node.attr("MIMEType").value().split(',') : [];
+
+    let mime = null;
+    mimes.forEach(curMime => {
+        curMime = curMime.trim();
+        if (!mime || (curMime.indexOf('application') !== 0))
+            mime = curMime;
+    });
+
+    const result = {id, name, url, extensions, mime};
     cache[puid] = result;
 
     return result;

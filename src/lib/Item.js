@@ -14,17 +14,31 @@ async function getItem(id) {
 
 function getFullPath(item, type = null) {
     const relativePath = getRelativePath(item, type);
-    return path.join(config.dataPath, relativePath);
+    return relativePath ? path.join(config.dataPath, relativePath) : null;
 }
 
 function getRelativePath(item, type = null) {
+    type = type || getAvailableType(item);
+
     if (type === 'access')
         return item.access_resolver;
 
     if (type === 'original')
         return item.original_resolver;
-
-    return item.access_resolver ? item.access_resolver : item.original_resolver;
 }
 
-module.exports = {getItem, getFullPath, getRelativePath};
+function getPronom(item, type = null) {
+    type = type || getAvailableType(item);
+
+    if (type === 'access')
+        return item.access_pronom;
+
+    if (type === 'original')
+        return item.original_pronom;
+}
+
+function getAvailableType(item) {
+    return item.access_resolver ? 'access' : 'original';
+}
+
+module.exports = {getItem, getFullPath, getRelativePath, getPronom, getAvailableType};
