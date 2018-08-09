@@ -18,21 +18,24 @@ if (!config.internalIpAddresses.length > 0)
     enabledAuthServices.push('external');
 
 async function hasAccess(ctx, item) {
-    const ip = ctx.ip;
-    const accessId = await getAccessIdFromRequest(ctx);
-    const identities = await getIdentitiesForAccessId(accessId);
+    if (!config.loginDisabled || (config.internalIpAddresses.length > 0)) {
+        const ip = ctx.ip;
+        const accessId = await getAccessIdFromRequest(ctx);
+        const identities = await getIdentitiesForAccessId(accessId);
 
-    if (!config.loginDisabled || (config.internalIpAddresses.length > 0))
         return await runTaskWithResponse('access', {item, ip, identities});
+    }
 
     return true;
 }
 
 async function requiresAuthentication(item) {
-    if (!config.loginDisabled || (config.internalIpAddresses.length > 0))
-        return await runTaskWithResponse('access', {item});
+    if (!config.loginDisabled || (config.internalIpAddresses.length > 0)) {
+        const hasAccessForItem = await runTaskWithResponse('access', {item});
+        return hasAccessForItem !== true;
+    }
 
-    return true;
+    return false;
 }
 
 async function getAuthTexts(item, type) {
