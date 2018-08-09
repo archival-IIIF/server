@@ -15,13 +15,13 @@ module.exports = {
     })(),
 
     services: (() => {
-        if (!process.env.IIIF_SERVER_SERVICES)
+        if (!process.env.IIIF_SERVER_SERVICES || (process.env.IIIF_SERVER_SERVICES === 'null'))
             throw new Error("services is not defined");
         return process.env.IIIF_SERVER_SERVICES.split(',');
     })(),
 
     accessToken: (() => {
-        if (!process.env.IIIF_SERVER_ACCESS_TOKEN)
+        if (!process.env.IIIF_SERVER_ACCESS_TOKEN || (process.env.IIIF_SERVER_ACCESS_TOKEN === 'null'))
             throw new Error("accessToken is not defined");
         return process.env.IIIF_SERVER_ACCESS_TOKEN;
     })(),
@@ -32,23 +32,24 @@ module.exports = {
     })(),
 
     logLevel: (() => {
-        return process.env.IIIF_SERVER_LOG_LEVEL ? process.env.IIIF_SERVER_LOG_LEVEL : 'debug';
+        return (process.env.IIIF_SERVER_LOG_LEVEL && (process.env.IIIF_SERVER_LOG_LEVEL !== 'null'))
+            ? process.env.IIIF_SERVER_LOG_LEVEL : 'debug';
     })(),
 
     baseUrl: (() => {
-        if (!process.env.IIIF_SERVER_BASE_URL)
+        if (!process.env.IIIF_SERVER_BASE_URL || (process.env.IIIF_SERVER_BASE_URL === 'null'))
             throw new Error("base url is not defined");
         return process.env.IIIF_SERVER_BASE_URL;
     })(),
 
     dataPath: (() => {
-        if (!process.env.IIIF_SERVER_DATA_PATH)
+        if (!process.env.IIIF_SERVER_DATA_PATH || (process.env.IIIF_SERVER_DATA_PATH === 'null'))
             throw new Error("data path is not defined");
         return process.env.IIIF_SERVER_DATA_PATH;
     })(),
 
     internalIpAddresses: (() => {
-        if (!process.env.IIIF_SERVER_INTERNAL_IP_ADDRESSES)
+        if (!process.env.IIIF_SERVER_INTERNAL_IP_ADDRESSES || (process.env.IIIF_SERVER_INTERNAL_IP_ADDRESSES === 'null'))
             return [];
         return process.env.IIIF_SERVER_INTERNAL_IP_ADDRESSES.split(',');
     })(),
@@ -59,22 +60,22 @@ module.exports = {
     })(),
 
     database: (() => {
-        const host = process.env.IIIF_SERVER_DATABASE_HOST
+        const host = (process.env.IIIF_SERVER_DATABASE_HOST && (process.env.IIIF_SERVER_DATABASE_HOST !== 'null'))
             ? process.env.IIIF_SERVER_DATABASE_HOST : 'localhost';
         const port = parseInt(process.env.IIIF_SERVER_DATABASE_PORT) > 0
             ? parseInt(process.env.IIIF_SERVER_DATABASE_PORT) : 5432;
-        const user = process.env.IIIF_SERVER_DATABASE_USER
+        const user = (process.env.IIIF_SERVER_DATABASE_USER && (process.env.IIIF_SERVER_DATABASE_USER !== 'null'))
             ? process.env.IIIF_SERVER_DATABASE_USER : 'pgadmin';
-        const password = process.env.IIIF_SERVER_DATABASE_PASSWORD
+        const password = (process.env.IIIF_SERVER_DATABASE_PASSWORD && (process.env.IIIF_SERVER_DATABASE_PASSWORD !== 'null'))
             ? process.env.IIIF_SERVER_DATABASE_PASSWORD : 'pgadmin';
-        const database = process.env.IIIF_SERVER_DATABASE_DB
+        const database = (process.env.IIIF_SERVER_DATABASE_DB && (process.env.IIIF_SERVER_DATABASE_DB !== 'null'))
             ? process.env.IIIF_SERVER_DATABASE_DB : 'iiif-server';
 
         return {host, port, user, password, database};
     })(),
 
     redis: (() => {
-        const host = process.env.IIIF_SERVER_REDIS_HOST
+        const host = (process.env.IIIF_SERVER_REDIS_HOST && (process.env.IIIF_SERVER_REDIS_HOST !== 'null'))
             ? process.env.IIIF_SERVER_REDIS_HOST : 'localhost';
         const port = parseInt(process.env.IIIF_SERVER_REDIS_PORT) > 0
             ? parseInt(process.env.IIIF_SERVER_REDIS_PORT) : 6379;
