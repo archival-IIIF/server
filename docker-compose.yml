@@ -7,6 +7,7 @@ services:
     ports:
       - "80:3333"
     volumes:
+      - additional:/data/additional
       - collections:/data/collections
       - app-conf:/opt/iiif-server/config.yaml
     networks:
@@ -43,6 +44,7 @@ services:
 volumes:
   app-conf:
   loris-conf:
+  additional:
   collections:
   db-data:
 

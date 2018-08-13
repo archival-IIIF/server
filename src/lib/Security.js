@@ -11,14 +11,18 @@ const {runTaskWithResponse} = require('./Task');
 const getAsync = promisify(client.get).bind(client);
 const setAsync = promisify(client.set).bind(client);
 
+const isLoginEnabled = !config.loginDisabled;
+const isExternalEnabled = config.internalIpAddresses.length > 0;
+const isAuthenticationEnabled = isLoginEnabled || isExternalEnabled;
+
 const enabledAuthServices = [];
-if (!config.loginDisabled)
+if (isLoginEnabled)
     enabledAuthServices.push('login');
-if (!config.internalIpAddresses.length > 0)
+if (isExternalEnabled)
     enabledAuthServices.push('external');
 
 async function hasAccess(ctx, item) {
-    if (!config.loginDisabled || (config.internalIpAddresses.length > 0)) {
+    if (isAuthenticationEnabled) {
         const ip = ctx.ip;
         const accessId = await getAccessIdFromRequest(ctx);
         const identities = await getIdentitiesForAccessId(accessId);
@@ -30,7 +34,7 @@ async function hasAccess(ctx, item) {
 }
 
 async function requiresAuthentication(item) {
-    if (!config.loginDisabled || (config.internalIpAddresses.length > 0)) {
+    if (isAuthenticationEnabled) {
         const hasAccessForItem = await runTaskWithResponse('access', {item});
         return hasAccessForItem !== true;
     }
@@ -43,7 +47,7 @@ async function getAuthTexts(item, type) {
 }
 
 function isIpInRange(ip) {
-    if (config.internalIpAddresses.length > 0) {
+    if (isExternalEnabled) {
         const foundMatch = config.internalIpAddresses.find(ipRange => rangeCheck.inRange(ip, ipRange));
         return foundMatch !== undefined;
     }

@@ -12,7 +12,8 @@ COPY . /opt/iiif-server
 WORKDIR /opt/iiif-server
 
 # Install viewers
-RUN ./install-viewers.sh
+RUN chmod +x ./install-viewers.sh &&\
+ ./install-viewers.sh
 
 # Install the application
 RUN npm install --production

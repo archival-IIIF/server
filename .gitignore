@@ -3,4 +3,5 @@
 .env
 *.iml
 config.yml
+config.yaml
 *.log

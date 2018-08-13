@@ -16,14 +16,14 @@ async function getInfo(item, tier) {
         }));
     }
 
-    if (tier)
+    if (typeof tier === 'object')
         imageInfo.setTier(tier, config.imageTierSeparator);
 
     return imageInfo;
 }
 
 async function getImage(item, tier, imageOptions) {
-    if (tier) {
+    if (typeof tier === 'object') {
         const maxSize = Image.computeMaxSize(tier, item.width, item.height);
         // TODO: Parse and validate imageOptions.size for max size
     }

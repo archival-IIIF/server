@@ -25,8 +25,8 @@
 
 - name: set pm2 config
   template:
-    src: config.yml.j2
-    dest: "{{ iiif_server_path }}/config.yml"
+    src: config.yaml.j2
+    dest: "{{ iiif_server_path }}/config.yaml"
 
 - name: remove pm2 applications
   command: "pm2 delete all"
@@ -38,7 +38,7 @@
   command: "pm2 startup --hp {{ iiif_server_path }}"
 
 - name: start the application
-  command: "pm2 start {{ iiif_server_path }}/config.yml"
+  command: "pm2 start {{ iiif_server_path }}/config.yaml"
 
 - name: save the application startup script
   command: "pm2 save"
