@@ -6,6 +6,7 @@ const {promisify} = require('util');
 const {db} = require('./DB');
 const {client} = require('./Redis');
 const config = require('./Config');
+const logger = require('./Logger');
 const {runTaskWithResponse} = require('./Task');
 
 const getAsync = promisify(client.get).bind(client);
@@ -26,6 +27,13 @@ async function hasAccess(ctx, item) {
         const ip = ctx.ip;
         const accessId = await getAccessIdFromRequest(ctx);
         const identities = await getIdentitiesForAccessId(accessId);
+
+        if (accessId && identities.length > 0)
+            logger.debug('Determining access with an access id and matching identities');
+        else if (accessId)
+            logger.debug('Determining access with an access id but no matching identities');
+        else
+            logger.debug('Determining access with no access id and no identities');
 
         return await runTaskWithResponse('access', {item, ip, identities});
     }
@@ -55,7 +63,7 @@ function isIpInRange(ip) {
 }
 
 async function checkTokenDb(tokens) {
-    const tokensInfo = await db.query('SELECT * FROM tokens WHERE token IN ($1:csv);', tokens);
+    const tokensInfo = await db.query('SELECT * FROM tokens WHERE token IN ($1:list);', [tokens]);
 
     return tokensInfo.filter(tokenInfo => {
         if (tokenInfo.from && tokenInfo.to && !moment().isBetween(moment(tokenInfo.from), moment(tokenInfo.to)))
@@ -76,11 +84,11 @@ async function getIdentitiesForAccessId(acccesId) {
     return [];
 }
 
-async function setAccessIdForIdentity(identity, accessId = null) {
+async function setAccessIdForIdentity(identity, accessId) {
     const identities = [];
 
     if (accessId)
-        identities.push(await getIdentitiesForAccessId(accessId));
+        identities.push(...(await getIdentitiesForAccessId(accessId)));
     else
         accessId = uuid();
 
@@ -104,10 +112,17 @@ async function getAccessIdForAccessToken(accessToken) {
 
 async function getAccessIdFromRequest(ctx) {
     if (ctx.headers.hasOwnProperty('authorization')) {
+        logger.debug('Found token in header for current request');
+
         const accessToken = ctx.headers.authorization.replace('Bearer', '').trim();
         return await getAccessIdForAccessToken(accessToken);
     }
-    return ctx.cookies.get('access');
+
+    const accessCookie = ctx.cookies.get('access');
+    if (accessCookie)
+        logger.debug('Found access cookie for current request');
+
+    return accessCookie;
 }
 
 module.exports = {

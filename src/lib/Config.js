@@ -20,6 +20,12 @@ module.exports = {
         return process.env.IIIF_SERVER_SERVICES.split(',');
     })(),
 
+    secret: (() => {
+        if (!process.env.IIIF_SERVER_SECRET || (process.env.IIIF_SERVER_SECRET === 'null'))
+            throw new Error("secret is not defined");
+        return process.env.IIIF_SERVER_SECRET;
+    })(),
+
     accessToken: (() => {
         if (!process.env.IIIF_SERVER_ACCESS_TOKEN || (process.env.IIIF_SERVER_ACCESS_TOKEN === 'null'))
             throw new Error("accessToken is not defined");

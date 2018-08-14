@@ -65,6 +65,8 @@ function startWeb() {
     app.use(adminRouter.routes());
 
     app.proxy = true;
+    app.keys = [config.secret];
+
     app.listen(config.port);
 }
 

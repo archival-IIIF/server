@@ -147,7 +147,7 @@ async function addMediaSequence(manifest, item, mime, type) {
     const resource = new Resource(itemId, null, null, mime, type, rendering);
     const mediaSequence = new MediaSequence(`${prefixPresentationUrl}/${item.id}/sequence/0`, resource);
 
-    await setAuthenticationServices(item, rendering);
+    await setAuthenticationServices(item, resource);
     manifest.setMediaSequence(mediaSequence);
 }
 

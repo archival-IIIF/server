@@ -9,19 +9,17 @@ const router = new Router({prefix});
 
 router.get('/login', ctx => {
     ctx.type = 'text/html';
-    if (ctx.cookies.get('access'))
-        ctx.body = createReadStream(path.join(__dirname, 'close-window.html'));
-    else
-        ctx.body = createReadStream(path.join(__dirname, 'token-login.html'));
+    ctx.body = createReadStream(path.join(__dirname, 'token-login.html'));
 });
 
 router.post('/login', async ctx => {
     const token = ctx.request.body.token;
 
     if (await security.checkTokenDb([token])) {
-        const accessId = await security.setAccessIdForIdentity(token);
+        let accessId = await security.getAccessIdFromRequest(ctx);
+        accessId = await security.setAccessIdForIdentity(token, accessId);
         ctx.cookies.set('access', accessId, {
-            //signed: true,
+            signed: true,
             maxAge: 3600000,
             expires: moment().add(1, 'd').toDate(),
             //secure: true,

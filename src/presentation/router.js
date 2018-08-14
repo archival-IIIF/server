@@ -1,8 +1,6 @@
 const Router = require('koa-router');
 const {db} = require('../lib/DB');
 const {cache} = require('../lib/Cache');
-const {getItem} = require('../lib/Item');
-const {hasAccess} = require('../lib/Security');
 const HttpError = require('../lib/HttpError');
 const presentationBuilder = require('./PresentationBuilder');
 
@@ -24,11 +22,6 @@ async function validateRequest(ctx) {
     const containerId = await findContainerId(ctx.params.id);
     if (!containerId)
         throw new HttpError(404, `No collection found with id ${ctx.params.id}`);
-
-    const item = await getItem(ctx.params.id);
-    const access = await hasAccess(ctx, item);
-    if (!access)
-        ctx.status = 401;
 
     return containerId;
 }

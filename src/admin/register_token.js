@@ -22,7 +22,7 @@ async function registerToken(token, container, from, to) {
         throw new HttpError(400, 'Please provide a valid date range!');
 
     const items = {token, container_id: container, from: from ? from.toDate() : null, to: to ? to.toDate() : null};
-    const sql = pg.helpers.insert(items, new pg.helpers.ColumnSet(['token', 'container_id', 'from', 'to']), 'token');
+    const sql = pg.helpers.insert(items, new pg.helpers.ColumnSet(['token', 'container_id', 'from', 'to']), 'tokens');
     await db.none(sql, items);
 
     return token;

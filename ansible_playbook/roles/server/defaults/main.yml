@@ -9,6 +9,7 @@
   iiif_server_data_path: "{{ collections_path }}"
 
   iiif_server_services: "web,archivematica-import"
+  iiif_server_secret: secret
   iiif_server_access_token: secret
   iiif_server_cache_disabled: false
 
