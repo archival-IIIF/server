@@ -21,6 +21,10 @@ class Base {
         this.logo = logo;
     }
 
+    setAttribution(attribution) {
+        this.attribution = attribution;
+    }
+
     setService(service) {
         if (!this.service)
             this.service = service;

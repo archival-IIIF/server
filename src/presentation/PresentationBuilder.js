@@ -18,6 +18,7 @@ const {iconsByExtension} = require('../lib/FileIcon');
 const {enabledAuthServices, requiresAuthentication, getAuthTexts} = require('../lib/Security');
 
 const path = require('path');
+const moment = require('moment');
 
 const prefixPresentationUrl = `${config.baseUrl}/iiif/presentation`;
 const prefixImageUrl = `${config.baseUrl}/iiif/image`;
@@ -48,6 +49,7 @@ async function getCollection(id) {
 
     collection.setContext();
     addLogo(collection);
+    addAttribution(collection);
     addMetadata(collection, root);
 
     if (root.parent_id)
@@ -81,6 +83,7 @@ async function getManifest(id) {
 
     manifest.setContext();
     addLogo(manifest);
+    addAttribution(manifest);
     addMetadata(manifest, root);
 
     if (root.parent_id)
@@ -206,10 +209,24 @@ function addMetadata(base, root) {
             `<a href="${pronomData.url}">${pronomData.name} (${pronomData.extensions.map(ext => `.${ext}`).join(', ')})</a>`
         );
     }
+
+    if (root.size && root.created_at) {
+        const steps = Math.floor(Math.log(root.size) / Math.log(1024));
+        const fileSize = `${(root.size / Math.pow(1024, steps)).toFixed(2)} ${['B', 'KB', 'MB', 'GB', 'TB'][steps]}`;
+        base.addMetadata('Original file size', fileSize);
+
+        const date = moment(root.created_at).format('MMMM Do YYYY');
+        base.addMetadata('Original modification date', date);
+    }
 }
 
 function addLogo(base) {
     base.setLogo(`${prefixFileUrl}/logo`);
+}
+
+function addAttribution(base) {
+    if (config.attribution)
+        base.setAttribution(config.attribution);
 }
 
 module.exports = {getCollection, getManifest};

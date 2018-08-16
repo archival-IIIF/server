@@ -16,6 +16,7 @@
   iiif_server_port: 3333
   iiif_server_log_level: warn
   iiif_server_logo: https://example.com/logo
+  iiif_server_attribution: Provided by
 
   iiif_server_base_url: http://localhost:3333
   iiif_server_image_server_url: http://localhost:8080

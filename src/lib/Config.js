@@ -4,6 +4,7 @@ if (process.env.NODE_ENV !== 'production')
 module.exports = {
     env: process.env.NODE_ENV,
     logo: process.env.IIIF_SERVER_LOGO,
+    attribution: process.env.IIIF_SERVER_ATTRIBUTION,
     universalViewerPath: process.env.IIIF_SERVER_UNIVERSAL_VIEWER_PATH,
     archivalViewerPath: process.env.IIIF_SERVER_ARCHIVAL_VIEWER_PATH,
     imageServerUrl: process.env.IIIF_SERVER_IMAGE_SERVER_URL,
