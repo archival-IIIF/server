@@ -1,8 +1,8 @@
 const Base = require('./Base');
 
 class Rendering extends Base {
-    constructor(id, format) {
-        super(id, null, null);
+    constructor(id, label, format) {
+        super(id, null, label);
         this.format = format;
     }
 }

@@ -43,6 +43,15 @@ class Base {
         else
             this.metadata.push({"label": label, "value": value});
     }
+
+    addRendering(rendering) {
+        if (!this.rendering)
+            this.rendering = rendering;
+        else if (Array.isArray(this.rendering))
+            this.rendering.push(rendering);
+        else
+            this.rendering = [this.rendering, rendering];
+    }
 }
 
 module.exports = Base;

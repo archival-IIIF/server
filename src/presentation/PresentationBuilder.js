@@ -127,28 +127,34 @@ async function addImage(manifest, item) {
 }
 
 async function addAudio(manifest, item) {
-    await addMediaSequence(manifest, item, 'audio/mp3', 'dctypes:Sound');
+    await addMediaSequence(manifest, item, 'dctypes:Sound');
 }
 
 async function addVideo(manifest, item) {
-    await addMediaSequence(manifest, item, 'video/mp4', 'dctypes:MovingImage');
+    await addMediaSequence(manifest, item, 'dctypes:MovingImage');
 }
 
 async function addPdf(manifest, item) {
-    await addMediaSequence(manifest, item, 'application/pdf', 'foaf:Document');
+    await addMediaSequence(manifest, item, 'foaf:Document');
 }
 
 async function addOther(manifest, item) {
-    const pronom = item.access_pronom || item.original_pronom;
-    const pronomData = getPronomInfo(pronom);
-    await addMediaSequence(manifest, item, pronomData ? pronomData.mime : null, 'foaf:Document');
+    await addMediaSequence(manifest, item, 'foaf:Document');
 }
 
-async function addMediaSequence(manifest, item, mime, type) {
-    const itemId = `${prefixFileUrl}/${item.id}`;
-    const rendering = new Rendering(itemId, mime);
-    const resource = new Resource(itemId, null, null, mime, type, rendering);
+async function addMediaSequence(manifest, item, type) {
+    const accessPronomData = item.access_pronom ? getPronomInfo(item.access_pronom) : null;
+    const originalPronomData = item.original_pronom ? getPronomInfo(item.original_pronom) : null;
+    const defaultMime = accessPronomData ? accessPronomData.mime : originalPronomData.mime;
+
+    const resource = new Resource(`${prefixFileUrl}/${item.id}`, null, null, defaultMime, type);
     const mediaSequence = new MediaSequence(`${prefixPresentationUrl}/${item.id}/sequence/0`, resource);
+
+    if (accessPronomData)
+        resource.addRendering(new Rendering(`${prefixFileUrl}/${item.id}/access`, 'Access copy', accessPronomData.mime));
+
+    if (originalPronomData)
+        resource.addRendering(new Rendering(`${prefixFileUrl}/${item.id}/original`, 'Original copy', originalPronomData.mime));
 
     await setAuthenticationServices(item, resource);
     manifest.setMediaSequence(mediaSequence);

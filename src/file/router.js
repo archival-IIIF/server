@@ -38,7 +38,7 @@ async function getFile(ctx) {
     const type = ctx.params.type || getAvailableType(item);
     const fullPath = getFullPath(item, type);
 
-    if (!fullPath)
+    if (!fullPath || (item.type !== 'image'))
         throw new HttpError(404, `No file found for id ${ctx.params.id} and type ${type}`);
 
     const pronom = getPronom(item, type);
