@@ -2,6 +2,7 @@ const Image = require('./Image');
 const config = require('../lib/Config');
 const AuthService = require('../presentation/AuthService');
 const {enabledAuthServices, requiresAuthentication, getAuthTexts} = require('../lib/Security');
+const SizeRequest = require('./SizeRequest');
 const serveImage = config.imageServerUrl ? require('./external') : require('./internal');
 
 async function getInfo(item, tier) {
@@ -25,7 +26,18 @@ async function getInfo(item, tier) {
 async function getImage(item, tier, imageOptions) {
     if (typeof tier === 'object') {
         const maxSize = Image.computeMaxSize(tier, item.width, item.height);
-        // TODO: Parse and validate imageOptions.size for max size
+
+        const sizeRequest = new SizeRequest(imageOptions.size);
+        sizeRequest.parseImageRequest({size: {width: item.width, height: item.height}});
+        const sizeRequested = sizeRequest.newSize;
+
+        if ((item.width > maxSize.width) || (item.height > maxSize.height))
+            return {
+                image: null,
+                status: 401,
+                contentType: null,
+                contentLength: null
+            };
     }
 
     return await serveImage(item.id, imageOptions);
