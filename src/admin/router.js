@@ -1,6 +1,6 @@
 const Router = require('koa-router');
 const config = require('../lib/Config');
-const {runTask, runTaskWithResponse} = require('../lib/Task');
+const {runTask} = require('../lib/Task');
 const HttpError = require('../lib/HttpError');
 const registerToken = require('./register_token');
 const importCollection = require('./api_import');

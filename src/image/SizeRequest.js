@@ -41,7 +41,45 @@ class SizeRequest {
 
             if ((this.newSize.width === 0) || (this.newSize.height === 0))
                 throw new RequestError('Size width and/or height should not be zero');
+
+            this.updateProcessingInfo(processingInfo);
         }
+    }
+
+    updateProcessingInfo(processingInfo) {
+        if (this.isMax)
+            return;
+
+        let width = processingInfo.size.width;
+        let height = processingInfo.size.height;
+
+        if (this.newSize.width && this.newSize.height && this.bestFit) {
+            const newWidth = Math.round(width * this.newSize.height / height);
+            const newHeight = Math.round(height * this.newSize.width / width);
+
+            if (newWidth < this.newSize.width) {
+                height = Math.round(height * newWidth / width);
+                width = newWidth;
+            }
+            else {
+                width = Math.round(width * newHeight / height);
+                height = newHeight;
+            }
+        }
+        else if (this.newSize.width && this.newSize.height) {
+            width = this.newSize.width;
+            height = this.newSize.height;
+        }
+        else if (this.newSize.width && !this.newSize.height) {
+            height = Math.round(height * this.newSize.width / width);
+            width = this.newSize.width;
+        }
+        else if (this.newSize.height && !this.newSize.width) {
+            width = Math.round(width * this.newSize.height / height);
+            height = this.newSize.height;
+        }
+
+        processingInfo.size = {width, height};
     }
 
     requiresImageProcessing() {

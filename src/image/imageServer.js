@@ -28,10 +28,10 @@ async function getImage(item, tier, imageOptions) {
         const maxSize = Image.computeMaxSize(tier, item.width, item.height);
 
         const sizeRequest = new SizeRequest(imageOptions.size);
-        sizeRequest.parseImageRequest({size: {width: item.width, height: item.height}});
-        const sizeRequested = sizeRequest.newSize;
+        const processingInfo = {size: {width: item.width, height: item.height}};
+        sizeRequest.parseImageRequest(processingInfo);
 
-        if ((item.width > maxSize.width) || (item.height > maxSize.height))
+        if ((processingInfo.size.width > maxSize.maxWidth) || (processingInfo.size.height > maxSize.maxHeight))
             return {
                 image: null,
                 status: 401,
