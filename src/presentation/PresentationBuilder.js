@@ -63,8 +63,7 @@ async function getCollection(id) {
         }
         else if (child.child_type) {
             const manifest = new Manifest(`${prefixPresentationUrl}/${child.child_id}/manifest`, child.child_label);
-            const extension = child.child_original_resolver
-                ? path.extname(child.child_original_resolver).substring(1) : null;
+            const extension = child.child_label ? path.extname(child.child_label).substring(1).toLowerCase() : null;
             addFileTypeThumbnail(manifest, child.child_original_pronom, extension, 'file');
             collection.addManifest(manifest);
         }
@@ -218,8 +217,8 @@ function addMetadata(base, root) {
 
     if (root.size && root.created_at) {
         const steps = Math.floor(Math.log(root.size) / Math.log(1024));
-        const fileSize = `${(root.size / Math.pow(1024, steps)).toFixed(2)} ${['B', 'KB', 'MB', 'GB', 'TB'][steps]}`;
-        base.addMetadata('Original file size', fileSize);
+        const fileSize = `${(root.size / Math.pow(1024, steps)).toFixed(2)} ${['bytes', 'KB', 'MB', 'GB', 'TB'][steps]}`;
+        base.addMetadata('Original file size', root.size > 0 ? fileSize : '0 bytes');
 
         const date = moment(root.created_at).format('MMMM Do YYYY');
         base.addMetadata('Original modification date', date);
