@@ -22,6 +22,12 @@ if (isLoginEnabled)
 if (isExternalEnabled)
     enabledAuthServices.push('external');
 
+const AccessState = Object.freeze({
+    OPEN: Symbol('open'),
+    CLOSED: Symbol('closed'),
+    TIERED: Symbol('tiered')
+});
+
 async function hasAccess(ctx, item) {
     if (isAuthenticationEnabled) {
         const ip = ctx.ip;
@@ -38,13 +44,13 @@ async function hasAccess(ctx, item) {
         return await runTaskWithResponse('access', {item, ip, identities});
     }
 
-    return true;
+    return {state: AccessState.OPEN};
 }
 
 async function requiresAuthentication(item) {
     if (isAuthenticationEnabled) {
-        const hasAccessForItem = await runTaskWithResponse('access', {item});
-        return hasAccessForItem !== true;
+        const access = await runTaskWithResponse('access', {item});
+        return access.state !== AccessState.OPEN;
     }
 
     return false;
@@ -127,6 +133,7 @@ async function getAccessIdFromRequest(ctx) {
 
 module.exports = {
     enabledAuthServices,
+    AccessState,
     hasAccess,
     requiresAuthentication,
     getAuthTexts,

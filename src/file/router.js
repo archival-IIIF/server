@@ -7,7 +7,7 @@ const {promisify} = require('util');
 const config = require('../lib/Config');
 const getPronomInfo = require('../lib/Pronom');
 const HttpError = require('../lib/HttpError');
-const {hasAccess} = require('../lib/Security');
+const {AccessState, hasAccess} = require('../lib/Security');
 const {getItem, getFullPath, getPronom, getAvailableType} = require('../lib/Item');
 
 const readFileAsync = promisify(fs.readFile);
@@ -29,7 +29,8 @@ router.get('/:id/:type', getFile);
 
 async function getFile(ctx) {
     const item = await getItem(ctx.params.id);
-    if (!(await hasAccess(ctx, item)))
+    const access = await hasAccess(ctx, item);
+    if (access.state !== AccessState.OPEN)
         throw new HttpError(401, 'Access denied');
 
     if (ctx.params.type && !['original', 'access'].includes(ctx.params.type))
