@@ -55,7 +55,7 @@ async function getCollection(id) {
     if (root.parent_id)
         collection.setParent(`${prefixPresentationUrl}/collection/${root.parent_id}`);
 
-    data.forEach(child => {
+    await Promise.all(data.map(async child => {
         if (child.child_type === 'folder') {
             const childCollection = new Collection(`${prefixPresentationUrl}/collection/${child.child_id}`, child.child_label);
             addFileTypeThumbnail(childCollection, null, null, 'folder');
@@ -64,10 +64,15 @@ async function getCollection(id) {
         else if (child.child_type) {
             const manifest = new Manifest(`${prefixPresentationUrl}/${child.child_id}/manifest`, child.child_label);
             const extension = child.child_label ? path.extname(child.child_label).substring(1).toLowerCase() : null;
-            addFileTypeThumbnail(manifest, child.child_original_pronom, extension, 'file');
+
+            if (child.child_type === 'image')
+                await addThumbnail(manifest, root);
+            else
+                addFileTypeThumbnail(manifest, child.child_original_pronom, extension, 'file');
+
             collection.addManifest(manifest);
         }
-    });
+    }));
 
     return collection;
 }
@@ -95,17 +100,17 @@ async function getManifest(id) {
     }
 
     switch (root.type) {
-        case "image":
+        case 'image':
             await addImage(manifest, root);
             await addThumbnail(manifest, root);
             break;
-        case "audio":
+        case 'audio':
             await addAudio(manifest, root);
             break;
-        case "video":
+        case 'video':
             await addVideo(manifest, root);
             break;
-        case "pdf":
+        case 'pdf':
             await addPdf(manifest, root);
             break;
         default:
