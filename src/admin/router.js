@@ -1,8 +1,9 @@
 const Router = require('koa-router');
 const config = require('../lib/Config');
-const {runTask} = require('../lib/Task');
+const {runTask, runTaskWithResponse} = require('../lib/Task');
 const HttpError = require('../lib/HttpError');
 const registerToken = require('./register_token');
+const importCollection = require('./api_import');
 
 const router = new Router({prefix: '/admin'});
 
@@ -13,11 +14,16 @@ router.use((ctx, next) => {
     next();
 });
 
-router.post('/import', async ctx => {
-    if (!ctx.request.body.dip_path)
-        throw new HttpError(400, 'Please provide a dip_path');
+router.post('/import_api', async ctx => {
+    await importCollection(ctx.request.body);
+    ctx.body = 'Successfully imported collection!';
+});
 
-    runTask('import', {dipPath: ctx.query.dip_path});
+router.post('/import', async ctx => {
+    if (!ctx.request.body.path)
+        throw new HttpError(400, 'Please provide a path');
+
+    runTask('import', {path: ctx.request.body.path});
     ctx.body = 'Import is sent to the queue';
 });
 
