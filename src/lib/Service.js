@@ -22,11 +22,15 @@ const allServices = [{
     getService: () => require('../service/iish_auth_texts')
 }];
 
-const servicesRunning = config.services.map(name => {
+let servicesRunning = config.services.map(name => {
     const serviceFound = allServices.find(service => service.name.toLowerCase() === name.toLowerCase());
     if (!serviceFound)
         throw new Error(`No service found with the name ${name}!`);
-    return serviceFound;
+    return {...serviceFound};
 });
+
+if (servicesRunning.find(service => service.runAs === 'web'))
+    servicesRunning = servicesRunning.map(
+        service => service.runAs === 'worker' ? {...service, runAs: 'lib'} : {...service});
 
 module.exports = {allServices, servicesRunning};

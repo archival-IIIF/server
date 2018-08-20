@@ -12,6 +12,7 @@
   iiif_server_secret: secret
   iiif_server_access_token: secret
   iiif_server_cache_disabled: false
+  iiif_server_redis_disabled: false
 
   iiif_server_port: 3333
   iiif_server_log_level: warn

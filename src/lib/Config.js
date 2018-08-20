@@ -82,6 +82,10 @@ module.exports = {
     })(),
 
     redis: (() => {
+        const redisDisabled = process.env.IIIF_SERVER_REDIS_DISABLED;
+        if (redisDisabled && (redisDisabled.toLowerCase() === 'true' || redisDisabled === '1'))
+            return null;
+
         const host = (process.env.IIIF_SERVER_REDIS_HOST && (process.env.IIIF_SERVER_REDIS_HOST !== 'null'))
             ? process.env.IIIF_SERVER_REDIS_HOST : 'localhost';
         const port = parseInt(process.env.IIIF_SERVER_REDIS_PORT) > 0
