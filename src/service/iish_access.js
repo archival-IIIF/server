@@ -15,9 +15,9 @@ async function hasAccess({item, ip, identities}) {
         return {state: AccessState.TIERED, tier: {name: 'pictoright', maxSize: 450}};
 
     if (hasToken)
-        return {state: AccessState.CLOSED};
+        return {state: AccessState.OPEN};
 
-    return {state: AccessState.OPEN};
+    return {state: AccessState.CLOSED};
 }
 
 module.exports = hasAccess;
