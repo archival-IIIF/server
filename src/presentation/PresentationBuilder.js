@@ -35,7 +35,8 @@ const collectionSql = `
         child.original_resolver as child_original_resolver, child.original_pronom as child_original_pronom
         FROM items as parent 
         LEFT JOIN items as child ON parent.id = child.parent_id 
-        WHERE parent.id = $1 AND parent.type = 'folder';`;
+        WHERE parent.id = $1 AND parent.type = 'folder'
+        ORDER BY child.label ASC;`;
 
 const manifestSql = "SELECT * FROM items WHERE id = $1 AND type <> 'folder';";
 
