@@ -50,6 +50,7 @@ async function getCollection(id) {
 
     collection.setContext();
     addLogo(collection);
+    addLicense(collection);
     addAttribution(collection);
     addMetadata(collection, root);
 
@@ -88,6 +89,7 @@ async function getManifest(id) {
 
     manifest.setContext();
     addLogo(manifest);
+    addLicense(manifest);
     addAttribution(manifest);
     addMetadata(manifest, root);
 
@@ -233,6 +235,11 @@ function addMetadata(base, root) {
 
 function addLogo(base) {
     base.setLogo(`${prefixFileUrl}/logo`);
+}
+
+function addLicense(base) {
+    // TODO: Get license
+    base.setLicense('http://creativecommons.org/licenses/by-sa/3.0/');
 }
 
 function addAttribution(base) {

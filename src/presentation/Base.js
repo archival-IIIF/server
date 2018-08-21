@@ -25,6 +25,10 @@ class Base {
         this.attribution = attribution;
     }
 
+    setLicense(license) {
+        this.license = license;
+    }
+
     setService(service) {
         if (!this.service)
             this.service = service;
