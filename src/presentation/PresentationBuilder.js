@@ -66,7 +66,7 @@ async function getCollection(id) {
             const extension = child.child_label ? path.extname(child.child_label).substring(1).toLowerCase() : null;
 
             if (child.child_type === 'image')
-                await addThumbnail(manifest, root);
+                await addThumbnail(manifest, child);
             else
                 addFileTypeThumbnail(manifest, child.child_original_pronom, extension, 'file');
 
