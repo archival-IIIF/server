@@ -28,10 +28,10 @@ const AccessState = Object.freeze({
     TIERED: Symbol('tiered')
 });
 
-async function hasAccess(ctx, item) {
+async function hasAccess(ctx, item, acceptToken = false) {
     if (isAuthenticationEnabled) {
         const ip = ctx.ip;
-        const accessId = await getAccessIdFromRequest(ctx);
+        const accessId = await getAccessIdFromRequest(ctx, acceptToken);
         const identities = await getIdentitiesForAccessId(accessId);
 
         if (accessId && identities.length > 0)
@@ -115,8 +115,8 @@ async function getAccessIdForAccessToken(accessToken) {
     return await getAsync(`access-token:${accessToken}`);
 }
 
-async function getAccessIdFromRequest(ctx) {
-    if (ctx.headers.hasOwnProperty('authorization')) {
+async function getAccessIdFromRequest(ctx, acceptToken = false) {
+    if (acceptToken && ctx.headers.hasOwnProperty('authorization')) {
         logger.debug('Found token in header for current request');
 
         const accessToken = ctx.headers.authorization.replace('Bearer', '').trim();

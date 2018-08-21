@@ -26,7 +26,7 @@ async function validateRequest(ctx) {
         throw new HttpError(404, `No collection found with id ${ctx.params.id}`);
 
     // const item = await getItem(ctx.params.id);
-    // const access = await hasAccess(ctx, item);
+    // const access = await hasAccess(ctx, item, true);
     // if (access.state !== AccessState.OPEN)
     //     throw new HttpError(401, 'Access denied');
 

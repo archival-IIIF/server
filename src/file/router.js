@@ -29,7 +29,7 @@ router.get('/:id/:type', getFile);
 
 async function getFile(ctx) {
     const item = await getItem(ctx.params.id);
-    const access = await hasAccess(ctx, item);
+    const access = await hasAccess(ctx, item, false);
     if (access.state !== AccessState.OPEN)
         throw new HttpError(401, 'Access denied');
 

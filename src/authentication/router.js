@@ -16,7 +16,7 @@ router.post('/login', async ctx => {
     const token = ctx.request.body.token;
 
     if (await security.checkTokenDb([token])) {
-        let accessId = await security.getAccessIdFromRequest(ctx);
+        let accessId = await security.getAccessIdFromRequest(ctx, false);
         accessId = await security.setAccessIdForIdentity(token, accessId);
         ctx.cookies.set('access', accessId, {
             signed: true,
@@ -37,7 +37,7 @@ router.post('/login', async ctx => {
 router.get('/token', async ctx => {
     const message = {};
 
-    const accessId = await security.getAccessIdFromRequest(ctx);
+    const accessId = await security.getAccessIdFromRequest(ctx, false);
     if (accessId) {
         message.accessToken = await security.setAccessTokenForAccessId(accessId);
         message.expiresIn = 3600;

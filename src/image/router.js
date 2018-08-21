@@ -21,7 +21,7 @@ router.get('/:id/info.json', async ctx => {
     if (!item || (item.type !== 'image'))
         throw new HttpError(404, `No image with the id ${id}`);
 
-    const access = await hasAccess(ctx, item);
+    const access = await hasAccess(ctx, item, true);
     if (access.state === AccessState.CLOSED)
         ctx.status = 401;
     else if (tier && access.state === AccessState.OPEN)
@@ -41,7 +41,7 @@ router.get('/:id/:region/:size/:rotation/:quality.:format', async ctx => {
     if (!item || (item.type !== 'image'))
         throw new HttpError(404, `No image with the id ${id}`);
 
-    const access = await hasAccess(ctx, item);
+    const access = await hasAccess(ctx, item, false);
     if ((access.state === AccessState.CLOSED) || ((access.state === AccessState.TIERED) && (access.tier.name !== tier)))
         throw new HttpError(401, 'Access denied!');
 
