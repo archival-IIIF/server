@@ -79,7 +79,6 @@ async function checkTokenDb(tokens) {
             return false;
 
         return !(tokenInfo.to && !moment().isBefore(moment(tokenInfo.to)));
-
     });
 }
 

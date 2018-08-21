@@ -23,7 +23,7 @@ router.post('/import', async ctx => {
     if (!ctx.request.body.path)
         throw new HttpError(400, 'Please provide a path');
 
-    runTask('import', {path: ctx.request.body.path});
+    runTask('import', {dipPath: ctx.request.body.path});
     ctx.body = 'Import is sent to the queue';
 });
 
