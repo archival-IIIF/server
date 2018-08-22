@@ -2,7 +2,7 @@ const HttpError = require('../lib/HttpError');
 const {evictCache} = require('../lib/Cache');
 const {indexItems, deleteItems} = require('../lib/Item');
 
-async function importCollection(collection) {
+async function indexCollection(collection) {
     if (!collection.hasOwnProperty('id'))
         throw new HttpError(400, 'ID missing');
 
@@ -37,4 +37,4 @@ async function importCollection(collection) {
     await indexItems(items);
 }
 
-module.exports = importCollection;
+module.exports = indexCollection;
