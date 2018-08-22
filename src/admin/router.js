@@ -29,7 +29,7 @@ router.post('/import', async ctx => {
 
 router.post('/register_token', async ctx => {
     ctx.body = await registerToken(
-        ctx.request.body.token, ctx.request.body.container, ctx.request.body.from, ctx.request.body.to);
+        ctx.request.body.token, ctx.request.body.collection, ctx.request.body.from, ctx.request.body.to);
 });
 
 module.exports = router;

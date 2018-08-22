@@ -1,12 +1,12 @@
 const uuid = require('uuid/v4');
 const moment = require('moment');
 
-const {db, pg} = require('../lib/DB');
 const HttpError = require('../lib/HttpError');
+const client = require('../lib/ElasticSearch');
 
-async function registerToken(token, container, from, to) {
-    if (!container)
-        throw new HttpError(400, 'Please provide a container!');
+async function registerToken(token, collection, from, to) {
+    if (!collection)
+        throw new HttpError(400, 'Please provide a collection!');
 
     token = token || uuid();
     from = from ? moment(from) : null;
@@ -21,11 +21,21 @@ async function registerToken(token, container, from, to) {
     if (from && to && !from.isBefore(to))
         throw new HttpError(400, 'Please provide a valid date range!');
 
-    const items = {token, container_id: container, from: from ? from.toDate() : null, to: to ? to.toDate() : null};
-    const sql = pg.helpers.insert(items, new pg.helpers.ColumnSet(['token', 'container_id', 'from', 'to']), 'tokens');
-    await db.none(sql, items);
+    const tokenInfo = {
+        token,
+        collection_id: collection,
+        from: from ? from.toDate() : null,
+        to: to ? to.toDate() : null
+    };
 
-    return token;
+    await client.index({
+        index: 'tokens',
+        type: '_doc',
+        id: token,
+        body: tokenInfo
+    });
+
+    return tokenInfo;
 }
 
 module.exports = registerToken;

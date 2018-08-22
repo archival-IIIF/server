@@ -21,3 +21,4 @@
 
   iiif_server_base_url: http://localhost:3333
   iiif_server_image_server_url: http://localhost:8080
+  iiif_server_elasticsearch_url: http://localhost:9200

@@ -1,14 +1,44 @@
 const path = require('path');
-const {db} = require('../lib/DB');
 const config = require('../lib/Config');
-const HttpError = require('../lib/HttpError');
+const client = require('../lib/ElasticSearch');
+
+async function indexItems(items) {
+    while (items.length > 0) {
+        const body = [].concat(...items.splice(0, 100).map(
+            item => [{index: {_index: 'items', _type: '_doc', _id: item.id}}, item]));
+        const result = await client.bulk({body});
+        if (result.errors)
+            throw new Error('Failed to index the items');
+    }
+}
+
+async function deleteItems(collectionId) {
+    await client.deleteByQuery({index: 'items', q: `collection_id:${collectionId}`});
+}
 
 async function getItem(id) {
     try {
-        return await db.one('SELECT * FROM items WHERE id = $1;', id);
+        const response = await client.get({index: 'items', type: '_doc', id: id});
+        return response._source;
     }
-    catch (e) {
-        throw new HttpError(404, `No file found with id ${id}`);
+    catch (err) {
+        return null;
+    }
+}
+
+async function getChildItems(id) {
+    try {
+        const response = await client.search({
+            index: 'items',
+            q: `parent_id:${id}`,
+            sort: 'label:asc',
+            size: 1000
+        });
+
+        return response.hits.hits.map(hit => hit._source);
+    }
+    catch (err) {
+        return [];
     }
 }
 
@@ -21,24 +51,33 @@ function getRelativePath(item, type = null) {
     type = type || getAvailableType(item);
 
     if (type === 'access')
-        return item.access_resolver;
+        return item.access.uri;
 
     if (type === 'original')
-        return item.original_resolver;
+        return item.original.uri;
 }
 
 function getPronom(item, type = null) {
     type = type || getAvailableType(item);
 
     if (type === 'access')
-        return item.access_pronom;
+        return item.access.puid;
 
     if (type === 'original')
-        return item.original_pronom;
+        return item.original.puid;
 }
 
 function getAvailableType(item) {
-    return item.access_resolver ? 'access' : 'original';
+    return item.access.uri ? 'access' : 'original';
 }
 
-module.exports = {getItem, getFullPath, getRelativePath, getPronom, getAvailableType};
+module.exports = {
+    indexItems,
+    deleteItems,
+    getItem,
+    getChildItems,
+    getFullPath,
+    getRelativePath,
+    getPronom,
+    getAvailableType
+};
