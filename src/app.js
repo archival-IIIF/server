@@ -28,9 +28,13 @@ function startWeb() {
     const app = new Koa();
 
     app.use(async (ctx, next) => {
-        ctx.set("Access-Control-Allow-Origin", "*");
-        ctx.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-        await next();
+        ctx.set('Access-Control-Allow-Origin', '*');
+        ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+
+        if (ctx.method === 'OPTIONS')
+            ctx.status = 204;
+        else
+            await next();
     });
 
     app.use(async (ctx, next) => {
