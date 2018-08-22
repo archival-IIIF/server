@@ -40,84 +40,98 @@ const collectionSql = `
 
 const manifestSql = "SELECT * FROM items WHERE id = $1 AND type <> 'folder';";
 
-async function getCollection(id) {
+async function getCollection(id, includeContent = true) {
     const data = await db.query(collectionSql, [id]);
     if (data.length === 0)
         return null;
 
     const root = data[0];
-    const collection = new Collection(`${prefixPresentationUrl}/collection/${root.id}`, root.label);
+    const label = includeContent ? root.label : 'Access denied';
+    const collection = new Collection(`${prefixPresentationUrl}/collection/${root.id}`, label);
 
     collection.setContext();
     addLogo(collection);
     addLicense(collection);
     addAttribution(collection);
-    addMetadata(collection, root);
 
     if (root.parent_id)
         collection.setParent(`${prefixPresentationUrl}/collection/${root.parent_id}`);
 
-    await Promise.all(data.map(async child => {
-        if (child.child_type === 'folder') {
-            const childCollection = new Collection(`${prefixPresentationUrl}/collection/${child.child_id}`, child.child_label);
-            addFileTypeThumbnail(childCollection, null, null, 'folder');
-            collection.addCollection(childCollection);
-        }
-        else if (child.child_type) {
-            const manifest = new Manifest(`${prefixPresentationUrl}/${child.child_id}/manifest`, child.child_label);
-            const extension = child.child_label ? path.extname(child.child_label).substring(1).toLowerCase() : null;
+    if (includeContent) {
+        addMetadata(collection, root);
 
-            if (child.child_type === 'image')
-                await addThumbnail(manifest, {id: child.child_id});
-            else
-                addFileTypeThumbnail(manifest, child.child_original_pronom, extension, 'file');
+        await Promise.all(data.map(async child => {
+            if (child.child_type === 'folder') {
+                const childCollection = new Collection(`${prefixPresentationUrl}/collection/${child.child_id}`, child.child_label);
+                addFileTypeThumbnail(childCollection, null, null, 'folder');
+                collection.addCollection(childCollection);
+            }
+            else if (child.child_type) {
+                const manifest = new Manifest(`${prefixPresentationUrl}/${child.child_id}/manifest`, child.child_label);
+                const extension = child.child_label ? path.extname(child.child_label).substring(1).toLowerCase() : null;
 
-            collection.addManifest(manifest);
-        }
-    }));
+                if (child.child_type === 'image')
+                    await addThumbnail(manifest, {id: child.child_id});
+                else
+                    addFileTypeThumbnail(manifest, child.child_original_pronom, extension, 'file');
+
+                collection.addManifest(manifest);
+            }
+        }));
+    }
+    else {
+        await setAuthenticationServices(root, collection);
+    }
 
     return collection;
 }
 
-async function getManifest(id) {
+async function getManifest(id, includeContent = true) {
     const data = await db.query(manifestSql, [id]);
     if (data.length === 0)
         return null;
 
     const root = data[0];
-    const manifest = new Manifest(`${prefixPresentationUrl}/${root.id}/manifest`, root.label);
+    const label = includeContent ? root.label : 'Access denied';
+    const manifest = new Manifest(`${prefixPresentationUrl}/${root.id}/manifest`, label);
 
     manifest.setContext();
     addLogo(manifest);
     addLicense(manifest);
     addAttribution(manifest);
-    addMetadata(manifest, root);
 
     if (root.parent_id)
         manifest.setParent(`${prefixPresentationUrl}/collection/${root.parent_id}`);
 
-    if (root.type !== 'image') {
-        const extension = root.original_resolver
-            ? path.extname(root.original_resolver).substring(1) : null;
-        addFileTypeThumbnail(manifest, root.original_pronom, extension, 'file');
-    }
+    if (includeContent) {
+        addMetadata(manifest, root);
 
-    switch (root.type) {
-        case 'image':
-            await addImage(manifest, root);
-            await addThumbnail(manifest, root);
-            break;
-        case 'audio':
-            await addAudio(manifest, root);
-            break;
-        case 'video':
-            await addVideo(manifest, root);
-            break;
-        case 'pdf':
-            await addPdf(manifest, root);
-            break;
-        default:
-            await addOther(manifest, root);
+        if (root.type !== 'image') {
+            const extension = root.original_resolver
+                ? path.extname(root.original_resolver).substring(1) : null;
+            addFileTypeThumbnail(manifest, root.original_pronom, extension, 'file');
+        }
+
+        switch (root.type) {
+            case 'image':
+                await addImage(manifest, root);
+                await addThumbnail(manifest, root);
+                break;
+            case 'audio':
+                await addAudio(manifest, root);
+                break;
+            case 'video':
+                await addVideo(manifest, root);
+                break;
+            case 'pdf':
+                await addPdf(manifest, root);
+                break;
+            default:
+                await addOther(manifest, root);
+        }
+    }
+    else {
+        await setAuthenticationServices(root, manifest);
     }
 
     return manifest;

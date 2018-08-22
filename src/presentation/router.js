@@ -9,14 +9,28 @@ const presentationBuilder = require('./PresentationBuilder');
 const router = new Router({prefix: '/iiif/presentation'});
 
 router.get('/collection/:id', async ctx => {
-    const containerId = await validateRequest(ctx);
-    const collectionBuilder = async () => await presentationBuilder.getCollection(ctx.params.id);
+    const {containerId, access} = await validateRequest(ctx);
+
+    if (access.state !== AccessState.OPEN) {
+        ctx.status = 401;
+        ctx.body = await presentationBuilder.getCollection(ctx.params.id, false);
+        return;
+    }
+
+    const collectionBuilder = async () => await presentationBuilder.getCollection(ctx.params.id, true);
     ctx.body = await cache('collection', containerId, ctx.params.id, collectionBuilder);
 });
 
 router.get('/:id/manifest', async ctx => {
-    const containerId = await validateRequest(ctx);
-    const manifestBuilder = async () => await presentationBuilder.getManifest(ctx.params.id);
+    const {containerId, access} = await validateRequest(ctx);
+
+    if (access.state !== AccessState.OPEN) {
+        ctx.status = 401;
+        ctx.body = await presentationBuilder.getManifest(ctx.params.id, false);
+        return;
+    }
+
+    const manifestBuilder = async () => await presentationBuilder.getManifest(ctx.params.id, true);
     ctx.body = await cache('manifest', containerId, ctx.params.id, manifestBuilder);
 });
 
@@ -25,12 +39,10 @@ async function validateRequest(ctx) {
     if (!containerId)
         throw new HttpError(404, `No collection found with id ${ctx.params.id}`);
 
-    // const item = await getItem(ctx.params.id);
-    // const access = await hasAccess(ctx, item, true);
-    // if (access.state !== AccessState.OPEN)
-    //     throw new HttpError(401, 'Access denied');
+    const item = await getItem(ctx.params.id);
+    const access = await hasAccess(ctx, item, true);
 
-    return containerId;
+    return {containerId, access};
 }
 
 async function findContainerId(id) {
