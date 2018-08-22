@@ -8,6 +8,7 @@
     - role: elastic.elasticsearch
       tags: elasticsearch
       es_instance_name: "iiif"
+      es_xpack_features: []
 
 - hosts: backend
   become: yes
