@@ -29,74 +29,88 @@ const prefixIconUrl = `${config.baseUrl}/file-icon`;
 const defaultFileIcon = 'blank';
 const defaultFolderIcon = 'folder';
 
-async function getCollection(item) {
-    const collection = new Collection(`${prefixPresentationUrl}/collection/${item.id}`, item.label);
+async function getCollection(item, includeContent = true) {
+    const label = includeContent ? item.label : 'Access denied';
+    const collection = new Collection(`${prefixPresentationUrl}/collection/${item.id}`, label);
 
     collection.setContext();
     addLogo(collection);
     addLicense(collection);
     addAttribution(collection);
-    addMetadata(collection, item);
 
     if (item.parent_id)
         collection.setParent(`${prefixPresentationUrl}/collection/${item.parent_id}`);
 
-    const children = await getChildItems(item.id);
-    await Promise.all(children.map(async child => {
-        if (child.type === 'folder') {
-            const childCollection = new Collection(`${prefixPresentationUrl}/collection/${child.id}`, child.label);
-            addFileTypeThumbnail(childCollection, null, null, 'folder');
-            collection.addCollection(childCollection);
-        }
-        else {
-            const manifest = new Manifest(`${prefixPresentationUrl}/${child.id}/manifest`, child.label);
-            const extension = child.label ? path.extname(child.label).substring(1).toLowerCase() : null;
+    if (includeContent) {
+        addMetadata(collection, item);
 
-            if (child.type === 'image')
-                await addThumbnail(manifest, child);
-            else
-                addFileTypeThumbnail(manifest, child.original.puid, extension, 'file');
+        const children = await getChildItems(item.id);
+        await Promise.all(children.map(async child => {
+            if (child.type === 'folder') {
+                const childCollection = new Collection(`${prefixPresentationUrl}/collection/${child.id}`, child.label);
+                addFileTypeThumbnail(childCollection, null, null, 'folder');
+                collection.addCollection(childCollection);
+            }
+            else {
+                const manifest = new Manifest(`${prefixPresentationUrl}/${child.id}/manifest`, child.label);
+                const extension = child.label ? path.extname(child.label).substring(1).toLowerCase() : null;
 
-            collection.addManifest(manifest);
-        }
-    }));
+                if (child.type === 'image')
+                    await addThumbnail(manifest, child);
+                else
+                    addFileTypeThumbnail(manifest, child.original.puid, extension, 'file');
+
+                collection.addManifest(manifest);
+            }
+        }));
+    }
+    else {
+        await setAuthenticationServices(item, collection);
+    }
 
     return collection;
 }
 
-async function getManifest(item) {
-    const manifest = new Manifest(`${prefixPresentationUrl}/${item.id}/manifest`, item.label);
+async function getManifest(item, includeContent = true) {
+    const label = includeContent ? item.label : 'Access denied';
+    const manifest = new Manifest(`${prefixPresentationUrl}/${item.id}/manifest`, label);
 
     manifest.setContext();
     addLogo(manifest);
     addLicense(manifest);
     addAttribution(manifest);
-    addMetadata(manifest, item);
 
     if (item.parent_id)
         manifest.setParent(`${prefixPresentationUrl}/collection/${item.parent_id}`);
 
-    if (item.type !== 'image') {
-        const extension = item.label ? path.extname(item.label).substring(1).toLowerCase() : null;
-        addFileTypeThumbnail(manifest, item.original.puid, extension, 'file');
-    }
+    if (includeContent) {
+        addMetadata(manifest, item);
 
-    switch (item.type) {
-        case 'image':
-            await addImage(manifest, item);
-            await addThumbnail(manifest, item);
-            break;
-        case 'audio':
-            await addAudio(manifest, item);
-            break;
-        case 'video':
-            await addVideo(manifest, item);
-            break;
-        case 'pdf':
-            await addPdf(manifest, item);
-            break;
-        default:
-            await addOther(manifest, item);
+        if (item.type !== 'image') {
+            const extension = item.label ? path.extname(item.label).substring(1).toLowerCase() : null;
+            addFileTypeThumbnail(manifest, item.original.puid, extension, 'file');
+        }
+
+        switch (item.type) {
+            case 'image':
+                await addImage(manifest, item);
+                await addThumbnail(manifest, item);
+                break;
+            case 'audio':
+                await addAudio(manifest, item);
+                break;
+            case 'video':
+                await addVideo(manifest, item);
+                break;
+            case 'pdf':
+                await addPdf(manifest, item);
+                break;
+            default:
+                await addOther(manifest, item);
+        }
+    }
+    else {
+        await setAuthenticationServices(item, manifest);
     }
 
     return manifest;
