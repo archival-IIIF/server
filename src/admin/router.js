@@ -8,7 +8,13 @@ const indexCollection = require('./api_index');
 const router = new Router({prefix: '/admin'});
 
 router.use((ctx, next) => {
-    if (!ctx.request.body.access_token || (ctx.request.body.access_token.toLowerCase() !== config.accessToken))
+    const accessToken = ctx.request.body.access_token
+        ? ctx.request.body.access_token.toLowerCase()
+        : ctx.query.access_token
+            ? ctx.query.access_token.toLowerCase()
+            : null;
+
+    if (accessToken !== config.accessToken)
         throw new HttpError(403, 'Access denied');
 
     next();
