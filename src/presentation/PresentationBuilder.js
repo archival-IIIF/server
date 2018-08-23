@@ -199,7 +199,7 @@ function addMetadata(base, root) {
         );
     }
 
-    if (root.access.puid) {
+    if (root.access.puid && (root.type !== 'image')) {
         const pronomData = getPronomInfo(root.access.puid);
         base.addMetadata(
             'Access file type',
