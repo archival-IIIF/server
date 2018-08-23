@@ -29,59 +29,31 @@ const prefixIconUrl = `${config.baseUrl}/file-icon`;
 const defaultFileIcon = 'blank';
 const defaultFolderIcon = 'folder';
 
-async function getCollection(item) {
-    const collection = new Collection(`${prefixPresentationUrl}/collection/${item.id}`, item.label);
-const collectionSql = `
-        SELECT parent.id as id, parent.parent_id, parent.label as label, 
-        child.id as child_id, child.type as child_type, child.label as child_label, 
-        child.original_resolver as child_original_resolver, child.original_pronom as child_original_pronom
-        FROM items as parent 
-        LEFT JOIN items as child ON parent.id = child.parent_id 
-        WHERE parent.id = $1 AND parent.type = 'folder'
-        ORDER BY child.label ASC;`;
-
-const manifestSql = "SELECT * FROM items WHERE id = $1 AND type <> 'folder';";
-
-async function getCollection(id, includeContent = true) {
-    const data = await db.query(collectionSql, [id]);
-    if (data.length === 0)
-        return null;
-
-    const root = data[0];
-    const label = includeContent ? root.label : 'Access denied';
-    const collection = new Collection(`${prefixPresentationUrl}/collection/${root.id}`, label);
+async function getCollection(item, includeContent = true) {
+    const label = includeContent ? item.label : 'Access denied';
+    const collection = new Collection(`${prefixPresentationUrl}/collection/${item.id}`, label);
 
     collection.setContext();
     addLogo(collection);
     addLicense(collection);
     addAttribution(collection);
-    addMetadata(collection, item);
 
     if (item.parent_id)
         collection.setParent(`${prefixPresentationUrl}/collection/${item.parent_id}`);
 
-    const children = await getChildItems(item.id);
-    await Promise.all(children.map(async child => {
-        if (child.type === 'folder') {
-            const childCollection = new Collection(`${prefixPresentationUrl}/collection/${child.id}`, child.label);
-            addFileTypeThumbnail(childCollection, null, null, 'folder');
-            collection.addCollection(childCollection);
-        }
-        else {
-            const manifest = new Manifest(`${prefixPresentationUrl}/${child.id}/manifest`, child.label);
-            const extension = child.label ? path.extname(child.label).substring(1).toLowerCase() : null;
     if (includeContent) {
-        addMetadata(collection, root);
+        addMetadata(collection, item);
 
-        await Promise.all(data.map(async child => {
-            if (child.child_type === 'folder') {
-                const childCollection = new Collection(`${prefixPresentationUrl}/collection/${child.child_id}`, child.child_label);
+        const children = await getChildItems(item.id);
+        await Promise.all(children.map(async child => {
+            if (child.type === 'folder') {
+                const childCollection = new Collection(`${prefixPresentationUrl}/collection/${child.id}`, child.label);
                 addFileTypeThumbnail(childCollection, null, null, 'folder');
                 collection.addCollection(childCollection);
             }
-            else if (child.child_type) {
-                const manifest = new Manifest(`${prefixPresentationUrl}/${child.child_id}/manifest`, child.child_label);
-                const extension = child.child_label ? path.extname(child.child_label).substring(1).toLowerCase() : null;
+            else {
+                const manifest = new Manifest(`${prefixPresentationUrl}/${child.id}/manifest`, child.label);
+                const extension = child.label ? path.extname(child.label).substring(1).toLowerCase() : null;
 
                 if (child.type === 'image')
                     await addThumbnail(manifest, child);
@@ -93,38 +65,29 @@ async function getCollection(id, includeContent = true) {
         }));
     }
     else {
-        await setAuthenticationServices(root, collection);
+        await setAuthenticationServices(item, collection);
     }
 
     return collection;
 }
 
-async function getManifest(item) {
-    const manifest = new Manifest(`${prefixPresentationUrl}/${item.id}/manifest`, item.label);
-async function getManifest(id, includeContent = true) {
-    const data = await db.query(manifestSql, [id]);
-    if (data.length === 0)
-        return null;
-
-    const root = data[0];
-    const label = includeContent ? root.label : 'Access denied';
-    const manifest = new Manifest(`${prefixPresentationUrl}/${root.id}/manifest`, label);
+async function getManifest(item, includeContent = true) {
+    const label = includeContent ? item.label : 'Access denied';
+    const manifest = new Manifest(`${prefixPresentationUrl}/${item.id}/manifest`, label);
 
     manifest.setContext();
     addLogo(manifest);
     addLicense(manifest);
     addAttribution(manifest);
-    addMetadata(manifest, item);
 
     if (item.parent_id)
         manifest.setParent(`${prefixPresentationUrl}/collection/${item.parent_id}`);
 
     if (includeContent) {
-        addMetadata(manifest, root);
+        addMetadata(manifest, item);
 
         if (item.type !== 'image') {
-            const extension = item.original.uri
-                ? path.extname(item.original.uri).substring(1) : null;
+            const extension = item.original.uri ? path.extname(item.original.uri).substring(1) : null;
             addFileTypeThumbnail(manifest, item.original.puid, extension, 'file');
         }
 
@@ -147,7 +110,7 @@ async function getManifest(id, includeContent = true) {
         }
     }
     else {
-        await setAuthenticationServices(root, manifest);
+        await setAuthenticationServices(item, manifest);
     }
 
     return manifest;
