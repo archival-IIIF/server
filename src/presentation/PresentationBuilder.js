@@ -77,8 +77,7 @@ async function getManifest(item) {
         manifest.setParent(`${prefixPresentationUrl}/collection/${item.parent_id}`);
 
     if (item.type !== 'image') {
-        const extension = item.original.uri
-            ? path.extname(item.original.uri).substring(1) : null;
+        const extension = item.label ? path.extname(item.label).substring(1).toLowerCase() : null;
         addFileTypeThumbnail(manifest, item.original.puid, extension, 'file');
     }
 
@@ -137,10 +136,10 @@ async function addMediaSequence(manifest, item, type) {
     const resource = new Resource(`${prefixFileUrl}/${item.id}`, null, null, defaultMime, type);
     const mediaSequence = new MediaSequence(`${prefixPresentationUrl}/${item.id}/sequence/0`, resource);
 
-    if (accessPronomData)
+    if (item.access.uri && accessPronomData)
         resource.addRendering(new Rendering(`${prefixFileUrl}/${item.id}/access`, 'Access copy', accessPronomData.mime));
 
-    if (originalPronomData)
+    if (item.original.uri && originalPronomData)
         resource.addRendering(new Rendering(`${prefixFileUrl}/${item.id}/original`, 'Original copy', originalPronomData.mime));
 
     await setAuthenticationServices(item, resource);
@@ -195,7 +194,15 @@ function addMetadata(base, root) {
     if (root.original.puid) {
         const pronomData = getPronomInfo(root.original.puid);
         base.addMetadata(
-            'File type',
+            'Original file type',
+            `<a href="${pronomData.url}">${pronomData.name} (${pronomData.extensions.map(ext => `.${ext}`).join(', ')})</a>`
+        );
+    }
+
+    if (root.access.puid) {
+        const pronomData = getPronomInfo(root.access.puid);
+        base.addMetadata(
+            'Access file type',
             `<a href="${pronomData.url}">${pronomData.name} (${pronomData.extensions.map(ext => `.${ext}`).join(', ')})</a>`
         );
     }
