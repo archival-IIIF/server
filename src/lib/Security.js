@@ -32,7 +32,8 @@ async function hasAccess(ctx, item, acceptToken = false) {
     if (isAuthenticationEnabled) {
         const ip = ctx.ip;
         const accessId = await getAccessIdFromRequest(ctx, acceptToken);
-        const identities = await getIdentitiesForAccessId(accessId);
+        const accessIdInfo = await getIdentitiesAndTokensForAccessId(accessId);
+        const identities = accessIdInfo ? accessIdInfo.identities : [];
 
         if (accessId && identities.length > 0)
             logger.debug('Determining access with an access id and matching identities');
@@ -96,33 +97,43 @@ async function checkTokenDb(tokens) {
     }
 }
 
-async function getIdentitiesForAccessId(acccesId) {
-    const identities = await getAsync(`access-id:${acccesId}`);
-    if (identities)
-        return JSON.parse(identities);
-    return [];
+async function getIdentitiesAndTokensForAccessId(acccesId) {
+    const accessIdInfo = await getAsync(`access-id:${acccesId}`);
+    if (accessIdInfo)
+        return JSON.parse(accessIdInfo);
+    return null;
 }
 
 async function setAccessIdForIdentity(identity, accessId) {
-    const identities = [];
+    const accessIdInfo = accessId ? await getIdentitiesAndTokensForAccessId(accessId) : null;
+    const identities = accessIdInfo ? accessIdInfo.identities : [];
+    const token = accessIdInfo ? accessIdInfo.token : null;
 
-    if (accessId)
-        identities.push(...(await getIdentitiesForAccessId(accessId)));
-    else
-        accessId = uuid();
+    accessId = accessId || uuid();
 
     if (!identities.includes(identity)) {
         identities.push(identity);
-        await setAsync(`access-id:${accessId}`, JSON.stringify(identities), 'EX', 86400);
+        await setAsync(`access-id:${accessId}`, JSON.stringify({identities, token}), 'EX', 86400);
     }
 
     return accessId;
 }
 
 async function setAccessTokenForAccessId(accessId) {
-    const accessToken = uuid();
-    await setAsync(`access-token:${accessToken}`, accessId, 'EX', 86400);
-    return accessToken;
+    const accessIdInfo = await getIdentitiesAndTokensForAccessId(accessId);
+    if (accessIdInfo) {
+        const identities = accessIdInfo.identities;
+        const token = accessIdInfo.token || uuid();
+
+        if (!accessIdInfo.token) {
+            await setAsync(`access-token:${token}`, accessId, 'EX', 86400);
+            await setAsync(`access-id:${accessId}`, JSON.stringify({identities, token}), 'EX', 86400);
+        }
+
+        return token;
+    }
+
+    return null;
 }
 
 async function getAccessIdForAccessToken(accessToken) {

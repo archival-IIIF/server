@@ -13,7 +13,7 @@ router.get('/collection/:id', async ctx => {
         throw new HttpError(404, `No collection found with id ${ctx.params.id}`);
 
     const access = await hasAccess(ctx, item, true);
-    if (access.state !== AccessState.OPEN) {
+    if (access.state === AccessState.CLOSED) {
         ctx.status = 401;
         ctx.body = await getCollection(item, false);
         return;
@@ -28,7 +28,7 @@ router.get('/:id/manifest', async ctx => {
         throw new HttpError(404, `No manifest found with id ${ctx.params.id}`);
 
     const access = await hasAccess(ctx, item, true);
-    if (access.state !== AccessState.OPEN) {
+    if (access.state === AccessState.CLOSED) {
         ctx.status = 401;
         ctx.body = await getManifest(item, false);
         return;
