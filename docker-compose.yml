@@ -25,13 +25,11 @@ services:
     networks:
       - back-tier
 
-  db:
-    image: postgres
+  elasticsearch:
+    image: elasticsearch
     restart: always
-    environment:
-      POSTGRES_PASSWORD: example
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - indexes:/usr/share/elasticsearch/data
     networks:
       - back-tier
 
@@ -46,7 +44,7 @@ volumes:
   loris-conf:
   additional:
   collections:
-  db-data:
+  indexes:
 
 networks:
   front-tier:

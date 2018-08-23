@@ -6,10 +6,10 @@ const allServices = [{
     runAs: 'web',
     getService: () => null
 }, {
-    name: 'archivematica-import',
-    type: 'import',
+    name: 'archivematica-index',
+    type: 'index',
     runAs: 'worker',
-    getService: () => require('../service/archivematica_import')
+    getService: () => require('../service/archivematica_index')
 }, {
     name: 'iish-access',
     type: 'access',

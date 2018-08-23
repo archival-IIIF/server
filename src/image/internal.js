@@ -1,4 +1,4 @@
-const {getItem, getFullPath} = require('../lib/Item');
+const {getFullPath} = require('../lib/Item');
 
 const ImageProcessing = require('./ImageProcessing');
 const RegionRequest = require('./RegionRequest');
@@ -8,7 +8,7 @@ const QualityRequest = require('./QualityRequest');
 const FormatRequest = require('./FormatRequest');
 const {RequestError, NotImplementedError} = require('./errors');
 
-async function serveImage(id, {region, size, rotation, quality, format}) {
+async function serveImage(item, {region, size, rotation, quality, format}) {
     const result = {
         image: null,
         status: 200,
@@ -17,9 +17,7 @@ async function serveImage(id, {region, size, rotation, quality, format}) {
     };
 
     try {
-        const item = await getItem(id);
         const processingInfo = {uri: getFullPath(item), size: {width: item.width, height: item.height}};
-
         const imageProcessing = new ImageProcessing(processingInfo, [
             new RegionRequest(region),
             new SizeRequest(size),

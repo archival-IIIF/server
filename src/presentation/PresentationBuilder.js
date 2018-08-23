@@ -11,9 +11,9 @@ const AuthService = require('./AuthService');
 const Image = require('../image/Image');
 const {getProfile} = require('../image/imageServer');
 
-const {db} = require('../lib/DB');
 const config = require('../lib/Config');
 const getPronomInfo = require('../lib/Pronom');
+const {getChildItems} = require('../lib/Item');
 const {iconsByExtension} = require('../lib/FileIcon');
 const {enabledAuthServices, requiresAuthentication, getAuthTexts} = require('../lib/Security');
 
@@ -29,6 +29,8 @@ const prefixIconUrl = `${config.baseUrl}/file-icon`;
 const defaultFileIcon = 'blank';
 const defaultFolderIcon = 'folder';
 
+async function getCollection(item) {
+    const collection = new Collection(`${prefixPresentationUrl}/collection/${item.id}`, item.label);
 const collectionSql = `
         SELECT parent.id as id, parent.parent_id, parent.label as label, 
         child.id as child_id, child.type as child_type, child.label as child_label, 
@@ -53,10 +55,21 @@ async function getCollection(id, includeContent = true) {
     addLogo(collection);
     addLicense(collection);
     addAttribution(collection);
+    addMetadata(collection, item);
 
-    if (root.parent_id)
-        collection.setParent(`${prefixPresentationUrl}/collection/${root.parent_id}`);
+    if (item.parent_id)
+        collection.setParent(`${prefixPresentationUrl}/collection/${item.parent_id}`);
 
+    const children = await getChildItems(item.id);
+    await Promise.all(children.map(async child => {
+        if (child.type === 'folder') {
+            const childCollection = new Collection(`${prefixPresentationUrl}/collection/${child.id}`, child.label);
+            addFileTypeThumbnail(childCollection, null, null, 'folder');
+            collection.addCollection(childCollection);
+        }
+        else {
+            const manifest = new Manifest(`${prefixPresentationUrl}/${child.id}/manifest`, child.label);
+            const extension = child.label ? path.extname(child.label).substring(1).toLowerCase() : null;
     if (includeContent) {
         addMetadata(collection, root);
 
@@ -70,10 +83,10 @@ async function getCollection(id, includeContent = true) {
                 const manifest = new Manifest(`${prefixPresentationUrl}/${child.child_id}/manifest`, child.child_label);
                 const extension = child.child_label ? path.extname(child.child_label).substring(1).toLowerCase() : null;
 
-                if (child.child_type === 'image')
-                    await addThumbnail(manifest, {id: child.child_id});
+                if (child.type === 'image')
+                    await addThumbnail(manifest, child);
                 else
-                    addFileTypeThumbnail(manifest, child.child_original_pronom, extension, 'file');
+                    addFileTypeThumbnail(manifest, child.original.puid, extension, 'file');
 
                 collection.addManifest(manifest);
             }
@@ -86,6 +99,8 @@ async function getCollection(id, includeContent = true) {
     return collection;
 }
 
+async function getManifest(item) {
+    const manifest = new Manifest(`${prefixPresentationUrl}/${item.id}/manifest`, item.label);
 async function getManifest(id, includeContent = true) {
     const data = await db.query(manifestSql, [id]);
     if (data.length === 0)
@@ -99,35 +114,36 @@ async function getManifest(id, includeContent = true) {
     addLogo(manifest);
     addLicense(manifest);
     addAttribution(manifest);
+    addMetadata(manifest, item);
 
-    if (root.parent_id)
-        manifest.setParent(`${prefixPresentationUrl}/collection/${root.parent_id}`);
+    if (item.parent_id)
+        manifest.setParent(`${prefixPresentationUrl}/collection/${item.parent_id}`);
 
     if (includeContent) {
         addMetadata(manifest, root);
 
-        if (root.type !== 'image') {
-            const extension = root.original_resolver
-                ? path.extname(root.original_resolver).substring(1) : null;
-            addFileTypeThumbnail(manifest, root.original_pronom, extension, 'file');
+        if (item.type !== 'image') {
+            const extension = item.original.uri
+                ? path.extname(item.original.uri).substring(1) : null;
+            addFileTypeThumbnail(manifest, item.original.puid, extension, 'file');
         }
 
-        switch (root.type) {
+        switch (item.type) {
             case 'image':
-                await addImage(manifest, root);
-                await addThumbnail(manifest, root);
+                await addImage(manifest, item);
+                await addThumbnail(manifest, item);
                 break;
             case 'audio':
-                await addAudio(manifest, root);
+                await addAudio(manifest, item);
                 break;
             case 'video':
-                await addVideo(manifest, root);
+                await addVideo(manifest, item);
                 break;
             case 'pdf':
-                await addPdf(manifest, root);
+                await addPdf(manifest, item);
                 break;
             default:
-                await addOther(manifest, root);
+                await addOther(manifest, item);
         }
     }
     else {
@@ -164,8 +180,8 @@ async function addOther(manifest, item) {
 }
 
 async function addMediaSequence(manifest, item, type) {
-    const accessPronomData = item.access_pronom ? getPronomInfo(item.access_pronom) : null;
-    const originalPronomData = item.original_pronom ? getPronomInfo(item.original_pronom) : null;
+    const accessPronomData = item.access.puid ? getPronomInfo(item.access.puid) : null;
+    const originalPronomData = item.original.puid ? getPronomInfo(item.original.puid) : null;
     const defaultMime = accessPronomData ? accessPronomData.mime : originalPronomData.mime;
 
     const resource = new Resource(`${prefixFileUrl}/${item.id}`, null, null, defaultMime, type);
@@ -226,11 +242,8 @@ function addFileTypeThumbnail(base, pronom, fileExtension, type) {
 }
 
 function addMetadata(base, root) {
-    if (root.metadata)
-        base.addMetadata(root.metadata);
-
-    if (root.original_pronom) {
-        const pronomData = getPronomInfo(root.original_pronom);
+    if (root.original.puid) {
+        const pronomData = getPronomInfo(root.original.puid);
         base.addMetadata(
             'File type',
             `<a href="${pronomData.url}">${pronomData.name} (${pronomData.extensions.map(ext => `.${ext}`).join(', ')})</a>`

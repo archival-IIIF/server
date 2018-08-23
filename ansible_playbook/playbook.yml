@@ -1,12 +1,14 @@
 ---
-- hosts: database
+- hosts: elasticsearch
   become: yes
   pre_tasks:
     - include: tasks/load-vars.yml
       tags: "pre_tasks"
   roles:
-    - role: "postgresql"
-      tags: postgresql
+    - role: elastic.elasticsearch
+      tags: elasticsearch
+      es_instance_name: "iiif"
+      es_xpack_features: []
 
 - hosts: backend
   become: yes

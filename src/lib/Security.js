@@ -3,10 +3,10 @@ const rangeCheck = require('range_check');
 const uuid = require('uuid/v4');
 const {promisify} = require('util');
 
-const {db} = require('./DB');
 const {client} = require('./Redis');
 const config = require('./Config');
 const logger = require('./Logger');
+const esClient = require('./ElasticSearch');
 const {runTaskWithResponse} = require('./Task');
 
 const getAsync = promisify(client.get).bind(client);
@@ -69,17 +69,31 @@ function isIpInRange(ip) {
 }
 
 async function checkTokenDb(tokens) {
-    const tokensInfo = await db.query('SELECT * FROM tokens WHERE token IN ($1:list);', [tokens]);
+    try {
+        const response = await esClient.search({
+            index: 'tokens',
+            size: 100,
+            body: {
+                query: {
+                    terms: {'token': tokens}
+                }
+            },
+        });
 
-    return tokensInfo.filter(tokenInfo => {
-        if (tokenInfo.from && tokenInfo.to && !moment().isBetween(moment(tokenInfo.from), moment(tokenInfo.to)))
-            return false;
+        const tokensInfo = response.hits.hits.map(hit => hit._source);
+        return tokensInfo.filter(tokenInfo => {
+            if (tokenInfo.from && tokenInfo.to && !moment().isBetween(moment(tokenInfo.from), moment(tokenInfo.to)))
+                return false;
 
-        if (tokenInfo.from && !moment().isAfter(moment(tokenInfo.from)))
-            return false;
+            if (tokenInfo.from && !moment().isAfter(moment(tokenInfo.from)))
+                return false;
 
-        return !(tokenInfo.to && !moment().isBefore(moment(tokenInfo.to)));
-    });
+            return !(tokenInfo.to && !moment().isBefore(moment(tokenInfo.to)));
+        });
+    }
+    catch (err) {
+        return [];
+    }
 }
 
 async function getIdentitiesForAccessId(acccesId) {

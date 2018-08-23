@@ -66,19 +66,10 @@ module.exports = {
         return (loginDisabled && (loginDisabled.toLowerCase() === 'true' || loginDisabled === '1'));
     })(),
 
-    database: (() => {
-        const host = (process.env.IIIF_SERVER_DATABASE_HOST && (process.env.IIIF_SERVER_DATABASE_HOST !== 'null'))
-            ? process.env.IIIF_SERVER_DATABASE_HOST : 'localhost';
-        const port = parseInt(process.env.IIIF_SERVER_DATABASE_PORT) > 0
-            ? parseInt(process.env.IIIF_SERVER_DATABASE_PORT) : 5432;
-        const user = (process.env.IIIF_SERVER_DATABASE_USER && (process.env.IIIF_SERVER_DATABASE_USER !== 'null'))
-            ? process.env.IIIF_SERVER_DATABASE_USER : 'pgadmin';
-        const password = (process.env.IIIF_SERVER_DATABASE_PASSWORD && (process.env.IIIF_SERVER_DATABASE_PASSWORD !== 'null'))
-            ? process.env.IIIF_SERVER_DATABASE_PASSWORD : 'pgadmin';
-        const database = (process.env.IIIF_SERVER_DATABASE_DB && (process.env.IIIF_SERVER_DATABASE_DB !== 'null'))
-            ? process.env.IIIF_SERVER_DATABASE_DB : 'iiif-server';
-
-        return {host, port, user, password, database};
+    elasticSearchUrl: (() => {
+        if (!process.env.IIIF_SERVER_ELASTICSEARCH_URL || (process.env.IIIF_SERVER_ELASTICSEARCH_URL === 'null'))
+            throw new Error("elasticsearch url is not defined");
+        return process.env.IIIF_SERVER_ELASTICSEARCH_URL;
     })(),
 
     redis: (() => {

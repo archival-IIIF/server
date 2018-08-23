@@ -1,9 +1,8 @@
 const request = require('request-promise-native');
 const config = require('../lib/Config');
-const {getItem, getRelativePath} = require('../lib/Item');
+const {getRelativePath} = require('../lib/Item');
 
-async function serveImage(id, {region, size, rotation, quality, format}) {
-    const item = await getItem(id);
+async function serveImage(item, {region, size, rotation, quality, format}) {
     const path = getRelativePath(item);
     const url = `${config.imageServerUrl}/${path}/${region}/${size}/${rotation}/${quality}.${format}`;
     const response = await request({uri: url, encoding: null, resolveWithFullResponse: true, simple: false});

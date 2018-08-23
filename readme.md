@@ -2,7 +2,7 @@
 
 ## Components
 
-![](https://github.com/archival-IIIF/server/blob/iish/doc/components/components.png)
+![](https://github.com/archival-IIIF/server/blob/iish/components.png)
 
 ## Installation
 

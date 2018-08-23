@@ -40,7 +40,7 @@ async function getImage(item, tier, imageOptions) {
             };
     }
 
-    return await serveImage(item.id, imageOptions);
+    return await serveImage(item, imageOptions);
 }
 
 function getProfile() {

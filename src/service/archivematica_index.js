@@ -4,7 +4,7 @@ const {promisify} = require('util');
 const moment = require('moment');
 const libxmljs = require('libxmljs');
 
-const {db, pg} = require('../lib/DB');
+const {indexItems, deleteItems} = require('../lib/Item');
 const {evictCache} = require('../lib/Cache');
 const {getTypeForPronom, pronomByExtension} = require('./util/archivematica_pronom_data');
 
@@ -20,23 +20,6 @@ const namespaces = {
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'File': 'http://ns.exiftool.ca/File/1.0/'
 };
-
-const columnSet = new pg.helpers.ColumnSet([
-    "id",
-    "parent_id",
-    "container_id",
-    "metadata",
-    "type",
-    "label",
-    "size",
-    "created_at",
-    "width",
-    "height",
-    "original_resolver",
-    "original_pronom",
-    "access_resolver",
-    "access_pronom"
-]);
 
 async function processDip({dipPath}) {
     const metsFile = (await readdirAsync(dipPath)).find(file => file.startsWith('METS') && file.endsWith('xml'));
@@ -62,37 +45,36 @@ async function processDip({dipPath}) {
     await cleanup(id);
 
     let items = [{
-        "id": id,
-        "parent_id": null,
-        "container_id": id,
-        "metadata": null,
-        "type": 'folder',
-        "label": id,
-        "size": null,
-        "created_at": null,
-        "width": null,
-        "height": null,
-        "original_resolver": null,
-        "original_pronom": null,
-        "access_resolver": null,
-        "access_pronom": null
+        'id': id,
+        'parent_id': null,
+        'collection_id': id,
+        'type': 'folder',
+        'label': id,
+        'size': null,
+        'created_at': null,
+        'width': null,
+        'height': null,
+        'original': {
+            'uri': null,
+            'puid': null
+        },
+        'access': {
+            'uri': null,
+            'puid': null
+        }
     }];
 
     items = items.concat(walkTree({
         id, mets, objects, relativeRootPath, curNode: rootLogical, curNodePhysical: rootPhysical
     }));
 
-    await writeItems(items);
+    await indexItems(items);
 }
 
 async function cleanup(id) {
-    const result = await db.result("SELECT id FROM items WHERE container_id = $1", [id]);
-    if (result.rowCount > 0) {
-        await db.none("DELETE FROM items WHERE container_id = $1;", [id]);
-
-        await evictCache('collection', id);
-        await evictCache('manifest', id);
-    }
+    await deleteItems(id);
+    await evictCache('collection', id);
+    await evictCache('manifest', id);
 }
 
 function walkTree({id, mets, objects, relativeRootPath, curNode, curNodePhysical, parent = null}) {
@@ -137,20 +119,23 @@ function readFolder(rootId, mets, node, nodePhysical, parent) {
         const name = path.basename(originalName);
 
         return {
-            "id": id,
-            "parent_id": parent || rootId,
-            "container_id": rootId,
-            "metadata": null,
-            "type": 'folder',
-            "label": name,
-            "size": null,
-            "created_at": null,
-            "width": null,
-            "height": null,
-            "original_resolver": null,
-            "original_pronom": null,
-            "access_resolver": null,
-            "access_pronom": null
+            'id': id,
+            'parent_id': parent || rootId,
+            'collection_id': rootId,
+            'type': 'folder',
+            'label': name,
+            'size': null,
+            'created_at': null,
+            'width': null,
+            'height': null,
+            'original': {
+                'uri': null,
+                'puid': null
+            },
+            'access': {
+                'uri': null,
+                'puid': null
+            }
         };
     }
 
@@ -191,21 +176,24 @@ function readFile(rootId, mets, objects, relativeRootPath, node, nodePhysical, p
         const extension = path.extname(file);
 
         return {
-            "id": id,
-            "parent_id": parent || rootId,
-            "container_id": rootId,
-            "metadata": null,
-            "type": type,
-            "label": name,
-            "size": size,
-            "created_at": creationDate,
-            "width": resolution.width,
-            "height": resolution.height,
-            "original_resolver": isOriginal ? path.join(relativeRootPath, file) : null,
-            "original_pronom": pronomKey,
-            "access_resolver": !isOriginal ? path.join(relativeRootPath, file) : null,
-            "access_pronom": (!isOriginal && pronomByExtension.hasOwnProperty(extension))
-                ? pronomByExtension[extension] : null
+            'id': id,
+            'parent_id': parent || rootId,
+            'collection_id': rootId,
+            'type': type,
+            'label': name,
+            'size': size,
+            'created_at': creationDate,
+            'width': resolution.width,
+            'height': resolution.height,
+            'original': {
+                'uri': isOriginal ? path.join(relativeRootPath, file) : null,
+                'puid': pronomKey,
+            },
+            'access': {
+                'uri': !isOriginal ? path.join(relativeRootPath, file) : null,
+                'puid': (!isOriginal && pronomByExtension.hasOwnProperty(extension))
+                    ? pronomByExtension[extension] : null
+            }
         };
     }
 
@@ -257,11 +245,6 @@ function getResolution(width, height) {
         };
     }
     return null;
-}
-
-async function writeItems(items) {
-    const sql = pg.helpers.insert(items, columnSet, 'items');
-    await db.none(sql, items);
 }
 
 module.exports = processDip;
