@@ -21,7 +21,7 @@ router.post('/login', async ctx => {
         accessId = await security.setAccessIdForIdentity(token, accessId);
         ctx.cookies.set('access', accessId, {
             signed: true,
-            maxAge: 3600000,
+            maxAge: 86400000,
             expires: moment().add(1, 'd').toDate(),
             overwrite: true
         });
