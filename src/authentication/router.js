@@ -15,7 +15,8 @@ router.get('/login', ctx => {
 router.post('/login', async ctx => {
     const token = ctx.request.body.token;
 
-    if (await security.checkTokenDb([token])) {
+    const tokens = await security.checkTokenDb([token]);
+    if (tokens.length > 0) {
         let accessId = await security.getAccessIdFromRequest(ctx, false);
         accessId = await security.setAccessIdForIdentity(token, accessId);
         ctx.cookies.set('access', accessId, {
