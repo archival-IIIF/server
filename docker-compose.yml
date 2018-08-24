@@ -17,8 +17,6 @@ services:
   image:
     image: wellcome/loris
     restart: always
-    ports:
-      - "8080:8888"
     volumes:
       - collections:/data/collections
       - loris-conf:/opt/loris/etc/loris2.conf
@@ -26,7 +24,7 @@ services:
       - back-tier
 
   elasticsearch:
-    image: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.3.2
     restart: always
     volumes:
       - indexes:/usr/share/elasticsearch/data
