@@ -38,8 +38,10 @@ router.get('/token', async ctx => {
     const message = {};
 
     const accessId = await security.getAccessIdFromRequest(ctx, false);
-    if (accessId) {
-        message.accessToken = await security.setAccessTokenForAccessId(accessId);
+    const token = (accessId) ? await security.setAccessTokenForAccessId(accessId) : null;
+
+    if (token) {
+        message.accessToken = token;
         message.expiresIn = 3600;
     }
     else {
