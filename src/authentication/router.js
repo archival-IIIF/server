@@ -25,13 +25,10 @@ router.post('/login', async ctx => {
             expires: moment().add(1, 'd').toDate(),
             overwrite: true
         });
+    }
 
-        ctx.type = 'text/html';
-        ctx.body = createReadStream(path.join(__dirname, 'close-window.html'));
-    }
-    else {
-        ctx.redirect(`${prefix}/login`);
-    }
+    ctx.type = 'text/html';
+    ctx.body = createReadStream(path.join(__dirname, 'close-window.html'));
 });
 
 router.get('/token', async ctx => {
