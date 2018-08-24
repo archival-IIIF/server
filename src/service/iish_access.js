@@ -10,8 +10,6 @@ async function hasAccess({item, ip, identities}) {
     if (!isIpInRange(ip))
         return {state: AccessState.CLOSED};
 
-    return {state: AccessState.OPEN};
-
     if (identities && identities.length > 0) {
         const tokensInfo = await checkTokenDb(identities);
         const tokenInfo = tokensInfo.find(tokenInfo => tokenInfo.collection_id === item.collection_id);
