@@ -11,6 +11,7 @@ const {runTaskWithResponse} = require('./Task');
 
 const getAsync = promisify(client.get).bind(client);
 const setAsync = promisify(client.set).bind(client);
+const delAsync = promisify(client.del).bind(client);
 
 const isLoginEnabled = !config.loginDisabled;
 const isExternalEnabled = config.internalIpAddresses.length > 0;
@@ -155,6 +156,19 @@ async function getAccessIdFromRequest(ctx, acceptToken = false) {
     return accessCookie;
 }
 
+async function removeAccessIdFromRequest(ctx) {
+    const accessId = ctx.cookies.get('access');
+    if (accessId) {
+        const accessIdInfo = await getIdentitiesAndTokensForAccessId(accessId);
+        if (accessIdInfo) {
+            await delAsync(`access-id:${accessId}`);
+
+            if (accessIdInfo.token)
+                await delAsync(`access-token:${accessIdInfo.token}`);
+        }
+    }
+}
+
 module.exports = {
     enabledAuthServices,
     AccessState,
@@ -165,5 +179,6 @@ module.exports = {
     checkTokenDb,
     setAccessIdForIdentity,
     setAccessTokenForAccessId,
-    getAccessIdFromRequest
+    getAccessIdFromRequest,
+    removeAccessIdFromRequest
 };

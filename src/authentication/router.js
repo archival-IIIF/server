@@ -22,7 +22,6 @@ router.post('/login', async ctx => {
             signed: true,
             maxAge: 3600000,
             expires: moment().add(1, 'd').toDate(),
-            //secure: true,
             overwrite: true
         });
 
@@ -62,5 +61,13 @@ router.get('/token', async ctx => {
         ctx.body = message;
     }
 });
+
+router.get('/logout', async ctx => {
+    await security.removeAccessIdFromRequest(ctx);
+
+    ctx.type = 'text/html';
+    ctx.body = createReadStream(path.join(__dirname, 'logout.html'));
+});
+
 
 module.exports = router;

@@ -31,14 +31,21 @@ class AuthService extends Base {
                 return null;
         }
 
-        service.setAuthTexts(authTexts);
+        service.setAuthTexts(authTexts[type]);
         service.setService(AuthService.getAccessTokenService(prefixAuthUrl));
+        service.setService(AuthService.getLogoutService(prefixAuthUrl, authTexts));
 
         return service;
     }
 
     static getAccessTokenService(prefixAuthUrl) {
         return new AuthService(`${prefixAuthUrl}/token`, 'http://iiif.io/api/auth/1/token', null);
+    }
+
+    static getLogoutService(prefixAuthUrl, authTexts) {
+        const service = new AuthService(`${prefixAuthUrl}/logout`, 'http://iiif.io/api/auth/1/logout', null);
+        service.setAuthTexts(authTexts.logout);
+        return service;
     }
 }
 
