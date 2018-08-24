@@ -33,7 +33,9 @@ class AuthService extends Base {
 
         service.setAuthTexts(authTexts[type]);
         service.setService(AuthService.getAccessTokenService(prefixAuthUrl));
-        service.setService(AuthService.getLogoutService(prefixAuthUrl, authTexts));
+
+        if (type !== 'external')
+            service.setService(AuthService.getLogoutService(prefixAuthUrl, authTexts));
 
         return service;
     }
