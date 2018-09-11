@@ -229,6 +229,9 @@ function addMetadata(base, root) {
         const date = moment(root.created_at).format('MMMM Do YYYY');
         base.addMetadata('Original modification date', date);
     }
+
+    if (root.metadata)
+        base.addMetadata(root.metadata);
 }
 
 function addLogo(base) {

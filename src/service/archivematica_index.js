@@ -54,6 +54,7 @@ async function processDip({dipPath}) {
         'created_at': null,
         'width': null,
         'height': null,
+        'metadata': null,
         'original': {
             'uri': null,
             'puid': null
@@ -128,6 +129,7 @@ function readFolder(rootId, mets, node, nodePhysical, parent) {
             'created_at': null,
             'width': null,
             'height': null,
+            'metadata': null,
             'original': {
                 'uri': null,
                 'puid': null
@@ -185,6 +187,7 @@ function readFile(rootId, mets, objects, relativeRootPath, node, nodePhysical, p
             'created_at': creationDate,
             'width': resolution.width,
             'height': resolution.height,
+            'metadata': null,
             'original': {
                 'uri': isOriginal ? path.join(relativeRootPath, file) : null,
                 'puid': pronomKey,

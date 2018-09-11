@@ -42,17 +42,19 @@ class Base {
         if (!this.metadata)
             this.metadata = [];
 
-        if (typeof label === 'object')
-            this.metadata = Object.entries(label).map(md => ({label: md[0], value: md[1]}));
+        if ((typeof label === 'object') && (label.hasOwnProperty('key') && label.hasOwnProperty('value')))
+            this.metadata = {label: label.label, value: label.value};
+        else if (Array.isArray(label))
+            this.metadata.push(...label);
         else
-            this.metadata.push({"label": label, "value": value});
+            this.metadata.push({label, value});
     }
 
     addRendering(rendering) {
         if (!this.rendering)
             this.rendering = rendering;
         else if (Array.isArray(this.rendering))
-            this.rendering.push(rendering);
+            this.rendering.push(...rendering);
         else
             this.rendering = [this.rendering, rendering];
     }

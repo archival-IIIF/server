@@ -23,6 +23,7 @@ async function indexCollection(collection) {
         'created_at': null,
         'width': null,
         'height': null,
+        'metadata': null,
         'original': {
             'uri': null,
             'puid': null

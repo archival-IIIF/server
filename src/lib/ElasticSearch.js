@@ -41,6 +41,16 @@ setTimeout(() => {
                             height: {
                                 type: 'short'
                             },
+                            metadata: {
+                                properties: {
+                                    label: {
+                                        type: 'keyword'
+                                    },
+                                    value: {
+                                        type: 'keyword'
+                                    }
+                                }
+                            },
                             original: {
                                 properties: {
                                     uri: {
