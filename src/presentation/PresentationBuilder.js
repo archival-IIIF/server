@@ -240,7 +240,7 @@ function addLogo(base) {
 
 function addLicense(base) {
     // TODO: Get license
-    base.setLicense('http://creativecommons.org/licenses/by-sa/3.0/');
+    // base.setLicense('http://creativecommons.org/licenses/by-sa/3.0/');
 }
 
 function addAttribution(base) {
