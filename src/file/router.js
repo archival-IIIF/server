@@ -10,6 +10,7 @@ const HttpError = require('../lib/HttpError');
 const {AccessState, hasAccess} = require('../lib/Security');
 const {getItem, getFullPath, getPronom, getAvailableType} = require('../lib/Item');
 
+const statAsync = promisify(fs.stat);
 const readFileAsync = promisify(fs.readFile);
 
 const router = new Router({prefix: '/file'});
@@ -48,8 +49,9 @@ async function getFile(ctx) {
     const pronom = getPronom(item, type);
     const name = path.basename(fullPath);
     const pronomInfo = getPronomInfo(pronom);
+    const stat = await statAsync(fullPath);
 
-    ctx.set('Content-Length', item.size);
+    ctx.set('Content-Length', stat.size);
     ctx.set('Content-Type', (pronomInfo && pronomInfo.mime) ? pronomInfo.mime : mime.contentType(name));
     ctx.set('Content-Disposition', `inline; filename="${name}"`);
 
