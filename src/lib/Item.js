@@ -2,13 +2,54 @@ const path = require('path');
 const config = require('../lib/Config');
 const client = require('../lib/ElasticSearch');
 
+function getEmptyItem() {
+    return {
+        id: null,
+        parent_id: null,
+        collection_id: null,
+        metadata_id: null,
+        type: null,
+        label: null,
+        description: null,
+        authors: [],
+        language: null,
+        size: null,
+        created_at: null,
+        width: null,
+        height: null,
+        metadata: [],
+        original: {
+            uri: null,
+            puid: null
+        },
+        access: {
+            uri: null,
+            puid: null
+        }
+    };
+}
+
 async function indexItems(items) {
     while (items.length > 0) {
-        const body = [].concat(...items.splice(0, 100).map(
-            item => [{index: {_index: 'items', _type: '_doc', _id: item.id}}, item]));
+        const body = [].concat(...items.splice(0, 100).map(item => [
+            {index: {_index: 'items', _type: '_doc', _id: item.id}},
+            item
+        ]));
         const result = await client.bulk({body});
         if (result.errors)
             throw new Error('Failed to index the items');
+    }
+}
+
+async function updateItems(items) {
+    while (items.length > 0) {
+        const body = [].concat(...items.splice(0, 100).map(item => [
+            {update: {_index: 'items', _type: '_doc', _id: item.id}},
+            {doc: item, upsert: {...getEmptyItem(), ...item}}
+        ]));
+        const result = await client.bulk({body});
+        if (result.errors)
+            throw new Error('Failed to update the items');
     }
 }
 
@@ -72,7 +113,9 @@ function getAvailableType(item) {
 }
 
 module.exports = {
+    getEmptyItem,
     indexItems,
+    updateItems,
     deleteItems,
     getItem,
     getChildItems,

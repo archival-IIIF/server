@@ -46,7 +46,7 @@ async function getCollection(item, includeContent = true) {
 
         const children = await getChildItems(item.id);
         await Promise.all(children.map(async child => {
-            if (child.type === 'folder') {
+            if (child.type === 'folder' || child.type === 'metadata') {
                 const childCollection = new Collection(`${prefixPresentationUrl}/collection/${child.id}`, child.label);
                 addFileTypeThumbnail(childCollection, null, null, 'folder');
                 collection.addCollection(childCollection);
@@ -229,6 +229,12 @@ function addMetadata(base, root) {
         const date = moment(root.created_at).format('MMMM Do YYYY');
         base.addMetadata('Original modification date', date);
     }
+
+    if (root.authors.length > 0)
+        root.authors.forEach(auth => base.addMetadata(auth.type, auth.name));
+
+    if (root.language)
+        base.addMetadata('Language', root.language);
 
     if (root.metadata)
         base.addMetadata(root.metadata);

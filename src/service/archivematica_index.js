@@ -4,7 +4,8 @@ const {promisify} = require('util');
 const moment = require('moment');
 const libxmljs = require('libxmljs');
 
-const {indexItems, deleteItems} = require('../lib/Item');
+const {runTask} = require('../lib/Task');
+const {getEmptyItem, indexItems, deleteItems} = require('../lib/Item');
 const {evictCache} = require('../lib/Cache');
 const {getTypeForPronom, pronomByExtension} = require('./util/archivematica_pronom_data');
 
@@ -45,24 +46,11 @@ async function processDip({dipPath}) {
     await cleanup(id);
 
     let items = [{
+        ...getEmptyItem(),
         'id': id,
-        'parent_id': null,
         'collection_id': id,
         'type': 'folder',
-        'label': id,
-        'size': null,
-        'created_at': null,
-        'width': null,
-        'height': null,
-        'metadata': null,
-        'original': {
-            'uri': null,
-            'puid': null
-        },
-        'access': {
-            'uri': null,
-            'puid': null
-        }
+        'label': id
     }];
 
     items = items.concat(walkTree({
@@ -70,6 +58,8 @@ async function processDip({dipPath}) {
     }));
 
     await indexItems(items);
+
+    runTask('metadata', {collectionId: id});
 }
 
 async function cleanup(id) {
@@ -120,24 +110,12 @@ function readFolder(rootId, mets, node, nodePhysical, parent) {
         const name = path.basename(originalName);
 
         return {
+            ...getEmptyItem(),
             'id': id,
             'parent_id': parent || rootId,
             'collection_id': rootId,
             'type': 'folder',
-            'label': name,
-            'size': null,
-            'created_at': null,
-            'width': null,
-            'height': null,
-            'metadata': null,
-            'original': {
-                'uri': null,
-                'puid': null
-            },
-            'access': {
-                'uri': null,
-                'puid': null
-            }
+            'label': name
         };
     }
 
@@ -178,6 +156,7 @@ function readFile(rootId, mets, objects, relativeRootPath, node, nodePhysical, p
         const extension = path.extname(file);
 
         return {
+            ...getEmptyItem(),
             'id': id,
             'parent_id': parent || rootId,
             'collection_id': rootId,
@@ -187,7 +166,6 @@ function readFile(rootId, mets, objects, relativeRootPath, node, nodePhysical, p
             'created_at': creationDate,
             'width': resolution.width,
             'height': resolution.height,
-            'metadata': null,
             'original': {
                 'uri': isOriginal ? path.join(relativeRootPath, file) : null,
                 'puid': pronomKey,
@@ -215,7 +193,7 @@ function determineResolution(objCharacteristicsExt) {
 
     const ffprobe = objCharacteristicsExt.get('./ffprobe/streams/stream[@codec_type="video"]', namespaces);
     if (ffprobe) {
-        const resolution = getResolution(ffprobe.attr('width'), ffprobe.attr('height'));
+        const resolution = getResolution(ffprobe.attr('width').value(), ffprobe.attr('height').value());
         if (resolution) return resolution;
     }
 

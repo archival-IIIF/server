@@ -11,6 +11,11 @@ const allServices = [{
     runAs: 'worker',
     getService: () => require('../service/archivematica_index')
 }, {
+    name: 'iish-metadata',
+    type: 'metadata',
+    runAs: 'worker',
+    getService: () => require('../service/iish_metadata')
+}, {
     name: 'iish-access',
     type: 'access',
     runAs: 'lib',

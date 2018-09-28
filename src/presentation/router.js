@@ -9,7 +9,7 @@ const router = new Router({prefix: '/iiif/presentation'});
 
 router.get('/collection/:id', async ctx => {
     const item = await getItem(ctx.params.id);
-    if (!item || (item.type !== 'folder'))
+    if (!item || (item.type !== 'folder' && item.type !== 'metadata'))
         throw new HttpError(404, `No collection found with id ${ctx.params.id}`);
 
     const access = await hasAccess(ctx, item, true);
@@ -24,7 +24,7 @@ router.get('/collection/:id', async ctx => {
 
 router.get('/:id/manifest', async ctx => {
     const item = await getItem(ctx.params.id);
-    if (!item || (item.type === 'folder'))
+    if (!item || (item.type === 'folder') || (item.type === 'metadata'))
         throw new HttpError(404, `No manifest found with id ${ctx.params.id}`);
 
     const access = await hasAccess(ctx, item, true);

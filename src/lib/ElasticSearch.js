@@ -16,10 +16,16 @@ setTimeout(() => {
                 mappings: {
                     '_doc': {
                         properties: {
+                            id: {
+                                type: 'keyword'
+                            },
                             parent_id: {
                                 type: 'keyword'
                             },
                             collection_id: {
+                                type: 'keyword'
+                            },
+                            metadata_id: {
                                 type: 'keyword'
                             },
                             type: {
@@ -28,6 +34,22 @@ setTimeout(() => {
                             label: {
                                 type: 'text',
                                 fielddata: true
+                            },
+                            description: {
+                                type: 'text'
+                            },
+                            authors: {
+                                properties: {
+                                    type: {
+                                        type: 'keyword'
+                                    },
+                                    name: {
+                                        type: 'text'
+                                    }
+                                }
+                            },
+                            language: {
+                                type: 'keyword'
                             },
                             size: {
                                 type: 'long'
