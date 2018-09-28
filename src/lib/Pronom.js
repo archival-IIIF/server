@@ -3,7 +3,7 @@ const path = require('path');
 const libxmljs = require('libxmljs');
 
 const cache = {};
-const druid = libxmljs.parseXml(fs.readFileSync(path.join(__dirname, 'DROID_SignatureFile_V93.xml'), 'utf8'));
+const druid = libxmljs.parseXml(fs.readFileSync(path.join(__dirname, 'DROID_SignatureFile.xml'), 'utf8'));
 
 function getPronomInfo(puid) {
     if (cache.hasOwnProperty(puid))
