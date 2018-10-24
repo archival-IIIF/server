@@ -53,12 +53,15 @@ async function getCollection(item, includeContent = true) {
             }
             else {
                 const manifest = new Manifest(`${prefixPresentationUrl}/${child.id}/manifest`, child.label);
-                const extension = child.label ? path.extname(child.label).substring(1).toLowerCase() : null;
 
                 if (child.type === 'image')
                     await addThumbnail(manifest, child);
-                else
+                else if (child.type === 'root')
+                    await addThumbnail(manifest, child); // TODO: Add manifest thumbnail for digitized
+                else {
+                    const extension = child.label ? path.extname(child.label).substring(1).toLowerCase() : null;
                     addFileTypeThumbnail(manifest, child.original.puid, extension, 'file');
+                }
 
                 collection.addManifest(manifest);
             }
@@ -86,12 +89,15 @@ async function getManifest(item, includeContent = true) {
     if (includeContent) {
         addMetadata(manifest, item);
 
-        if (item.type !== 'image') {
+        if ((item.type !== 'image') && (item.type !== 'root')) {
             const extension = item.label ? path.extname(item.label).substring(1).toLowerCase() : null;
             addFileTypeThumbnail(manifest, item.original.puid, extension, 'file');
         }
 
         switch (item.type) {
+            case 'root':
+                await addRoot(manifest, item);
+                break;
             case 'image':
                 await addImage(manifest, item);
                 await addThumbnail(manifest, item);
@@ -114,6 +120,10 @@ async function getManifest(item, includeContent = true) {
     }
 
     return manifest;
+}
+
+async function addRoot(manifes, item) {
+
 }
 
 async function addImage(manifest, item) {

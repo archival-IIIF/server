@@ -24,7 +24,7 @@ router.get('/collection/:id', async ctx => {
 
 router.get('/:id/manifest', async ctx => {
     const item = await getItem(ctx.params.id);
-    if (!item || (item.type === 'folder') || (item.type === 'metadata'))
+    if (!item || (item.type === 'folder') || (item.type === 'metadata') || item.order)
         throw new HttpError(404, `No manifest found with id ${ctx.params.id}`);
 
     const access = await hasAccess(ctx, item, true);

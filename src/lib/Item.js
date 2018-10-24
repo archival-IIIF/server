@@ -2,7 +2,7 @@ const path = require('path');
 const config = require('../lib/Config');
 const client = require('../lib/ElasticSearch');
 
-function getEmptyItem() {
+function createItem(obj) {
     return {
         id: null,
         parent_id: null,
@@ -14,6 +14,7 @@ function getEmptyItem() {
         authors: [],
         language: null,
         size: null,
+        order: null,
         created_at: null,
         width: null,
         height: null,
@@ -25,7 +26,8 @@ function getEmptyItem() {
         access: {
             uri: null,
             puid: null
-        }
+        },
+        ...obj
     };
 }
 
@@ -45,7 +47,7 @@ async function updateItems(items) {
     while (items.length > 0) {
         const body = [].concat(...items.splice(0, 100).map(item => [
             {update: {_index: 'items', _type: '_doc', _id: item.id}},
-            {doc: item, upsert: {...getEmptyItem(), ...item}}
+            {doc: item, upsert: createItem(item)}
         ]));
         const result = await client.bulk({body});
         if (result.errors)
@@ -113,7 +115,7 @@ function getAvailableType(item) {
 }
 
 module.exports = {
-    getEmptyItem,
+    createItem,
     indexItems,
     updateItems,
     deleteItems,

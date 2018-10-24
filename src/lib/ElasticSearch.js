@@ -54,6 +54,9 @@ setTimeout(() => {
                             size: {
                                 type: 'long'
                             },
+                            order: {
+                                type: 'short',
+                            },
                             created_at: {
                                 type: 'date'
                             },
@@ -92,6 +95,43 @@ setTimeout(() => {
                                         type: 'keyword'
                                     }
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    client.indices.exists({index: 'texts'}).then(exists => {
+        if (exists) return;
+
+        client.indices.create({
+            index: 'texts',
+            body: {
+                mappings: {
+                    '_doc': {
+                        properties: {
+                            id: {
+                                type: 'keyword'
+                            },
+                            item_id: {
+                                type: 'keyword'
+                            },
+                            collection_id: {
+                                type: 'keyword'
+                            },
+                            type: {
+                                type: 'keyword'
+                            },
+                            language: {
+                                type: 'keyword'
+                            },
+                            encoding: {
+                                type: 'keyword'
+                            },
+                            text: {
+                                type: 'text'
                             }
                         }
                     }

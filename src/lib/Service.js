@@ -6,10 +6,15 @@ const allServices = [{
     runAs: 'web',
     getService: () => null
 }, {
-    name: 'archivematica-index',
+    name: 'iish-archivematica-index',
     type: 'index',
     runAs: 'worker',
-    getService: () => require('../service/archivematica_index')
+    getService: () => require('../service/iish_archivematica_index')
+}, {
+    name: 'text-index',
+    type: 'text',
+    runAs: 'worker',
+    getService: () => require('../service/text_index')
 }, {
     name: 'iish-metadata',
     type: 'metadata',

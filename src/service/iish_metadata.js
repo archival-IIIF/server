@@ -1,7 +1,7 @@
 const request = require('request-promise-native');
 const EAD = require('./iish/EAD');
 const config = require('../lib/Config');
-const {getEmptyItem, updateItems} = require('../lib/Item');
+const {updateItems} = require('../lib/Item');
 
 async function processMetadata({collectionId}) {
     if (collectionId.startsWith('ARCH') || collectionId.startsWith('COLL')) {
