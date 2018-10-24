@@ -42,8 +42,9 @@ async function indexItems(items) {
 }
 
 async function updateItems(items) {
-    while (items.length > 0) {
-        const body = [].concat(...items.splice(0, 100).map(item => [
+    const uniqueItems = items.filter((item, i) => items.findIndex(otherItem => otherItem.id === item.id) === i);
+    while (uniqueItems.length > 0) {
+        const body = [].concat(...uniqueItems.splice(0, 100).map(item => [
             {update: {_index: 'items', _type: '_doc', _id: item.id}},
             {doc: item, upsert: {...getEmptyItem(), ...item}}
         ]));
@@ -54,7 +55,7 @@ async function updateItems(items) {
 }
 
 async function deleteItems(collectionId) {
-    await client.deleteByQuery({index: 'items', q: `collection_id:${collectionId}`});
+    await client.deleteByQuery({index: 'items', q: `collection_id:"${collectionId}"`});
 }
 
 async function getItem(id) {
@@ -68,18 +69,43 @@ async function getItem(id) {
 }
 
 async function getChildItems(id) {
+    return getItems(`parent_id:"${id}"`);
+}
+
+async function getRootItemByCollectionId(id) {
+    const items = await getItems(`id:"${id}" AND collection_id:"${id}"`);
+    return (items.length > 0) ? items[0] : null;
+}
+
+async function getCollectionsByMetadataId(id) {
+    const items = await getItems(`metadata_id:"${id}" AND _exists_:collection_id`);
+    return Array.from(new Set(items.map(item => item.collection_id)));
+}
+
+async function getItems(q) {
+    const items = [];
+
     try {
-        const response = await client.search({
+        let {_scroll_id, hits} = await client.search({
             index: 'items',
-            q: `parent_id:${id}`,
             sort: 'label:asc',
-            size: 1000
+            size: 1000,
+            scroll: '10s',
+            q
         });
 
-        return response.hits.hits.map(hit => hit._source);
+        while (hits && hits.hits.length) {
+            items.push(...hits.hits.map(hit => hit._source));
+
+            const scrollResults = await client.scroll({scroll_id: _scroll_id, scroll: '10s'});
+            _scroll_id = scrollResults._scroll_id;
+            hits = scrollResults.hits;
+        }
+
+        return items;
     }
     catch (err) {
-        return [];
+        return items;
     }
 }
 
@@ -119,6 +145,8 @@ module.exports = {
     deleteItems,
     getItem,
     getChildItems,
+    getRootItemByCollectionId,
+    getCollectionsByMetadataId,
     getFullPath,
     getRelativePath,
     getPronom,

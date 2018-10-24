@@ -16,6 +16,12 @@ const allServices = [{
     runAs: 'worker',
     getService: () => require('../service/iish_metadata')
 }, {
+    name: 'iish-metadata-update',
+    type: 'metadata-update',
+    runAs: 'cron',
+    cron: '58 11 * * *',
+    getService: () => require('../service/iish_metadata_update')
+}, {
     name: 'iish-access',
     type: 'access',
     runAs: 'lib',

@@ -20,7 +20,8 @@
     "redis": "2.8.0",
     "uuid": "3.3.2",
     "moment": "2.22.2",
-    "range_check": "1.4.0"
+    "range_check": "1.4.0",
+    "node-cron": "2.0.3"
   },
   "devDependencies": {
     "sharp": "0.20.8",
