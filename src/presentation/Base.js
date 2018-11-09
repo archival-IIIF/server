@@ -42,7 +42,7 @@ class Base {
         if (!this.metadata)
             this.metadata = [];
 
-        if ((typeof label === 'object') && (label.hasOwnProperty('key') && label.hasOwnProperty('value')))
+        if ((typeof label === 'object') && (label.hasOwnProperty('label') && label.hasOwnProperty('value')))
             this.metadata = {label: label.label, value: label.value};
         else if (Array.isArray(label))
             this.metadata.push(...label);
