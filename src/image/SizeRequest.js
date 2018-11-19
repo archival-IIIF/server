@@ -87,10 +87,8 @@ class SizeRequest {
     }
 
     executeImageProcessing(image) {
-        if (this.requiresImageProcessing()) {
-            image.resize(this.newSize.width, this.newSize.height);
-            if (this.bestFit) image.max();
-        }
+        if (this.requiresImageProcessing())
+            image.resize(this.newSize.width, this.newSize.height, {fit: this.bestFit ? 'inside' : 'cover'});
     }
 }
 
