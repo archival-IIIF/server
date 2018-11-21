@@ -3,7 +3,7 @@ const config = require('./Config');
 
 const client = new elasticsearch.Client({
     host: config.elasticSearchUrl,
-    apiVersion: '6.3'
+    apiVersion: '6.5'
 });
 
 setTimeout(() => {
