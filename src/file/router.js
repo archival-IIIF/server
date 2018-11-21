@@ -7,7 +7,7 @@ const {promisify} = require('util');
 const config = require('../lib/Config');
 const getPronomInfo = require('../lib/Pronom');
 const HttpError = require('../lib/HttpError');
-const {AccessState, hasAccess} = require('../lib/Security');
+const {AccessState, hasAccess, hasAdminAccess} = require('../lib/Security');
 const {getItem, getFullPath, getPronom, getAvailableType} = require('../lib/Item');
 
 const statAsync = promisify(fs.stat);
@@ -43,13 +43,16 @@ async function getFile(ctx) {
     const type = ctx.params.type || getAvailableType(item);
     const fullPath = getFullPath(item, type);
 
-    if (!fullPath || (item.type === 'image'))
+    if (!fullPath || (item.type === 'image' && !hasAdminAccess(ctx)))
         throw new HttpError(404, `No file found for id ${ctx.params.id} and type ${type}`);
 
     const pronom = getPronom(item, type);
     const name = path.basename(fullPath);
     const pronomInfo = getPronomInfo(pronom);
     const stat = await statAsync(fullPath);
+
+    if (item.resolution)
+        ctx.set('Content-Resolution', item.resolution);
 
     ctx.set('Content-Length', stat.size);
     ctx.set('Content-Type', (pronomInfo && pronomInfo.mime) ? pronomInfo.mime : mime.contentType(name));

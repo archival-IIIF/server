@@ -63,6 +63,9 @@ setTimeout(() => {
                             height: {
                                 type: 'short'
                             },
+                            resolution: {
+                                type: 'short'
+                            },
                             metadata: {
                                 properties: {
                                     label: {

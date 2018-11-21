@@ -19,7 +19,7 @@ const namespaces = {
     'mediainfo': 'https://mediaarea.net/mediainfo',
     'fits': 'http://hul.harvard.edu/ois/xml/ns/fits/fits_output',
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-    'File': 'http://ns.exiftool.ca/File/1.0/'
+    'IFD0': 'http://ns.exiftool.ca/EXIF/IFD0/1.0/',
 };
 
 async function processDip({dipPath}) {
@@ -150,6 +150,7 @@ function readFile(rootId, mets, objects, relativeRootPath, node, nodePhysical, p
         const resolution = (type === 'image' || type === 'video')
             ? determineResolution(objCharacteristicsExt)
             : {width: null, height: null};
+        const dpi = (type === 'image') ? determineDpi(objCharacteristicsExt) : null;
 
         const file = objects.find(f => f.startsWith(id));
         const isOriginal = file.endsWith(label);
@@ -166,6 +167,7 @@ function readFile(rootId, mets, objects, relativeRootPath, node, nodePhysical, p
             'created_at': creationDate,
             'width': resolution.width,
             'height': resolution.height,
+            'resolution': dpi,
             'original': {
                 'uri': isOriginal ? path.join(relativeRootPath, file) : null,
                 'puid': pronomKey,
@@ -218,13 +220,30 @@ function determineResolution(objCharacteristicsExt) {
     return {width: null, height: null};
 }
 
-function getResolution(width, height) {
+function getResolution(width, height, dpi) {
     if (width && height) {
         return {
             width: Number.parseInt(width),
-            height: Number.parseInt(height)
+            height: Number.parseInt(height),
+            dpi: dpi ? Number.parseInt(dpi) : null
         };
     }
+    return null;
+}
+
+function determineDpi(objCharacteristicsExt) {
+    const exifTool = objCharacteristicsExt.get('./rdf:RDF/rdf:Description', namespaces);
+    if (exifTool) {
+        const dpi = Number.parseInt(exifTool.get('./IFD0:XResolution', namespaces).text());
+        if (dpi) return dpi;
+    }
+
+    const fitsExifTool = objCharacteristicsExt.get('./fits:fits/fits:toolOutput/fits:tool[@name="Exiftool"]/exiftool', namespaces);
+    if (fitsExifTool) {
+        const dpi = Number.parseInt(exifTool.get('./XResolution', namespaces).text());
+        if (dpi) return dpi;
+    }
+
     return null;
 }
 
