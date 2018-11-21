@@ -27,6 +27,9 @@ class RegionRequest {
                 processingInfo.size = {width: shortestDimension, height: shortestDimension};
             }
 
+            this.width = processingInfo.size.width;
+            this.height = processingInfo.size.height;
+
             return;
         }
 
@@ -70,7 +73,7 @@ class RegionRequest {
     executeImageProcessing(image) {
         if (this.requiresImageProcessing()) {
             if (this.isSquare)
-                image.crop(strategy.entropy);
+                image.resize(this.width, this.height, {fit: 'cover', position: 'entropy'});
             else
                 image.extract({left: this.left, top: this.top, width: this.width, height: this.height});
         }

@@ -18,6 +18,7 @@ function createItem(obj) {
         created_at: null,
         width: null,
         height: null,
+        resolution: null,
         metadata: [],
         original: {
             uri: null,

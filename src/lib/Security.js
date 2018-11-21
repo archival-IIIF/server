@@ -30,6 +30,9 @@ const AccessState = Object.freeze({
 });
 
 async function hasAccess(ctx, item, acceptToken = false) {
+    if (hasAdminAccess(ctx))
+        return {state: AccessState.OPEN};
+
     if (isAuthenticationEnabled) {
         const ip = ctx.ip;
         const accessId = await getAccessIdFromRequest(ctx, acceptToken);
@@ -47,6 +50,17 @@ async function hasAccess(ctx, item, acceptToken = false) {
     }
 
     return {state: AccessState.OPEN};
+}
+
+function hasAdminAccess(ctx) {
+    if (ctx.request.body.access_token && (ctx.request.body.access_token.toLowerCase() === config.accessToken))
+        return true;
+
+    if (ctx.query.access_token && (ctx.query.access_token.toLowerCase() === config.accessToken))
+        return true;
+
+    return (ctx.headers.hasOwnProperty('authorization')
+        && (ctx.headers.authorization.replace('Bearer', '').trim().toLowerCase() === config.accessToken));
 }
 
 async function requiresAuthentication(item) {
@@ -173,6 +187,7 @@ module.exports = {
     enabledAuthServices,
     AccessState,
     hasAccess,
+    hasAdminAccess,
     requiresAuthentication,
     getAuthTexts,
     isIpInRange,
