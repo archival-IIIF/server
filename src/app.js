@@ -7,6 +7,8 @@ servicesRunning.forEach(function initService(service) {
         startWeb();
     else if (service.runAs === 'worker')
         startWorker(service);
+    else if (service.runAs === 'cron')
+        startCron(service);
 });
 
 function startWeb() {
@@ -77,4 +79,9 @@ function startWeb() {
 function startWorker(service) {
     const onTask = require('./lib/Worker.js');
     onTask(service.type, service.getService());
+}
+
+function startCron(service) {
+    const cron = require('node-cron');
+    cron.schedule(service.cron, service.getService());
 }

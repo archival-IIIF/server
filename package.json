@@ -21,6 +21,7 @@
     "uuid": "3.3.2",
     "moment": "2.22.2",
     "range_check": "1.4.0",
+    "node-cron": "2.0.3",
     "detect-character-encoding": "0.6.0"
   },
   "devDependencies": {
