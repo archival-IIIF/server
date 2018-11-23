@@ -10,6 +10,7 @@ module.exports = {
     imageServerUrl: process.env.IIIF_SERVER_IMAGE_SERVER_URL,
     imageTierSeparator: process.env.IIIF_SERVER_IMAGE_TIER_SEPARATOR,
     metadataOaiUrl: process.env.IIIF_SERVER_METADATA_OAI_URL,
+    metadataSrwUrl: process.env.IIIF_SERVER_METADATA_SRW_URL,
 
     cacheDisabled: (() => {
         const cacheDiasbled = process.env.IIIF_SERVER_CACHE_DISABLED;

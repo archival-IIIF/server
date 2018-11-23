@@ -1,7 +1,12 @@
+const libxmljs = require('libxmljs');
 const request = require('request-promise-native');
 const EAD = require('./iish/EAD');
 const config = require('../lib/Config');
 const {updateItems, getCollectionsByMetadataId} = require('../lib/Item');
+
+const ns = {
+    'marc': 'http://www.loc.gov/MARC21/slim'
+};
 
 async function processMetadata({oaiIdentifier, collectionId}) {
     if (!oaiIdentifier && collectionId) {
@@ -10,8 +15,16 @@ async function processMetadata({oaiIdentifier, collectionId}) {
             oaiIdentifier = `oai:socialhistoryservices.org:10622/${rootId}`;
         }
         else {
-            // TODO: Find MARC record using a SRU call:
-            // ?query=marc.852\$p=\"${collectionId}\"&version=1.1&operation=searchRetrieve&recordSchema=info:srw/schema/1/marcxml-v1.1&maximumRecords=1&startRecord=1&resultSetTTL=0&recordPacking=xml
+            const response = await request({
+                uri: config.metadataSrwUrl, strictSSL: false, qs: {
+                    operation: 'searchRetrieve',
+                    query: `marc.852$p="${collectionId}"`
+                }
+            });
+
+            const srwResults = libxmljs.parseXml(response);
+            const marcId = srwResults.get('//marc:controlfield[@tag="001"]', ns).text();
+            oaiIdentifier = `oai:socialhistoryservices.org:${marcId}`;
         }
     }
 
