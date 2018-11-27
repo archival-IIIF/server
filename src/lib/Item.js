@@ -19,6 +19,7 @@ function createItem(obj) {
         width: null,
         height: null,
         resolution: null,
+        duration: null,
         metadata: [],
         original: {
             uri: null,

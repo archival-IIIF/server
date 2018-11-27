@@ -1,12 +1,11 @@
 [
   "http://iiif.io/api/image/2/level2.json",
   {
-    "supports": [
-      "canonicalLinkHeader",
-      "profileLinkHeader",
-      "mirroring",
-      "rotationArbitrary",
-      "regionSquare"
+    "formats": [
+      "jpg",
+      "png",
+      "gif",
+      "webp"
     ],
     "qualities": [
       "default",
@@ -14,11 +13,19 @@
       "gray",
       "bitonal"
     ],
-    "formats": [
-      "jpg",
-      "png",
-      "gif",
-      "webp"
+    "supports": [
+      "cors",
+      "mirroring",
+      "regionByPct",
+      "regionByPx",
+      "regionSquare",
+      "rotationArbitrary",
+      "sizeByWhListed",
+      "sizeByForcedWh",
+      "sizeByH",
+      "sizeByPct",
+      "sizeByW",
+      "sizeByWh"
     ]
   }
 ]

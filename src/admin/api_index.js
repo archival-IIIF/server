@@ -1,6 +1,6 @@
 const HttpError = require('../lib/HttpError');
 const {evictCache} = require('../lib/Cache');
-const {indexItems, deleteItems} = require('../lib/Item');
+const {createItem, indexItems, deleteItems} = require('../lib/Item');
 
 async function indexCollection(collection) {
     if (!collection.hasOwnProperty('id'))
@@ -13,27 +13,13 @@ async function indexCollection(collection) {
     await evictCache('collection', collection.id);
     await evictCache('manifest', collection.id);
 
-    const items = [{
+    const items = [createItem({
         'id': collection.id,
-        'parent_id': null,
         'collection_id': collection.id,
         'type': 'folder',
         'label': collection.name,
-        'size': null,
-        'created_at': null,
-        'width': null,
-        'height': null,
-        'metadata': null,
-        'original': {
-            'uri': null,
-            'puid': null
-        },
-        'access': {
-            'uri': null,
-            'puid': null
-        }
-    }];
-    items.concat(...collection.items);
+    })];
+    items.concat(...collection.items.map(item => createItem(item)));
 
     await indexItems(items);
 }

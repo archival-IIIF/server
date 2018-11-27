@@ -1,9 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 const {promisify} = require('util');
-const detectCharacterEncoding = require('detect-character-encoding');
+const iconv = require('iconv-lite');
+const jschardet = require('jschardet');
 
-const {createText, indexTexts, deleteTexts, readAlto} = require('../lib/Text');
+const {createText, indexTexts, deleteTexts, readAlto, getFullPath} = require('../lib/Text');
 
 const readFileAsync = promisify(fs.readFile);
 
@@ -11,14 +12,14 @@ async function processText({collectionId, items}) {
     await deleteTexts(collectionId);
 
     const textItems = await Promise.all(items.map(async item => {
-        const [text, encoding] = await getTextFromFile(item.uri);
+        const text = await getTextFromFile(item);
         return createText({
             id: item.id,
             item_id: item.itemId,
             collection_id: collectionId,
             type: item.type,
             language: item.language,
-            encoding,
+            uri: item.uri,
             text
         });
     }));
@@ -26,30 +27,26 @@ async function processText({collectionId, items}) {
     await indexTexts(textItems);
 }
 
-async function getTextFromFile(uri) {
-    const extension = path.extname(uri);
+async function getTextFromFile(item) {
+    const extension = path.extname(item.uri);
     switch (extension) {
         case 'xml':
-            return await getAltoText(uri);
+            return await getAltoText(item);
         case 'txt':
         default:
-            return await getPlainText(uri);
+            return await getPlainText(item);
     }
 }
 
-async function getPlainText(uri) {
-    const textBuffer = await readFileAsync(uri);
-    const encoding = detectCharacterEncoding(textBuffer)[0].encoding;
-    const text = await readFileAsync(uri, encoding);
-
-    return [text, encoding];
+async function getPlainText(item) {
+    const textBuffer = await readFileAsync(getFullPath(item));
+    const encodingDetection = jschardet.detect(textBuffer);
+    return iconv.decode(textBuffer, encodingDetection.encoding);
 }
 
-async function getAltoText(uri) {
-    const altoWords = await readAlto(uri);
-    const text = altoWords.map(altoWord => altoWord.word).join(' ');
-
-    return [text, 'utf-8'];
+async function getAltoText(item) {
+    const altoWords = await readAlto(getFullPath(item));
+    return altoWords.map(altoWord => altoWord.word).join(' ');
 }
 
 module.exports = processText;

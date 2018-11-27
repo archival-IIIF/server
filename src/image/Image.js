@@ -1,4 +1,4 @@
-const Base = require('../presentation/Base');
+const Base = require('../presentation/elem/v2/Base');
 
 class Image extends Base {
     constructor(id, width, height) {

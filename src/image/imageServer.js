@@ -1,6 +1,6 @@
 const Image = require('./Image');
 const config = require('../lib/Config');
-const AuthService = require('../presentation/AuthService');
+const AuthService = require('../presentation/elem/v2/AuthService');
 const {enabledAuthServices, requiresAuthentication, getAuthTexts} = require('../lib/Security');
 const SizeRequest = require('./SizeRequest');
 const serveImage = config.imageServerUrl ? require('./external') : require('./internal');

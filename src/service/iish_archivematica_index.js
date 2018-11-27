@@ -19,7 +19,7 @@ const ns = {
     'mediainfo': 'https://mediaarea.net/mediainfo',
     'fits': 'http://hul.harvard.edu/ois/xml/ns/fits/fits_output',
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-    'File': 'http://ns.exiftool.ca/File/1.0/'
+    'IFD0': 'http://ns.exiftool.ca/EXIF/IFD0/1.0/',
 };
 
 async function processDip({dipPath}) {
@@ -45,7 +45,7 @@ async function processDip({dipPath}) {
         mets,
         objects,
         relativeRootPath,
-        curNode: rootLogical,
+        curNode: rootLogical || rootPhysical,
         curNodePhysical: rootPhysical,
         structureIISH: rootStructureIISH
     });
@@ -67,7 +67,7 @@ function getRootItem(mets) {
     return createItem({
         'id': id,
         'collection_id': id,
-        'type': id.contains('.dig') ? 'folder' : 'root', // TODO: Find a better way to separate between digital born and digitized content
+        'type': id.indexOf('.dig') >= 0 ? 'folder' : 'root', // TODO: Find a better way to separate between digital born and digitized content
         'label': id
     });
 }
@@ -89,11 +89,11 @@ function walkTree({id, mets, objects, relativeRootPath, curNode, curNodePhysical
         const nodePhysical = curNodePhysical.get(`./mets:div[@LABEL="${label}"]`, ns);
 
         if (node.attr('TYPE').value() === 'Directory') {
-            const folderInfo = readFolder(id, mets, node, nodePhysical, parent);
+            const folderInfo = !structureIISH ? readFolder(id, mets, node, nodePhysical, parent) : null;
             if (folderInfo)
                 items.push(folderInfo);
 
-            if (folderInfo || structureIISH || (!parent && (label === 'preservation'))) {
+            if (folderInfo || (structureIISH && !parent)) {
                 const [childItems, childTexts] = walkTree({
                     id,
                     mets,
@@ -174,6 +174,8 @@ function readFile(rootId, mets, objects, relativeRootPath, node, nodePhysical, s
         const resolution = (type === 'image' || type === 'video')
             ? determineResolution(objCharacteristicsExt)
             : {width: null, height: null};
+        const dpi = (type === 'image') ? determineDpi(objCharacteristicsExt) : null;
+        const duration = (type === 'video' || type === 'audio') ? determineDuration(objCharacteristicsExt) : null;
 
         const file = objects.find(f => f.startsWith(internalId));
         const isOriginal = file.endsWith(label);
@@ -187,7 +189,7 @@ function readFile(rootId, mets, objects, relativeRootPath, node, nodePhysical, s
 
         return createItem({
             'id': id,
-            'parent_id': parent || rootId,
+            'parent_id': (parent && (parent !== 'preservation')) ? parent : rootId,
             'collection_id': rootId,
             'type': type,
             'label': name,
@@ -196,6 +198,8 @@ function readFile(rootId, mets, objects, relativeRootPath, node, nodePhysical, s
             'created_at': creationDate,
             'width': resolution.width,
             'height': resolution.height,
+            'resolution': dpi,
+            'duration': duration,
             'original': {
                 'uri': isOriginal ? path.join(relativeRootPath, file) : null,
                 'puid': pronomKey,
@@ -220,27 +224,28 @@ function readText(rootId, mets, objects, relativeRootPath, node, nodePhysical, s
     if (premisObj) {
         const id = getIdentifier(premisObj);
 
-        const itemId = structureIISH.find(`./mets:div[@TYPE="page"]/mets:fptr[@FILEID="${fileId}"]/../mets:fptr`, ns).find(fptrElem => {
+        const fptrs = structureIISH.find(`./mets:div[@TYPE="page"]/mets:fptr[@FILEID="${fileId}"]/../mets:fptr`, ns);
+        const fptr = fptrs.find(fptrElem => {
             const itemFileId = fptrElem.attr('FILEID').value();
+            const parentFolderDiv = mets.get(`//mets:structMap[@TYPE="physical"]//mets:fptr[@FILEID="${itemFileId}"]/../..`, ns);
+            return (parentFolderDiv.attr('LABEL').value() === 'preservation');
+        });
+
+        if (fptr) {
+            const itemFileId = fptr.attr('FILEID').value();
             const itemPremisObj = findPremisObj(mets, itemFileId);
             const itemId = getIdentifier(itemPremisObj);
 
-            const parentFolderDiv = mets.find(`//mets:structMap[@TYPE="physical"]//mets:fptr[@FILEID="${itemFileId}"]/../..`, ns);
-            if (parentFolderDiv.attr('LABEL').value() === 'preservation')
-                return itemId;
+            let type = parent;
+            let language = null;
+            if (type.startsWith('translation_')) {
+                type = 'translation';
+                language = type.split('_')[1];
+            }
 
-            return null;
-        });
-
-        let type = parent;
-        let language = null;
-        if (type.startsWith('translation_')) {
-            type = 'translation';
-            language = type.split('_')[1];
+            if (itemId)
+                return {id, itemId, type, language, uri: path.join(relativeRootPath, file)};
         }
-
-        if (itemId)
-            return {id, itemId, type, language, uri: path.join(relativeRootPath, file)};
     }
 
     return null;
@@ -257,16 +262,16 @@ function findPremisObj(mets, fileId) {
 }
 
 function getIdentifier(premisObj) {
-    const hdlObj = premisObj.get('./premisv3:objectIdentifier/premisv3:objectIdentifierType[text()="HDL"]', ns);
-    const uuidObj = premisObj.get('./premisv3:objectIdentifier/premisv3:objectIdentifierType[text()="UUID"]', ns);
+    const hdlObj = premisObj.get('./premis:objectIdentifier/premis:objectIdentifierType[text()="HDL"]', ns);
+    const uuidObj = premisObj.get('./premis:objectIdentifier/premis:objectIdentifierType[text()="UUID"]', ns);
 
     if (hdlObj) {
-        const hdl = hdlObj.get('./../premisv3:objectIdentifierValue', ns).text();
+        const hdl = hdlObj.get('./../premis:objectIdentifierValue', ns).text();
         return hdl.split('/')[1];
     }
 
     if (uuidObj)
-        return uuidObj.get('./../premisv3:objectIdentifierValue', ns).text();
+        return uuidObj.get('./../premis:objectIdentifierValue', ns).text();
 
     return null;
 }
@@ -315,6 +320,40 @@ function getResolution(width, height) {
             height: Number.parseInt(height)
         };
     }
+    return null;
+}
+
+function determineDpi(objCharacteristicsExt) {
+    const exifTool = objCharacteristicsExt.get('./rdf:RDF/rdf:Description', ns);
+    if (exifTool) {
+        const dpi = Number.parseInt(exifTool.get('./IFD0:XResolution', ns).text());
+        if (dpi) return dpi;
+    }
+
+    const fitsExifTool = objCharacteristicsExt.get('./fits:fits/fits:toolOutput/fits:tool[@name="Exiftool"]/exiftool', ns);
+    if (fitsExifTool) {
+        const dpi = Number.parseInt(exifTool.get('./XResolution', ns).text());
+        if (dpi) return dpi;
+    }
+
+    return null;
+}
+
+function determineDuration(objCharacteristicsExt) {
+    const mediaInfo = objCharacteristicsExt.get('./mediainfo:MediaInfo/mediainfo:media/mediainfo:track[@type="General"]', ns);
+    if (mediaInfo) {
+        const duration = Number.parseFloat(mediaInfo.get('./mediainfo:Duration', ns).text());
+        if (duration) return duration;
+    }
+
+    let duration = null;
+    objCharacteristicsExt.find('./ffprobe/streams/stream', ns).forEach(stream => {
+        const curDuration = stream.attr('duration') ? Number.parseFloat(stream.attr('duration').value()) : null;
+        if (curDuration && (duration === null || curDuration > duration))
+            duration = curDuration;
+    });
+    if (duration) return duration;
+
     return null;
 }
 

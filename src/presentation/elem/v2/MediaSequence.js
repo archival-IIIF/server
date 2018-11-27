@@ -3,11 +3,14 @@ const Base = require('./Base');
 class MediaSequence extends Base {
     constructor(id, element) {
         super(id, 'ixif:MediaSequence', null);
-        if (element) this.setElement(element);
+        if (element) this.addElement(element);
     }
 
-    setElement(element) {
-        this.elements = [element];
+    addElement(element) {
+        if (!this.elements)
+            this.elements = [];
+
+        this.elements.push(element);
     }
 }
 

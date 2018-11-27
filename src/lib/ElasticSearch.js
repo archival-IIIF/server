@@ -69,6 +69,9 @@ setTimeout(() => {
                             resolution: {
                                 type: 'short'
                             },
+                            duration: {
+                                type: 'short'
+                            },
                             metadata: {
                                 properties: {
                                     label: {
@@ -130,7 +133,7 @@ setTimeout(() => {
                             language: {
                                 type: 'keyword'
                             },
-                            encoding: {
+                            uri: {
                                 type: 'keyword'
                             },
                             text: {

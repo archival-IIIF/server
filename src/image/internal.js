@@ -28,7 +28,7 @@ async function serveImage(item, {region, size, rotation, quality, format}) {
 
         const processedImage = await imageProcessing.process();
         result.image = processedImage.data;
-        result.contentLength = processedImage.size;
+        result.contentLength = processedImage.info.size;
         result.contentType = getContentType(format);
     }
     catch (err) {
