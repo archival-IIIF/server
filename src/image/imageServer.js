@@ -1,4 +1,5 @@
 const Image = require('./Image');
+const logger = require('../lib/Logger');
 const config = require('../lib/Config');
 const AuthService = require('../presentation/elem/v2/AuthService');
 const {enabledAuthServices, requiresAuthentication, getAuthTexts} = require('../lib/Security');
@@ -25,6 +26,8 @@ async function getInfo(item, tier) {
 
 async function getImage(item, tier, imageOptions) {
     if (typeof tier === 'object') {
+        logger.debug(`Validate the size requested with the maximum size of tier ${tier}`);
+
         const maxSize = Image.computeMaxSize(tier, item.width, item.height);
 
         const sizeRequest = new SizeRequest(imageOptions.size);

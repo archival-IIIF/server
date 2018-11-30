@@ -17,7 +17,7 @@ function startWeb() {
     const json = require('koa-json');
     const serve = require('koa-static-server');
     const bodyParser = require('koa-bodyparser');
-    const range = require('koa-range');
+    const path = require('path');
 
     const {fileIconsPath} = require('./lib/FileIcon');
 
@@ -43,13 +43,18 @@ function startWeb() {
         try {
             await next();
         }
-        catch (e) {
-            ctx.status = e.status || 500;
-            ctx.body = (e.status && e.status < 500) ? e.message : 'Internal Server Error';
+        catch (err) {
+            ctx.status = err.status || 500;
+            ctx.body = (err.status && err.status < 500) ? err.message : 'Internal Server Error';
 
-            if (!e.status || e.status >= 500)
-                throw e;
+            if (!err.status || err.status >= 500)
+                ctx.app.emit('error', err, ctx);
         }
+    });
+
+    app.on('error', (err, ctx) => {
+        if (err.code === 'EPIPE' || err.code === 'ECONNRESET') return;
+        logger.error(`${err.status || 500} - ${ctx.method} - ${ctx.originalUrl} - ${err.message}`, err);
     });
 
     if (config.env !== 'production')
@@ -57,7 +62,6 @@ function startWeb() {
 
     app.use(json({pretty: false, param: 'pretty'}));
     app.use(bodyParser());
-    app.use(range);
 
     app.use(serve({rootDir: fileIconsPath, rootPath: '/file-icon'}));
     app.use(serve({rootDir: config.universalViewerPath, rootPath: '/universalviewer', index: 'uv.html'}));
@@ -74,14 +78,17 @@ function startWeb() {
     app.keys = [config.secret];
 
     app.listen(config.port);
+    logger.info('Started the web service');
 }
 
 function startWorker(service) {
     const onTask = require('./lib/Worker.js');
     onTask(service.type, service.getService());
+    logger.info(`Worker initialized for ${service.name}`);
 }
 
 function startCron(service) {
     const cron = require('node-cron');
     cron.schedule(service.cron, service.getService());
+    logger.info(`Cron ${service.cron} scheduled for ${service.name}`);
 }

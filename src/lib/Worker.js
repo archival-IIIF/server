@@ -5,7 +5,7 @@ const {promisify} = require('util');
 const saddAsync = promisify(client.sadd).bind(client);
 
 function onTask(type, process, blockingClient = createNewClient()) {
-    logger.info(`Waiting for a new task with type '${type}'`);
+    logger.debug(`Waiting for a new task with type '${type}'`);
 
     let identifier;
     blockingClient.blpop('tasks:' + type, 0, async (err, msg) => {
@@ -19,18 +19,18 @@ function onTask(type, process, blockingClient = createNewClient()) {
         try {
             const task = JSON.parse(msg[1]);
             identifier = task.identifier;
-            logger.info(`Received a new task with type '${type}' and identifier '${identifier}'`);
+            logger.debug(`Received a new task with type '${type}' and identifier '${identifier}'`);
 
             const noAdded = await saddAsync('tasks:' + type + ':progress', identifier);
             if (noAdded !== 1) {
-                logger.info(`Task with type '${type}' and identifier '${identifier}' is already added to the progress list`);
+                logger.debug(`Task with type '${type}' and identifier '${identifier}' is already added to the progress list`);
                 return;
             }
 
-            logger.info(`Start progress on task with type '${type}' and identifier '${identifier}'`);
+            logger.debug(`Start progress on task with type '${type}' and identifier '${identifier}'`);
             const data = task.data;
             const result = await process(data);
-            logger.info(`Finished progress on task with type '${type}' and identifier '${identifier}'`);
+            logger.debug(`Finished progress on task with type '${type}' and identifier '${identifier}'`);
 
             client.multi()
                 .srem('tasks:' + type + ':progress', identifier)

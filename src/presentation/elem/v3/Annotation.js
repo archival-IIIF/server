@@ -6,6 +6,10 @@ class Annotation extends Base {
         this.motivation = motivation;
         this.body = resource;
     }
+
+    setCanvas(canvas) {
+        this.target = canvas.id;
+    }
 }
 
 module.exports = Annotation;

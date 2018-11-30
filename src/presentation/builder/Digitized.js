@@ -60,9 +60,11 @@ async function addContent(manifest, parentItem) {
 
         canvas.setItems(annoPage);
         annoPage.setItems(annotation);
+        annotation.setCanvas(canvas);
 
-        canvas.setLabel({'en': [`Page ${page}`]});
         addThumbnail(canvas, item);
+        if (items.length > 1)
+            canvas.setLabel({'en': [`Page ${page}`]});
 
         return canvas;
     }));
@@ -110,8 +112,10 @@ function getImageResource(item, size = 'full') {
 }
 
 function addThumbnail(base, item) {
-    const resource = getImageResource(item, '!100,100');
-    base.setThumbnail(resource);
+    if (item.type === 'image') {
+        const resource = getImageResource(item, '!100,100');
+        base.setThumbnail(resource);
+    }
 }
 
 function getType(item) {

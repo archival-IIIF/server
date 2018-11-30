@@ -12,7 +12,7 @@ function runTask(type, task, identifier = uuid()) {
         return;
     }
 
-    logger.info(`Sending a new task with type '${type}' and identifier '${identifier}'`);
+    logger.debug(`Sending a new task with type '${type}' and identifier '${identifier}'`);
     client.rpush(getChannel(type), JSON.stringify({identifier: identifier, data: task}));
 }
 
@@ -34,7 +34,7 @@ function runTaskWithResponse(type, task, identifier = uuid()) {
                 subscriber.unsubscribe();
                 subscriber.end(true);
 
-                logger.info(`Task with type '${type}' and identifier '${identifier}' has finished`);
+                logger.debug(`Task with type '${type}' and identifier '${identifier}' has finished`);
                 resolve(msg.data);
             }
         });

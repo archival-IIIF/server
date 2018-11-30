@@ -262,7 +262,7 @@ function findPremisObj(mets, fileId) {
 }
 
 function getIdentifier(premisObj) {
-    const hdlObj = premisObj.get('./premis:objectIdentifier/premis:objectIdentifierType[text()="HDL"]', ns);
+    const hdlObj = premisObj.get('./premis:objectIdentifier/premis:objectIdentifierType[text()="hdl"]', ns);
     const uuidObj = premisObj.get('./premis:objectIdentifier/premis:objectIdentifierType[text()="UUID"]', ns);
 
     if (hdlObj) {
