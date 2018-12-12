@@ -49,7 +49,7 @@ class Base {
         if (Array.isArray(label))
             label.forEach(md => this.addMetadata(md));
         else if ((typeof label === 'object') && (label.hasOwnProperty('label') && label.hasOwnProperty('value')))
-            this.metadata = {label: label.label, value: label.value};
+            this.metadata.push({label: label.label, value: label.value});
         else
             this.metadata.push({label, value});
     }
