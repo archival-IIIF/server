@@ -10,6 +10,7 @@ services:
       - additional:/data/additional
       - collections:/data/collections
       - app-conf:/opt/iiif-server/config.yaml
+      - universal-viewer-conf:/opt/iiif-server/universalviewer-config.json
     networks:
       - front-tier
       - back-tier
@@ -39,6 +40,7 @@ services:
 
 volumes:
   app-conf:
+  universal-viewer-conf:
   loris-conf:
   additional:
   collections:

@@ -36,6 +36,11 @@ const allServices = [{
     type: 'auth-texts',
     runAs: 'lib',
     getService: () => require('../service/iish_auth_texts')
+}, {
+    name: 'iish-iiif-metadata',
+    type: 'iiif-metadata',
+    runAs: 'lib',
+    getService: () => require('../service/iish_iiif_metadata')
 }];
 
 let servicesRunning = config.services.map(name => {

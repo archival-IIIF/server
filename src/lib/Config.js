@@ -7,14 +7,15 @@ module.exports = {
     attribution: process.env.IIIF_SERVER_ATTRIBUTION,
     universalViewerPath: process.env.IIIF_SERVER_UNIVERSAL_VIEWER_PATH,
     archivalViewerPath: process.env.IIIF_SERVER_ARCHIVAL_VIEWER_PATH,
+    universalViewerConfigPath: process.env.IIIF_SERVER_UNIVERSAL_VIEWER_CONFIG_PATH,
     imageServerUrl: process.env.IIIF_SERVER_IMAGE_SERVER_URL,
     imageTierSeparator: process.env.IIIF_SERVER_IMAGE_TIER_SEPARATOR,
     metadataOaiUrl: process.env.IIIF_SERVER_METADATA_OAI_URL,
     metadataSrwUrl: process.env.IIIF_SERVER_METADATA_SRW_URL,
 
     cacheDisabled: (() => {
-        const cacheDiasbled = process.env.IIIF_SERVER_CACHE_DISABLED;
-        return (cacheDiasbled && (cacheDiasbled.toLowerCase() === 'true' || cacheDiasbled === '1'));
+        const cacheDisabled = process.env.IIIF_SERVER_CACHE_DISABLED;
+        return (cacheDisabled && (cacheDisabled.toLowerCase() === 'true' || cacheDisabled === '1'));
     })(),
 
     services: (() => {

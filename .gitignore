@@ -1,6 +1,7 @@
 /.idea
 /node_modules
 .env
+universalviewer-config.json
 *.iml
 config.yml
 config.yaml

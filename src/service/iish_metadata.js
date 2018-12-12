@@ -1,12 +1,11 @@
 const libxmljs = require('libxmljs');
 const request = require('request-promise-native');
-const EAD = require('./iish/EAD');
+
 const config = require('../lib/Config');
 const {updateItems, getCollectionsByMetadataId} = require('../lib/Item');
 
-const ns = {
-    'marc': 'http://www.loc.gov/MARC21/slim'
-};
+const EAD = require('./iish/EAD');
+const MarcXML = require('./iish/MARCXML');
 
 async function processMetadata({oaiIdentifier, collectionId}) {
     if (!oaiIdentifier && collectionId) {
@@ -23,7 +22,9 @@ async function processMetadata({oaiIdentifier, collectionId}) {
             });
 
             const srwResults = libxmljs.parseXml(response);
-            const marcId = srwResults.get('//marc:controlfield[@tag="001"]', ns).text();
+            const marcId = srwResults.get('//marc:controlfield[@tag="001"]', {
+                'marc': 'http://www.loc.gov/MARC21/slim'
+            }).text();
             oaiIdentifier = `oai:socialhistoryservices.org:${marcId}`;
         }
     }
@@ -69,7 +70,10 @@ function updateEAD(xml, oaiIdentifier, collectionId) {
         const item = {
             id: (md.unitId === rootId) ? rootId : `${rootId}.${md.unitId}`,
             metadata_id: oaiIdentifier,
-            label: md.title
+            label: md.title,
+            iish: {
+                metadataHdl: '10622/' + collectionId
+            }
         };
 
         if (prevUnitId)
@@ -81,13 +85,17 @@ function updateEAD(xml, oaiIdentifier, collectionId) {
         if (md.authors)
             item.authors = md.authors;
 
-        if (md.language)
-            item.language = md.language;
+        if (md.dates)
+            item.dates = md.dates;
+
+        if (md.extent)
+            item.physical = md.extent;
 
         if (md.unitId === unitId)
-            item.iish = {access};
+            item.iish.access = access;
         else
             item.type = 'metadata';
+
         prevUnitId = item.id;
 
         return item;
@@ -95,7 +103,34 @@ function updateEAD(xml, oaiIdentifier, collectionId) {
 }
 
 function updateMarc(xml, oaiIdentifier, collectionId) {
-    return [];
+    const access = MarcXML.getAccess(collectionId, xml);
+    const metadata = MarcXML.getMetadata(collectionId, xml);
+
+    return metadata.map(md => {
+        const item = {
+            id: collectionId,
+            metadata_id: oaiIdentifier,
+            label: md.title,
+            iish: {
+                access,
+                metadataHdl: md.metadataHdl
+            }
+        };
+
+        if (md.description)
+            item.description = md.description;
+
+        if (md.authors)
+            item.authors = md.authors;
+
+        if (md.dates)
+            item.dates = md.dates;
+
+        if (md.physical)
+            item.physical = md.physical;
+
+        return item;
+    });
 }
 
 module.exports = processMetadata;

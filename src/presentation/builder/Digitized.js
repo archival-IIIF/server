@@ -1,5 +1,8 @@
+const config = require('../../lib/Config');
 const getPronomInfo = require('../../lib/Pronom');
 const {getChildItems} = require('../../lib/Item');
+const {runTaskWithResponse} = require('../../lib/Task');
+
 const {getProfile} = require('../../image/imageServer');
 
 const Manifest = require('../elem/v3/Manifest');
@@ -9,16 +12,19 @@ const Annotation = require('../elem/v3/Annotation');
 const Resource = require('../elem/v3/Resource');
 const Service = require('../elem/v3/Service');
 
-const {prefixImageUrl, prefixPresentationUrl, prefixFileUrl, addLicense, addAttribution} = require('./Util');
+const prefixPresentationUrl = `${config.baseUrl}/iiif/presentation`;
+const prefixImageUrl = `${config.baseUrl}/iiif/image`;
+const prefixFileUrl = `${config.baseUrl}/file`;
 
-async function getManifest(item) {
+async function getManifest(item, builder) {
     const manifest = new Manifest(`${prefixPresentationUrl}/${item.id}/manifest`, item.label);
 
-    manifest.setContext();
-    addLogo(manifest);
-    addLicense(manifest);
-    addAttribution(manifest);
-    addMetadata(manifest, item);
+    addDefaults(manifest);
+
+    await addMetadata(manifest, item);
+
+    if (item.description)
+        manifest.setSummary(item.description);
 
     if (item.parent_id)
         manifest.setParent(`${prefixPresentationUrl}/collection/${item.parent_id}`);
@@ -28,7 +34,7 @@ async function getManifest(item) {
     return manifest;
 }
 
-async function getReference(item) {
+async function getReference(item, builder) {
     const manifest = new Manifest(`${prefixPresentationUrl}/${item.id}/manifest`, item.label);
 
     const items = await getItems(item);
@@ -62,7 +68,9 @@ async function addContent(manifest, parentItem) {
         annoPage.setItems(annotation);
         annotation.setCanvas(canvas);
 
+        await addMetadata(canvas, item);
         addThumbnail(canvas, item);
+
         if (items.length > 1)
             canvas.setLabel({'en': [`Page ${page}`]});
 
@@ -72,19 +80,27 @@ async function addContent(manifest, parentItem) {
     manifest.setItems(manifestItems);
 }
 
-function addMetadata(base, root) {
-    if (root.authors.length > 0)
-        root.authors.forEach(auth => base.addMetadata(auth.type, auth.name));
+async function addMetadata(base, root) {
+    if (root.authors.length > 0) {
+        const authors = root.authors.reduce((acc, author) => {
+            acc[author.type] ? acc[author.type].push(author.name) : acc[author.type] = [author.name];
+            return acc;
+        }, {});
+        Object.keys(authors).forEach(type => base.addMetadata(type, authors[type]));
+    }
 
-    if (root.language)
-        base.addMetadata('Language', root.language);
+    if (root.dates.length > 0)
+        base.addMetadata('Dates', root.dates);
 
-    if (root.metadata)
+    if (root.physical)
+        base.addMetadata('Physical description', root.physical);
+
+    if (root.metadata.length > 0)
         base.addMetadata(root.metadata);
-}
 
-function addLogo(base) {
-    base.setLogo(new Resource(`${prefixFileUrl}/logo`, 'Image'));
+    const md = await runTaskWithResponse('iiif-metadata', {item: root});
+    if (md && md.length > 0)
+        base.addMetadata(md);
 }
 
 function getResource(item) {
@@ -116,6 +132,13 @@ function addThumbnail(base, item) {
         const resource = getImageResource(item, '!100,100');
         base.setThumbnail(resource);
     }
+}
+
+function addDefaults(manifest) {
+    manifest.setContext();
+    manifest.setLogo(new Resource(`${prefixFileUrl}/logo`, 'Image'));
+    if (config.attribution)
+        manifest.setAttribution(config.attribution);
 }
 
 function getType(item) {

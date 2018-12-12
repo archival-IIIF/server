@@ -1,19 +1,17 @@
 const crypto = require('crypto');
 const libxmljs = require('libxmljs');
 
-const namespaces = {
-    'ead': 'urn:isbn:1-931666-22-9'
-};
+const ns = {'ead': 'urn:isbn:1-931666-22-9'};
 
 function getMetadata(collectionId, eadXml) {
     const [id, unitId] = collectionId.split('.');
     const ead = libxmljs.parseXml(eadXml);
 
-    const archdesc = ead.get('//ead:ead/ead:archdesc', namespaces);
+    const archdesc = ead.get('//ead:ead/ead:archdesc', ns);
 
     return [
         getMetadataFromLevel(archdesc),
-        ...walkThroughLevels(archdesc.get(`.//ead:unitid[text()="${unitId}"]/../..`, namespaces))
+        ...walkThroughLevels(archdesc.get(`.//ead:unitid[text()="${unitId}"]/../..`, ns))
     ];
 }
 
@@ -22,14 +20,14 @@ function getAccess(collectionId, eadXml) {
     const ead = libxmljs.parseXml(eadXml);
 
     const accessRestrict = ead
-        .get('//ead:ead/ead:archdesc/ead:descgrp[@type="access_and_use"]/ead:accessrestrict', namespaces);
+        .get('//ead:ead/ead:archdesc/ead:descgrp[@type="access_and_use"]/ead:accessrestrict', ns);
     const accessType = accessRestrict.attr('type');
 
-    let restriction = accessRestrict.get('./ead:p', namespaces).text().toLowerCase().trim();
+    let restriction = accessRestrict.get('./ead:p', ns).text().toLowerCase().trim();
     if (accessType && (accessType.value() === 'part')) {
         const itemAccessRestrict = ead
             .get(`//ead:ead/ead:archdesc//ead:unitid[text()="${unitId}"]/../../ead:accessrestrict`,
-                namespaces);
+                ns);
 
         if (itemAccessRestrict)
             restriction = itemAccessRestrict.attr('type').value();
@@ -43,7 +41,7 @@ function getAccess(collectionId, eadXml) {
             return 'closed';
         case 'beperkt':
         case 'restricted':
-            return 'restricted';
+            return 'eadRestricted';
         case 'date':
             return 'date';
         default:
@@ -55,7 +53,7 @@ function walkThroughLevels(level) {
     if (!level)
         return [];
 
-    const parent = level.get('.//preceding-sibling::ead:did/..', namespaces);
+    const parent = level.get('.//preceding-sibling::ead:did/..', ns);
     if (parent.name() !== level.name())
         return [
             ...walkThroughLevels(parent),
@@ -71,32 +69,29 @@ function getMetadataFromLevel(level) {
     if (!level)
         return metadata;
 
-    metadata['title'] = level.get('./ead:did/ead:unittitle', namespaces).text().trim();
+    metadata['title'] = level.get('./ead:did/ead:unittitle', ns).text().trim();
 
-    const unitId = level.get('./ead:did/ead:unitid', namespaces);
+    const unitId = level.get('./ead:did/ead:unitid', ns);
     metadata['unitId'] = unitId
         ? unitId.text().trim()
         : crypto.createHash('md5').update(metadata.title).digest('hex');
 
-    const dates = level.find('./ead:did//ead:unitdate', namespaces);
+    const dates = level.find('./ead:did//ead:unitdate', ns).map(date => date.text().trim());
     if (dates.length > 0)
-        metadata['date'] = dates.map(date => date.text().trim());
+        metadata['dates'] = dates;
 
-    const origination = level.find('./ead:did//ead:origination', namespaces);
+    const origination = level.find('./ead:did//ead:origination', ns).map(origin => {
+        const type = origin.attr('label');
+        return {type: type ? type.value() : 'Author', name: origin.text().trim()};
+    });
     if (origination.length > 0)
-        metadata['authors'] = origination.map(origin => {
-            return {type: origin.attr('label').value(), name: origin.text().trim()};
-        });
+        metadata['authors'] = origination;
 
-    const extent = level.find('./ead:did/ead:physdesc//ead:extent', namespaces);
-    if (extent.length > 0)
-        metadata['extent'] = extent.map(name => name.text().trim());
+    const extent = level.get('./ead:did/ead:physdesc//ead:extent', ns);
+    if (extent)
+        metadata['extent'] = extent.text().trim();
 
-    const language = level.find('./ead:did/ead:langmaterial//ead:language', namespaces);
-    if (language.length > 0)
-        metadata['language'] = language.map(name => name.attr('langcode').value());
-
-    const content = level.find('./ead:descgrp[@type="content_and_structure"]/ead:scopecontent/ead:p', namespaces);
+    const content = level.find('./ead:descgrp[@type="content_and_structure"]/ead:scopecontent/ead:p', ns);
     if (content.length > 0)
         metadata['content'] = content
             .reduce((acc, p) => [...acc, p.text().trim()], [])

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>UniversalViewer</title>
+  <link rel="stylesheet" type="text/css" href="uv.css">
+  <script type="text/javascript" src="lib/offline.js"></script>
+  <script type="text/javascript" src="helpers.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+  </style>
+  <script type="text/javascript">
+      window.addEventListener('uvLoaded', function () {
+          var urlDataProvider = new UV.URLDataProvider(true);
+          var uv = createUV('#uv', {
+              root: '.',
+              configUri: './uv-config.json',
+              iiifResourceUri: urlDataProvider.get('manifest'),
+              collectionIndex: Number(urlDataProvider.get('c', 0)),
+              manifestIndex: Number(urlDataProvider.get('m', 0)),
+              sequenceIndex: Number(urlDataProvider.get('s', 0)),
+              canvasIndex: Number(urlDataProvider.get('cv', 0)),
+              rangeId: urlDataProvider.get('rid', 0),
+              rotation: Number(urlDataProvider.get('r', 0)),
+              xywh: urlDataProvider.get('xywh', ''),
+              embedded: true,
+              locales: [{name: 'en-GB'}]
+          }, urlDataProvider);
+      }, false);
+  </script>
+</head>
+<body>
+
+<div id="uv" class="uv"></div>
+
+<script type="text/javascript">
+    var $UV = $('#uv');
+
+    function resize() {
+        var windowWidth = window.innerWidth;
+        var windowHeight = window.innerHeight;
+        $UV.width(windowWidth);
+        $UV.height(windowHeight);
+    }
+
+    $(function () {
+        resize();
+        $(window).on('resize', resize);
+    });
+</script>
+<script type="text/javascript" src="uv.js"></script>
+</body>
+</html>

@@ -19,6 +19,10 @@ class Base {
         ];
     }
 
+    setSummary(summary) {
+        this.summary = {'@none': [summary]};
+    }
+
     setThumbnail(resource) {
         if (!this.thumbnail)
             this.thumbnail = [resource];
@@ -74,12 +78,12 @@ class Base {
         else if ((typeof label === 'object') && (label.hasOwnProperty('label') && label.hasOwnProperty('value')))
             this.metadata.push({
                 label: {'@none': [label.label]},
-                value: {'@none': [label.value]}
+                value: {'@none': Array.isArray(label.value) ? label.value : [label.value]}
             });
         else
             this.metadata.push({
                 label: {'@none': [label]},
-                value: {'@none': [value]}
+                value: {'@none': Array.isArray(value) ? value : [value]}
             });
     }
 }

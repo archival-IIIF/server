@@ -15,17 +15,14 @@ function startWeb() {
     const Koa = require('koa');
     const morgan = require('koa-morgan');
     const json = require('koa-json');
-    const serve = require('koa-static-server');
     const bodyParser = require('koa-bodyparser');
-    const path = require('path');
-
-    const {fileIconsPath} = require('./lib/FileIcon');
 
     const iiifImageRouter = require('./image/router');
     const iiifPresentationRouter = require('./presentation/router');
     const iiifAuthRouter = require('./authentication/router');
     const fileRouter = require('./file/router');
     const adminRouter = require('./admin/router');
+    const staticRouter = require('./static/router');
 
     const app = new Koa();
 
@@ -63,16 +60,13 @@ function startWeb() {
     app.use(json({pretty: false, param: 'pretty'}));
     app.use(bodyParser());
 
-    app.use(serve({rootDir: fileIconsPath, rootPath: '/file-icon'}));
-    app.use(serve({rootDir: config.universalViewerPath, rootPath: '/universalviewer', index: 'uv.html'}));
-    app.use(serve({rootDir: config.archivalViewerPath, rootPath: '/archivalviewer'}));
-
     app.use(iiifImageRouter.routes());
     app.use(iiifPresentationRouter.routes());
     app.use(iiifAuthRouter.routes());
 
     app.use(fileRouter.routes());
     app.use(adminRouter.routes());
+    app.use(staticRouter.routes());
 
     app.proxy = true;
     app.keys = [config.secret];

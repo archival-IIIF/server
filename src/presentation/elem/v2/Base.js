@@ -9,6 +9,10 @@ class Base {
         this["@context"] = context || 'http://iiif.io/api/presentation/2/context.json';
     }
 
+    setDescription(description) {
+        this.description = description;
+    }
+
     setThumbnail(resource) {
         this.thumbnail = resource;
     }
@@ -42,10 +46,10 @@ class Base {
         if (!this.metadata)
             this.metadata = [];
 
-        if ((typeof label === 'object') && (label.hasOwnProperty('label') && label.hasOwnProperty('value')))
+        if (Array.isArray(label))
+            label.forEach(md => this.addMetadata(md));
+        else if ((typeof label === 'object') && (label.hasOwnProperty('label') && label.hasOwnProperty('value')))
             this.metadata = {label: label.label, value: label.value};
-        else if (Array.isArray(label))
-            this.metadata.push(...label);
         else
             this.metadata.push({label, value});
     }

@@ -48,7 +48,10 @@ setTimeout(() => {
                                     }
                                 }
                             },
-                            language: {
+                            dates: {
+                                type: 'keyword'
+                            },
+                            physical: {
                                 type: 'keyword'
                             },
                             size: {

@@ -132,7 +132,7 @@ function readFolder(rootId, mets, node, nodePhysical, parent) {
         const premisObj = mets.get(`//mets:dmdSec[@ID="${dmdId}"]/mets:mdWrap/mets:xmlData/premisv3:object`, ns);
         const originalName = premisObj.get(`./premisv3:originalName`, ns).text();
         const name = path.basename(originalName);
-        const id = getIdentifier(premisObj);
+        const id = getIdentifier(premisObj, 'premisv3');
 
         if (id)
             return createItem({
@@ -155,7 +155,7 @@ function readFile(rootId, mets, objects, relativeRootPath, node, nodePhysical, s
 
     if (premisObj) {
         const originalName = premisObj.get('./premis:originalName', ns).text();
-        const id = getIdentifier(premisObj);
+        const id = getIdentifier(premisObj, 'premis');
 
         const objCharacteristics = premisObj.get('./premis:objectCharacteristics', ns);
         const objCharacteristicsExt = objCharacteristics.get('./premis:objectCharacteristicsExtension', ns);
@@ -222,7 +222,7 @@ function readText(rootId, mets, objects, relativeRootPath, node, nodePhysical, s
     const premisObj = findPremisObj(mets, fileId);
 
     if (premisObj) {
-        const id = getIdentifier(premisObj);
+        const id = getIdentifier(premisObj, 'premis');
 
         const fptrs = structureIISH.find(`./mets:div[@TYPE="page"]/mets:fptr[@FILEID="${fileId}"]/../mets:fptr`, ns);
         const fptr = fptrs.find(fptrElem => {
@@ -234,7 +234,7 @@ function readText(rootId, mets, objects, relativeRootPath, node, nodePhysical, s
         if (fptr) {
             const itemFileId = fptr.attr('FILEID').value();
             const itemPremisObj = findPremisObj(mets, itemFileId);
-            const itemId = getIdentifier(itemPremisObj);
+            const itemId = getIdentifier(itemPremisObj, 'premis');
 
             let type = parent;
             let language = null;
@@ -261,17 +261,17 @@ function findPremisObj(mets, fileId) {
     return null;
 }
 
-function getIdentifier(premisObj) {
-    const hdlObj = premisObj.get('./premis:objectIdentifier/premis:objectIdentifierType[text()="hdl"]', ns);
-    const uuidObj = premisObj.get('./premis:objectIdentifier/premis:objectIdentifierType[text()="UUID"]', ns);
+function getIdentifier(premisObj, premisNS = 'premis') {
+    const hdlObj = premisObj.get(`./${premisNS}:objectIdentifier/${premisNS}:objectIdentifierType[text()="hdl"]`, ns);
+    const uuidObj = premisObj.get(`./${premisNS}:objectIdentifier/${premisNS}:objectIdentifierType[text()="UUID"]`, ns);
 
     if (hdlObj) {
-        const hdl = hdlObj.get('./../premis:objectIdentifierValue', ns).text();
+        const hdl = hdlObj.get(`./../${premisNS}:objectIdentifierValue`, ns).text();
         return hdl.split('/')[1];
     }
 
     if (uuidObj)
-        return uuidObj.get('./../premis:objectIdentifierValue', ns).text();
+        return uuidObj.get(`./../${premisNS}:objectIdentifierValue`, ns).text();
 
     return null;
 }
@@ -279,35 +279,43 @@ function getIdentifier(premisObj) {
 function determineResolution(objCharacteristicsExt) {
     const mediaInfo = objCharacteristicsExt.get('./mediainfo:MediaInfo/mediainfo:media/mediainfo:track[@type="Image" or @type="Video"]', ns);
     if (mediaInfo) {
-        const resolution = getResolution(
-            mediaInfo.get('./mediainfo:Width', ns).text(),
-            mediaInfo.get('./mediainfo:Height', ns).text()
-        );
-        if (resolution) return resolution;
+        if (mediaInfo.get('./mediainfo:Width', ns) && mediaInfo.get('./mediainfo:Height', ns)) {
+            const resolution = getResolution(
+                mediaInfo.get('./mediainfo:Width', ns).text(),
+                mediaInfo.get('./mediainfo:Height', ns).text()
+            );
+            if (resolution) return resolution;
+        }
     }
 
     const ffprobe = objCharacteristicsExt.get('./ffprobe/streams/stream[@codec_type="video"]', ns);
     if (ffprobe) {
-        const resolution = getResolution(ffprobe.attr('width').value(), ffprobe.attr('height').value());
-        if (resolution) return resolution;
+        if (ffprobe.attr('width') && ffprobe.attr('height')) {
+            const resolution = getResolution(ffprobe.attr('width').value(), ffprobe.attr('height').value());
+            if (resolution) return resolution;
+        }
     }
 
     const exifTool = objCharacteristicsExt.get('./rdf:RDF/rdf:Description', ns);
     if (exifTool) {
-        const resolution = getResolution(
-            exifTool.get('./File:ImageWidth', ns).text(),
-            exifTool.get('./File:ImageHeight', ns).text()
-        );
-        if (resolution) return resolution;
+        if (exifTool.get('./File:ImageWidth', ns) && exifTool.get('./File:ImageHeight', ns)) {
+            const resolution = getResolution(
+                exifTool.get('./File:ImageWidth', ns).text(),
+                exifTool.get('./File:ImageHeight', ns).text()
+            );
+            if (resolution) return resolution;
+        }
     }
 
     const fitsExifTool = objCharacteristicsExt.get('./fits:fits/fits:toolOutput/fits:tool[@name="Exiftool"]/exiftool', ns);
     if (fitsExifTool) {
-        const resolution = getResolution(
-            fitsExifTool.get('./ImageWidth', ns).text(),
-            fitsExifTool.get('./ImageHeight', ns).text()
-        );
-        if (resolution) return resolution;
+        if (fitsExifTool.get('./ImageWidth', ns) && fitsExifTool.get('./ImageHeight', ns)) {
+            const resolution = getResolution(
+                fitsExifTool.get('./ImageWidth', ns).text(),
+                fitsExifTool.get('./ImageHeight', ns).text()
+            );
+            if (resolution) return resolution;
+        }
     }
 
     return {width: null, height: null};
@@ -326,14 +334,18 @@ function getResolution(width, height) {
 function determineDpi(objCharacteristicsExt) {
     const exifTool = objCharacteristicsExt.get('./rdf:RDF/rdf:Description', ns);
     if (exifTool) {
-        const dpi = Number.parseInt(exifTool.get('./IFD0:XResolution', ns).text());
-        if (dpi) return dpi;
+        if (exifTool.get('./IFD0:XResolution', ns)) {
+            const dpi = Number.parseInt(exifTool.get('./IFD0:XResolution', ns).text());
+            if (dpi) return dpi;
+        }
     }
 
     const fitsExifTool = objCharacteristicsExt.get('./fits:fits/fits:toolOutput/fits:tool[@name="Exiftool"]/exiftool', ns);
     if (fitsExifTool) {
-        const dpi = Number.parseInt(exifTool.get('./XResolution', ns).text());
-        if (dpi) return dpi;
+        if (exifTool.get('./XResolution', ns)) {
+            const dpi = Number.parseInt(exifTool.get('./XResolution', ns).text());
+            if (dpi) return dpi;
+        }
     }
 
     return null;
@@ -342,8 +354,10 @@ function determineDpi(objCharacteristicsExt) {
 function determineDuration(objCharacteristicsExt) {
     const mediaInfo = objCharacteristicsExt.get('./mediainfo:MediaInfo/mediainfo:media/mediainfo:track[@type="General"]', ns);
     if (mediaInfo) {
-        const duration = Number.parseFloat(mediaInfo.get('./mediainfo:Duration', ns).text());
-        if (duration) return duration;
+        if (mediaInfo.get('./mediainfo:Duration', ns)) {
+            const duration = Number.parseFloat(mediaInfo.get('./mediainfo:Duration', ns).text());
+            if (duration) return duration;
+        }
     }
 
     let duration = null;

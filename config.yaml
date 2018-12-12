@@ -10,6 +10,7 @@ apps:
       IIIF_SERVER_ACCESS_TOKEN: secret
       IIIF_SERVER_UNIVERSAL_VIEWER_PATH: /opt/universalviewer/examples/uv
       IIIF_SERVER_ARCHIVAL_VIEWER_PATH: /opt/iiif-viewer/build
+      IIIF_SERVER_UNIVERSAL_VIEWER_CONFIG_PATH: /opt/universalviewer-config.json
       IIIF_SERVER_IMAGE_SERVER_URL: http://image:8888
       IIIF_SERVER_IMAGE_TIER_SEPARATOR: _
       IIIF_SERVER_CACHE_DISABLED: false
