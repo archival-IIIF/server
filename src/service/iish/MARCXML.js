@@ -17,6 +17,12 @@ function getMetadata(collectionId, marcXml) {
     if (marc500.length > 0)
         metadata['description'] = normalize(marc500);
 
+    const marc520 = marc
+        .find('//marc:datafield[@tag="520"]/marc:subfield', ns)
+        .map(descrMarc => descrMarc.text().trim());
+    if (marc520.length > 0)
+        metadata['description'] = normalize(marc520);
+
     const marc300 = marc
         .find('//marc:datafield[@tag="300"]/marc:subfield', ns)
         .map(physical => physical.text().trim());

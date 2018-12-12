@@ -4,7 +4,7 @@ async function getMetadata({item}) {
     if (item.iish && item.iish.metadataHdl)
         metadata.push({
             label: 'Refer to this record',
-            value: `<a href="https://hdl.handle.net/10622/${item.iish.metadataHdl}" target="_blank">https://hdl.handle.net/10622/${item.iish.metadataHdl}</a>`
+            value: `<a href="https://hdl.handle.net/${item.iish.metadataHdl}" target="_blank">https://hdl.handle.net/${item.iish.metadataHdl}</a>`
         });
 
     if (item.type === 'root' || (item.type === 'folder' && item.id === item.collection_id))
