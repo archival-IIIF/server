@@ -1,8 +1,10 @@
 const {AccessState, isIpInRange, checkTokenDb} = require('../lib/Security');
 
 async function hasAccess({item, ip, identities}) {
-    // if (item.collection_id !== 'test')
-    //     return {state: AccessState.OPEN};
+    return {state: AccessState.CLOSED};
+
+     //if (item.collection_id !== 'test')
+         return {state: AccessState.OPEN};
 
     if (item.collection_id === null)
          return {state: AccessState.OPEN};

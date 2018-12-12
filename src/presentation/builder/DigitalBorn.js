@@ -31,7 +31,8 @@ const prefixFileUrl = `${config.baseUrl}/file`;
 const prefixIconUrl = `${config.baseUrl}/file-icon`;
 
 async function getCollection(item, access, builder) {
-    const label = (access !== AccessState.CLOSED) ? item.label : 'Access denied';
+    const label = ((access.state !== AccessState.CLOSED) || (item.collection_id === item.id))
+        ? item.label : 'Access denied';
     const collection = new Collection(`${prefixPresentationUrl}/collection/${item.id}`, label);
 
     setDefaults(collection);
@@ -42,9 +43,9 @@ async function getCollection(item, access, builder) {
     if (item.parent_id)
         collection.setParent(`${prefixPresentationUrl}/collection/${item.parent_id}`);
 
-    if (access !== AccessState.CLOSED) {
-        await addMetadata(collection, item);
+    await addMetadata(collection, item);
 
+    if (access.state !== AccessState.CLOSED) {
         const children = await getChildItems(item.id);
         await Promise.all(children.map(async childItem => {
             const child = await builder.getReference(childItem);
@@ -62,18 +63,18 @@ async function getCollection(item, access, builder) {
 }
 
 async function getManifest(item, access, builder) {
-    const label = (access !== AccessState.CLOSED) ? item.label : 'Access denied';
+    const label = (access.state !== AccessState.CLOSED) ? item.label : 'Access denied';
     const manifest = new Manifest(`${prefixPresentationUrl}/${item.id}/manifest`, label);
 
     setDefaults(manifest);
 
     if (item.description)
-        collection.setDescription(item.description);
+        manifest.setDescription(item.description);
 
     if (item.parent_id)
         manifest.setParent(`${prefixPresentationUrl}/collection/${item.parent_id}`);
 
-    if (access !== AccessState.CLOSED) {
+    if (access.state !== AccessState.CLOSED) {
         await addMetadata(manifest, item);
 
         if (item.type !== 'image') {
