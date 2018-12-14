@@ -22,3 +22,40 @@ Use the provided Docker Compose or the provided Ansible scripts. Or install manu
 1. Start the application:
     * Run `yarn run start` or  `npm run start`
     * With PM2: `pm2 start config.yml`
+
+## Configuration
+
+### Application configuration: environment variables
+
+- `NODE_ENV`: Should be `production` in a production environment
+- `IIIF_SERVER_SERVICES`: Comma separated list of services to run on this instance:
+  - `web`: Sets up a **web server** and the web environment
+  - `text-index`: Runs a **worker** that indexes texts (transcriptions, translations, etc.)
+  - `iish-archivematica-index`: Runs a **worker** that indexes IISH DIPs from Archivematica
+  - `iish-metadata`: Runs a **worker** that indexes IISH metadata (MARCXML / EAD)
+  - `iish-metadata-update`: Runs a **cron job** that processes changes in the IISH metadata
+  - `iish-access`: Loads a **library** that determines access to items for IISH collections
+  - `iish-auth-texts`: Loads a **library** that provides authentication assistance texts of items from IISH collections
+  - `iish-iiif-metadata`: Loads a **library** that provides IIIF metadata of items from IISH collections
+- `IIIF_SERVER_SECRET`: Signed cookie key
+- `IIIF_SERVER_ACCESS_TOKEN`: Access token for administrator access
+- `IIIF_SERVER_ARCHIVAL_VIEWER_PATH`: Path to the Archival Viewer
+- `IIIF_SERVER_UNIVERSAL_VIEWER_PATH`: Path to the Universal Viewer
+- `IIIF_SERVER_UNIVERSAL_VIEWER_CONFIG_PATH`: Path to the configuration file of the Universal Viewer
+- `IIIF_SERVER_IMAGE_SERVER_URL`: URL of the external IIIF image server (such as Loris)
+- `IIIF_SERVER_METADATA_OAI_URL`: URL of the OAI metadata provider
+- `IIIF_SERVER_METADATA_SRW_URL`: URL of the SRW metadata provider
+- `IIIF_SERVER_IMAGE_TIER_SEPARATOR`: Separator character to separate between the image identifier and the image tier
+- `IIIF_SERVER_CACHE_DISABLED`: Turn caching on/off (Requires Redis)
+- `IIIF_SERVER_PORT`: Port to run the web server
+- `IIIF_SERVER_LOGO`: Path to the image with the logo to add to the IIIF manifests
+- `IIIF_SERVER_ATTRIBUTION`: Attribution to add to the IIIF manifests
+- `IIIF_SERVER_BASE_URL`: The public base URL of the application
+- `IIIF_SERVER_DATA_PATH`: The root path of the collections to serve
+- `IIIF_SERVER_LOG_LEVEL`: The logging level
+- `IIIF_SERVER_INTERNAL_IP_ADDRESSES`: If access may be granted based on IP address, provide a comma separated white list of ip addresses (Requires Redis)
+- `IIIF_SERVER_LOGIN_DISABLED`: Turn login based authentication on/off (Requires Redis)
+- `IIIF_SERVER_ELASTICSEARCH_URL`: URL of the ElasticSearch indexer
+- `IIIF_SERVER_REDIS_DISABLED`: Turn Redis on/off
+- `IIIF_SERVER_REDIS_HOST`: Host of the Redis server (Requires Redis)
+- `IIIF_SERVER_REDIS_PORT`: Port of the Redis server (Requires Redis)

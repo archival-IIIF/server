@@ -1,31 +1,8 @@
 version: '3'
 
 services:
-  web:
-    build: .
-    restart: always
-    ports:
-      - "80:3333"
-    volumes:
-      - additional:/data/additional
-      - collections:/data/collections
-      - app-conf:/opt/iiif-server/config.yaml
-      - universal-viewer-conf:/opt/iiif-server/universalviewer-config.json
-    networks:
-      - front-tier
-      - back-tier
-
-  image:
-    image: wellcome/loris
-    restart: always
-    volumes:
-      - collections:/data/collections
-      - loris-conf:/opt/loris/etc/loris2.conf
-    networks:
-      - back-tier
-
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.3
     restart: always
     volumes:
       - indexes:/usr/share/elasticsearch/data
@@ -36,6 +13,29 @@ services:
     image: redis
     restart: always
     networks:
+      - back-tier
+
+  image:
+    build: ./loris
+    restart: always
+    volumes:
+      - collections:/data/collections
+      - loris-conf:/etc/loris2/loris2.conf
+    networks:
+      - back-tier
+
+  web:
+    build: .
+    restart: always
+    ports:
+      - "8000:3333"
+    volumes:
+      - additional:/data/additional
+      - collections:/data/collections
+      - app-conf:/opt/iiif-server/config.yaml
+      - universal-viewer-conf:/opt/universalviewer-config.json
+    networks:
+      - front-tier
       - back-tier
 
 volumes:

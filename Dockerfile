@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:lts-alpine
 
 # Install tooling
 RUN apk add --no-cache git
