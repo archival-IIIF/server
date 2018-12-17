@@ -48,6 +48,15 @@ class Base {
         };
     }
 
+    setHomepage(id, label) {
+        this.homepage = {
+            id,
+            type: 'Text',
+            label: {'en': [label]},
+            format: 'text/html'
+        };
+    }
+
     setRights(rights) {
         this.rights = rights;
     }
@@ -85,6 +94,26 @@ class Base {
                 label: {'@none': [label]},
                 value: {'@none': Array.isArray(value) ? value : [value]}
             });
+    }
+
+    addSeeAlso(seeAlso) {
+        if (!this.seeAlso)
+            this.seeAlso = [];
+
+        if (Array.isArray(seeAlso))
+            seeAlso.forEach(sa => this.addSeeAlso(sa));
+        else if ((typeof seeAlso === 'object') && seeAlso.hasOwnProperty('id')) {
+            const obj = {id: seeAlso.id, type: 'Dataset'};
+
+            if (seeAlso.format)
+                obj.format = seeAlso.format;
+            if (seeAlso.profile)
+                obj.profile = seeAlso.profile;
+            if (seeAlso.label)
+                obj.label = {'@en': [seeAlso.label]};
+
+            this.seeAlso.push(obj);
+        }
     }
 }
 

@@ -1,4 +1,5 @@
 const Base = require('./Base');
+const Manifest = require('../v2/Manifest');
 
 class Collection extends Base {
     constructor(id, label) {
@@ -21,12 +22,23 @@ class Collection extends Base {
         if (!this.manifests)
             this.manifests = [];
 
-        this.manifests.push({
-            "@id": manifest['@id'],
-            "@type": "sc:Manifest",
-            "label": manifest.label,
-            "thumbnail": manifest.thumbnail
-        });
+        if (manifest instanceof Manifest)
+            this.manifests.push({
+                "@id": manifest['@id'],
+                "@type": "sc:Manifest",
+                "label": manifest.label,
+                "thumbnail": manifest.thumbnail
+            });
+        else
+            this.manifests.push({
+                "@id": manifest.id,
+                "@type": "sc:Manifest",
+                "label": manifest.label['@none'][0],
+                "thumbnail": manifest.thumbnail ? {
+                    '@id': manifest.thumbnail[0].id,
+                    'format': manifest.thumbnail[0].format
+                } : undefined
+            });
     }
 }
 

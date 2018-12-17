@@ -1,4 +1,24 @@
-async function getMetadata({item}) {
+const config = require('../lib/Config');
+
+async function getIIIFMetadata({item}) {
+    return {
+        homepage: getHomepage(item),
+        metadata: getMetadata(item),
+        seeAlso: getSeeAlso(item)
+    };
+}
+
+function getHomepage(item) {
+    if (item.iish && item.iish.metadataHdl)
+        return {
+            id: `https://hdl.handle.net/${item.iish.metadataHdl}`,
+            label: 'Homepage'
+        };
+
+    return null;
+}
+
+function getMetadata(item) {
     const metadata = [];
 
     if (item.iish && item.iish.metadataHdl)
@@ -28,4 +48,21 @@ async function getMetadata({item}) {
     return metadata;
 }
 
-module.exports = getMetadata;
+function getSeeAlso(item) {
+    const seeAlso = [];
+
+    if (item.metadata_id) {
+        const metadataPrefix = (item.metadata_id.includes('ARCH') || item.metadata_id.includes('COLL'))
+            ? 'ead' : 'marcxml';
+        seeAlso.push({
+            id: `${config.metadataOaiUrl}?verb=GetRecord&identifier=${item.metadata_id}&metadataPrefix=${metadataPrefix}`,
+            format: 'text/xml',
+            profile: (metadataPrefix === 'ead') ? 'http://www.loc.gov/ead/ead.xsd' : 'http://www.loc.gov/MARC21/slim',
+            label: `${metadataPrefix.toUpperCase()} metadata describing this object`
+        });
+    }
+
+    return seeAlso;
+}
+
+module.exports = getIIIFMetadata;

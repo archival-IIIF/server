@@ -20,14 +20,13 @@ async function getManifest(item, builder) {
     const manifest = new Manifest(`${prefixPresentationUrl}/${item.id}/manifest`, item.label);
 
     addDefaults(manifest);
-
     await addMetadata(manifest, item);
 
     if (item.description)
         manifest.setSummary(item.description);
 
     if (item.parent_id)
-        manifest.setParent(`${prefixPresentationUrl}/collection/${item.parent_id}`);
+        manifest.setParent(`${prefixPresentationUrl}/collection/${item.parent_id}`, 'Collection');
 
     await addContent(manifest, item);
 
@@ -95,12 +94,23 @@ async function addMetadata(base, root) {
     if (root.physical)
         base.addMetadata('Physical description', root.physical);
 
+    if (root.description)
+        base.addMetadata('Description', root.description);
+
     if (root.metadata.length > 0)
         base.addMetadata(root.metadata);
 
     const md = await runTaskWithResponse('iiif-metadata', {item: root});
-    if (md && md.length > 0)
-        base.addMetadata(md);
+    if (md) {
+        if (md.homepage)
+            base.setHomepage(md.homepage.id, md.homepage.label);
+
+        if (md.metadata && md.metadata.length > 0)
+            base.addMetadata(md.metadata);
+
+        if (md.seeAlso && md.seeAlso.length > 0)
+            base.addSeeAlso(md.seeAlso);
+    }
 }
 
 function getResource(item) {

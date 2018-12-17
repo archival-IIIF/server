@@ -38,9 +38,11 @@ async function getReference(item, builder) {
 
 async function addMetadata(base, root) {
     if (root.authors.length > 0) {
-        const authors = root.authors.reduce((acc, author) =>
-            acc[author.type] ? acc[author.type].push(author.name) : acc[author.type] = [author.name], {});
-        Object.entries(authors).forEach(type => base.addMetadata(type, authors[type]));
+        const authors = root.authors.reduce((acc, author) => {
+            acc[author.type] ? acc[author.type].push(author.name) : acc[author.type] = [author.name];
+            return acc;
+        }, {});
+        Object.keys(authors).forEach(type => base.addMetadata(type, authors[type]));
     }
 
     if (root.dates.length > 0)
@@ -53,8 +55,16 @@ async function addMetadata(base, root) {
         base.addMetadata(root.metadata);
 
     const md = await runTaskWithResponse('iiif-metadata', {item: root});
-    if (md && md.length > 0)
-        base.addMetadata(md);
+    if (md) {
+        if (md.homepage)
+            base.setRelated(md.homepage.id, md.homepage.label);
+
+        if (md.metadata && md.metadata.length > 0)
+            base.addMetadata(md.metadata);
+
+        if (md.seeAlso && md.seeAlso.length > 0)
+            base.addSeeAlso(md.seeAlso);
+    }
 }
 
 function setDefaults(collection) {

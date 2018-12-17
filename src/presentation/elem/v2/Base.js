@@ -29,6 +29,14 @@ class Base {
         this.attribution = attribution;
     }
 
+    setRelated(id, label) {
+        this.related = {
+            '@id': id,
+            format: 'text/html',
+            label: label,
+        };
+    }
+
     setLicense(license) {
         this.license = license;
     }
@@ -52,6 +60,26 @@ class Base {
             this.metadata.push({label: label.label, value: label.value});
         else
             this.metadata.push({label, value});
+    }
+
+    addSeeAlso(seeAlso) {
+        if (!this.seeAlso)
+            this.seeAlso = [];
+
+        if (Array.isArray(seeAlso))
+            seeAlso.forEach(sa => this.addSeeAlso(sa));
+        else if ((typeof seeAlso === 'object') && seeAlso.hasOwnProperty('id')) {
+            const obj = {'@id': seeAlso.id};
+
+            if (seeAlso.format)
+                obj.format = seeAlso.format;
+            if (seeAlso.profile)
+                obj.profile = seeAlso.profile;
+            if (seeAlso.label)
+                obj.label = seeAlso.label;
+
+            this.seeAlso.push(obj);
+        }
     }
 
     addRendering(rendering) {
