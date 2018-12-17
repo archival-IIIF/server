@@ -18,15 +18,15 @@
     "file-icon-vectors": "1.0.0",
     "redis": "2.8.0",
     "uuid": "3.3.2",
-    "moment": "2.22.2",
+    "moment": "2.23.0",
     "range_check": "1.4.0",
     "node-cron": "2.0.3",
     "iconv-lite": "0.4.24",
     "jschardet": "1.6.0"
   },
   "devDependencies": {
-    "sharp": "0.21.0",
-    "dotenv": "6.1.0",
+    "sharp": "0.21.1",
+    "dotenv": "6.2.0",
     "mocha": "5.2.0"
   }
 }
