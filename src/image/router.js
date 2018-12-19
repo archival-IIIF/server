@@ -36,6 +36,14 @@ router.get('/:id/info.json', async ctx => {
         ctx.redirect(`${prefix}/${id}${config.imageTierSeparator}${access.tier.name}/info.json`);
 
     ctx.body = await cache('image', id, ctx.params.id, async () => await imageServer.getInfo(item, access.tier));
+    switch (ctx.accepts('application/ld+json', 'application/json')) {
+        case 'application/json':
+            ctx.set('Content-Type', 'application/json');
+            break;
+        case 'application/ld+json':
+        default:
+            ctx.set('Content-Type', 'application/ld+json;profile="http://iiif.io/api/image/2/context.json"');
+    }
 
     logger.info(`Sending image info with id ${id} and tier ${tier}`);
 });
@@ -65,6 +73,7 @@ router.get('/:id/:region/:size/:rotation/:quality.:format', async ctx => {
     ctx.status = image.status;
     ctx.set('Content-Type', image.contentType);
     ctx.set('Content-Length', image.contentLength);
+    ctx.set('Content-Disposition', `inline; filename="${ctx.params.id}-${ctx.params.region}-${ctx.params.size}-${ctx.params.rotation}-${ctx.params.quality}.${ctx.params.format}"`);
 
     logger.info(`Sending an image with id ${id} and tier ${tier}`);
 });
