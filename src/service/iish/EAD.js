@@ -10,7 +10,7 @@ function getMetadata(collectionId, eadXml) {
     const archdesc = ead.get('//ead:ead/ead:archdesc', ns);
 
     return [
-        getMetadataFromLevel(archdesc),
+        extractMetadataFromLevel(archdesc),
         ...walkThroughLevels(archdesc.get(`.//ead:unitid[text()="${unitId}"]/../..`, ns))
     ];
 }
@@ -57,47 +57,68 @@ function walkThroughLevels(level) {
     if (parent.name() !== level.name())
         return [
             ...walkThroughLevels(parent),
-            getMetadataFromLevel(level)
+            extractMetadataFromLevel(level)
         ];
 
-    return [getMetadataFromLevel(level)];
+    return [extractMetadataFromLevel(level)];
 }
 
-function getMetadataFromLevel(level) {
+function extractMetadataFromLevel(level) {
     const metadata = {};
-
     if (!level)
         return metadata;
 
-    metadata['title'] = level.get('./ead:did/ead:unittitle', ns).text().trim();
+    extractTitle(level, metadata);
+    extractUnitId(level, metadata);
+    extractContent(level, metadata);
+    extractExtent(level, metadata);
+    extractAuthors(level, metadata);
+    extractDates(level, metadata);
 
-    const unitId = level.get('./ead:did/ead:unitid', ns);
+    return metadata;
+}
+
+function extractTitle(ead, metadata) {
+    metadata['title'] = ead.get('./ead:did/ead:unittitle', ns).text().trim();
+}
+
+function extractUnitId(ead, metadata) {
+    const unitId = ead.get('./ead:did/ead:unitid', ns);
     metadata['unitId'] = unitId
         ? unitId.text().trim()
         : crypto.createHash('md5').update(metadata.title).digest('hex');
+}
 
-    const dates = level.find('./ead:did//ead:unitdate', ns).map(date => date.text().trim());
-    if (dates.length > 0)
-        metadata['dates'] = dates;
+function extractContent(ead, metadata) {
+    const content = ead.find('./ead:descgrp[@type="content_and_structure"]/ead:scopecontent/ead:p', ns);
 
-    const origination = level.find('./ead:did//ead:origination', ns).map(origin => {
-        const type = origin.attr('label');
-        return {type: type ? type.value() : 'Author', name: origin.text().trim()};
-    });
-    if (origination.length > 0)
-        metadata['authors'] = origination;
-
-    const extent = level.get('./ead:did/ead:physdesc//ead:extent', ns);
-    if (extent)
-        metadata['extent'] = extent.text().trim();
-
-    const content = level.find('./ead:descgrp[@type="content_and_structure"]/ead:scopecontent/ead:p', ns);
     if (content.length > 0)
         metadata['content'] = content
             .reduce((acc, p) => [...acc, p.text().trim()], [])
             .join('<br/>');
+}
 
-    return metadata;
+function extractExtent(ead, metadata) {
+    const extent = ead.get('./ead:did/ead:physdesc//ead:extent', ns);
+
+    if (extent)
+        metadata['extent'] = extent.text().trim();
+}
+
+function extractAuthors(ead, metadata) {
+    const origination = ead.find('./ead:did//ead:origination', ns).map(origin => {
+        const type = origin.attr('label');
+        return {type: type ? type.value() : 'Author', name: origin.text().trim()};
+    });
+
+    if (origination.length > 0)
+        metadata['authors'] = origination;
+}
+
+function extractDates(ead, metadata) {
+    const dates = ead.find('./ead:did//ead:unitdate', ns).map(date => date.text().trim());
+    if (dates.length > 0)
+        metadata['dates'] = dates;
 }
 
 module.exports = {getMetadata, getAccess};

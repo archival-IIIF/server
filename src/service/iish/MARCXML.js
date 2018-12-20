@@ -4,58 +4,14 @@ const ns = {'marc': 'http://www.loc.gov/MARC21/slim'};
 
 function getMetadata(collectionId, marcXml) {
     const marc = libxmljs.parseXml(marcXml);
-
     const metadata = {};
 
-    metadata['title'] = normalize(
-        marc.find('//marc:datafield[@tag="245"]/marc:subfield', ns).map(titleMarc => titleMarc.text().trim())
-    );
-
-    const marc500 = marc
-        .find('//marc:datafield[@tag="500"]/marc:subfield', ns)
-        .map(descrMarc => descrMarc.text().trim());
-    if (marc500.length > 0)
-        metadata['description'] = normalize(marc500);
-
-    const marc520 = marc
-        .find('//marc:datafield[@tag="520"]/marc:subfield', ns)
-        .map(descrMarc => descrMarc.text().trim());
-    if (marc520.length > 0)
-        metadata['description'] = normalize(marc520);
-
-    const marc300 = marc
-        .find('//marc:datafield[@tag="300"]/marc:subfield', ns)
-        .map(physical => physical.text().trim());
-    if (marc300.length > 0)
-        metadata['physical'] = normalize(marc300);
-
-    const authors = marc
-        .find('//marc:datafield[@tag="100" or @tag="110" or @tag="111" or @tag="700" or @tag="710" or @tag="711"]', ns)
-        .map(marcAuthors => {
-            let name = normalize(marcAuthors.get('./marc:subfield[@code="a"]', ns).text().trim());
-            if (marcAuthors.get('./marc:subfield[@code="b"]', ns))
-                name = name + ' ' + normalize(marcAuthors.get('./marc:subfield[@code="b"]', ns).text().trim());
-
-            if (marcAuthors.get('./marc:subfield[@code="c"]', ns))
-                name = name + ' ' + normalize(marcAuthors.get('./marc:subfield[@code="c"]', ns).text().trim());
-
-            if (marcAuthors.get('./marc:subfield[@code="d"]', ns))
-                name = name + ' ' + normalize(marcAuthors.get('./marc:subfield[@code="d"]', ns).text().trim());
-
-            const marcAuthorsType = marcAuthors.get('./marc:subfield[@code="e"]', ns);
-
-            return {type: marcAuthorsType ? normalize(marcAuthorsType.text().trim()) : 'Author', name};
-        });
-    if (authors.length > 0)
-        metadata['authors'] = authors;
-
-    const dates = marc.find('//marc:datafield[@tag="260" or @tag="264"]/marc:subfield[@code="c"]', ns).map(marcDates => {
-        return normalize(marcDates.text().trim());
-    });
-    if (dates.length > 0)
-        metadata['dates'] = dates;
-
-    metadata['metadataHdl'] = marc.get('//marc:datafield[@tag="902"]', ns).text().trim();
+    extractTitle(marc, metadata);
+    extractDescription(marc, metadata);
+    extractPhysicalDescription(marc, metadata);
+    extractAuthors(marc, metadata);
+    extractDates(marc, metadata);
+    extractHdlToMetadata(marc, metadata);
 
     return [metadata];
 }
@@ -68,6 +24,83 @@ function getAccess(collectionId, marcXml) {
         return marc542m.text();
 
     return 'open'; // TODO: Always open or always closed (depending on type?)
+}
+
+function extractTitle(marc, metadata) {
+    metadata['title'] = normalize(
+        marc.find('//marc:datafield[@tag="245"]/marc:subfield[@code="a" or @code="b"]', ns)
+            .map(titleMarc => titleMarc.text().trim())
+    );
+}
+
+function extractDescription(marc, metadata) {
+    const marc520 = marc
+        .find('//marc:datafield[@tag="520"]/marc:subfield', ns)
+        .map(descrMarc => descrMarc.text().trim());
+
+    if (marc520.length > 0)
+        metadata['description'] = normalize(marc520);
+
+    const marc500 = marc
+        .find('//marc:datafield[@tag="500"]/marc:subfield', ns)
+        .map(descrMarc => descrMarc.text().trim());
+
+    if (marc500.length > 0)
+        metadata['description'] = normalize(marc500);
+}
+
+function extractPhysicalDescription(marc, metadata) {
+    const marc300 = marc
+        .find('//marc:datafield[@tag="300"]/marc:subfield', ns)
+        .map(physical => physical.text().trim());
+
+    if (marc300.length > 0)
+        metadata['physical'] = normalize(marc300);
+}
+
+function extractAuthors(marc, metadata) {
+    const authors = [
+        {tag: 100, defaultRole: 'Author'},
+        {tag: 110, defaultRole: 'Organization'},
+        {tag: 111, defaultRole: 'Congress'},
+        {tag: 600, defaultRole: 'Subject person'},
+        {tag: 610, defaultRole: 'Subject corporation'},
+        {tag: 611, defaultRole: 'Subject congress'},
+        {tag: 700, defaultRole: 'Other author'},
+        {tag: 710, defaultRole: 'Other organization'},
+        {tag: 711, defaultRole: 'Other congress'}
+    ].map(({tag, defaultRole}) => ({marcAuthor: marc.find(`//marc:datafield[@tag="${tag}"`, ns), defaultRole}))
+        .map(({marcAuthor, defaultRole}) => {
+            let name = normalize(marcAuthor.get('./marc:subfield[@code="a"]', ns).text().trim());
+            if (marcAuthor.get('./marc:subfield[@code="b"]', ns))
+                name = name + ' ' + normalize(marcAuthor.get('./marc:subfield[@code="b"]', ns).text().trim());
+
+            if (marcAuthor.get('./marc:subfield[@code="c"]', ns))
+                name = name + ' ' + normalize(marcAuthor.get('./marc:subfield[@code="c"]', ns).text().trim());
+
+            if (marcAuthor.get('./marc:subfield[@code="d"]', ns))
+                name = name + ' ' + normalize(marcAuthor.get('./marc:subfield[@code="d"]', ns).text().trim());
+
+            const marcAuthorsType = marcAuthor.get('./marc:subfield[@code="e"]', ns);
+
+            return {type: marcAuthorsType ? normalize(marcAuthorsType.text().trim()) : defaultRole, name};
+        });
+
+    if (authors.length > 0)
+        metadata['authors'] = authors;
+}
+
+function extractDates(marc, metadata) {
+    const dates = marc.find('//marc:datafield[@tag="260" or @tag="264"]/marc:subfield[@code="c"]', ns).map(marcDates => {
+        return normalize(marcDates.text().trim());
+    });
+
+    if (dates.length > 0)
+        metadata['dates'] = dates;
+}
+
+function extractHdlToMetadata(marc, metadata) {
+    metadata['metadataHdl'] = marc.get('//marc:datafield[@tag="902"]', ns).text().trim();
 }
 
 function normalize(value) {
