@@ -70,6 +70,7 @@ function extractAuthors(marc, metadata) {
         {tag: 710, defaultRole: 'Other organization'},
         {tag: 711, defaultRole: 'Other congress'}
     ].map(({tag, defaultRole}) => ({marcAuthor: marc.find(`//marc:datafield[@tag="${tag}"`, ns), defaultRole}))
+        .filter(({marcAuthor, defaultRole}) => marcAuthor)
         .map(({marcAuthor, defaultRole}) => {
             let name = normalize(marcAuthor.get('./marc:subfield[@code="a"]', ns).text().trim());
             if (marcAuthor.get('./marc:subfield[@code="b"]', ns))
