@@ -70,8 +70,8 @@ async function addContent(manifest, parentItem) {
         await addMetadata(canvas, item);
         addThumbnail(canvas, item);
 
-        if (items.length > 1)
-            canvas.setLabel({'en': [`Page ${page}`]});
+        // if (items.length > 1)
+        //     canvas.setLabel({'en': [`Page ${page}`]});
 
         return canvas;
     }));

@@ -16,6 +16,7 @@ function startWeb() {
     const morgan = require('koa-morgan');
     const json = require('koa-json');
     const bodyParser = require('koa-bodyparser');
+    const compress = require('koa-compress');
 
     const iiifImageRouter = require('./image/router');
     const iiifPresentationRouter = require('./presentation/router');
@@ -57,6 +58,7 @@ function startWeb() {
     if (config.env !== 'production')
         app.use(morgan('short', {'stream': logger.stream}));
 
+    app.use(compress());
     app.use(json({pretty: false, param: 'pretty'}));
     app.use(bodyParser());
 
