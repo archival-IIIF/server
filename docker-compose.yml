@@ -2,7 +2,7 @@ version: '3'
 
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.3
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
     restart: always
     volumes:
       - indexes:/usr/share/elasticsearch/data
@@ -12,6 +12,8 @@ services:
   redis:
     image: redis
     restart: always
+    volumes:
+      - redis-persistance:/data
     networks:
       - back-tier
 
@@ -45,6 +47,7 @@ volumes:
   additional:
   collections:
   indexes:
+  redis-persistance:
 
 networks:
   front-tier:
