@@ -52,6 +52,8 @@ async function getItems(parentItem) {
 async function addContent(manifest, parentItem) {
     const items = await getItems(parentItem);
     const firstItem = items[0];
+
+    addBehavior(manifest, firstItem, items.length > 1);
     addThumbnail(manifest, firstItem);
 
     const manifestItems = await Promise.all(items.map(async item => {
@@ -69,9 +71,6 @@ async function addContent(manifest, parentItem) {
 
         await addMetadata(canvas, item);
         addThumbnail(canvas, item);
-
-        // if (items.length > 1)
-        //     canvas.setLabel({'en': [`Page ${page}`]});
 
         return canvas;
     }));
@@ -139,9 +138,16 @@ function getImageResource(item, size = 'full') {
 
 function addThumbnail(base, item) {
     if (item.type === 'image') {
-        const resource = getImageResource(item, '!100,100');
+        const resource = getImageResource(item, '90,');
         base.setThumbnail(resource);
     }
+}
+
+function addBehavior(base, item, hasMultipleItems = true) {
+    if (item.type === 'image' && hasMultipleItems)
+        base.addBehavior('paged');
+    else
+        base.addBehavior('individuals');
 }
 
 function addDefaults(manifest) {

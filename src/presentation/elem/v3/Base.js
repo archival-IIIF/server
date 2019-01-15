@@ -115,6 +115,16 @@ class Base {
             this.seeAlso.push(obj);
         }
     }
+
+    addBehavior(behavior) {
+        if (!this.behavior)
+            this.behavior = [];
+
+        if (Array.isArray(behavior))
+            behavior.forEach(b => this.addBehavior(b));
+        else
+            this.behavior.push(behavior);
+    }
 }
 
 module.exports = Base;
