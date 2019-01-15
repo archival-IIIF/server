@@ -10,6 +10,9 @@ const ns = {
 };
 
 async function updateMetadata() {
+    if (!config.metadataOaiUrl)
+        throw new Error('Failed to run the update metadata service: there is no OAI URL configured!');
+
     try {
         const fromDate = moment().subtract(5, 'days').format('YYYY-MM-DD');
 
@@ -20,7 +23,7 @@ async function updateMetadata() {
                     verb: 'ListIdentifiers',
                     metadataPrefix: 'marcxml',
                     from: fromDate,
-                    resumptionToken: resumptionToken ? resumptionToken : undefined
+                    resumptionToken: resumptionToken || undefined
                 }
             });
 

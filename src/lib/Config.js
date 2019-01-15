@@ -12,9 +12,14 @@ module.exports = {
     hotFolderPath: process.env.IIIF_SERVER_HOT_FOLDER_PATH,
     hotFolderPattern: process.env.IIIF_SERVER_HOT_FOLDER_PATTERN,
     imageServerUrl: process.env.IIIF_SERVER_IMAGE_SERVER_URL,
-    imageTierSeparator: process.env.IIIF_SERVER_IMAGE_TIER_SEPARATOR,
     metadataOaiUrl: process.env.IIIF_SERVER_METADATA_OAI_URL,
     metadataSrwUrl: process.env.IIIF_SERVER_METADATA_SRW_URL,
+
+    imageTierSeparator: (() => {
+        if (!process.env.IIIF_SERVER_IMAGE_TIER_SEPARATOR || (process.env.IIIF_SERVER_IMAGE_TIER_SEPARATOR === 'null'))
+            throw new Error('Image tier separator is not defined');
+        return process.env.IIIF_SERVER_IMAGE_TIER_SEPARATOR
+    })(),
 
     cacheDisabled: (() => {
         const cacheDisabled = process.env.IIIF_SERVER_CACHE_DISABLED;
@@ -23,19 +28,19 @@ module.exports = {
 
     services: (() => {
         if (!process.env.IIIF_SERVER_SERVICES || (process.env.IIIF_SERVER_SERVICES === 'null'))
-            throw new Error("services is not defined");
+            throw new Error('Services to run are not defined');
         return process.env.IIIF_SERVER_SERVICES.split(',');
     })(),
 
     secret: (() => {
         if (!process.env.IIIF_SERVER_SECRET || (process.env.IIIF_SERVER_SECRET === 'null'))
-            throw new Error("secret is not defined");
+            throw new Error('Secret is not defined');
         return process.env.IIIF_SERVER_SECRET;
     })(),
 
     accessToken: (() => {
         if (!process.env.IIIF_SERVER_ACCESS_TOKEN || (process.env.IIIF_SERVER_ACCESS_TOKEN === 'null'))
-            throw new Error("accessToken is not defined");
+            throw new Error('The access token is not defined');
         return process.env.IIIF_SERVER_ACCESS_TOKEN;
     })(),
 
@@ -51,13 +56,13 @@ module.exports = {
 
     baseUrl: (() => {
         if (!process.env.IIIF_SERVER_BASE_URL || (process.env.IIIF_SERVER_BASE_URL === 'null'))
-            throw new Error("base url is not defined");
+            throw new Error('The base url is not defined');
         return process.env.IIIF_SERVER_BASE_URL;
     })(),
 
     dataPath: (() => {
         if (!process.env.IIIF_SERVER_DATA_PATH || (process.env.IIIF_SERVER_DATA_PATH === 'null'))
-            throw new Error("data path is not defined");
+            throw new Error('The collection data path is not defined');
         return process.env.IIIF_SERVER_DATA_PATH;
     })(),
 
@@ -74,7 +79,7 @@ module.exports = {
 
     elasticSearchUrl: (() => {
         if (!process.env.IIIF_SERVER_ELASTICSEARCH_URL || (process.env.IIIF_SERVER_ELASTICSEARCH_URL === 'null'))
-            throw new Error("elasticsearch url is not defined");
+            throw new Error('The ElasticSearch URL is not defined');
         return process.env.IIIF_SERVER_ELASTICSEARCH_URL;
     })(),
 

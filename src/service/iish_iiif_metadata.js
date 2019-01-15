@@ -51,7 +51,7 @@ function getMetadata(item) {
 function getSeeAlso(item) {
     const seeAlso = [];
 
-    if (item.metadata_id) {
+    if (config.metadataOaiUrl && item.metadata_id) {
         const metadataPrefix = (item.metadata_id.includes('ARCH') || item.metadata_id.includes('COLL'))
             ? 'ead' : 'marcxml';
         seeAlso.push({

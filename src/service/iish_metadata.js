@@ -8,6 +8,9 @@ const EAD = require('./iish/EAD');
 const MarcXML = require('./iish/MARCXML');
 
 async function processMetadata({oaiIdentifier, collectionId}) {
+    if (!config.metadataOaiUrl || !config.metadataSrwUrl)
+        throw new Error('Cannot process metadata, as there is no OAI or SRW URL configured!');
+
     if (!oaiIdentifier && collectionId) {
         if (collectionId.includes('ARCH') || collectionId.includes('COLL')) {
             const rootId = collectionId.split('.')[0];
