@@ -23,7 +23,7 @@ router.post('/index', async ctx => {
     if (!ctx.request.body.path)
         throw new HttpError(400, 'Please provide a path');
 
-    runTask('index', {dipPath: ctx.request.body.path});
+    runTask('index', {collectionPath: ctx.request.body.path});
     ctx.body = 'Collection is sent to the queue for indexing';
 });
 

@@ -6,6 +6,11 @@ const allServices = [{
     runAs: 'web',
     getService: () => null
 }, {
+    name: 'directory-watcher',
+    type: 'watcher',
+    runAs: 'standalone',
+    getService: () => require('../service/directory_watcher')
+}, {
     name: 'iish-archivematica-index',
     type: 'index',
     runAs: 'worker',

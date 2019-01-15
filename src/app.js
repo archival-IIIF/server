@@ -3,12 +3,22 @@ const logger = require('./lib/Logger');
 const {servicesRunning} = require('./lib/Service');
 
 servicesRunning.forEach(function initService(service) {
-    if (service.runAs === 'web')
-        startWeb();
-    else if (service.runAs === 'worker')
-        startWorker(service);
-    else if (service.runAs === 'cron')
-        startCron(service);
+    switch (service.runAs) {
+        case 'web':
+            startWeb();
+            break;
+        case 'worker':
+            startWorker(service);
+            break;
+        case 'standalone':
+            if (config.appInstance === 0 || config.appInstance === undefined)
+                startStandalone(service);
+            break;
+        case 'cron':
+            if (config.appInstance === 0 || config.appInstance === undefined)
+                startCron(service);
+            break;
+    }
 });
 
 function startWeb() {
@@ -75,6 +85,11 @@ function startWeb() {
 
     app.listen(config.port);
     logger.info('Started the web service');
+}
+
+function startStandalone(service) {
+    service.getService()();
+    logger.info(`Standalone initialized for ${service.name}`);
 }
 
 function startWorker(service) {

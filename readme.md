@@ -30,6 +30,7 @@ Use the provided Docker Compose or the provided Ansible scripts. Or install manu
 - `NODE_ENV`: Should be `production` in a production environment
 - `IIIF_SERVER_SERVICES`: Comma separated list of services to run on this instance:
   - `web`: Sets up a **web server** and the web environment
+  - `directory-watcher`:  Runs a **standalone** script that watches a directory for new collections to index
   - `text-index`: Runs a **worker** that indexes texts (transcriptions, translations, etc.)
   - `iish-archivematica-index`: Runs a **worker** that indexes IISH DIPs from Archivematica
   - `iish-metadata`: Runs a **worker** that indexes IISH metadata (MARCXML / EAD)
@@ -51,6 +52,8 @@ Use the provided Docker Compose or the provided Ansible scripts. Or install manu
 - `IIIF_SERVER_LOGO`: Path to the image with the logo to add to the IIIF manifests
 - `IIIF_SERVER_ATTRIBUTION`: Attribution to add to the IIIF manifests
 - `IIIF_SERVER_BASE_URL`: The public base URL of the application
+- `IIIF_SERVER_HOT_FOLDER_PATH`: The path to the hot folder where new collections to be indexed are placed
+- `IIIF_SERVER_HOT_FOLDER_PATTERN`: The pattern of a file in the root of a new collection to trigger indexing
 - `IIIF_SERVER_DATA_PATH`: The root path of the collections to serve
 - `IIIF_SERVER_LOG_LEVEL`: The logging level
 - `IIIF_SERVER_INTERNAL_IP_ADDRESSES`: If access may be granted based on IP address, provide a comma separated white list of ip addresses (Requires Redis)

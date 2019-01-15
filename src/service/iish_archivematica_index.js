@@ -22,9 +22,9 @@ const ns = {
     'IFD0': 'http://ns.exiftool.ca/EXIF/IFD0/1.0/',
 };
 
-async function processDip({dipPath}) {
-    const metsFile = (await readdirAsync(dipPath)).find(file => file.startsWith('METS') && file.endsWith('xml'));
-    const metsPath = path.join(dipPath, metsFile);
+async function processDip({collectionPath}) {
+    const metsFile = (await readdirAsync(collectionPath)).find(file => file.startsWith('METS') && file.endsWith('xml'));
+    const metsPath = path.join(collectionPath, metsFile);
     const metsXml = await readFileAsync(metsPath, 'utf8');
 
     const mets = libxmljs.parseXml(metsXml);
@@ -32,9 +32,9 @@ async function processDip({dipPath}) {
     const rootPhysical = mets.get('//mets:structMap[@TYPE="physical"]/mets:div/mets:div', ns);
     const rootStructureIISH = mets.get('//mets:structMap[@ID="structMap_iish"]/mets:div', ns);
 
-    const objectsPath = path.join(dipPath, 'objects');
+    const objectsPath = path.join(collectionPath, 'objects');
     const objects = await readdirAsync(objectsPath);
-    const relativeRootPath = path.join(path.basename(dipPath), 'objects');
+    const relativeRootPath = path.join(path.basename(collectionPath), 'objects');
 
     const rootItem = getRootItem(mets);
 

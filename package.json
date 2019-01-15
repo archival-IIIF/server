@@ -23,7 +23,9 @@
     "range_check": "1.4.0",
     "node-cron": "2.0.3",
     "iconv-lite": "0.4.24",
-    "jschardet": "1.6.0"
+    "jschardet": "1.6.0",
+    "chokidar": "2.0.4",
+    "fs-extra": "7.0.1"
   },
   "devDependencies": {
     "sharp": "0.21.1",
