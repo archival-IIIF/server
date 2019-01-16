@@ -4,7 +4,7 @@ FROM node:lts-alpine
 RUN apk add --no-cache git
 
 # Install global NPM tooling
-RUN npm install grunt-cli pm2 -g
+RUN npm install yarn grunt-cli pm2 -g
 
 # Copy the application
 RUN mkdir -p /opt/iiif-server
@@ -16,7 +16,7 @@ RUN chmod +x ./install-viewers.sh &&\
  ./install-viewers.sh
 
 # Install the application
-RUN npm install --production
+RUN yarn install --production
 
 # Run the application
 CMD ["pm2-runtime", "start", "config.yaml"]
