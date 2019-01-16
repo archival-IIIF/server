@@ -60,18 +60,18 @@ function extractPhysicalDescription(marc, metadata) {
 
 function extractAuthors(marc, metadata) {
     const authors = [
-        {tag: 100, defaultRole: 'Author'},
-        {tag: 110, defaultRole: 'Organization'},
-        {tag: 111, defaultRole: 'Congress'},
-        {tag: 600, defaultRole: 'Subject person'},
-        {tag: 610, defaultRole: 'Subject corporation'},
-        {tag: 611, defaultRole: 'Subject congress'},
-        {tag: 700, defaultRole: 'Other author'},
-        {tag: 710, defaultRole: 'Other organization'},
-        {tag: 711, defaultRole: 'Other congress'}
-    ].map(({tag, defaultRole}) => ({marcAuthor: marc.find(`//marc:datafield[@tag="${tag}"`, ns), defaultRole}))
-        .filter(({marcAuthor, defaultRole}) => marcAuthor)
-        .map(({marcAuthor, defaultRole}) => {
+        {tag: 100, role: 'Author'},
+        {tag: 110, role: 'Organization'},
+        {tag: 111, role: 'Congress'},
+        {tag: 600, role: 'Subject person'},
+        {tag: 610, role: 'Subject corporation'},
+        {tag: 611, role: 'Subject congress'},
+        {tag: 700, role: 'Other author'},
+        {tag: 710, role: 'Other organization'},
+        {tag: 711, role: 'Other congress'}
+    ].map(({tag, role}) => ({marcAuthors: marc.find(`//marc:datafield[@tag="${tag}"]`, ns), role}))
+        .reduce((acc, {marcAuthors, role}) => acc.concat(marcAuthors.map(i => ({marcAuthor: i, role}))), [])
+        .map(({marcAuthor, role}) => {
             let name = normalize(marcAuthor.get('./marc:subfield[@code="a"]', ns).text().trim());
             if (marcAuthor.get('./marc:subfield[@code="b"]', ns))
                 name = name + ' ' + normalize(marcAuthor.get('./marc:subfield[@code="b"]', ns).text().trim());
@@ -84,7 +84,7 @@ function extractAuthors(marc, metadata) {
 
             const marcAuthorsType = marcAuthor.get('./marc:subfield[@code="e"]', ns);
 
-            return {type: marcAuthorsType ? normalize(marcAuthorsType.text().trim()) : defaultRole, name};
+            return {type: marcAuthorsType ? normalize(marcAuthorsType.text().trim()) : role, name};
         });
 
     if (authors.length > 0)
