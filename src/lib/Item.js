@@ -73,8 +73,11 @@ async function getItem(id) {
     }
 }
 
-async function getChildItems(id) {
-    return getItems(`parent_id:"${id}"`);
+async function getChildItems(id, sortByOrder = false) {
+    const items = await getItems(`parent_id:"${id}"`);
+    if (sortByOrder)
+        items.sort((childA, childB) => (childA.order < childB.order) ? -1 : 1);
+    return items;
 }
 
 async function getRootItemByCollectionId(id) {

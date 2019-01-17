@@ -2,7 +2,7 @@ const Router = require('koa-router');
 const imageServer = require('./imageServer');
 
 const logger = require('../lib/Logger');
-const {getItem} = require('../lib/Item');
+const {getItem, getChildItems} = require('../lib/Item');
 const config = require('../lib/Config');
 const HttpError = require('../lib/HttpError');
 const {AccessState, hasAccess} = require('../lib/Security');
@@ -21,7 +21,7 @@ router.get('/:id/info.json', async ctx => {
 
     logger.info(`Received a request for image info with id ${id} on tier ${tier}`);
 
-    const item = await getItem(id);
+    const item = await determineItem(id);
     if (!item || (item.type !== 'image'))
         throw new HttpError(404, `No image with the id ${id}`);
 
@@ -35,7 +35,7 @@ router.get('/:id/info.json', async ctx => {
     else if (!tier && (access.state === AccessState.TIERED))
         ctx.redirect(`${prefix}/${id}${config.imageTierSeparator}${access.tier.name}/info.json`);
 
-    ctx.body = await cache('image', id, ctx.params.id, async () => await imageServer.getInfo(item, access.tier));
+    ctx.body = await cache('image', id, ctx.params.id, async () => await imageServer.getInfo(item, access.tier, id));
     switch (ctx.accepts('application/ld+json', 'application/json')) {
         case 'application/json':
             ctx.set('Content-Type', 'application/json');
@@ -53,7 +53,7 @@ router.get('/:id/:region/:size/:rotation/:quality.:format', async ctx => {
 
     logger.info(`Received a request an image with id ${id} on tier ${tier}`);
 
-    const item = await getItem(id);
+    const item = await determineItem(id);
     if (!item || (item.type !== 'image'))
         throw new HttpError(404, `No image with the id ${id}`);
 
@@ -77,5 +77,15 @@ router.get('/:id/:region/:size/:rotation/:quality.:format', async ctx => {
 
     logger.info(`Sending an image with id ${id} and tier ${tier}`);
 });
+
+async function determineItem(id) {
+    const item = await getItem(id);
+    if (item && item.type === 'root') {
+        const children = await getChildItems(item.id);
+        const firstChild = children.find(child => child.order === 1);
+        return firstChild || children[0];
+    }
+    return item;
+}
 
 module.exports = router;

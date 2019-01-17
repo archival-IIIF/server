@@ -36,21 +36,15 @@ async function getManifest(item, builder) {
 async function getReference(item, builder) {
     const manifest = new Manifest(`${prefixPresentationUrl}/${item.id}/manifest`, item.label);
 
-    const items = await getItems(item);
+    const items = await getChildItems(item.id, true);
     const firstItem = items[0];
     addThumbnail(manifest, firstItem);
 
     return manifest;
 }
 
-async function getItems(parentItem) {
-    const items = await getChildItems(parentItem.id);
-    items.sort((childA, childB) => (childA.order < childB.order) ? -1 : 1);
-    return items;
-}
-
 async function addContent(manifest, parentItem) {
-    const items = await getItems(parentItem);
+    const items = await getChildItems(parentItem.id, true);
     const firstItem = items[0];
 
     addBehavior(manifest, firstItem, items.length > 1);

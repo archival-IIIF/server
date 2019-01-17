@@ -6,8 +6,11 @@ const {enabledAuthServices, requiresAuthentication, getAuthTexts} = require('../
 const SizeRequest = require('./SizeRequest');
 const serveImage = config.imageServerUrl ? require('./external') : require('./internal');
 
-async function getInfo(item, tier) {
-    const imageInfo = new Image(`${config.baseUrl}/iiif/image/${item.id}`, item.width, item.height);
+async function getInfo(item, tier, id) {
+    if (!id)
+        id = item.id;
+
+    const imageInfo = new Image(`${config.baseUrl}/iiif/image/${id}`, item.width, item.height);
     imageInfo.setContext('http://iiif.io/api/image/2/context.json');
     imageInfo.setProfile(getProfile());
 
