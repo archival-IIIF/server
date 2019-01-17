@@ -30,7 +30,8 @@ Use the provided Docker Compose or the provided Ansible scripts. Or install manu
 - `NODE_ENV`: Should be `production` in a production environment
 - `IIIF_SERVER_SERVICES`: Comma separated list of services to run on this instance:
   - `web`: Sets up a **web server** and the web environment
-  - `directory-watcher`:  Runs a **standalone** script that watches a directory for new collections to index
+  - `directory-watcher-changes`:  Runs a **standalone** script that watches a directory for new collections to index: when a collection has had no changes for a certain amount of time, the index is triggered
+  - `directory-watcher-file-trigger`: Runs a **standalone** script that watches a directory for new collections to index: when a collection includes a trigger file, the index is triggered
   - `text-index`: Runs a **worker** that indexes texts (transcriptions, translations, etc.)
   - `iish-archivematica-index`: Runs a **worker** that indexes IISH DIPs from Archivematica
   - `iish-metadata`: Runs a **worker** that indexes IISH metadata (MARCXML / EAD)

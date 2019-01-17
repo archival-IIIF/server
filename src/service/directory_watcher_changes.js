@@ -11,7 +11,7 @@ const {runTask} = require('../lib/Task');
 
 const collectionsWatching = {};
 
-function watchDirectoryForNewCollections() {
+function watchDirectoryForChanges() {
     if (!config.hotFolderPath || !existsSync(config.hotFolderPath))
         throw new Error('No hot folder or incorrect hot folder to watch!');
 
@@ -69,4 +69,4 @@ async function startIndexForNewCollection(path) {
     delete collectionsWatching[path];
 }
 
-module.exports = watchDirectoryForNewCollections;
+module.exports = watchDirectoryForChanges;

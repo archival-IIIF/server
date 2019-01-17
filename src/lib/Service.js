@@ -6,10 +6,15 @@ const allServices = [{
     runAs: 'web',
     getService: () => null
 }, {
-    name: 'directory-watcher',
+    name: 'directory-watcher-changes',
     type: 'watcher',
     runAs: 'standalone',
-    getService: () => require('../service/directory_watcher')
+    getService: () => require('../service/directory_watcher_changes')
+}, {
+    name: 'directory-watcher-file-trigger',
+    type: 'watcher',
+    runAs: 'standalone',
+    getService: () => require('../service/directory_watcher_file_trigger')
 }, {
     name: 'iish-archivematica-index',
     type: 'index',
@@ -54,6 +59,13 @@ let servicesRunning = config.services.map(name => {
         throw new Error(`No service found with the name ${name}!`);
     return {...serviceFound};
 });
+
+servicesRunning.reduce((acc, service) => {
+    if (acc.includes(service.type))
+        throw new Error(`There is more than one service of type '${service.type}' configured!`);
+    acc.push(service.type);
+    return acc;
+}, []);
 
 if (servicesRunning.find(service => service.runAs === 'web'))
     servicesRunning = servicesRunning.map(
