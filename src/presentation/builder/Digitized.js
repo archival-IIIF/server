@@ -48,7 +48,7 @@ async function addContent(manifest, parentItem) {
     const firstItem = items[0];
 
     addBehavior(manifest, firstItem, items.length > 1);
-    addThumbnail(manifest, firstItem);
+    addThumbnail(manifest, parentItem, firstItem);
 
     const manifestItems = await Promise.all(items.map(async item => {
         const page = item.order || 0;
@@ -130,8 +130,8 @@ function getImageResource(item, size = 'full') {
     return resource;
 }
 
-function addThumbnail(base, item) {
-    if (item.type === 'image') {
+function addThumbnail(base, item, childItem) {
+    if ((item.type === 'image') || (item.type === 'root' && childItem && childItem.type === 'image')) {
         const resource = getImageResource(item, '90,');
         base.setThumbnail(resource);
     }
