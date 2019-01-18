@@ -4,6 +4,7 @@ const {servicesRunning} = require('./Service');
 const {client, createNewClient} = require('./Redis');
 
 const getChannel = type => `tasks:${type}`;
+const getServiceByType = type => servicesRunning.find(service => (service.type === type) && (service.runAs === 'lib'));
 
 function runTask(type, task, identifier = uuid()) {
     const service = getServiceByType(type);
@@ -48,10 +49,6 @@ function runTaskWithResponse(type, task, identifier = uuid()) {
 
         runTask(type, identifier, task);
     });
-}
-
-function getServiceByType(type) {
-    return servicesRunning.find(service => (service.type === type) && (service.runAs === 'lib'));
 }
 
 module.exports = {runTask, runTaskWithResponse};
