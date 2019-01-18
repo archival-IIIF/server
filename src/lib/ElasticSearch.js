@@ -4,7 +4,12 @@ const logger = require('./Logger');
 
 const client = new elasticsearch.Client({
     host: config.elasticSearchUrl,
-    apiVersion: '6.5'
+    apiVersion: '6.5',
+    log: {
+        type: 'file',
+        level: 'error',
+        path: __dirname + '/../../elasticsearch.log',
+    }
 });
 
 setMapping();
