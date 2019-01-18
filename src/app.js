@@ -11,11 +11,11 @@ servicesRunning.forEach(function initService(service) {
             startWorker(service);
             break;
         case 'standalone':
-            if (config.appInstance === 0 || config.appInstance === undefined)
+            if (config.appInstance === undefined || parseInt(config.appInstance) === 0)
                 startStandalone(service);
             break;
         case 'cron':
-            if (config.appInstance === 0 || config.appInstance === undefined)
+            if (config.appInstance === undefined || parseInt(config.appInstance) === 0)
                 startCron(service);
             break;
     }
