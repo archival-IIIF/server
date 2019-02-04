@@ -33,8 +33,6 @@ function watchDirectoryForFileTrigger() {
 }
 
 async function startIndexForNewCollection(path, trigger) {
-    await unlinkAsync(trigger);
-
     const relativePath = path.replace(config.hotFolderPath, '.');
     const newPath = resolve(config.dataPath, relativePath);
     logger.info(`Move collection from hot folder ${path} to ${newPath}`);
