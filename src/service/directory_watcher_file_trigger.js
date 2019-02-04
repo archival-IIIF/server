@@ -1,5 +1,4 @@
-const {promisify} = require('util');
-const {existsSync, unlink} = require('fs');
+const {existsSync} = require('fs');
 const {dirname, basename, resolve} = require('path');
 
 const chokidar = require('chokidar');
@@ -8,8 +7,6 @@ const {move} = require('fs-extra');
 const config = require('../lib/Config');
 const logger = require('../lib/Logger');
 const {runTask} = require('../lib/Task');
-
-const unlinkAsync = promisify(unlink);
 
 function watchDirectoryForFileTrigger() {
     if (!config.hotFolderPath || !existsSync(config.hotFolderPath))
@@ -27,12 +24,12 @@ function watchDirectoryForFileTrigger() {
         if (hotFolderPattern.exec(file)) {
             const directory = dirname(path);
             logger.info(`Found a new collection in the hot folder ${directory}`);
-            startIndexForNewCollection(directory, path);
+            startIndexForNewCollection(directory);
         }
     });
 }
 
-async function startIndexForNewCollection(path, trigger) {
+async function startIndexForNewCollection(path) {
     const relativePath = path.replace(config.hotFolderPath, '.');
     const newPath = resolve(config.dataPath, relativePath);
     logger.info(`Move collection from hot folder ${path} to ${newPath}`);

@@ -4,6 +4,7 @@ const {promisify} = require('util');
 const moment = require('moment');
 const libxmljs = require('libxmljs');
 
+const config = require('../lib/Config');
 const {runTask} = require('../lib/Task');
 const {evictCache} = require('../lib/Cache');
 const {createItem, indexItems, deleteItems} = require('../lib/Item');
@@ -34,7 +35,7 @@ async function processDip({collectionPath}) {
 
     const objectsPath = path.join(collectionPath, 'objects');
     const objects = await readdirAsync(objectsPath);
-    const relativeRootPath = path.join(path.basename(collectionPath), 'objects');
+    const relativeRootPath = objectsPath.replace(`${config.dataPath}/`, '');
 
     const rootItem = getRootItem(mets);
 
