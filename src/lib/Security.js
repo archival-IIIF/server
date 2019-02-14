@@ -1,17 +1,12 @@
 const moment = require('moment');
 const rangeCheck = require('range_check');
 const uuid = require('uuid/v4');
-const {promisify} = require('util');
 
 const {client} = require('./Redis');
 const config = require('./Config');
 const logger = require('./Logger');
 const esClient = require('./ElasticSearch');
 const {runTaskWithResponse} = require('./Task');
-
-const getAsync = promisify(client.get).bind(client);
-const setAsync = promisify(client.set).bind(client);
-const delAsync = promisify(client.del).bind(client);
 
 const isLoginEnabled = !config.loginDisabled;
 const isExternalEnabled = config.internalIpAddresses.length > 0;
@@ -113,7 +108,7 @@ async function checkTokenDb(tokens) {
 }
 
 async function getIdentitiesAndTokensForAccessId(acccesId) {
-    const accessIdInfo = await getAsync(`access-id:${acccesId}`);
+    const accessIdInfo = await client.get(`access-id:${acccesId}`);
     if (accessIdInfo)
         return JSON.parse(accessIdInfo);
     return null;
@@ -128,7 +123,7 @@ async function setAccessIdForIdentity(identity, accessId) {
 
     if (!identities.includes(identity)) {
         identities.push(identity);
-        await setAsync(`access-id:${accessId}`, JSON.stringify({identities, token}), 'EX', 86400);
+        await client.set(`access-id:${accessId}`, JSON.stringify({identities, token}), ['EX', 86400]);
     }
 
     return accessId;
@@ -141,8 +136,8 @@ async function setAccessTokenForAccessId(accessId) {
         const token = accessIdInfo.token || uuid();
 
         if (!accessIdInfo.token) {
-            await setAsync(`access-token:${token}`, accessId, 'EX', 86400);
-            await setAsync(`access-id:${accessId}`, JSON.stringify({identities, token}), 'EX', 86400);
+            await client.set(`access-token:${token}`, accessId, ['EX', 86400]);
+            await client.set(`access-id:${accessId}`, JSON.stringify({identities, token}), ['EX', 86400]);
         }
 
         return token;
@@ -152,7 +147,7 @@ async function setAccessTokenForAccessId(accessId) {
 }
 
 async function getAccessIdForAccessToken(accessToken) {
-    return await getAsync(`access-token:${accessToken}`);
+    return await client.get(`access-token:${accessToken}`);
 }
 
 async function getAccessIdFromRequest(ctx, acceptToken = false) {
@@ -175,10 +170,10 @@ async function removeAccessIdFromRequest(ctx) {
     if (accessId) {
         const accessIdInfo = await getIdentitiesAndTokensForAccessId(accessId);
         if (accessIdInfo) {
-            await delAsync(`access-id:${accessId}`);
+            await client.del(`access-id:${accessId}`);
 
             if (accessIdInfo.token)
-                await delAsync(`access-token:${accessIdInfo.token}`);
+                await client.del(`access-token:${accessIdInfo.token}`);
         }
     }
 }

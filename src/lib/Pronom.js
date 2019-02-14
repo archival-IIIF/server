@@ -22,7 +22,7 @@ function getPronomInfo(puid) {
 
     logger.debug(`Caching PRONOM information by PUID ${puid}`);
 
-    const id = node.attr('ID').value();
+    const id = parseInt(node.attr('ID').value());
     const name = node.attr('Name').value();
     const url = `https://www.nationalarchives.gov.uk/PRONOM/Format/proFormatSearch.aspx?status=detailReport&id=${id}`;
     const extensions = node.find('./p:Extension', ns).map(ext => ext.text());

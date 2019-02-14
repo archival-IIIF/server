@@ -1,16 +1,13 @@
-const redis = require('redis');
 const config = require('./Config');
+const {createHandyClient} = require('handy-redis');
 
-const client = createNewClient();
+const client = (config.redis !== null) ? createNewClient() : null;
 
 function createNewClient() {
-    if (config.redis !== null)
-        return redis.createClient(config.redis);
-
-    if (!config.cacheDisabled || !config.loginDisabled || config.internalIpAddresses.length > 0)
+    if (config.redis === null)
         throw new Error('Redis is required for using either the cache or the auth functionality!');
 
-    return null;
+    return createHandyClient(config.redis);
 }
 
 module.exports = {client, createNewClient};

@@ -3,7 +3,7 @@ const config = require('./Config');
 
 const stackTraceFormat = format(info => {
     if (info.meta && info.meta instanceof Error)
-        info.message = `${info.message}\n${info.meta.stack}`;
+        info.message = `${info.message} \n${info.meta.stack}`;
     return info;
 });
 

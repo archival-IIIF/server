@@ -17,7 +17,7 @@
     "request": "2.88.0",
     "request-promise-native": "1.0.5",
     "file-icon-vectors": "1.0.0",
-    "redis": "2.8.0",
+    "handy-redis": "1.5.2",
     "uuid": "3.3.2",
     "moment": "2.24.0",
     "range_check": "1.4.0",
@@ -30,6 +30,10 @@
   "devDependencies": {
     "sharp": "0.21.3",
     "dotenv": "6.2.0",
-    "mocha": "5.2.0"
+    "mocha": "5.2.0",
+    "sinon": "7.2.3",
+    "chai": "4.2.0",
+    "sinon-chai": "3.3.0",
+    "rewiremock": "3.13.0"
   }
 }

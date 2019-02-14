@@ -26,14 +26,14 @@ function runTaskWithResponse(type, task, identifier = uuid()) {
     const subscriber = createNewClient();
 
     return new Promise((resolve, reject) => {
-        subscriber.subscribe(getChannel(type));
-        subscriber.on('message', (ch, message) => {
+        subscriber.redis.subscribe(getChannel(type));
+        subscriber.redis.on('message', (ch, message) => {
             const msg = JSON.parse(message);
             if ((ch === getChannel(type)) && (msg.identifier === identifier)) {
                 clearTimeout(timer);
 
-                subscriber.unsubscribe();
-                subscriber.end(true);
+                subscriber.redis.unsubscribe();
+                subscriber.redis.end(true);
 
                 logger.debug(`Task with type '${type}' and identifier '${identifier}' has finished`);
                 resolve(msg.data);
@@ -41,13 +41,13 @@ function runTaskWithResponse(type, task, identifier = uuid()) {
         });
 
         const timer = setTimeout(() => {
-            subscriber.unsubscribe();
-            subscriber.end(true);
+            subscriber.redis.unsubscribe();
+            subscriber.redis.end(true);
 
             reject(new Error(`Task of type ${type} with identifier ${identifier} timed out`));
         }, timeout);
 
-        runTask(type, identifier, task);
+        runTask(type, task, identifier);
     });
 }
 
