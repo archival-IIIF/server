@@ -54,7 +54,7 @@ function walkThroughLevels(level) {
         return [];
 
     const parent = level.get('.//preceding-sibling::ead:did/..', ns);
-    if (parent.name() !== level.name())
+    if (parent && parent.name() !== level.name())
         return [
             ...walkThroughLevels(parent),
             extractMetadataFromLevel(level)

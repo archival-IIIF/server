@@ -27,8 +27,10 @@ async function processMetadata({oaiIdentifier, collectionId}) {
             const srwResults = libxmljs.parseXml(response);
             const marcId = srwResults.get('//marc:controlfield[@tag="001"]', {
                 'marc': 'http://www.loc.gov/MARC21/slim'
-            }).text();
-            oaiIdentifier = `oai:socialhistoryservices.org:${marcId}`;
+            });
+
+            if (marcId)
+                oaiIdentifier = `oai:socialhistoryservices.org:${marcId.text()}`;
         }
     }
 

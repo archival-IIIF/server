@@ -81,7 +81,8 @@ const imageTypes = [
     'fmt/119',
     'fmt/662',
     'fmt/668',
-    'fmt/1001'
+    'fmt/1001',
+    'fmt/645'
 ];
 const audioTypes = [
     'x-fmt/136',

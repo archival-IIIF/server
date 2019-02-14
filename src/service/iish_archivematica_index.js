@@ -343,8 +343,8 @@ function determineDpi(objCharacteristicsExt) {
 
     const fitsExifTool = objCharacteristicsExt.get('./fits:fits/fits:toolOutput/fits:tool[@name="Exiftool"]/exiftool', ns);
     if (fitsExifTool) {
-        if (exifTool.get('./XResolution', ns)) {
-            const dpi = Number.parseInt(exifTool.get('./XResolution', ns).text());
+        if (fitsExifTool.get('./XResolution', ns)) {
+            const dpi = Number.parseInt(fitsExifTool.get('./XResolution', ns).text());
             if (dpi) return dpi;
         }
     }
