@@ -10,10 +10,10 @@
     "koa-send": "5.0.0",
     "koa-bodyparser": "4.2.1",
     "koa-compress": "3.0.0",
-    "winston": "3.2.0",
+    "winston": "3.2.1",
     "mime-types": "2.1.21",
     "libxmljs": "0.19.5",
-    "elasticsearch": "15.3.1",
+    "elasticsearch": "15.4.1",
     "request": "2.88.0",
     "request-promise-native": "1.0.5",
     "file-icon-vectors": "1.0.0",
@@ -24,7 +24,7 @@
     "node-cron": "2.0.3",
     "iconv-lite": "0.4.24",
     "jschardet": "2.1.0",
-    "chokidar": "2.0.4",
+    "chokidar": "2.1.1",
     "fs-extra": "7.0.1"
   },
   "devDependencies": {
