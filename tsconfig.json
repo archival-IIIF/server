@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "alwaysStrict": true,
+    "target": "es2018",
+    "module": "commonjs",
+    "sourceMap": true
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "typeRoots": [
+    "./types",
+    "./node_modules/@types"
+  ]
+}
