@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alto xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="http://schema.ccs-gmbh.com/metae/alto-1-4.xsd"
+      xmlns:xlink="http://www.w3.org/1999/xlink">
+  <Layout>
+    <Page ID="Page1" HEIGHT="4450" WIDTH="3533" PHYSICAL_IMG_NR="1" PC="0.974288224956063">
+      <TopMargin HEIGHT="0" WIDTH="3533" HPOS="0" VPOS="0"/>
+      <LeftMargin HEIGHT="4450" WIDTH="0" HPOS="0" VPOS="0"/>
+      <RightMargin HEIGHT="4450" WIDTH="445" HPOS="4428" VPOS="0"/>
+      <BottomMargin HEIGHT="22" WIDTH="3533" HPOS="0" VPOS="4428"/>
+      <PrintSpace HEIGHT="4428" WIDTH="3088" HPOS="0" VPOS="0">
+        <TextBlock ID="TextBlock1" HEIGHT="37" WIDTH="231" HPOS="1550" VPOS="297" STYLEREFS="TXT_0 PAR_BLOCK">
+          <TextLine ID="TextLine1" HEIGHT="37" WIDTH="218" HPOS="1557" VPOS="297">
+            <String ID="String1" CONTENT="The" HEIGHT="4" WIDTH="47" HPOS="1557" VPOS="318" WC="1" CC="0"/>
+            <SP ID="SP1" WIDTH="25" HPOS="1604" VPOS="297"/>
+            <String ID="String2" CONTENT="first" HEIGHT="37" WIDTH="23" HPOS="1654" VPOS="297" WC="0.15" CC="8"/>
+            <SP ID="SP2" WIDTH="49" HPOS="1677" VPOS="297"/>
+            <String ID="String3" CONTENT="block." HEIGHT="3" WIDTH="49" HPOS="1726" VPOS="319" WC="1" CC="0"/>
+          </TextLine>
+        </TextBlock>
+        <TextBlock ID="TextBlock2" HEIGHT="457" WIDTH="1297" HPOS="345" VPOS="394" STYLEREFS="TXT_0 PAR_BLOCK">
+          <TextLine ID="TextLine2" HEIGHT="45" WIDTH="1282" HPOS="354" VPOS="394">
+            <String ID="String4" CONTENT="This" HEIGHT="35" WIDTH="33" HPOS="354" VPOS="394" WC="1" CC="00"/>
+            <SP ID="SP3" WIDTH="21" HPOS="387" VPOS="394"/>
+            <String ID="String5" CONTENT="is" HEIGHT="43" WIDTH="236" HPOS="408" VPOS="396" WC="0.95"
+                    CC="00500000000"/>
+            <SP ID="SP4" WIDTH="16" HPOS="644" VPOS="396"/>
+            <String ID="String6" CONTENT="one" HEIGHT="35" WIDTH="44" HPOS="660" VPOS="396" WC="1" CC="00"/>
+            <SP ID="SP5" WIDTH="26" HPOS="704" VPOS="396"/>
+            <String ID="String7" CONTENT="line" HEIGHT="27" WIDTH="56" HPOS="730" VPOS="405" WC="1" CC="000"/>
+            <SP ID="SP6" WIDTH="29" HPOS="786" VPOS="398"/>
+            <String ID="String8" CONTENT="of" HEIGHT="40" WIDTH="173" HPOS="815" VPOS="398" WC="1"
+                    CC="000000000"/>
+            <SP ID="SP7" WIDTH="27" HPOS="988" VPOS="398"/>
+            <String ID="String9" CONTENT="text." HEIGHT="34" WIDTH="28" HPOS="1015" VPOS="399" WC="1" CC="00"/>
+          </TextLine>
+        </TextBlock>
+      </PrintSpace>
+    </Page>
+  </Layout>
+</alto>

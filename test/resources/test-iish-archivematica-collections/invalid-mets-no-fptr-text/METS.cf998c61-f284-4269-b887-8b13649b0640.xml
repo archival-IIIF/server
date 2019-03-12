@@ -1,0 +1,205 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:xlink="http://www.w3.org/1999/xlink"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version111/mets.xsd">
+  <mets:dmdSec ID="dmdSec_1">
+    <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+      <mets:xmlData>
+        <premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:intellectualEntity"
+                       xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd"
+                       version="3.0">
+          <premis:objectIdentifier>
+            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+            <premis:objectIdentifierValue>cf998c61-f284-4269-b887-8b13649b0640</premis:objectIdentifierValue>
+          </premis:objectIdentifier>
+          <premis:originalName>test-cf998c61-f284-4269-b887-8b13649b0640</premis:originalName>
+        </premis:object>
+      </mets:xmlData>
+    </mets:mdWrap>
+  </mets:dmdSec>
+  <mets:amdSec ID="amdSec_12">
+    <mets:techMD ID="techMD_12">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>cf34ab26-d4a2-4b73-99bf-9da8171084b0</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>f787fbb7d850ec866d40bc82b136da98d81adc6de8eb5bc3148285c9f8ed6ca7
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>126</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Plain Text</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>x-fmt/111</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2018-10-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output"
+                      xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd"
+                      version="1.1.0" timestamp="11/27/18 10:27 AM">
+                  <identification status="SINGLE_RESULT">
+                    <identity format="Plain text" mimetype="text/plain" toolname="FITS" toolversion="1.1.0">
+                      <tool toolname="file utility" toolversion="5.25"/>
+                    </identity>
+                  </identification>
+                  <fileinfo>
+                    <filepath toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/transcription/test_01.txt
+                    </filepath>
+                    <filename toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">test_01.txt
+                    </filename>
+                    <size toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">126</size>
+                    <fslastmodified toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">
+                      1539075340000
+                    </fslastmodified>
+                  </fileinfo>
+                  <filestatus/>
+                  <metadata>
+                    <text>
+                      <charset toolname="file utility" toolversion="5.25" status="SINGLE_RESULT">US-ASCII</charset>
+                    </text>
+                  </metadata>
+                  <toolOutput>
+                    <tool name="file utility" version="5.25">
+                      <fileUtilityOutput xmlns="">
+                        <rawOutput>ASCII text
+                          text/plain; charset=us-ascii
+                        </rawOutput>
+                        <mimetype>text/plain</mimetype>
+                        <format>Plain text</format>
+                        <charset>US-ASCII</charset>
+                      </fileUtilityOutput>
+                    </tool>
+                    <tool name="OIS File Information" version="0.2">
+                      <fits
+                          xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd">
+                        <fileinfo>
+                          <filepath>
+                            /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/transcription/test_01.txt
+                          </filepath>
+                          <filename>test_01.txt</filename>
+                          <size>126</size>
+                          <fslastmodified>1539075340000</fslastmodified>
+                        </fileinfo>
+                      </fits>
+                    </tool>
+                    <tool name="ffident" version="0.2">
+                      <ffidentOutput xmlns="">
+                        <shortName/>
+                        <longName>Unknown Binary</longName>
+                        <group/>
+                        <mimetypes>
+                          <mimetype>application/octet-stream</mimetype>
+                        </mimetypes>
+                        <fileExtensions/>
+                      </ffidentOutput>
+                    </tool>
+                    <tool name="Tika" version="1.10">
+                      <metadata xmlns="">
+                        <field name="X-Parsed-By">
+                          <value>org.apache.tika.parser.DefaultParser</value>
+                          <value>org.apache.tika.parser.txt.TXTParser</value>
+                        </field>
+                        <field name="Content-Encoding">
+                          <value>ISO-8859-1</value>
+                        </field>
+                        <field name="Content-Type">
+                          <value>text/plain; charset=ISO-8859-1</value>
+                        </field>
+                      </metadata>
+                    </tool>
+                  </toolOutput>
+                </fits>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/transcription/test_01.txt</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:fileSec>
+    <mets:fileGrp USE="original">
+      <mets:file GROUPID="Group-cf34ab26-d4a2-4b73-99bf-9da8171084b0" ID="file-cf34ab26-d4a2-4b73-99bf-9da8171084b0"
+                 ADMID="amdSec_12">
+        <mets:FLocat xlink:href="objects/transcription/test_01.txt" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+    </mets:fileGrp>
+    <mets:fileGrp USE="submissionDocumentation">
+      <mets:file GROUPID="Group-0f7a75c8-c27b-40ea-8f41-85e6e183f3f6" ID="file-0f7a75c8-c27b-40ea-8f41-85e6e183f3f6"
+                 ADMID="amdSec_11">
+        <mets:FLocat
+            xlink:href="objects/submissionDocumentation/transfer-test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/METS.xml"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+    </mets:fileGrp>
+    <mets:fileGrp USE="metadata">
+      <mets:file GROUPID="Group-32c37ddf-e288-4dc0-8f0e-de29742d2665" ID="file-32c37ddf-e288-4dc0-8f0e-de29742d2665"
+                 ADMID="amdSec_1">
+        <mets:FLocat
+            xlink:href="objects/metadata/transfers/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/directory_tree.txt"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-0671ef17-a3e8-4f88-8c60-e862be415314" ID="file-0671ef17-a3e8-4f88-8c60-e862be415314"
+                 ADMID="amdSec_2">
+        <mets:FLocat
+            xlink:href="objects/metadata/transfers/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/mets_structmap.xml"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+    </mets:fileGrp>
+  </mets:fileSec>
+  <mets:structMap ID="structMap_1" LABEL="Archivematica default" TYPE="physical">
+    <mets:div LABEL="test-cf998c61-f284-4269-b887-8b13649b0640" TYPE="Directory" DMDID="dmdSec_1">
+      <mets:div LABEL="objects" TYPE="Directory">
+        <mets:div LABEL="metadata" TYPE="Directory">
+          <mets:div LABEL="transfers" TYPE="Directory">
+            <mets:div LABEL="test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6" TYPE="Directory">
+              <mets:div LABEL="directory_tree.txt" TYPE="Item">
+                <mets:fptr FILEID="file-32c37ddf-e288-4dc0-8f0e-de29742d2665"/>
+              </mets:div>
+              <mets:div LABEL="mets_structmap.xml" TYPE="Item">
+                <mets:fptr FILEID="file-0671ef17-a3e8-4f88-8c60-e862be415314"/>
+              </mets:div>
+            </mets:div>
+          </mets:div>
+        </mets:div>
+        <mets:div LABEL="preservation" TYPE="Directory"/>
+        <mets:div LABEL="submissionDocumentation" TYPE="Directory">
+          <mets:div LABEL="transfer-test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6" TYPE="Directory">
+            <mets:div LABEL="METS.xml" TYPE="Item">
+              <mets:fptr FILEID="file-0f7a75c8-c27b-40ea-8f41-85e6e183f3f6"/>
+            </mets:div>
+          </mets:div>
+        </mets:div>
+        <mets:div LABEL="transcription" TYPE="Directory">
+          <mets:div LABEL="test_01.txt" TYPE="Item">
+            <mets:fptr FILEID="file-cf34ab26-d4a2-4b73-99bf-9da8171084b0"/>
+          </mets:div>
+        </mets:div>
+      </mets:div>
+    </mets:div>
+  </mets:structMap>
+  <mets:structMap TYPE="logical" ID="structMap_iish" LABEL="IISH structure">
+    <mets:div>
+      <mets:div TYPE="page" ORDER="1" LABEL="Page 1">
+        <mets:fptr CONTENTIDS="transcription/test_01.txt" FILEID="file-cf34ab26-d4a2-4b73-99bf-9da8171084b0"/>
+      </mets:div>
+    </mets:div>
+  </mets:structMap>
+</mets:mets>

@@ -5,7 +5,7 @@ import * as libxmljs from 'libxmljs';
 import {Attribute} from 'libxmljs';
 
 import config from '../lib/Config';
-import client from '../lib/ElasticSearch';
+import getClient from '../lib/ElasticSearch';
 
 export interface Text {
     id: string;
@@ -25,20 +25,20 @@ export async function indexTexts(textItems: Text[]): Promise<void> {
             {index: {_index: 'texts', _type: '_doc', _id: item.id}},
             item
         ]);
-        const result = await client.bulk({body: [].concat(...body as [])});
+        const result = await getClient().bulk({body: [].concat(...body as [])});
         if (result.errors)
             throw new Error('Failed to index the text items');
     }
 }
 
 export async function deleteTexts(collectionId: string): Promise<void> {
-    await client.deleteByQuery({index: 'texts', q: `collection_id:${collectionId}`});
+    await getClient().deleteByQuery({index: 'texts', q: `collection_id:${collectionId}`});
 }
 
 export async function readAlto(uri: string): Promise<{ x: number, y: number, width: number, height: number, word: string }[]> {
     const altoXml = await readFileAsync(uri, 'utf8');
     const alto = libxmljs.parseXml(altoXml);
-    return alto.find('String').map(stringElem => {
+    return alto.find('//String').map(stringElem => {
         return {
             x: parseInt((stringElem.attr('VPOS') as Attribute).value()),
             y: parseInt((stringElem.attr('HPOS') as Attribute).value()),

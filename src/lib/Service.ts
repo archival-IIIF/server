@@ -30,7 +30,7 @@ export interface CronService extends StandaloneService {
 
 export type IndexParams = { collectionPath: string };
 export type TextParams = { collectionId: string, items: TextItem[] };
-export type MetadataParams = { oaiIdentifier?: string, collectionId?: string };
+export type MetadataParams = { oaiIdentifier?: string | null, collectionId?: string };
 export type AccessParams = { item: Item, ip?: string, identities?: string[] };
 export type AuthTextsParams = { item: Item };
 export type IIIFMetadataParams = { item: Item };
@@ -104,3 +104,9 @@ servicesRunning.reduce<string[]>((acc, service) => {
 if (servicesRunning.find(service => service.runAs === 'web'))
     servicesRunning = servicesRunning.map(
         service => service.runAs === 'worker' ? <Service>{...service, runAs: 'lib'} : {...service});
+
+// for testing purposes
+export function setServicesRunning(services: Service[]) {
+    if (config.env === 'test')
+        servicesRunning = services;
+}

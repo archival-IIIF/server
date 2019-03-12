@@ -1,0 +1,1 @@
+This text with some special characters: «ταБЬℓσ»: 1<2 & 4+1>3%, for this utf8 text!

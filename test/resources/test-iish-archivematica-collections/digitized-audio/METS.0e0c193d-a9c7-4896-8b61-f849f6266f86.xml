@@ -1,0 +1,391 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:xlink="http://www.w3.org/1999/xlink"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version111/mets.xsd">
+  <mets:dmdSec ID="dmdSec_1">
+    <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+      <mets:xmlData>
+        <premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:intellectualEntity"
+                       xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd"
+                       version="3.0">
+          <premis:objectIdentifier>
+            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+            <premis:objectIdentifierValue>0e0c193d-a9c7-4896-8b61-f849f6266f86</premis:objectIdentifierValue>
+          </premis:objectIdentifier>
+          <premis:originalName>test-0e0c193d-a9c7-4896-8b61-f849f6266f86</premis:originalName>
+        </premis:object>
+      </mets:xmlData>
+    </mets:mdWrap>
+  </mets:dmdSec>
+  <mets:amdSec ID="amdSec_3">
+    <mets:techMD ID="techMD_3">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>843d35b3-6ad8-4e33-9e3c-e5b25b13fde7</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>35a7e066e141669088d6badf9e17624d1b16a508633a3884b58e18949e2d3a4d
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>21626768</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Waveform Audio (PCMWAVEFORMAT)</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>fmt/141</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2018-12-20</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <ffprobe>
+                  <program_version version="3.3.2-1~16.04.york2"
+                                   copyright="Copyright (c) 2007-2017 the FFmpeg developers"
+                                   compiler_ident="gcc 5.4.0 (Ubuntu 5.4.0-6ubuntu1~16.04.4) 20160609"
+                                   configuration="--prefix=/usr --extra-version='1~16.04.york2' --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --enable-gpl --disable-stripping --enable-avresample --enable-avisynth --enable-gnutls --enable-ladspa --enable-libass --enable-libbluray --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libgme --enable-libgsm --enable-libmp3lame --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libpulse --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libssh --enable-libtheora --enable-libtwolame --enable-libvorbis --enable-libvpx --enable-libwavpack --enable-libwebp --enable-libx265 --enable-libxvid --enable-libzmq --enable-libzvbi --enable-omx --enable-openal --enable-opengl --enable-sdl2 --enable-libdc1394 --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-libopencv --enable-libx264 --enable-shared"/>
+                  <library_versions>
+                    <library_version name="libavutil" major="55" minor="58" micro="100" version="3619428"
+                                     ident="Lavu55.58.100"/>
+                    <library_version name="libavcodec" major="57" minor="89" micro="100" version="3758436"
+                                     ident="Lavc57.89.100"/>
+                    <library_version name="libavformat" major="57" minor="71" micro="100" version="3753828"
+                                     ident="Lavf57.71.100"/>
+                    <library_version name="libavdevice" major="57" minor="6" micro="100" version="3737188"
+                                     ident="Lavd57.6.100"/>
+                    <library_version name="libavfilter" major="6" minor="82" micro="100" version="414308"
+                                     ident="Lavfi6.82.100"/>
+                    <library_version name="libswscale" major="4" minor="6" micro="100" version="263780"
+                                     ident="SwS4.6.100"/>
+                    <library_version name="libswresample" major="2" minor="7" micro="100" version="132964"
+                                     ident="SwR2.7.100"/>
+                    <library_version name="libpostproc" major="54" minor="5" micro="100" version="3540324"
+                                     ident="postproc54.5.100"/>
+                  </library_versions>
+                  <streams>
+                    <stream index="0" codec_name="pcm_s16le" codec_long_name="PCM signed 16-bit little-endian"
+                            codec_type="audio" codec_time_base="1/44100" codec_tag_string="[1][0][0][0]"
+                            codec_tag="0x0001" sample_fmt="s16" sample_rate="44100" channels="2" bits_per_sample="16"
+                            r_frame_rate="0/0" avg_frame_rate="0/0" time_base="1/44100" duration_ts="5406681"
+                            duration="122.600476" bit_rate="1411200" extradata=" ">
+                      <disposition default="0" dub="0" original="0" comment="0" lyrics="0" karaoke="0" forced="0"
+                                   hearing_impaired="0" visual_impaired="0" clean_effects="0" attached_pic="0"
+                                   timed_thumbnails="0"/>
+                    </stream>
+                  </streams>
+                  <chapters>
+                  </chapters>
+                  <format
+                      filename="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-9ecad774-a8a6-40ef-a62e-48ae23907133/objects/preservation/test_1.wav"
+                      nb_streams="1" nb_programs="0" format_name="wav" format_long_name="WAV / WAVE (Waveform Audio)"
+                      duration="122.600476" size="21626768" bit_rate="1411202" probe_score="99"/>
+                </ffprobe>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                  <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/"
+                                   xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/"
+                                   xmlns:System="http://ns.exiftool.ca/File/System/1.0/"
+                                   xmlns:File="http://ns.exiftool.ca/File/1.0/"
+                                   xmlns:RIFF="http://ns.exiftool.ca/RIFF/RIFF/1.0/"
+                                   xmlns:Composite="http://ns.exiftool.ca/Composite/1.0/"
+                                   rdf:about="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-9ecad774-a8a6-40ef-a62e-48ae23907133/objects/preservation/test_1.wav"
+                                   et:toolkit="Image::ExifTool 10.10">
+                    <ExifTool:ExifToolVersion>10.10</ExifTool:ExifToolVersion>
+                    <System:FileName>test_1.wav</System:FileName>
+                    <System:Directory>
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-9ecad774-a8a6-40ef-a62e-48ae23907133/objects/preservation
+                    </System:Directory>
+                    <System:FileSize>21 MB</System:FileSize>
+                    <System:FileModifyDate>2018:12:20 13:13:51+00:00</System:FileModifyDate>
+                    <System:FileAccessDate>2018:12:20 13:18:34+00:00</System:FileAccessDate>
+                    <System:FileInodeChangeDate>2018:12:20 13:18:24+00:00</System:FileInodeChangeDate>
+                    <System:FilePermissions>rw-r-----</System:FilePermissions>
+                    <File:FileType>WAV</File:FileType>
+                    <File:FileTypeExtension>wav</File:FileTypeExtension>
+                    <File:MIMEType>audio/x-wav</File:MIMEType>
+                    <RIFF:Encoding>Microsoft PCM</RIFF:Encoding>
+                    <RIFF:NumChannels>2</RIFF:NumChannels>
+                    <RIFF:SampleRate>44100</RIFF:SampleRate>
+                    <RIFF:AvgBytesPerSec>176400</RIFF:AvgBytesPerSec>
+                    <RIFF:BitsPerSample>16</RIFF:BitsPerSample>
+                    <Composite:Duration>0:02:02</Composite:Duration>
+                  </rdf:Description>
+                </rdf:RDF>
+                <MediaInfo xmlns="https://mediaarea.net/mediainfo"
+                           xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd"
+                           version="2.0">
+                  <creatingLibrary version="18.03" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
+                  <media
+                      ref="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-9ecad774-a8a6-40ef-a62e-48ae23907133/objects/preservation/test_1.wav">
+                    <track type="General">
+                      <AudioCount>1</AudioCount>
+                      <FileExtension>wav</FileExtension>
+                      <Format>Wave</Format>
+                      <FileSize>21626768</FileSize>
+                      <Duration>122.600</Duration>
+                      <OverallBitRate_Mode>CBR</OverallBitRate_Mode>
+                      <OverallBitRate>1411208</OverallBitRate>
+                      <StreamSize>44</StreamSize>
+                      <File_Modified_Date>UTC 2018-12-20 13:13:51</File_Modified_Date>
+                      <File_Modified_Date_Local>2018-12-20 13:13:51</File_Modified_Date_Local>
+                    </track>
+                    <track type="Audio">
+                      <Format>PCM</Format>
+                      <Format_Settings_Endianness>Little</Format_Settings_Endianness>
+                      <Format_Settings_Sign>Signed</Format_Settings_Sign>
+                      <CodecID>1</CodecID>
+                      <Duration>122.600</Duration>
+                      <BitRate_Mode>CBR</BitRate_Mode>
+                      <BitRate>1411200</BitRate>
+                      <Channels>2</Channels>
+                      <SamplingRate>44100</SamplingRate>
+                      <SamplingCount>5406660</SamplingCount>
+                      <BitDepth>16</BitDepth>
+                      <StreamSize>21626724</StreamSize>
+                      <StreamSize_Proportion>1.00000</StreamSize_Proportion>
+                    </track>
+                  </media>
+                </MediaInfo>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/preservation/test_1.wav</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_4">
+    <mets:techMD ID="techMD_4">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>171b4119-baed-4423-8e32-c1f37cc230c9</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>0f3c2a183c314734d4710221f470c162872afeaa5c74e0314f377f4615257226
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>26169544</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Waveform Audio (PCMWAVEFORMAT)</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>fmt/141</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2018-12-20</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <ffprobe>
+                  <program_version version="3.3.2-1~16.04.york2"
+                                   copyright="Copyright (c) 2007-2017 the FFmpeg developers"
+                                   compiler_ident="gcc 5.4.0 (Ubuntu 5.4.0-6ubuntu1~16.04.4) 20160609"
+                                   configuration="--prefix=/usr --extra-version='1~16.04.york2' --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --enable-gpl --disable-stripping --enable-avresample --enable-avisynth --enable-gnutls --enable-ladspa --enable-libass --enable-libbluray --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libgme --enable-libgsm --enable-libmp3lame --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libpulse --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libssh --enable-libtheora --enable-libtwolame --enable-libvorbis --enable-libvpx --enable-libwavpack --enable-libwebp --enable-libx265 --enable-libxvid --enable-libzmq --enable-libzvbi --enable-omx --enable-openal --enable-opengl --enable-sdl2 --enable-libdc1394 --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-libopencv --enable-libx264 --enable-shared"/>
+                  <library_versions>
+                    <library_version name="libavutil" major="55" minor="58" micro="100" version="3619428"
+                                     ident="Lavu55.58.100"/>
+                    <library_version name="libavcodec" major="57" minor="89" micro="100" version="3758436"
+                                     ident="Lavc57.89.100"/>
+                    <library_version name="libavformat" major="57" minor="71" micro="100" version="3753828"
+                                     ident="Lavf57.71.100"/>
+                    <library_version name="libavdevice" major="57" minor="6" micro="100" version="3737188"
+                                     ident="Lavd57.6.100"/>
+                    <library_version name="libavfilter" major="6" minor="82" micro="100" version="414308"
+                                     ident="Lavfi6.82.100"/>
+                    <library_version name="libswscale" major="4" minor="6" micro="100" version="263780"
+                                     ident="SwS4.6.100"/>
+                    <library_version name="libswresample" major="2" minor="7" micro="100" version="132964"
+                                     ident="SwR2.7.100"/>
+                    <library_version name="libpostproc" major="54" minor="5" micro="100" version="3540324"
+                                     ident="postproc54.5.100"/>
+                  </library_versions>
+                  <streams>
+                    <stream index="0" codec_name="pcm_s16le" codec_long_name="PCM signed 16-bit little-endian"
+                            codec_type="audio" codec_time_base="1/44100" codec_tag_string="[1][0][0][0]"
+                            codec_tag="0x0001" sample_fmt="s16" sample_rate="44100" channels="2" bits_per_sample="16"
+                            r_frame_rate="0/0" avg_frame_rate="0/0" time_base="1/44100" duration_ts="6542375"
+                            duration="148.353175" bit_rate="1411200" extradata=" ">
+                      <disposition default="0" dub="0" original="0" comment="0" lyrics="0" karaoke="0" forced="0"
+                                   hearing_impaired="0" visual_impaired="0" clean_effects="0" attached_pic="0"
+                                   timed_thumbnails="0"/>
+                    </stream>
+                  </streams>
+                  <chapters>
+                  </chapters>
+                  <format
+                      filename="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-9ecad774-a8a6-40ef-a62e-48ae23907133/objects/preservation/test_2.wav"
+                      nb_streams="1" nb_programs="0" format_name="wav" format_long_name="WAV / WAVE (Waveform Audio)"
+                      duration="148.353175" size="26169544" bit_rate="1411202" probe_score="99"/>
+                </ffprobe>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                  <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/"
+                                   xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/"
+                                   xmlns:System="http://ns.exiftool.ca/File/System/1.0/"
+                                   xmlns:File="http://ns.exiftool.ca/File/1.0/"
+                                   xmlns:RIFF="http://ns.exiftool.ca/RIFF/RIFF/1.0/"
+                                   xmlns:Composite="http://ns.exiftool.ca/Composite/1.0/"
+                                   rdf:about="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-9ecad774-a8a6-40ef-a62e-48ae23907133/objects/preservation/test_2.wav"
+                                   et:toolkit="Image::ExifTool 10.10">
+                    <ExifTool:ExifToolVersion>10.10</ExifTool:ExifToolVersion>
+                    <System:FileName>test_2.wav</System:FileName>
+                    <System:Directory>
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-9ecad774-a8a6-40ef-a62e-48ae23907133/objects/preservation
+                    </System:Directory>
+                    <System:FileSize>25 MB</System:FileSize>
+                    <System:FileModifyDate>2018:12:20 13:14:06+00:00</System:FileModifyDate>
+                    <System:FileAccessDate>2018:12:20 13:18:35+00:00</System:FileAccessDate>
+                    <System:FileInodeChangeDate>2018:12:20 13:18:24+00:00</System:FileInodeChangeDate>
+                    <System:FilePermissions>rw-r-----</System:FilePermissions>
+                    <File:FileType>WAV</File:FileType>
+                    <File:FileTypeExtension>wav</File:FileTypeExtension>
+                    <File:MIMEType>audio/x-wav</File:MIMEType>
+                    <RIFF:Encoding>Microsoft PCM</RIFF:Encoding>
+                    <RIFF:NumChannels>2</RIFF:NumChannels>
+                    <RIFF:SampleRate>44100</RIFF:SampleRate>
+                    <RIFF:AvgBytesPerSec>176400</RIFF:AvgBytesPerSec>
+                    <RIFF:BitsPerSample>16</RIFF:BitsPerSample>
+                    <Composite:Duration>0:02:28</Composite:Duration>
+                  </rdf:Description>
+                </rdf:RDF>
+                <MediaInfo xmlns="https://mediaarea.net/mediainfo"
+                           xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd"
+                           version="2.0">
+                  <creatingLibrary version="18.03" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
+                  <media
+                      ref="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-9ecad774-a8a6-40ef-a62e-48ae23907133/objects/preservation/test_2.wav">
+                    <track type="General">
+                      <AudioCount>1</AudioCount>
+                      <FileExtension>wav</FileExtension>
+                      <Format>Wave</Format>
+                      <FileSize>26169544</FileSize>
+                      <Duration>148.353</Duration>
+                      <OverallBitRate_Mode>CBR</OverallBitRate_Mode>
+                      <OverallBitRate>1411204</OverallBitRate>
+                      <StreamSize>44</StreamSize>
+                      <File_Modified_Date>UTC 2018-12-20 13:14:06</File_Modified_Date>
+                      <File_Modified_Date_Local>2018-12-20 13:14:06</File_Modified_Date_Local>
+                    </track>
+                    <track type="Audio">
+                      <Format>PCM</Format>
+                      <Format_Settings_Endianness>Little</Format_Settings_Endianness>
+                      <Format_Settings_Sign>Signed</Format_Settings_Sign>
+                      <CodecID>1</CodecID>
+                      <Duration>148.353</Duration>
+                      <BitRate_Mode>CBR</BitRate_Mode>
+                      <BitRate>1411200</BitRate>
+                      <Channels>2</Channels>
+                      <SamplingRate>44100</SamplingRate>
+                      <SamplingCount>6542368</SamplingCount>
+                      <BitDepth>16</BitDepth>
+                      <StreamSize>26169500</StreamSize>
+                      <StreamSize_Proportion>1.00000</StreamSize_Proportion>
+                    </track>
+                  </media>
+                </MediaInfo>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/preservation/test_2.wav</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:fileSec>
+    <mets:fileGrp USE="original">
+      <mets:file GROUPID="Group-843d35b3-6ad8-4e33-9e3c-e5b25b13fde7" ID="file-843d35b3-6ad8-4e33-9e3c-e5b25b13fde7"
+                 ADMID="amdSec_3">
+        <mets:FLocat xlink:href="objects/preservation/test_1.wav" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-171b4119-baed-4423-8e32-c1f37cc230c9" ID="file-171b4119-baed-4423-8e32-c1f37cc230c9"
+                 ADMID="amdSec_4">
+        <mets:FLocat xlink:href="objects/preservation/test_2.wav" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+    </mets:fileGrp>
+    <mets:fileGrp USE="submissionDocumentation">
+      <mets:file GROUPID="Group-7cdf88f3-84b7-4384-bb84-00076bc5776e" ID="file-7cdf88f3-84b7-4384-bb84-00076bc5776e"
+                 ADMID="amdSec_5">
+        <mets:FLocat
+            xlink:href="objects/submissionDocumentation/transfer-test-9ecad774-a8a6-40ef-a62e-48ae23907133/METS.xml"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+    </mets:fileGrp>
+    <mets:fileGrp USE="metadata">
+      <mets:file GROUPID="Group-799ca7f0-14d1-443c-8ab1-0e31cdce7aee" ID="file-799ca7f0-14d1-443c-8ab1-0e31cdce7aee"
+                 ADMID="amdSec_1">
+        <mets:FLocat
+            xlink:href="objects/metadata/transfers/test-9ecad774-a8a6-40ef-a62e-48ae23907133/directory_tree.txt"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-468d2f5f-deb8-4764-ae8a-59b9c04e86c5" ID="file-468d2f5f-deb8-4764-ae8a-59b9c04e86c5"
+                 ADMID="amdSec_2">
+        <mets:FLocat
+            xlink:href="objects/metadata/transfers/test-9ecad774-a8a6-40ef-a62e-48ae23907133/mets_structmap.xml"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+    </mets:fileGrp>
+  </mets:fileSec>
+  <mets:structMap ID="structMap_1" LABEL="Archivematica default" TYPE="physical">
+    <mets:div LABEL="test-0e0c193d-a9c7-4896-8b61-f849f6266f86" TYPE="Directory" DMDID="dmdSec_1">
+      <mets:div LABEL="objects" TYPE="Directory">
+        <mets:div LABEL="metadata" TYPE="Directory">
+          <mets:div LABEL="transfers" TYPE="Directory">
+            <mets:div LABEL="test-9ecad774-a8a6-40ef-a62e-48ae23907133" TYPE="Directory">
+              <mets:div LABEL="directory_tree.txt" TYPE="Item">
+                <mets:fptr FILEID="file-799ca7f0-14d1-443c-8ab1-0e31cdce7aee"/>
+              </mets:div>
+              <mets:div LABEL="mets_structmap.xml" TYPE="Item">
+                <mets:fptr FILEID="file-468d2f5f-deb8-4764-ae8a-59b9c04e86c5"/>
+              </mets:div>
+            </mets:div>
+          </mets:div>
+        </mets:div>
+        <mets:div LABEL="preservation" TYPE="Directory">
+          <mets:div LABEL="test_1.wav" TYPE="Item">
+            <mets:fptr FILEID="file-843d35b3-6ad8-4e33-9e3c-e5b25b13fde7"/>
+          </mets:div>
+          <mets:div LABEL="test_2.wav" TYPE="Item">
+            <mets:fptr FILEID="file-171b4119-baed-4423-8e32-c1f37cc230c9"/>
+          </mets:div>
+        </mets:div>
+        <mets:div LABEL="submissionDocumentation" TYPE="Directory">
+          <mets:div LABEL="transfer-test-9ecad774-a8a6-40ef-a62e-48ae23907133" TYPE="Directory">
+            <mets:div LABEL="METS.xml" TYPE="Item">
+              <mets:fptr FILEID="file-7cdf88f3-84b7-4384-bb84-00076bc5776e"/>
+            </mets:div>
+          </mets:div>
+        </mets:div>
+      </mets:div>
+    </mets:div>
+  </mets:structMap>
+  <mets:structMap TYPE="logical" ID="structMap_iish" LABEL="IISH structure">
+    <mets:div>
+      <mets:div TYPE="page" ORDER="1" LABEL="Page 1">
+        <mets:fptr CONTENTIDS="preservation/test_1.wav" FILEID="file-843d35b3-6ad8-4e33-9e3c-e5b25b13fde7"/>
+      </mets:div>
+      <mets:div TYPE="page" ORDER="2" LABEL="Page 2">
+        <mets:fptr CONTENTIDS="preservation/test_2.wav" FILEID="file-171b4119-baed-4423-8e32-c1f37cc230c9"/>
+      </mets:div>
+    </mets:div>
+  </mets:structMap>
+</mets:mets>

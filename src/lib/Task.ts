@@ -1,6 +1,6 @@
 import * as uuid from 'uuid/v1';
 import logger from './Logger';
-import {client, createNewClient} from './Redis';
+import {getClient, createNewClient} from './Redis';
 import {ArgService, servicesRunning} from './Service';
 
 export interface RedisMessage<T> {
@@ -20,6 +20,7 @@ export function runTask<T>(type: string, task: T, identifier: string = uuid()): 
         return;
     }
 
+    const client = getClient();
     if (!client)
         throw new Error('Redis is required for sending tasks to workers!');
 
@@ -32,6 +33,7 @@ export function runTaskWithResponse<T, R>(type: string, task: T, identifier: str
     if (service && service.getService)
         return service.getService()<T, R>(task);
 
+    const client = getClient();
     if (!client)
         throw new Error('Redis is required for sending tasks to workers!');
 

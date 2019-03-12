@@ -1,0 +1,1829 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:xlink="http://www.w3.org/1999/xlink"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version111/mets.xsd">
+  <mets:dmdSec ID="dmdSec_1">
+    <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+      <mets:xmlData>
+        <premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:intellectualEntity"
+                       xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd"
+                       version="3.0">
+          <premis:objectIdentifier>
+            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+            <premis:objectIdentifierValue>cf998c61-f284-4269-b887-8b13649b0640</premis:objectIdentifierValue>
+          </premis:objectIdentifier>
+          <premis:originalName>test-cf998c61-f284-4269-b887-8b13649b0640</premis:originalName>
+        </premis:object>
+      </mets:xmlData>
+    </mets:mdWrap>
+  </mets:dmdSec>
+  <mets:amdSec ID="amdSec_3">
+    <mets:techMD ID="techMD_3">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>b8b7aca7-0a0d-452e-a98d-94c8e7607aa5</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>86d8a9339bfda42e91a3cdcf9ed8b7c464cf623bea7ffea76b3a9619e20c07a1
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>16976840</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Tagged Image File Format</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>fmt/353</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2018-10-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                  <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/"
+                                   xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/"
+                                   xmlns:System="http://ns.exiftool.ca/File/System/1.0/"
+                                   xmlns:File="http://ns.exiftool.ca/File/1.0/"
+                                   xmlns:IFD0="http://ns.exiftool.ca/EXIF/IFD0/1.0/"
+                                   xmlns:Photoshop="http://ns.exiftool.ca/Photoshop/Photoshop/1.0/"
+                                   xmlns:Composite="http://ns.exiftool.ca/Composite/1.0/"
+                                   rdf:about="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation/test_01.tif"
+                                   et:toolkit="Image::ExifTool 10.10">
+                    <ExifTool:ExifToolVersion>10.10</ExifTool:ExifToolVersion>
+                    <System:FileName>test_01.tif</System:FileName>
+                    <System:Directory>
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation
+                    </System:Directory>
+                    <System:FileSize>16 MB</System:FileSize>
+                    <System:FileModifyDate>2018:10:09 08:52:36+00:00</System:FileModifyDate>
+                    <System:FileAccessDate>2018:11:27 10:26:34+00:00</System:FileAccessDate>
+                    <System:FileInodeChangeDate>2018:11:27 10:26:25+00:00</System:FileInodeChangeDate>
+                    <System:FilePermissions>rw-r-----</System:FilePermissions>
+                    <File:FileType>TIFF</File:FileType>
+                    <File:FileTypeExtension>tif</File:FileTypeExtension>
+                    <File:MIMEType>image/tiff</File:MIMEType>
+                    <File:ExifByteOrder>Big-endian (Motorola, MM)</File:ExifByteOrder>
+                    <IFD0:SubfileType>Full-resolution Image</IFD0:SubfileType>
+                    <IFD0:ImageWidth>1960</IFD0:ImageWidth>
+                    <IFD0:ImageHeight>2887</IFD0:ImageHeight>
+                    <IFD0:BitsPerSample>8 8 8</IFD0:BitsPerSample>
+                    <IFD0:Compression>Uncompressed</IFD0:Compression>
+                    <IFD0:PhotometricInterpretation>RGB</IFD0:PhotometricInterpretation>
+                    <IFD0:StripOffsets>1240</IFD0:StripOffsets>
+                    <IFD0:SamplesPerPixel>3</IFD0:SamplesPerPixel>
+                    <IFD0:RowsPerStrip>2887</IFD0:RowsPerStrip>
+                    <IFD0:StripByteCounts>16975560</IFD0:StripByteCounts>
+                    <IFD0:XResolution>304.7999</IFD0:XResolution>
+                    <IFD0:YResolution>304.7999</IFD0:YResolution>
+                    <IFD0:PlanarConfiguration>Chunky</IFD0:PlanarConfiguration>
+                    <IFD0:ResolutionUnit>inches</IFD0:ResolutionUnit>
+                    <IFD0:ImageSourceData>(Binary data 36 bytes, use -b option to extract)</IFD0:ImageSourceData>
+                    <Photoshop:XResolution>304.8</Photoshop:XResolution>
+                    <Photoshop:DisplayedUnitsX>inches</Photoshop:DisplayedUnitsX>
+                    <Photoshop:YResolution>304.8</Photoshop:YResolution>
+                    <Photoshop:DisplayedUnitsY>inches</Photoshop:DisplayedUnitsY>
+                    <Photoshop:GlobalAngle>120</Photoshop:GlobalAngle>
+                    <Photoshop:GlobalAltitude>30</Photoshop:GlobalAltitude>
+                    <Photoshop:CopyrightFlag>False</Photoshop:CopyrightFlag>
+                    <Composite:ImageSize>1960x2887</Composite:ImageSize>
+                    <Composite:Megapixels>5.7</Composite:Megapixels>
+                  </rdf:Description>
+                </rdf:RDF>
+                <MediaInfo xmlns="https://mediaarea.net/mediainfo"
+                           xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd"
+                           version="2.0">
+                  <creatingLibrary version="18.03" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
+                  <media
+                      ref="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation/test_01.tif">
+                    <track type="General">
+                      <ImageCount>1</ImageCount>
+                      <FileExtension>tif</FileExtension>
+                      <Format>TIFF</Format>
+                      <FileSize>16976840</FileSize>
+                      <File_Modified_Date>UTC 2018-10-09 08:52:36</File_Modified_Date>
+                      <File_Modified_Date_Local>2018-10-09 08:52:36</File_Modified_Date_Local>
+                    </track>
+                    <track type="Image">
+                      <Format>Raw</Format>
+                      <Width>1960</Width>
+                      <Height>2887</Height>
+                      <ColorSpace>RGB</ColorSpace>
+                      <BitDepth>8</BitDepth>
+                      <Compression_Mode>Lossless</Compression_Mode>
+                    </track>
+                  </media>
+                </MediaInfo>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/preservation/test_01.tif</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_4">
+    <mets:techMD ID="techMD_4">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>9a99eef6-3e69-4cdf-ae68-4f304194bb64</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>4b683155c0603cd36bff0d3f2edbe0f045ecb171e3bad1605afc4224846687db
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>16751032</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Tagged Image File Format</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>fmt/353</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2018-10-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                  <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/"
+                                   xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/"
+                                   xmlns:System="http://ns.exiftool.ca/File/System/1.0/"
+                                   xmlns:File="http://ns.exiftool.ca/File/1.0/"
+                                   xmlns:IFD0="http://ns.exiftool.ca/EXIF/IFD0/1.0/"
+                                   xmlns:Photoshop="http://ns.exiftool.ca/Photoshop/Photoshop/1.0/"
+                                   xmlns:Composite="http://ns.exiftool.ca/Composite/1.0/"
+                                   rdf:about="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation/test_02.tif"
+                                   et:toolkit="Image::ExifTool 10.10">
+                    <ExifTool:ExifToolVersion>10.10</ExifTool:ExifToolVersion>
+                    <System:FileName>test_02.tif</System:FileName>
+                    <System:Directory>
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation
+                    </System:Directory>
+                    <System:FileSize>16 MB</System:FileSize>
+                    <System:FileModifyDate>2018:10:09 08:52:34+00:00</System:FileModifyDate>
+                    <System:FileAccessDate>2018:11:27 10:26:34+00:00</System:FileAccessDate>
+                    <System:FileInodeChangeDate>2018:11:27 10:26:25+00:00</System:FileInodeChangeDate>
+                    <System:FilePermissions>rw-r-----</System:FilePermissions>
+                    <File:FileType>TIFF</File:FileType>
+                    <File:FileTypeExtension>tif</File:FileTypeExtension>
+                    <File:MIMEType>image/tiff</File:MIMEType>
+                    <File:ExifByteOrder>Big-endian (Motorola, MM)</File:ExifByteOrder>
+                    <IFD0:SubfileType>Full-resolution Image</IFD0:SubfileType>
+                    <IFD0:ImageWidth>1942</IFD0:ImageWidth>
+                    <IFD0:ImageHeight>2875</IFD0:ImageHeight>
+                    <IFD0:BitsPerSample>8 8 8</IFD0:BitsPerSample>
+                    <IFD0:Compression>Uncompressed</IFD0:Compression>
+                    <IFD0:PhotometricInterpretation>RGB</IFD0:PhotometricInterpretation>
+                    <IFD0:StripOffsets>1240</IFD0:StripOffsets>
+                    <IFD0:SamplesPerPixel>3</IFD0:SamplesPerPixel>
+                    <IFD0:RowsPerStrip>2875</IFD0:RowsPerStrip>
+                    <IFD0:StripByteCounts>16749750</IFD0:StripByteCounts>
+                    <IFD0:XResolution>304.7999</IFD0:XResolution>
+                    <IFD0:YResolution>304.7999</IFD0:YResolution>
+                    <IFD0:PlanarConfiguration>Chunky</IFD0:PlanarConfiguration>
+                    <IFD0:ResolutionUnit>inches</IFD0:ResolutionUnit>
+                    <IFD0:ImageSourceData>(Binary data 36 bytes, use -b option to extract)</IFD0:ImageSourceData>
+                    <Photoshop:XResolution>304.8</Photoshop:XResolution>
+                    <Photoshop:DisplayedUnitsX>inches</Photoshop:DisplayedUnitsX>
+                    <Photoshop:YResolution>304.8</Photoshop:YResolution>
+                    <Photoshop:DisplayedUnitsY>inches</Photoshop:DisplayedUnitsY>
+                    <Photoshop:GlobalAngle>120</Photoshop:GlobalAngle>
+                    <Photoshop:GlobalAltitude>30</Photoshop:GlobalAltitude>
+                    <Photoshop:CopyrightFlag>False</Photoshop:CopyrightFlag>
+                    <Composite:ImageSize>1942x2875</Composite:ImageSize>
+                    <Composite:Megapixels>5.6</Composite:Megapixels>
+                  </rdf:Description>
+                </rdf:RDF>
+                <MediaInfo xmlns="https://mediaarea.net/mediainfo"
+                           xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd"
+                           version="2.0">
+                  <creatingLibrary version="18.03" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
+                  <media
+                      ref="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation/test_02.tif">
+                    <track type="General">
+                      <ImageCount>1</ImageCount>
+                      <FileExtension>tif</FileExtension>
+                      <Format>TIFF</Format>
+                      <FileSize>16751032</FileSize>
+                      <File_Modified_Date>UTC 2018-10-09 08:52:34</File_Modified_Date>
+                      <File_Modified_Date_Local>2018-10-09 08:52:34</File_Modified_Date_Local>
+                    </track>
+                    <track type="Image">
+                      <Format>Raw</Format>
+                      <Width>1942</Width>
+                      <Height>2875</Height>
+                      <ColorSpace>RGB</ColorSpace>
+                      <BitDepth>8</BitDepth>
+                      <Compression_Mode>Lossless</Compression_Mode>
+                    </track>
+                  </media>
+                </MediaInfo>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/preservation/test_02.tif</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_5">
+    <mets:techMD ID="techMD_5">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>88348a48-c658-4150-a1bb-e4b05d6f1f2b</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>4c709ce9455dda2ca5f076e6a2722f3e0f3e31676f53397722432548c8a9d328
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>16839700</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Tagged Image File Format</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>fmt/353</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2018-10-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                  <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/"
+                                   xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/"
+                                   xmlns:System="http://ns.exiftool.ca/File/System/1.0/"
+                                   xmlns:File="http://ns.exiftool.ca/File/1.0/"
+                                   xmlns:IFD0="http://ns.exiftool.ca/EXIF/IFD0/1.0/"
+                                   xmlns:Photoshop="http://ns.exiftool.ca/Photoshop/Photoshop/1.0/"
+                                   xmlns:Composite="http://ns.exiftool.ca/Composite/1.0/"
+                                   rdf:about="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation/test_03.tif"
+                                   et:toolkit="Image::ExifTool 10.10">
+                    <ExifTool:ExifToolVersion>10.10</ExifTool:ExifToolVersion>
+                    <System:FileName>test_03.tif</System:FileName>
+                    <System:Directory>
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation
+                    </System:Directory>
+                    <System:FileSize>16 MB</System:FileSize>
+                    <System:FileModifyDate>2018:10:09 08:52:32+00:00</System:FileModifyDate>
+                    <System:FileAccessDate>2018:11:27 10:26:33+00:00</System:FileAccessDate>
+                    <System:FileInodeChangeDate>2018:11:27 10:26:25+00:00</System:FileInodeChangeDate>
+                    <System:FilePermissions>rw-r-----</System:FilePermissions>
+                    <File:FileType>TIFF</File:FileType>
+                    <File:FileTypeExtension>tif</File:FileTypeExtension>
+                    <File:MIMEType>image/tiff</File:MIMEType>
+                    <File:ExifByteOrder>Big-endian (Motorola, MM)</File:ExifByteOrder>
+                    <IFD0:SubfileType>Full-resolution Image</IFD0:SubfileType>
+                    <IFD0:ImageWidth>1955</IFD0:ImageWidth>
+                    <IFD0:ImageHeight>2871</IFD0:ImageHeight>
+                    <IFD0:BitsPerSample>8 8 8</IFD0:BitsPerSample>
+                    <IFD0:Compression>Uncompressed</IFD0:Compression>
+                    <IFD0:PhotometricInterpretation>RGB</IFD0:PhotometricInterpretation>
+                    <IFD0:StripOffsets>1242</IFD0:StripOffsets>
+                    <IFD0:SamplesPerPixel>3</IFD0:SamplesPerPixel>
+                    <IFD0:RowsPerStrip>2871</IFD0:RowsPerStrip>
+                    <IFD0:StripByteCounts>16838415</IFD0:StripByteCounts>
+                    <IFD0:XResolution>304.7999</IFD0:XResolution>
+                    <IFD0:YResolution>304.7999</IFD0:YResolution>
+                    <IFD0:PlanarConfiguration>Chunky</IFD0:PlanarConfiguration>
+                    <IFD0:ResolutionUnit>inches</IFD0:ResolutionUnit>
+                    <IFD0:ImageSourceData>(Binary data 36 bytes, use -b option to extract)</IFD0:ImageSourceData>
+                    <Photoshop:XResolution>304.8</Photoshop:XResolution>
+                    <Photoshop:DisplayedUnitsX>inches</Photoshop:DisplayedUnitsX>
+                    <Photoshop:YResolution>304.8</Photoshop:YResolution>
+                    <Photoshop:DisplayedUnitsY>inches</Photoshop:DisplayedUnitsY>
+                    <Photoshop:GlobalAngle>120</Photoshop:GlobalAngle>
+                    <Photoshop:GlobalAltitude>30</Photoshop:GlobalAltitude>
+                    <Photoshop:CopyrightFlag>False</Photoshop:CopyrightFlag>
+                    <Composite:ImageSize>1955x2871</Composite:ImageSize>
+                    <Composite:Megapixels>5.6</Composite:Megapixels>
+                  </rdf:Description>
+                </rdf:RDF>
+                <MediaInfo xmlns="https://mediaarea.net/mediainfo"
+                           xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd"
+                           version="2.0">
+                  <creatingLibrary version="18.03" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
+                  <media
+                      ref="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation/test_03.tif">
+                    <track type="General">
+                      <ImageCount>1</ImageCount>
+                      <FileExtension>tif</FileExtension>
+                      <Format>TIFF</Format>
+                      <FileSize>16839700</FileSize>
+                      <File_Modified_Date>UTC 2018-10-09 08:52:32</File_Modified_Date>
+                      <File_Modified_Date_Local>2018-10-09 08:52:32</File_Modified_Date_Local>
+                    </track>
+                    <track type="Image">
+                      <Format>Raw</Format>
+                      <Width>1955</Width>
+                      <Height>2871</Height>
+                      <ColorSpace>RGB</ColorSpace>
+                      <BitDepth>8</BitDepth>
+                      <Compression_Mode>Lossless</Compression_Mode>
+                    </track>
+                  </media>
+                </MediaInfo>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/preservation/test_03.tif</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_6">
+    <mets:techMD ID="techMD_6">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>a236198f-1844-4771-baac-59712c767fbe</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>07d6a05132256a02f76534ef3318efb0d4b6a7e3aea41db997835deca10aa59e
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>16814940</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Tagged Image File Format</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>fmt/353</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2018-10-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                  <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/"
+                                   xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/"
+                                   xmlns:System="http://ns.exiftool.ca/File/System/1.0/"
+                                   xmlns:File="http://ns.exiftool.ca/File/1.0/"
+                                   xmlns:IFD0="http://ns.exiftool.ca/EXIF/IFD0/1.0/"
+                                   xmlns:Photoshop="http://ns.exiftool.ca/Photoshop/Photoshop/1.0/"
+                                   xmlns:Composite="http://ns.exiftool.ca/Composite/1.0/"
+                                   rdf:about="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation/test_04.tif"
+                                   et:toolkit="Image::ExifTool 10.10">
+                    <ExifTool:ExifToolVersion>10.10</ExifTool:ExifToolVersion>
+                    <System:FileName>test_04.tif</System:FileName>
+                    <System:Directory>
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation
+                    </System:Directory>
+                    <System:FileSize>16 MB</System:FileSize>
+                    <System:FileModifyDate>2018:10:09 08:52:33+00:00</System:FileModifyDate>
+                    <System:FileAccessDate>2018:11:27 10:26:34+00:00</System:FileAccessDate>
+                    <System:FileInodeChangeDate>2018:11:27 10:26:25+00:00</System:FileInodeChangeDate>
+                    <System:FilePermissions>rw-r-----</System:FilePermissions>
+                    <File:FileType>TIFF</File:FileType>
+                    <File:FileTypeExtension>tif</File:FileTypeExtension>
+                    <File:MIMEType>image/tiff</File:MIMEType>
+                    <File:ExifByteOrder>Big-endian (Motorola, MM)</File:ExifByteOrder>
+                    <IFD0:SubfileType>Full-resolution Image</IFD0:SubfileType>
+                    <IFD0:ImageWidth>1944</IFD0:ImageWidth>
+                    <IFD0:ImageHeight>2883</IFD0:ImageHeight>
+                    <IFD0:BitsPerSample>8 8 8</IFD0:BitsPerSample>
+                    <IFD0:Compression>Uncompressed</IFD0:Compression>
+                    <IFD0:PhotometricInterpretation>RGB</IFD0:PhotometricInterpretation>
+                    <IFD0:StripOffsets>1242</IFD0:StripOffsets>
+                    <IFD0:SamplesPerPixel>3</IFD0:SamplesPerPixel>
+                    <IFD0:RowsPerStrip>2883</IFD0:RowsPerStrip>
+                    <IFD0:StripByteCounts>16813656</IFD0:StripByteCounts>
+                    <IFD0:XResolution>304.7999</IFD0:XResolution>
+                    <IFD0:YResolution>304.7999</IFD0:YResolution>
+                    <IFD0:PlanarConfiguration>Chunky</IFD0:PlanarConfiguration>
+                    <IFD0:ResolutionUnit>inches</IFD0:ResolutionUnit>
+                    <IFD0:ImageSourceData>(Binary data 36 bytes, use -b option to extract)</IFD0:ImageSourceData>
+                    <Photoshop:XResolution>304.8</Photoshop:XResolution>
+                    <Photoshop:DisplayedUnitsX>inches</Photoshop:DisplayedUnitsX>
+                    <Photoshop:YResolution>304.8</Photoshop:YResolution>
+                    <Photoshop:DisplayedUnitsY>inches</Photoshop:DisplayedUnitsY>
+                    <Photoshop:GlobalAngle>120</Photoshop:GlobalAngle>
+                    <Photoshop:GlobalAltitude>30</Photoshop:GlobalAltitude>
+                    <Photoshop:CopyrightFlag>False</Photoshop:CopyrightFlag>
+                    <Composite:ImageSize>1944x2883</Composite:ImageSize>
+                    <Composite:Megapixels>5.6</Composite:Megapixels>
+                  </rdf:Description>
+                </rdf:RDF>
+                <MediaInfo xmlns="https://mediaarea.net/mediainfo"
+                           xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd"
+                           version="2.0">
+                  <creatingLibrary version="18.03" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
+                  <media
+                      ref="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation/test_04.tif">
+                    <track type="General">
+                      <ImageCount>1</ImageCount>
+                      <FileExtension>tif</FileExtension>
+                      <Format>TIFF</Format>
+                      <FileSize>16814940</FileSize>
+                      <File_Modified_Date>UTC 2018-10-09 08:52:33</File_Modified_Date>
+                      <File_Modified_Date_Local>2018-10-09 08:52:33</File_Modified_Date_Local>
+                    </track>
+                    <track type="Image">
+                      <Format>Raw</Format>
+                      <Width>1944</Width>
+                      <Height>2883</Height>
+                      <ColorSpace>RGB</ColorSpace>
+                      <BitDepth>8</BitDepth>
+                      <Compression_Mode>Lossless</Compression_Mode>
+                    </track>
+                  </media>
+                </MediaInfo>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/preservation/test_04.tif</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_7">
+    <mets:techMD ID="techMD_7">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>62a1e40c-af27-472c-b870-818d6cb6464b</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>56ce4ecf7e93832624793fd7329d6445892213e413c887662d64639592188836
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>16814940</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Tagged Image File Format</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>fmt/353</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2018-10-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                  <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/"
+                                   xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/"
+                                   xmlns:System="http://ns.exiftool.ca/File/System/1.0/"
+                                   xmlns:File="http://ns.exiftool.ca/File/1.0/"
+                                   xmlns:IFD0="http://ns.exiftool.ca/EXIF/IFD0/1.0/"
+                                   xmlns:Photoshop="http://ns.exiftool.ca/Photoshop/Photoshop/1.0/"
+                                   xmlns:Composite="http://ns.exiftool.ca/Composite/1.0/"
+                                   rdf:about="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation/test_05.tif"
+                                   et:toolkit="Image::ExifTool 10.10">
+                    <ExifTool:ExifToolVersion>10.10</ExifTool:ExifToolVersion>
+                    <System:FileName>test_05.tif</System:FileName>
+                    <System:Directory>
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation
+                    </System:Directory>
+                    <System:FileSize>16 MB</System:FileSize>
+                    <System:FileModifyDate>2018:10:09 08:52:30+00:00</System:FileModifyDate>
+                    <System:FileAccessDate>2018:11:27 10:26:34+00:00</System:FileAccessDate>
+                    <System:FileInodeChangeDate>2018:11:27 10:26:25+00:00</System:FileInodeChangeDate>
+                    <System:FilePermissions>rw-r-----</System:FilePermissions>
+                    <File:FileType>TIFF</File:FileType>
+                    <File:FileTypeExtension>tif</File:FileTypeExtension>
+                    <File:MIMEType>image/tiff</File:MIMEType>
+                    <File:ExifByteOrder>Big-endian (Motorola, MM)</File:ExifByteOrder>
+                    <IFD0:SubfileType>Full-resolution Image</IFD0:SubfileType>
+                    <IFD0:ImageWidth>1944</IFD0:ImageWidth>
+                    <IFD0:ImageHeight>2883</IFD0:ImageHeight>
+                    <IFD0:BitsPerSample>8 8 8</IFD0:BitsPerSample>
+                    <IFD0:Compression>Uncompressed</IFD0:Compression>
+                    <IFD0:PhotometricInterpretation>RGB</IFD0:PhotometricInterpretation>
+                    <IFD0:StripOffsets>1242</IFD0:StripOffsets>
+                    <IFD0:SamplesPerPixel>3</IFD0:SamplesPerPixel>
+                    <IFD0:RowsPerStrip>2883</IFD0:RowsPerStrip>
+                    <IFD0:StripByteCounts>16813656</IFD0:StripByteCounts>
+                    <IFD0:XResolution>304.7999</IFD0:XResolution>
+                    <IFD0:YResolution>304.7999</IFD0:YResolution>
+                    <IFD0:PlanarConfiguration>Chunky</IFD0:PlanarConfiguration>
+                    <IFD0:ResolutionUnit>inches</IFD0:ResolutionUnit>
+                    <IFD0:ImageSourceData>(Binary data 36 bytes, use -b option to extract)</IFD0:ImageSourceData>
+                    <Photoshop:XResolution>304.8</Photoshop:XResolution>
+                    <Photoshop:DisplayedUnitsX>inches</Photoshop:DisplayedUnitsX>
+                    <Photoshop:YResolution>304.8</Photoshop:YResolution>
+                    <Photoshop:DisplayedUnitsY>inches</Photoshop:DisplayedUnitsY>
+                    <Photoshop:GlobalAngle>120</Photoshop:GlobalAngle>
+                    <Photoshop:GlobalAltitude>30</Photoshop:GlobalAltitude>
+                    <Photoshop:CopyrightFlag>False</Photoshop:CopyrightFlag>
+                    <Composite:ImageSize>1944x2883</Composite:ImageSize>
+                    <Composite:Megapixels>5.6</Composite:Megapixels>
+                  </rdf:Description>
+                </rdf:RDF>
+                <MediaInfo xmlns="https://mediaarea.net/mediainfo"
+                           xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd"
+                           version="2.0">
+                  <creatingLibrary version="18.03" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
+                  <media
+                      ref="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation/test_05.tif">
+                    <track type="General">
+                      <ImageCount>1</ImageCount>
+                      <FileExtension>tif</FileExtension>
+                      <Format>TIFF</Format>
+                      <FileSize>16814940</FileSize>
+                      <File_Modified_Date>UTC 2018-10-09 08:52:30</File_Modified_Date>
+                      <File_Modified_Date_Local>2018-10-09 08:52:30</File_Modified_Date_Local>
+                    </track>
+                    <track type="Image">
+                      <Format>Raw</Format>
+                      <Width>1944</Width>
+                      <Height>2883</Height>
+                      <ColorSpace>RGB</ColorSpace>
+                      <BitDepth>8</BitDepth>
+                      <Compression_Mode>Lossless</Compression_Mode>
+                    </track>
+                  </media>
+                </MediaInfo>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/preservation/test_05.tif</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_8">
+    <mets:techMD ID="techMD_8">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>76cf7fac-c2f9-412c-b773-2872777646f6</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>7772125a0a3c57b41fe42da4e7720e29f5c36ed19440654057722bb069a7f9df
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>16883520</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Tagged Image File Format</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>fmt/353</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2018-10-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                  <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/"
+                                   xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/"
+                                   xmlns:System="http://ns.exiftool.ca/File/System/1.0/"
+                                   xmlns:File="http://ns.exiftool.ca/File/1.0/"
+                                   xmlns:IFD0="http://ns.exiftool.ca/EXIF/IFD0/1.0/"
+                                   xmlns:Photoshop="http://ns.exiftool.ca/Photoshop/Photoshop/1.0/"
+                                   xmlns:Composite="http://ns.exiftool.ca/Composite/1.0/"
+                                   rdf:about="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation/test_06.tif"
+                                   et:toolkit="Image::ExifTool 10.10">
+                    <ExifTool:ExifToolVersion>10.10</ExifTool:ExifToolVersion>
+                    <System:FileName>test_06.tif</System:FileName>
+                    <System:Directory>
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation
+                    </System:Directory>
+                    <System:FileSize>16 MB</System:FileSize>
+                    <System:FileModifyDate>2018:10:09 08:52:31+00:00</System:FileModifyDate>
+                    <System:FileAccessDate>2018:11:27 10:26:34+00:00</System:FileAccessDate>
+                    <System:FileInodeChangeDate>2018:11:27 10:26:26+00:00</System:FileInodeChangeDate>
+                    <System:FilePermissions>rw-r-----</System:FilePermissions>
+                    <File:FileType>TIFF</File:FileType>
+                    <File:FileTypeExtension>tif</File:FileTypeExtension>
+                    <File:MIMEType>image/tiff</File:MIMEType>
+                    <File:ExifByteOrder>Big-endian (Motorola, MM)</File:ExifByteOrder>
+                    <IFD0:SubfileType>Full-resolution Image</IFD0:SubfileType>
+                    <IFD0:ImageWidth>1956</IFD0:ImageWidth>
+                    <IFD0:ImageHeight>2877</IFD0:ImageHeight>
+                    <IFD0:BitsPerSample>8 8 8</IFD0:BitsPerSample>
+                    <IFD0:Compression>Uncompressed</IFD0:Compression>
+                    <IFD0:PhotometricInterpretation>RGB</IFD0:PhotometricInterpretation>
+                    <IFD0:StripOffsets>1242</IFD0:StripOffsets>
+                    <IFD0:SamplesPerPixel>3</IFD0:SamplesPerPixel>
+                    <IFD0:RowsPerStrip>2877</IFD0:RowsPerStrip>
+                    <IFD0:StripByteCounts>16882236</IFD0:StripByteCounts>
+                    <IFD0:XResolution>304.7999</IFD0:XResolution>
+                    <IFD0:YResolution>304.7999</IFD0:YResolution>
+                    <IFD0:PlanarConfiguration>Chunky</IFD0:PlanarConfiguration>
+                    <IFD0:ResolutionUnit>inches</IFD0:ResolutionUnit>
+                    <IFD0:ImageSourceData>(Binary data 36 bytes, use -b option to extract)</IFD0:ImageSourceData>
+                    <Photoshop:XResolution>304.8</Photoshop:XResolution>
+                    <Photoshop:DisplayedUnitsX>inches</Photoshop:DisplayedUnitsX>
+                    <Photoshop:YResolution>304.8</Photoshop:YResolution>
+                    <Photoshop:DisplayedUnitsY>inches</Photoshop:DisplayedUnitsY>
+                    <Photoshop:GlobalAngle>120</Photoshop:GlobalAngle>
+                    <Photoshop:GlobalAltitude>30</Photoshop:GlobalAltitude>
+                    <Photoshop:CopyrightFlag>False</Photoshop:CopyrightFlag>
+                    <Composite:ImageSize>1956x2877</Composite:ImageSize>
+                    <Composite:Megapixels>5.6</Composite:Megapixels>
+                  </rdf:Description>
+                </rdf:RDF>
+                <MediaInfo xmlns="https://mediaarea.net/mediainfo"
+                           xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd"
+                           version="2.0">
+                  <creatingLibrary version="18.03" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
+                  <media
+                      ref="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation/test_06.tif">
+                    <track type="General">
+                      <ImageCount>1</ImageCount>
+                      <FileExtension>tif</FileExtension>
+                      <Format>TIFF</Format>
+                      <FileSize>16883520</FileSize>
+                      <File_Modified_Date>UTC 2018-10-09 08:52:31</File_Modified_Date>
+                      <File_Modified_Date_Local>2018-10-09 08:52:31</File_Modified_Date_Local>
+                    </track>
+                    <track type="Image">
+                      <Format>Raw</Format>
+                      <Width>1956</Width>
+                      <Height>2877</Height>
+                      <ColorSpace>RGB</ColorSpace>
+                      <BitDepth>8</BitDepth>
+                      <Compression_Mode>Lossless</Compression_Mode>
+                    </track>
+                  </media>
+                </MediaInfo>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/preservation/test_06.tif</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_9">
+    <mets:techMD ID="techMD_9">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>62008a42-e2e7-4446-95f2-c5aa70ceacf7</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>110ba773825d565bf622ea083c47c311948408238ea5ccd365348111f3a2ee45
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>16676376</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Tagged Image File Format</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>fmt/353</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2018-10-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                  <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/"
+                                   xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/"
+                                   xmlns:System="http://ns.exiftool.ca/File/System/1.0/"
+                                   xmlns:File="http://ns.exiftool.ca/File/1.0/"
+                                   xmlns:IFD0="http://ns.exiftool.ca/EXIF/IFD0/1.0/"
+                                   xmlns:Photoshop="http://ns.exiftool.ca/Photoshop/Photoshop/1.0/"
+                                   xmlns:Composite="http://ns.exiftool.ca/Composite/1.0/"
+                                   rdf:about="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation/test_07.tif"
+                                   et:toolkit="Image::ExifTool 10.10">
+                    <ExifTool:ExifToolVersion>10.10</ExifTool:ExifToolVersion>
+                    <System:FileName>test_07.tif</System:FileName>
+                    <System:Directory>
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation
+                    </System:Directory>
+                    <System:FileSize>16 MB</System:FileSize>
+                    <System:FileModifyDate>2018:10:09 08:52:28+00:00</System:FileModifyDate>
+                    <System:FileAccessDate>2018:11:27 10:26:34+00:00</System:FileAccessDate>
+                    <System:FileInodeChangeDate>2018:11:27 10:26:26+00:00</System:FileInodeChangeDate>
+                    <System:FilePermissions>rw-r-----</System:FilePermissions>
+                    <File:FileType>TIFF</File:FileType>
+                    <File:FileTypeExtension>tif</File:FileTypeExtension>
+                    <File:MIMEType>image/tiff</File:MIMEType>
+                    <File:ExifByteOrder>Big-endian (Motorola, MM)</File:ExifByteOrder>
+                    <IFD0:SubfileType>Full-resolution Image</IFD0:SubfileType>
+                    <IFD0:ImageWidth>1932</IFD0:ImageWidth>
+                    <IFD0:ImageHeight>2877</IFD0:ImageHeight>
+                    <IFD0:BitsPerSample>8 8 8</IFD0:BitsPerSample>
+                    <IFD0:Compression>Uncompressed</IFD0:Compression>
+                    <IFD0:PhotometricInterpretation>RGB</IFD0:PhotometricInterpretation>
+                    <IFD0:StripOffsets>1242</IFD0:StripOffsets>
+                    <IFD0:SamplesPerPixel>3</IFD0:SamplesPerPixel>
+                    <IFD0:RowsPerStrip>2877</IFD0:RowsPerStrip>
+                    <IFD0:StripByteCounts>16675092</IFD0:StripByteCounts>
+                    <IFD0:XResolution>304.7999</IFD0:XResolution>
+                    <IFD0:YResolution>304.7999</IFD0:YResolution>
+                    <IFD0:PlanarConfiguration>Chunky</IFD0:PlanarConfiguration>
+                    <IFD0:ResolutionUnit>inches</IFD0:ResolutionUnit>
+                    <IFD0:ImageSourceData>(Binary data 36 bytes, use -b option to extract)</IFD0:ImageSourceData>
+                    <Photoshop:XResolution>304.8</Photoshop:XResolution>
+                    <Photoshop:DisplayedUnitsX>inches</Photoshop:DisplayedUnitsX>
+                    <Photoshop:YResolution>304.8</Photoshop:YResolution>
+                    <Photoshop:DisplayedUnitsY>inches</Photoshop:DisplayedUnitsY>
+                    <Photoshop:GlobalAngle>120</Photoshop:GlobalAngle>
+                    <Photoshop:GlobalAltitude>30</Photoshop:GlobalAltitude>
+                    <Photoshop:CopyrightFlag>False</Photoshop:CopyrightFlag>
+                    <Composite:ImageSize>1932x2877</Composite:ImageSize>
+                    <Composite:Megapixels>5.6</Composite:Megapixels>
+                  </rdf:Description>
+                </rdf:RDF>
+                <MediaInfo xmlns="https://mediaarea.net/mediainfo"
+                           xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd"
+                           version="2.0">
+                  <creatingLibrary version="18.03" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
+                  <media
+                      ref="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation/test_07.tif">
+                    <track type="General">
+                      <ImageCount>1</ImageCount>
+                      <FileExtension>tif</FileExtension>
+                      <Format>TIFF</Format>
+                      <FileSize>16676376</FileSize>
+                      <File_Modified_Date>UTC 2018-10-09 08:52:28</File_Modified_Date>
+                      <File_Modified_Date_Local>2018-10-09 08:52:28</File_Modified_Date_Local>
+                    </track>
+                    <track type="Image">
+                      <Format>Raw</Format>
+                      <Width>1932</Width>
+                      <Height>2877</Height>
+                      <ColorSpace>RGB</ColorSpace>
+                      <BitDepth>8</BitDepth>
+                      <Compression_Mode>Lossless</Compression_Mode>
+                    </track>
+                  </media>
+                </MediaInfo>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/preservation/test_07.tif</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_10">
+    <mets:techMD ID="techMD_10">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>96693817-a99b-4c78-833f-7c9ff4b7c089</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>e4fc7db87718ce4531d5b4f59d2dfe8139a62717278b5d6d29a5a9d32d647215
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>16835720</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Tagged Image File Format</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>fmt/353</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2018-10-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                  <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/"
+                                   xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/"
+                                   xmlns:System="http://ns.exiftool.ca/File/System/1.0/"
+                                   xmlns:File="http://ns.exiftool.ca/File/1.0/"
+                                   xmlns:IFD0="http://ns.exiftool.ca/EXIF/IFD0/1.0/"
+                                   xmlns:Photoshop="http://ns.exiftool.ca/Photoshop/Photoshop/1.0/"
+                                   xmlns:Composite="http://ns.exiftool.ca/Composite/1.0/"
+                                   rdf:about="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation/test_08.tif"
+                                   et:toolkit="Image::ExifTool 10.10">
+                    <ExifTool:ExifToolVersion>10.10</ExifTool:ExifToolVersion>
+                    <System:FileName>test_08.tif</System:FileName>
+                    <System:Directory>
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation
+                    </System:Directory>
+                    <System:FileSize>16 MB</System:FileSize>
+                    <System:FileModifyDate>2018:10:09 08:52:29+00:00</System:FileModifyDate>
+                    <System:FileAccessDate>2018:11:27 10:26:34+00:00</System:FileAccessDate>
+                    <System:FileInodeChangeDate>2018:11:27 10:26:26+00:00</System:FileInodeChangeDate>
+                    <System:FilePermissions>rw-r-----</System:FilePermissions>
+                    <File:FileType>TIFF</File:FileType>
+                    <File:FileTypeExtension>tif</File:FileTypeExtension>
+                    <File:MIMEType>image/tiff</File:MIMEType>
+                    <File:ExifByteOrder>Big-endian (Motorola, MM)</File:ExifByteOrder>
+                    <IFD0:SubfileType>Full-resolution Image</IFD0:SubfileType>
+                    <IFD0:ImageWidth>1960</IFD0:ImageWidth>
+                    <IFD0:ImageHeight>2863</IFD0:ImageHeight>
+                    <IFD0:BitsPerSample>8 8 8</IFD0:BitsPerSample>
+                    <IFD0:Compression>Uncompressed</IFD0:Compression>
+                    <IFD0:PhotometricInterpretation>RGB</IFD0:PhotometricInterpretation>
+                    <IFD0:StripOffsets>1240</IFD0:StripOffsets>
+                    <IFD0:SamplesPerPixel>3</IFD0:SamplesPerPixel>
+                    <IFD0:RowsPerStrip>2863</IFD0:RowsPerStrip>
+                    <IFD0:StripByteCounts>16834440</IFD0:StripByteCounts>
+                    <IFD0:XResolution>304.7999</IFD0:XResolution>
+                    <IFD0:YResolution>304.7999</IFD0:YResolution>
+                    <IFD0:PlanarConfiguration>Chunky</IFD0:PlanarConfiguration>
+                    <IFD0:ResolutionUnit>inches</IFD0:ResolutionUnit>
+                    <IFD0:ImageSourceData>(Binary data 36 bytes, use -b option to extract)</IFD0:ImageSourceData>
+                    <Photoshop:XResolution>304.8</Photoshop:XResolution>
+                    <Photoshop:DisplayedUnitsX>inches</Photoshop:DisplayedUnitsX>
+                    <Photoshop:YResolution>304.8</Photoshop:YResolution>
+                    <Photoshop:DisplayedUnitsY>inches</Photoshop:DisplayedUnitsY>
+                    <Photoshop:GlobalAngle>120</Photoshop:GlobalAngle>
+                    <Photoshop:GlobalAltitude>30</Photoshop:GlobalAltitude>
+                    <Photoshop:CopyrightFlag>False</Photoshop:CopyrightFlag>
+                    <Composite:ImageSize>1960x2863</Composite:ImageSize>
+                    <Composite:Megapixels>5.6</Composite:Megapixels>
+                  </rdf:Description>
+                </rdf:RDF>
+                <MediaInfo xmlns="https://mediaarea.net/mediainfo"
+                           xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd"
+                           version="2.0">
+                  <creatingLibrary version="18.03" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
+                  <media
+                      ref="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/preservation/test_08.tif">
+                    <track type="General">
+                      <ImageCount>1</ImageCount>
+                      <FileExtension>tif</FileExtension>
+                      <Format>TIFF</Format>
+                      <FileSize>16835720</FileSize>
+                      <File_Modified_Date>UTC 2018-10-09 08:52:29</File_Modified_Date>
+                      <File_Modified_Date_Local>2018-10-09 08:52:29</File_Modified_Date_Local>
+                    </track>
+                    <track type="Image">
+                      <Format>Raw</Format>
+                      <Width>1960</Width>
+                      <Height>2863</Height>
+                      <ColorSpace>RGB</ColorSpace>
+                      <BitDepth>8</BitDepth>
+                      <Compression_Mode>Lossless</Compression_Mode>
+                    </track>
+                  </media>
+                </MediaInfo>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/preservation/test_08.tif</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_12">
+    <mets:techMD ID="techMD_12">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>cf34ab26-d4a2-4b73-99bf-9da8171084b0</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>f787fbb7d850ec866d40bc82b136da98d81adc6de8eb5bc3148285c9f8ed6ca7
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>126</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Plain Text</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>x-fmt/111</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2018-10-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output"
+                      xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd"
+                      version="1.1.0" timestamp="11/27/18 10:27 AM">
+                  <identification status="SINGLE_RESULT">
+                    <identity format="Plain text" mimetype="text/plain" toolname="FITS" toolversion="1.1.0">
+                      <tool toolname="file utility" toolversion="5.25"/>
+                    </identity>
+                  </identification>
+                  <fileinfo>
+                    <filepath toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/transcription/test_01.txt
+                    </filepath>
+                    <filename toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">test_01.txt
+                    </filename>
+                    <size toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">126</size>
+                    <fslastmodified toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">
+                      1539075340000
+                    </fslastmodified>
+                  </fileinfo>
+                  <filestatus/>
+                  <metadata>
+                    <text>
+                      <charset toolname="file utility" toolversion="5.25" status="SINGLE_RESULT">US-ASCII</charset>
+                    </text>
+                  </metadata>
+                  <toolOutput>
+                    <tool name="file utility" version="5.25">
+                      <fileUtilityOutput xmlns="">
+                        <rawOutput>ASCII text
+                          text/plain; charset=us-ascii
+                        </rawOutput>
+                        <mimetype>text/plain</mimetype>
+                        <format>Plain text</format>
+                        <charset>US-ASCII</charset>
+                      </fileUtilityOutput>
+                    </tool>
+                    <tool name="OIS File Information" version="0.2">
+                      <fits
+                          xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd">
+                        <fileinfo>
+                          <filepath>
+                            /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/transcription/test_01.txt
+                          </filepath>
+                          <filename>test_01.txt</filename>
+                          <size>126</size>
+                          <fslastmodified>1539075340000</fslastmodified>
+                        </fileinfo>
+                      </fits>
+                    </tool>
+                    <tool name="ffident" version="0.2">
+                      <ffidentOutput xmlns="">
+                        <shortName/>
+                        <longName>Unknown Binary</longName>
+                        <group/>
+                        <mimetypes>
+                          <mimetype>application/octet-stream</mimetype>
+                        </mimetypes>
+                        <fileExtensions/>
+                      </ffidentOutput>
+                    </tool>
+                    <tool name="Tika" version="1.10">
+                      <metadata xmlns="">
+                        <field name="X-Parsed-By">
+                          <value>org.apache.tika.parser.DefaultParser</value>
+                          <value>org.apache.tika.parser.txt.TXTParser</value>
+                        </field>
+                        <field name="Content-Encoding">
+                          <value>ISO-8859-1</value>
+                        </field>
+                        <field name="Content-Type">
+                          <value>text/plain; charset=ISO-8859-1</value>
+                        </field>
+                      </metadata>
+                    </tool>
+                  </toolOutput>
+                </fits>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/transcription/test_01.txt</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_13">
+    <mets:techMD ID="techMD_13">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>cf32e677-59d9-4245-ba1b-ba56572a16b9</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>bf5b2432cf89fb9cfec658bef658c8f530e78a2e4c3725b3ab6eafca7095cc4a
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>1521</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Plain Text</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>x-fmt/111</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2018-10-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output"
+                      xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd"
+                      version="1.1.0" timestamp="11/27/18 10:27 AM">
+                  <identification status="SINGLE_RESULT">
+                    <identity format="Plain text" mimetype="text/plain" toolname="FITS" toolversion="1.1.0">
+                      <tool toolname="file utility" toolversion="5.25"/>
+                    </identity>
+                  </identification>
+                  <fileinfo>
+                    <filepath toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/transcription/test_03.txt
+                    </filepath>
+                    <filename toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">test_03.txt
+                    </filename>
+                    <size toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">1521</size>
+                    <fslastmodified toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">
+                      1539075157000
+                    </fslastmodified>
+                  </fileinfo>
+                  <filestatus/>
+                  <metadata>
+                    <text>
+                      <charset toolname="file utility" toolversion="5.25" status="SINGLE_RESULT">UTF-8</charset>
+                    </text>
+                  </metadata>
+                  <toolOutput>
+                    <tool name="file utility" version="5.25">
+                      <fileUtilityOutput xmlns="">
+                        <rawOutput>UTF-8 Unicode text, with very long lines
+                          text/plain; charset=utf-8
+                        </rawOutput>
+                        <mimetype>text/plain</mimetype>
+                        <format>Plain text</format>
+                        <charset>UTF-8</charset>
+                      </fileUtilityOutput>
+                    </tool>
+                    <tool name="OIS File Information" version="0.2">
+                      <fits
+                          xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd">
+                        <fileinfo>
+                          <filepath>
+                            /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/transcription/test_03.txt
+                          </filepath>
+                          <filename>test_03.txt</filename>
+                          <size>1521</size>
+                          <fslastmodified>1539075157000</fslastmodified>
+                        </fileinfo>
+                      </fits>
+                    </tool>
+                    <tool name="ffident" version="0.2">
+                      <ffidentOutput xmlns="">
+                        <shortName/>
+                        <longName>Unknown Binary</longName>
+                        <group/>
+                        <mimetypes>
+                          <mimetype>application/octet-stream</mimetype>
+                        </mimetypes>
+                        <fileExtensions/>
+                      </ffidentOutput>
+                    </tool>
+                    <tool name="Tika" version="1.10">
+                      <metadata xmlns="">
+                        <field name="X-Parsed-By">
+                          <value>org.apache.tika.parser.DefaultParser</value>
+                          <value>org.apache.tika.parser.txt.TXTParser</value>
+                        </field>
+                        <field name="Content-Encoding">
+                          <value>UTF-8</value>
+                        </field>
+                        <field name="Content-Type">
+                          <value>text/plain; charset=UTF-8</value>
+                        </field>
+                      </metadata>
+                    </tool>
+                  </toolOutput>
+                </fits>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/transcription/test_03.txt</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_14">
+    <mets:techMD ID="techMD_14">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>029f77b2-f464-4746-9312-bb58603c91e3</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>bcd4231eace3c1191f76744322997f00535c55a5e79cb84594cccc771460824d
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>2012</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Plain Text</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>x-fmt/111</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2018-10-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output"
+                      xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd"
+                      version="1.1.0" timestamp="11/27/18 10:27 AM">
+                  <identification status="SINGLE_RESULT">
+                    <identity format="Plain text" mimetype="text/plain" toolname="FITS" toolversion="1.1.0">
+                      <tool toolname="file utility" toolversion="5.25"/>
+                    </identity>
+                  </identification>
+                  <fileinfo>
+                    <filepath toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/transcription/test_04.txt
+                    </filepath>
+                    <filename toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">test_04.txt
+                    </filename>
+                    <size toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">2012</size>
+                    <fslastmodified toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">
+                      1539075157000
+                    </fslastmodified>
+                  </fileinfo>
+                  <filestatus/>
+                  <metadata>
+                    <text>
+                      <charset toolname="file utility" toolversion="5.25" status="SINGLE_RESULT">UTF-8</charset>
+                    </text>
+                  </metadata>
+                  <toolOutput>
+                    <tool name="file utility" version="5.25">
+                      <fileUtilityOutput xmlns="">
+                        <rawOutput>UTF-8 Unicode text, with very long lines
+                          text/plain; charset=utf-8
+                        </rawOutput>
+                        <mimetype>text/plain</mimetype>
+                        <format>Plain text</format>
+                        <charset>UTF-8</charset>
+                      </fileUtilityOutput>
+                    </tool>
+                    <tool name="OIS File Information" version="0.2">
+                      <fits
+                          xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd">
+                        <fileinfo>
+                          <filepath>
+                            /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/transcription/test_04.txt
+                          </filepath>
+                          <filename>test_04.txt</filename>
+                          <size>2012</size>
+                          <fslastmodified>1539075157000</fslastmodified>
+                        </fileinfo>
+                      </fits>
+                    </tool>
+                    <tool name="ffident" version="0.2">
+                      <ffidentOutput xmlns="">
+                        <shortName/>
+                        <longName>Unknown Binary</longName>
+                        <group/>
+                        <mimetypes>
+                          <mimetype>application/octet-stream</mimetype>
+                        </mimetypes>
+                        <fileExtensions/>
+                      </ffidentOutput>
+                    </tool>
+                    <tool name="Tika" version="1.10">
+                      <metadata xmlns="">
+                        <field name="X-Parsed-By">
+                          <value>org.apache.tika.parser.DefaultParser</value>
+                          <value>org.apache.tika.parser.txt.TXTParser</value>
+                        </field>
+                        <field name="Content-Encoding">
+                          <value>UTF-8</value>
+                        </field>
+                        <field name="Content-Type">
+                          <value>text/plain; charset=UTF-8</value>
+                        </field>
+                      </metadata>
+                    </tool>
+                  </toolOutput>
+                </fits>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/transcription/test_04.txt</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_15">
+    <mets:techMD ID="techMD_15">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>ddc232cf-9a29-45b1-89f0-da4b39ff73ee</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>41284e6261402b89bd1311c3e48a5a4d6550b6a8f46fea9ab0644f288800d054
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>1873</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Plain Text</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>x-fmt/111</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2018-10-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output"
+                      xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd"
+                      version="1.1.0" timestamp="11/27/18 10:27 AM">
+                  <identification status="SINGLE_RESULT">
+                    <identity format="Plain text" mimetype="text/plain" toolname="FITS" toolversion="1.1.0">
+                      <tool toolname="file utility" toolversion="5.25"/>
+                    </identity>
+                  </identification>
+                  <fileinfo>
+                    <filepath toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/transcription/test_05.txt
+                    </filepath>
+                    <filename toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">test_05.txt
+                    </filename>
+                    <size toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">1873</size>
+                    <fslastmodified toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">
+                      1539075156000
+                    </fslastmodified>
+                  </fileinfo>
+                  <filestatus/>
+                  <metadata>
+                    <text>
+                      <charset toolname="file utility" toolversion="5.25" status="SINGLE_RESULT">US-ASCII</charset>
+                    </text>
+                  </metadata>
+                  <toolOutput>
+                    <tool name="file utility" version="5.25">
+                      <fileUtilityOutput xmlns="">
+                        <rawOutput>ASCII text, with very long lines
+                          text/plain; charset=us-ascii
+                        </rawOutput>
+                        <mimetype>text/plain</mimetype>
+                        <format>Plain text</format>
+                        <charset>US-ASCII</charset>
+                      </fileUtilityOutput>
+                    </tool>
+                    <tool name="OIS File Information" version="0.2">
+                      <fits
+                          xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd">
+                        <fileinfo>
+                          <filepath>
+                            /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/transcription/test_05.txt
+                          </filepath>
+                          <filename>test_05.txt</filename>
+                          <size>1873</size>
+                          <fslastmodified>1539075156000</fslastmodified>
+                        </fileinfo>
+                      </fits>
+                    </tool>
+                    <tool name="ffident" version="0.2">
+                      <ffidentOutput xmlns="">
+                        <shortName/>
+                        <longName>Unknown Binary</longName>
+                        <group/>
+                        <mimetypes>
+                          <mimetype>application/octet-stream</mimetype>
+                        </mimetypes>
+                        <fileExtensions/>
+                      </ffidentOutput>
+                    </tool>
+                    <tool name="Tika" version="1.10">
+                      <metadata xmlns="">
+                        <field name="X-Parsed-By">
+                          <value>org.apache.tika.parser.DefaultParser</value>
+                          <value>org.apache.tika.parser.txt.TXTParser</value>
+                        </field>
+                        <field name="Content-Encoding">
+                          <value>ISO-8859-1</value>
+                        </field>
+                        <field name="Content-Type">
+                          <value>text/plain; charset=ISO-8859-1</value>
+                        </field>
+                      </metadata>
+                    </tool>
+                  </toolOutput>
+                </fits>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/transcription/test_05.txt</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_16">
+    <mets:techMD ID="techMD_16">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>ebd8c23a-5e65-49ee-8b82-f6fa269d8ace</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>535a606f33dc5dc823a6d43a74751febf2da659ecfb10d832a280f0c276565aa
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>1888</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Plain Text</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>x-fmt/111</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2018-10-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output"
+                      xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd"
+                      version="1.1.0" timestamp="11/27/18 10:27 AM">
+                  <identification status="SINGLE_RESULT">
+                    <identity format="Plain text" mimetype="text/plain" toolname="FITS" toolversion="1.1.0">
+                      <tool toolname="file utility" toolversion="5.25"/>
+                    </identity>
+                  </identification>
+                  <fileinfo>
+                    <filepath toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/transcription/test_06.txt
+                    </filepath>
+                    <filename toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">test_06.txt
+                    </filename>
+                    <size toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">1888</size>
+                    <fslastmodified toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">
+                      1539075156000
+                    </fslastmodified>
+                  </fileinfo>
+                  <filestatus/>
+                  <metadata>
+                    <text>
+                      <charset toolname="file utility" toolversion="5.25" status="SINGLE_RESULT">UTF-8</charset>
+                    </text>
+                  </metadata>
+                  <toolOutput>
+                    <tool name="file utility" version="5.25">
+                      <fileUtilityOutput xmlns="">
+                        <rawOutput>UTF-8 Unicode text, with very long lines
+                          text/plain; charset=utf-8
+                        </rawOutput>
+                        <mimetype>text/plain</mimetype>
+                        <format>Plain text</format>
+                        <charset>UTF-8</charset>
+                      </fileUtilityOutput>
+                    </tool>
+                    <tool name="OIS File Information" version="0.2">
+                      <fits
+                          xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd">
+                        <fileinfo>
+                          <filepath>
+                            /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/transcription/test_06.txt
+                          </filepath>
+                          <filename>test_06.txt</filename>
+                          <size>1888</size>
+                          <fslastmodified>1539075156000</fslastmodified>
+                        </fileinfo>
+                      </fits>
+                    </tool>
+                    <tool name="ffident" version="0.2">
+                      <ffidentOutput xmlns="">
+                        <shortName/>
+                        <longName>Unknown Binary</longName>
+                        <group/>
+                        <mimetypes>
+                          <mimetype>application/octet-stream</mimetype>
+                        </mimetypes>
+                        <fileExtensions/>
+                      </ffidentOutput>
+                    </tool>
+                    <tool name="Tika" version="1.10">
+                      <metadata xmlns="">
+                        <field name="X-Parsed-By">
+                          <value>org.apache.tika.parser.DefaultParser</value>
+                          <value>org.apache.tika.parser.txt.TXTParser</value>
+                        </field>
+                        <field name="Content-Encoding">
+                          <value>UTF-8</value>
+                        </field>
+                        <field name="Content-Type">
+                          <value>text/plain; charset=UTF-8</value>
+                        </field>
+                      </metadata>
+                    </tool>
+                  </toolOutput>
+                </fits>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/transcription/test_06.txt</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_17">
+    <mets:techMD ID="techMD_17">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>833c9e39-399f-4b60-b1ec-7d407ced96e4</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>f76053658026102aa882b5a3c35d3968aa8f8662afe0d1dd49837eca034cbdb3
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>445</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Plain Text</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>x-fmt/111</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2018-10-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output"
+                      xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd"
+                      version="1.1.0" timestamp="11/27/18 10:27 AM">
+                  <identification status="SINGLE_RESULT">
+                    <identity format="Plain text" mimetype="text/plain" toolname="FITS" toolversion="1.1.0">
+                      <tool toolname="file utility" toolversion="5.25"/>
+                    </identity>
+                  </identification>
+                  <fileinfo>
+                    <filepath toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/transcription/test_07.txt
+                    </filepath>
+                    <filename toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">test_07.txt
+                    </filename>
+                    <size toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">445</size>
+                    <fslastmodified toolname="OIS File Information" toolversion="0.2" status="SINGLE_RESULT">
+                      1539075155000
+                    </fslastmodified>
+                  </fileinfo>
+                  <filestatus/>
+                  <metadata>
+                    <text>
+                      <charset toolname="file utility" toolversion="5.25" status="SINGLE_RESULT">UTF-8</charset>
+                    </text>
+                  </metadata>
+                  <toolOutput>
+                    <tool name="file utility" version="5.25">
+                      <fileUtilityOutput xmlns="">
+                        <rawOutput>UTF-8 Unicode text
+                          text/plain; charset=utf-8
+                        </rawOutput>
+                        <mimetype>text/plain</mimetype>
+                        <format>Plain text</format>
+                        <charset>UTF-8</charset>
+                      </fileUtilityOutput>
+                    </tool>
+                    <tool name="OIS File Information" version="0.2">
+                      <fits
+                          xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd">
+                        <fileinfo>
+                          <filepath>
+                            /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/objects/transcription/test_07.txt
+                          </filepath>
+                          <filename>test_07.txt</filename>
+                          <size>445</size>
+                          <fslastmodified>1539075155000</fslastmodified>
+                        </fileinfo>
+                      </fits>
+                    </tool>
+                    <tool name="ffident" version="0.2">
+                      <ffidentOutput xmlns="">
+                        <shortName/>
+                        <longName>Unknown Binary</longName>
+                        <group/>
+                        <mimetypes>
+                          <mimetype>application/octet-stream</mimetype>
+                        </mimetypes>
+                        <fileExtensions/>
+                      </ffidentOutput>
+                    </tool>
+                    <tool name="Tika" version="1.10">
+                      <metadata xmlns="">
+                        <field name="X-Parsed-By">
+                          <value>org.apache.tika.parser.DefaultParser</value>
+                          <value>org.apache.tika.parser.txt.TXTParser</value>
+                        </field>
+                        <field name="Content-Encoding">
+                          <value>UTF-8</value>
+                        </field>
+                        <field name="Content-Type">
+                          <value>text/plain; charset=UTF-8</value>
+                        </field>
+                      </metadata>
+                    </tool>
+                  </toolOutput>
+                </fits>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/transcription/test_07.txt</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:fileSec>
+    <mets:fileGrp USE="original">
+      <mets:file GROUPID="Group-b8b7aca7-0a0d-452e-a98d-94c8e7607aa5" ID="file-b8b7aca7-0a0d-452e-a98d-94c8e7607aa5"
+                 ADMID="amdSec_3">
+        <mets:FLocat xlink:href="objects/preservation/test_01.tif" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-9a99eef6-3e69-4cdf-ae68-4f304194bb64" ID="file-9a99eef6-3e69-4cdf-ae68-4f304194bb64"
+                 ADMID="amdSec_4">
+        <mets:FLocat xlink:href="objects/preservation/test_02.tif" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-88348a48-c658-4150-a1bb-e4b05d6f1f2b" ID="file-88348a48-c658-4150-a1bb-e4b05d6f1f2b"
+                 ADMID="amdSec_5">
+        <mets:FLocat xlink:href="objects/preservation/test_03.tif" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-a236198f-1844-4771-baac-59712c767fbe" ID="file-a236198f-1844-4771-baac-59712c767fbe"
+                 ADMID="amdSec_6">
+        <mets:FLocat xlink:href="objects/preservation/test_04.tif" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-62a1e40c-af27-472c-b870-818d6cb6464b" ID="file-62a1e40c-af27-472c-b870-818d6cb6464b"
+                 ADMID="amdSec_7">
+        <mets:FLocat xlink:href="objects/preservation/test_05.tif" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-76cf7fac-c2f9-412c-b773-2872777646f6" ID="file-76cf7fac-c2f9-412c-b773-2872777646f6"
+                 ADMID="amdSec_8">
+        <mets:FLocat xlink:href="objects/preservation/test_06.tif" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-62008a42-e2e7-4446-95f2-c5aa70ceacf7" ID="file-62008a42-e2e7-4446-95f2-c5aa70ceacf7"
+                 ADMID="amdSec_9">
+        <mets:FLocat xlink:href="objects/preservation/test_07.tif" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-96693817-a99b-4c78-833f-7c9ff4b7c089" ID="file-96693817-a99b-4c78-833f-7c9ff4b7c089"
+                 ADMID="amdSec_10">
+        <mets:FLocat xlink:href="objects/preservation/test_08.tif" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-cf34ab26-d4a2-4b73-99bf-9da8171084b0" ID="file-cf34ab26-d4a2-4b73-99bf-9da8171084b0"
+                 ADMID="amdSec_12">
+        <mets:FLocat xlink:href="objects/transcription/test_01.txt" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-cf32e677-59d9-4245-ba1b-ba56572a16b9" ID="file-cf32e677-59d9-4245-ba1b-ba56572a16b9"
+                 ADMID="amdSec_13">
+        <mets:FLocat xlink:href="objects/transcription/test_03.txt" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-029f77b2-f464-4746-9312-bb58603c91e3" ID="file-029f77b2-f464-4746-9312-bb58603c91e3"
+                 ADMID="amdSec_14">
+        <mets:FLocat xlink:href="objects/transcription/test_04.txt" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-ddc232cf-9a29-45b1-89f0-da4b39ff73ee" ID="file-ddc232cf-9a29-45b1-89f0-da4b39ff73ee"
+                 ADMID="amdSec_15">
+        <mets:FLocat xlink:href="objects/transcription/test_05.txt" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-ebd8c23a-5e65-49ee-8b82-f6fa269d8ace" ID="file-ebd8c23a-5e65-49ee-8b82-f6fa269d8ace"
+                 ADMID="amdSec_16">
+        <mets:FLocat xlink:href="objects/transcription/test_06.txt" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-833c9e39-399f-4b60-b1ec-7d407ced96e4" ID="file-833c9e39-399f-4b60-b1ec-7d407ced96e4"
+                 ADMID="amdSec_17">
+        <mets:FLocat xlink:href="objects/transcription/test_07.txt" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+    </mets:fileGrp>
+    <mets:fileGrp USE="submissionDocumentation">
+      <mets:file GROUPID="Group-0f7a75c8-c27b-40ea-8f41-85e6e183f3f6" ID="file-0f7a75c8-c27b-40ea-8f41-85e6e183f3f6"
+                 ADMID="amdSec_11">
+        <mets:FLocat
+            xlink:href="objects/submissionDocumentation/transfer-test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/METS.xml"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+    </mets:fileGrp>
+    <mets:fileGrp USE="metadata">
+      <mets:file GROUPID="Group-32c37ddf-e288-4dc0-8f0e-de29742d2665" ID="file-32c37ddf-e288-4dc0-8f0e-de29742d2665"
+                 ADMID="amdSec_1">
+        <mets:FLocat
+            xlink:href="objects/metadata/transfers/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/directory_tree.txt"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-0671ef17-a3e8-4f88-8c60-e862be415314" ID="file-0671ef17-a3e8-4f88-8c60-e862be415314"
+                 ADMID="amdSec_2">
+        <mets:FLocat
+            xlink:href="objects/metadata/transfers/test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6/mets_structmap.xml"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+    </mets:fileGrp>
+  </mets:fileSec>
+  <mets:structMap ID="structMap_1" LABEL="Archivematica default" TYPE="physical">
+    <mets:div LABEL="test-cf998c61-f284-4269-b887-8b13649b0640" TYPE="Directory" DMDID="dmdSec_1">
+      <mets:div LABEL="objects" TYPE="Directory">
+        <mets:div LABEL="metadata" TYPE="Directory">
+          <mets:div LABEL="transfers" TYPE="Directory">
+            <mets:div LABEL="test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6" TYPE="Directory">
+              <mets:div LABEL="directory_tree.txt" TYPE="Item">
+                <mets:fptr FILEID="file-32c37ddf-e288-4dc0-8f0e-de29742d2665"/>
+              </mets:div>
+              <mets:div LABEL="mets_structmap.xml" TYPE="Item">
+                <mets:fptr FILEID="file-0671ef17-a3e8-4f88-8c60-e862be415314"/>
+              </mets:div>
+            </mets:div>
+          </mets:div>
+        </mets:div>
+        <mets:div LABEL="preservation" TYPE="Directory">
+          <mets:div LABEL="test_01.tif" TYPE="Item">
+            <mets:fptr FILEID="file-b8b7aca7-0a0d-452e-a98d-94c8e7607aa5"/>
+          </mets:div>
+          <mets:div LABEL="test_02.tif" TYPE="Item">
+            <mets:fptr FILEID="file-9a99eef6-3e69-4cdf-ae68-4f304194bb64"/>
+          </mets:div>
+          <mets:div LABEL="test_03.tif" TYPE="Item">
+            <mets:fptr FILEID="file-88348a48-c658-4150-a1bb-e4b05d6f1f2b"/>
+          </mets:div>
+          <mets:div LABEL="test_04.tif" TYPE="Item">
+            <mets:fptr FILEID="file-a236198f-1844-4771-baac-59712c767fbe"/>
+          </mets:div>
+          <mets:div LABEL="test_05.tif" TYPE="Item">
+            <mets:fptr FILEID="file-62a1e40c-af27-472c-b870-818d6cb6464b"/>
+          </mets:div>
+          <mets:div LABEL="test_06.tif" TYPE="Item">
+            <mets:fptr FILEID="file-76cf7fac-c2f9-412c-b773-2872777646f6"/>
+          </mets:div>
+          <mets:div LABEL="test_07.tif" TYPE="Item">
+            <mets:fptr FILEID="file-62008a42-e2e7-4446-95f2-c5aa70ceacf7"/>
+          </mets:div>
+          <mets:div LABEL="test_08.tif" TYPE="Item">
+            <mets:fptr FILEID="file-96693817-a99b-4c78-833f-7c9ff4b7c089"/>
+          </mets:div>
+        </mets:div>
+        <mets:div LABEL="submissionDocumentation" TYPE="Directory">
+          <mets:div LABEL="transfer-test-2b50169f-7bc6-4d89-a8b9-ce1bbc3fcbe6" TYPE="Directory">
+            <mets:div LABEL="METS.xml" TYPE="Item">
+              <mets:fptr FILEID="file-0f7a75c8-c27b-40ea-8f41-85e6e183f3f6"/>
+            </mets:div>
+          </mets:div>
+        </mets:div>
+        <mets:div LABEL="transcription" TYPE="Directory">
+          <mets:div LABEL="test_01.txt" TYPE="Item">
+            <mets:fptr FILEID="file-cf34ab26-d4a2-4b73-99bf-9da8171084b0"/>
+          </mets:div>
+          <mets:div LABEL="test_03.txt" TYPE="Item">
+            <mets:fptr FILEID="file-cf32e677-59d9-4245-ba1b-ba56572a16b9"/>
+          </mets:div>
+          <mets:div LABEL="test_04.txt" TYPE="Item">
+            <mets:fptr FILEID="file-029f77b2-f464-4746-9312-bb58603c91e3"/>
+          </mets:div>
+          <mets:div LABEL="test_05.txt" TYPE="Item">
+            <mets:fptr FILEID="file-ddc232cf-9a29-45b1-89f0-da4b39ff73ee"/>
+          </mets:div>
+          <mets:div LABEL="test_06.txt" TYPE="Item">
+            <mets:fptr FILEID="file-ebd8c23a-5e65-49ee-8b82-f6fa269d8ace"/>
+          </mets:div>
+          <mets:div LABEL="test_07.txt" TYPE="Item">
+            <mets:fptr FILEID="file-833c9e39-399f-4b60-b1ec-7d407ced96e4"/>
+          </mets:div>
+        </mets:div>
+      </mets:div>
+    </mets:div>
+  </mets:structMap>
+  <mets:structMap TYPE="logical" ID="structMap_iish" LABEL="IISH structure">
+    <mets:div>
+      <mets:div TYPE="page" ORDER="1" LABEL="Page 1">
+        <mets:fptr CONTENTIDS="transcription/test_01.txt" FILEID="file-cf34ab26-d4a2-4b73-99bf-9da8171084b0"/>
+        <mets:fptr CONTENTIDS="preservation/test_01.tif" FILEID="file-b8b7aca7-0a0d-452e-a98d-94c8e7607aa5"/>
+      </mets:div>
+      <mets:div TYPE="page" ORDER="2" LABEL="Page 2">
+        <mets:fptr CONTENTIDS="preservation/test_02.tif" FILEID="file-9a99eef6-3e69-4cdf-ae68-4f304194bb64"/>
+      </mets:div>
+      <mets:div TYPE="page" ORDER="3" LABEL="Page 3">
+        <mets:fptr CONTENTIDS="transcription/test_03.txt" FILEID="file-cf32e677-59d9-4245-ba1b-ba56572a16b9"/>
+        <mets:fptr CONTENTIDS="preservation/test_03.tif" FILEID="file-88348a48-c658-4150-a1bb-e4b05d6f1f2b"/>
+      </mets:div>
+      <mets:div TYPE="page" ORDER="4" LABEL="Page 4">
+        <mets:fptr CONTENTIDS="transcription/test_04.txt" FILEID="file-029f77b2-f464-4746-9312-bb58603c91e3"/>
+        <mets:fptr CONTENTIDS="preservation/test_04.tif" FILEID="file-a236198f-1844-4771-baac-59712c767fbe"/>
+      </mets:div>
+      <mets:div TYPE="page" ORDER="5" LABEL="Page 5">
+        <mets:fptr CONTENTIDS="transcription/test_05.txt" FILEID="file-ddc232cf-9a29-45b1-89f0-da4b39ff73ee"/>
+        <mets:fptr CONTENTIDS="preservation/test_05.tif" FILEID="file-62a1e40c-af27-472c-b870-818d6cb6464b"/>
+      </mets:div>
+      <mets:div TYPE="page" ORDER="6" LABEL="Page 6">
+        <mets:fptr CONTENTIDS="transcription/test_06.txt" FILEID="file-ebd8c23a-5e65-49ee-8b82-f6fa269d8ace"/>
+        <mets:fptr CONTENTIDS="preservation/test_06.tif" FILEID="file-76cf7fac-c2f9-412c-b773-2872777646f6"/>
+      </mets:div>
+      <mets:div TYPE="page" ORDER="7" LABEL="Page 7">
+        <mets:fptr CONTENTIDS="transcription/test_07.txt" FILEID="file-833c9e39-399f-4b60-b1ec-7d407ced96e4"/>
+        <mets:fptr CONTENTIDS="preservation/test_07.tif" FILEID="file-62008a42-e2e7-4446-95f2-c5aa70ceacf7"/>
+      </mets:div>
+      <mets:div TYPE="page" ORDER="8" LABEL="Page 8">
+        <mets:fptr CONTENTIDS="preservation/test_08.tif" FILEID="file-96693817-a99b-4c78-833f-7c9ff4b7c089"/>
+      </mets:div>
+    </mets:div>
+  </mets:structMap>
+</mets:mets>

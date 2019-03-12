@@ -17,31 +17,43 @@ export default async function updateMetadata(): Promise<void> {
 
     try {
         const fromDate = moment().subtract(5, 'days').format('YYYY-MM-DD');
-
-        let resumptionToken = null;
-        while (resumptionToken !== false) {
-            const response = await request({
-                uri: config.metadataOaiUrl, strictSSL: false, qs: {
-                    verb: 'ListIdentifiers',
-                    metadataPrefix: 'marcxml',
-                    from: fromDate,
-                    resumptionToken: resumptionToken || undefined
-                }
-            });
-
-            const oaiResults = libxmljs.parseXml(response);
-
-            const resumptionTokenElem = oaiResults.get('//oai:resumptionToken', ns);
-            resumptionToken = resumptionTokenElem ? resumptionTokenElem.text() : false;
-
-            oaiResults.find('//oai:header', ns).forEach(headerElem => {
-                const identifierElem = headerElem.get('./oai:identifier', ns.oai);
-                if (identifierElem)
-                    runTask<MetadataParams>('metadata', {oaiIdentifier: identifierElem.text()});
-            });
-        }
+        const oaiIdentifiers = await getOAIIdentifiersOfUpdated(fromDate, config.metadataOaiUrl);
+        oaiIdentifiers.forEach(oaiIdentifier => {
+            runTask<MetadataParams>('metadata', {oaiIdentifier});
+        });
     }
     catch (err) {
-        logger.error('Failed to run the recurring update metadata procedure: ' + err.message);
+        logger.error(`Failed to run the recurring update metadata procedure: ${err.message}`);
     }
+}
+
+export async function getOAIIdentifiersOfUpdated(fromDate: string, uri: string): Promise<string[]> {
+    const oaiIdentifiers: string[] = [];
+
+    let resumptionToken = null;
+    while (resumptionToken !== false) {
+        const response = await request({
+            uri, strictSSL: false, qs: {
+                verb: 'ListIdentifiers',
+                metadataPrefix: 'marcxml',
+                from: fromDate,
+                resumptionToken: resumptionToken || undefined
+            }
+        });
+
+        const oaiResults = libxmljs.parseXml(response);
+
+        const resumptionTokenElem = oaiResults.get('//oai:resumptionToken', ns);
+        resumptionToken = resumptionTokenElem ? resumptionTokenElem.text() : false;
+
+        const foundIdentifiers = oaiResults
+            .find('//oai:header', ns)
+            .map(headerElem => headerElem.get('./oai:identifier', ns))
+            .filter(identifierElem => identifierElem !== null)
+            .map(identifierElem => (identifierElem as libxmljs.Element).text());
+
+        oaiIdentifiers.push(...foundIdentifiers);
+    }
+
+    return oaiIdentifiers;
 }

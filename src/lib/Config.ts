@@ -1,5 +1,7 @@
-if (process.env.NODE_ENV !== 'production')
-    require('dotenv').load();
+if (process.env.NODE_ENV === 'test')
+    require('dotenv').config({path: `${__dirname}/../../.test.env`});
+else if (process.env.NODE_ENV !== 'production')
+    require('dotenv').config();
 
 export interface Config {
     env?: string;
@@ -127,5 +129,11 @@ const config: Config = {
         return {host, port};
     })()
 };
+
+// For test purposes
+export function setConfig(property: keyof Config, value: Config[keyof Config]): void {
+    if (config.env === 'test')
+        config[property] = value;
+}
 
 export default config;

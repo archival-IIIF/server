@@ -1,0 +1,114 @@
+<ead:ead xmlns:ead="urn:isbn:1-931666-22-9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="urn:isbn:1-931666-22-9 http://www.loc.gov/ead/ead.xsd http://www.w3.org/1999/xlink http://www.loc.gov/standards/xlink/xlink.xsd">
+  <ead:eadheader langencoding="iso639-2b" dateencoding="iso8601" countryencoding="iso3166-1"
+                 repositoryencoding="iso15511" scriptencoding="iso15924" relatedencoding="MARC21">
+    <ead:eadid countrycode="NL" mainagencycode="NL-AmISG" identifier="hdl:10622/ARCH12345">
+      http://hdl.handle.net/10622/ARCH12345
+    </ead:eadid>
+  </ead:eadheader>
+  <ead:archdesc level="collection" type="inventory" relatedencoding="MARC21">
+    <ead:did>
+      <ead:head>Collection Summary</ead:head>
+      <ead:unittitle label="Title" encodinganalog="245$a">Collection title</ead:unittitle>
+      <ead:unitdate type="inclusive" label="Period" encodinganalog="245$f">2019</ead:unitdate>
+      <ead:unitid repositorycode="NL-AmsISG" label="Collection ID" countrycode="NL" encodinganalog="852$j">
+        ARCH12345
+      </ead:unitid>
+      <ead:origination label="Creator">
+        <ead:corpname encodinganalog="110$a">Creator of this archive</ead:corpname>
+      </ead:origination>
+      <ead:origination label="Other Creator">
+        <ead:corpname encodinganalog="710$a">Another creator of this archive</ead:corpname>
+      </ead:origination>
+      <ead:physdesc label="Physical Description">
+        <ead:extent unit="meter" encodinganalog="300$a" label="Extent">
+          1 m.
+        </ead:extent>,
+        <ead:extent unit="bytes" label="Extent" encodinganalog="300$a">
+          1 GB
+        </ead:extent>,
+        <ead:extent unit="file" label="Extent" encodinganalog="300$a">
+          1000 files
+        </ead:extent>
+      </ead:physdesc>
+      <ead:langmaterial label="Language of Material" encodinganalog="546$a">
+        <ead:language encodinganalog="041$a" langcode="eng">English</ead:language>
+      </ead:langmaterial>
+      <ead:abstract label="Abstract" encodinganalog="520$a">
+        An abstract of the archive.
+      </ead:abstract>
+    </ead:did>
+    <ead:descgrp type="content_and_structure">
+      <ead:head>Content and Structure</ead:head>
+      <ead:scopecontent encodinganalog="520$a">
+        <ead:head>Content</ead:head>
+        <ead:p>The content of this archive.</ead:p>
+        <ead:p>Is described in here.</ead:p>
+      </ead:scopecontent>
+    </ead:descgrp>
+    <ead:descgrp type="access_and_use">
+      <ead:head>Access and Use</ead:head>
+      <ead:accessrestrict encodinganalog="506$a" type="part">
+        <ead:head>Access</ead:head>
+        <ead:p>Restricted</ead:p>
+      </ead:accessrestrict>
+    </ead:descgrp>
+    <ead:dsc type="combined">
+      <ead:head>List</ead:head>
+      <ead:c01 level="series">
+        <ead:did>
+          <ead:unittitle>First set</ead:unittitle>
+        </ead:did>
+        <ead:c02 level="file">
+          <ead:did>
+            <ead:unitid>1</ead:unitid>
+            <ead:unittitle>
+              <ead:title>No 1</ead:title> from <ead:unitdate>2019</ead:unitdate>
+            </ead:unittitle>
+            <ead:physdesc>
+              <ead:extent>1 piece</ead:extent>
+            </ead:physdesc>
+          </ead:did>
+        </ead:c02>
+        <ead:c02 level="file">
+          <ead:did>
+            <ead:unitid>2</ead:unitid>
+            <ead:unittitle>
+              <ead:title>No 2</ead:title> from <ead:unitdate>2019</ead:unitdate>
+            </ead:unittitle>
+            <ead:physdesc>
+              <ead:extent>1 piece</ead:extent>
+            </ead:physdesc>
+          </ead:did>
+        </ead:c02>
+      </ead:c01>
+      <ead:c01 level="series">
+        <ead:did>
+          <ead:unittitle>Second set</ead:unittitle>
+        </ead:did>
+        <ead:c02 level="file">
+          <ead:did>
+            <ead:unitid>3</ead:unitid>
+            <ead:unittitle>
+              <ead:title>No 3</ead:title> from <ead:unitdate>2019</ead:unitdate>
+            </ead:unittitle>
+            <ead:physdesc>
+              <ead:extent>1 piece</ead:extent>
+            </ead:physdesc>
+          </ead:did>
+        </ead:c02>
+        <ead:c02 level="file">
+          <ead:did>
+            <ead:unitid>4</ead:unitid>
+            <ead:unittitle>
+              <ead:title>No 4</ead:title> from <ead:unitdate>2019</ead:unitdate>
+            </ead:unittitle>
+            <ead:physdesc>
+              <ead:extent>1 piece</ead:extent>
+            </ead:physdesc>
+          </ead:did>
+        </ead:c02>
+      </ead:c01>
+    </ead:dsc>
+  </ead:archdesc>
+</ead:ead>

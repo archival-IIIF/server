@@ -4,10 +4,10 @@ import * as rangeCheck from 'range_check';
 import * as uuid from 'uuid/v4';
 import {Context} from 'koa';
 
-import {client} from './Redis';
+import {getClient} from './Redis';
 import config from './Config';
 import logger from './Logger';
-import esClient from './ElasticSearch';
+import getEsClient from './ElasticSearch';
 import {runTaskWithResponse} from './Task';
 import {Item} from './ItemInterfaces';
 
@@ -103,7 +103,7 @@ export function isIpInRange(ip: string): boolean {
 
 export async function checkTokenDb(tokens: string[]): Promise<Token[]> {
     try {
-        const response = await esClient.search<Token>({
+        const response = await getEsClient().search<Token>({
             index: 'tokens',
             size: 100,
             body: {
@@ -130,6 +130,7 @@ export async function checkTokenDb(tokens: string[]): Promise<Token[]> {
 }
 
 async function getIdentitiesAndTokensForAccessId(acccesId: string | null): Promise<{ identities: string[]; token: string; } | null> {
+    const client = getClient();
     if (!client)
         throw new Error('Redis is required for authentication!');
 
@@ -140,6 +141,7 @@ async function getIdentitiesAndTokensForAccessId(acccesId: string | null): Promi
 }
 
 export async function setAccessIdForIdentity(identity: string, accessId: string | null): Promise<string> {
+    const client = getClient();
     if (!client)
         throw new Error('Redis is required for authentication!');
 
@@ -158,6 +160,7 @@ export async function setAccessIdForIdentity(identity: string, accessId: string 
 }
 
 export async function setAccessTokenForAccessId(accessId: string): Promise<string | null> {
+    const client = getClient();
     if (!client)
         throw new Error('Redis is required for authentication!');
 
@@ -178,6 +181,7 @@ export async function setAccessTokenForAccessId(accessId: string): Promise<strin
 }
 
 async function getAccessIdForAccessToken(accessToken: string): Promise<string | null> {
+    const client = getClient();
     if (!client)
         throw new Error('Redis is required for authentication!');
 
@@ -200,6 +204,7 @@ export async function getAccessIdFromRequest(ctx: Context, acceptToken = false):
 }
 
 export async function removeAccessIdFromRequest(ctx: Context): Promise<void> {
+    const client = getClient();
     if (!client)
         throw new Error('Redis is required for authentication!');
 

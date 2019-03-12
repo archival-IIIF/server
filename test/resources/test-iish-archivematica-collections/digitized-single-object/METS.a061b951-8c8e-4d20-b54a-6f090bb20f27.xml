@@ -1,0 +1,308 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:xlink="http://www.w3.org/1999/xlink"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version111/mets.xsd">
+  <mets:dmdSec ID="dmdSec_1">
+    <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+      <mets:xmlData>
+        <premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:intellectualEntity"
+                       xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd"
+                       version="3.0">
+          <premis:objectIdentifier>
+            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+            <premis:objectIdentifierValue>a061b951-8c8e-4d20-b54a-6f090bb20f27</premis:objectIdentifierValue>
+          </premis:objectIdentifier>
+          <premis:originalName>test-a061b951-8c8e-4d20-b54a-6f090bb20f27</premis:originalName>
+        </premis:object>
+      </mets:xmlData>
+    </mets:mdWrap>
+  </mets:dmdSec>
+  <mets:dmdSec ID="dmdSec_2">
+    <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+      <mets:xmlData>
+        <premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:intellectualEntity"
+                       xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd"
+                       version="3.0">
+          <premis:objectIdentifier>
+            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+            <premis:objectIdentifierValue>b34fba80-a357-4ffe-8fc4-eeeb3be5cddd</premis:objectIdentifierValue>
+          </premis:objectIdentifier>
+          <premis:originalName>%SIPDirectory%objects/preservation/</premis:originalName>
+        </premis:object>
+      </mets:xmlData>
+    </mets:mdWrap>
+  </mets:dmdSec>
+  <mets:amdSec ID="amdSec_5">
+    <mets:techMD ID="techMD_5">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
+                         xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
+                         version="2.2">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>2a863aca-eff6-4bb7-812f-cb797e75f793</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>7df8dce92aa1d5049ae64520a6bf2529b7f8bf159f6eb510464ac915f21c7b0a
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>144401772</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Tagged Image File Format</premis:formatName>
+                  <premis:formatVersion></premis:formatVersion>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>fmt/353</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2017-10-06</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                  <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/"
+                                   xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/"
+                                   xmlns:System="http://ns.exiftool.ca/File/System/1.0/"
+                                   xmlns:File="http://ns.exiftool.ca/File/1.0/"
+                                   xmlns:IFD0="http://ns.exiftool.ca/EXIF/IFD0/1.0/"
+                                   xmlns:XMP-x="http://ns.exiftool.ca/XMP/XMP-x/1.0/"
+                                   xmlns:XMP-tiff="http://ns.exiftool.ca/XMP/XMP-tiff/1.0/"
+                                   xmlns:XMP-xmp="http://ns.exiftool.ca/XMP/XMP-xmp/1.0/"
+                                   xmlns:XMP-dc="http://ns.exiftool.ca/XMP/XMP-dc/1.0/"
+                                   xmlns:XMP-photoshop="http://ns.exiftool.ca/XMP/XMP-photoshop/1.0/"
+                                   xmlns:XMP-xmpMM="http://ns.exiftool.ca/XMP/XMP-xmpMM/1.0/"
+                                   xmlns:XMP-exif="http://ns.exiftool.ca/XMP/XMP-exif/1.0/"
+                                   xmlns:IPTC="http://ns.exiftool.ca/IPTC/IPTC/1.0/"
+                                   xmlns:IPTC2="http://ns.exiftool.ca/IPTC/IPTC2/1.0/"
+                                   xmlns:Photoshop="http://ns.exiftool.ca/Photoshop/Photoshop/1.0/"
+                                   xmlns:ExifIFD="http://ns.exiftool.ca/EXIF/ExifIFD/1.0/"
+                                   xmlns:Composite="http://ns.exiftool.ca/Composite/1.0/"
+                                   rdf:about="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-82ddf70a-8752-4032-b6be-fa1e503ea1b5/objects/preservation/test_0001.tif"
+                                   et:toolkit="Image::ExifTool 10.10">
+                    <ExifTool:ExifToolVersion>10.10</ExifTool:ExifToolVersion>
+                    <System:FileName>test_0001.tif</System:FileName>
+                    <System:Directory>
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-82ddf70a-8752-4032-b6be-fa1e503ea1b5/objects/preservation
+                    </System:Directory>
+                    <System:FileSize>138 MB</System:FileSize>
+                    <System:FileModifyDate>2017:10:06 10:55:56+00:00</System:FileModifyDate>
+                    <System:FileAccessDate>2018:11:21 15:21:04+00:00</System:FileAccessDate>
+                    <System:FileInodeChangeDate>2018:11:21 15:20:39+00:00</System:FileInodeChangeDate>
+                    <System:FilePermissions>rw-r-----</System:FilePermissions>
+                    <File:FileType>TIFF</File:FileType>
+                    <File:FileTypeExtension>tif</File:FileTypeExtension>
+                    <File:MIMEType>image/tiff</File:MIMEType>
+                    <File:ExifByteOrder>Little-endian (Intel, II)</File:ExifByteOrder>
+                    <File:CurrentIPTCDigest>bf8a4ad7792cb081a898ce1813d65daa</File:CurrentIPTCDigest>
+                    <IFD0:SubfileType>Full-resolution Image</IFD0:SubfileType>
+                    <IFD0:ImageWidth>5854</IFD0:ImageWidth>
+                    <IFD0:ImageHeight>8221</IFD0:ImageHeight>
+                    <IFD0:BitsPerSample>8 8 8</IFD0:BitsPerSample>
+                    <IFD0:Compression>Uncompressed</IFD0:Compression>
+                    <IFD0:PhotometricInterpretation>RGB</IFD0:PhotometricInterpretation>
+                    <IFD0:StripOffsets>24524</IFD0:StripOffsets>
+                    <IFD0:Orientation>Horizontal (normal)</IFD0:Orientation>
+                    <IFD0:SamplesPerPixel>3</IFD0:SamplesPerPixel>
+                    <IFD0:RowsPerStrip>8221</IFD0:RowsPerStrip>
+                    <IFD0:StripByteCounts>144377202</IFD0:StripByteCounts>
+                    <IFD0:XResolution>300</IFD0:XResolution>
+                    <IFD0:YResolution>300</IFD0:YResolution>
+                    <IFD0:PlanarConfiguration>Chunky</IFD0:PlanarConfiguration>
+                    <IFD0:ResolutionUnit>inches</IFD0:ResolutionUnit>
+                    <IFD0:Software>Adobe Photoshop CS3 Windows</IFD0:Software>
+                    <IFD0:ModifyDate>2009:05:08 11:54:47</IFD0:ModifyDate>
+                    <IFD0:Artist>Business Graphics Datentechnik GmbH</IFD0:Artist>
+                    <XMP-x:XMPToolkit>Adobe XMP Core 4.1-c036 46.276720, Mon Feb 19 2007 22:40:08</XMP-x:XMPToolkit>
+                    <XMP-tiff:ImageWidth>5854</XMP-tiff:ImageWidth>
+                    <XMP-tiff:ImageHeight>8221</XMP-tiff:ImageHeight>
+                    <XMP-tiff:BitsPerSample>
+                      <rdf:Bag>
+                        <rdf:li>8</rdf:li>
+                        <rdf:li>8</rdf:li>
+                        <rdf:li>8</rdf:li>
+                      </rdf:Bag>
+                    </XMP-tiff:BitsPerSample>
+                    <XMP-tiff:Compression>Uncompressed</XMP-tiff:Compression>
+                    <XMP-tiff:PhotometricInterpretation>RGB</XMP-tiff:PhotometricInterpretation>
+                    <XMP-tiff:Orientation>Horizontal (normal)</XMP-tiff:Orientation>
+                    <XMP-tiff:SamplesPerPixel>3</XMP-tiff:SamplesPerPixel>
+                    <XMP-tiff:PlanarConfiguration>Chunky</XMP-tiff:PlanarConfiguration>
+                    <XMP-tiff:XResolution>300</XMP-tiff:XResolution>
+                    <XMP-tiff:YResolution>300</XMP-tiff:YResolution>
+                    <XMP-tiff:ResolutionUnit>inches</XMP-tiff:ResolutionUnit>
+                    <XMP-tiff:NativeDigest>
+                      256,257,258,259,262,274,277,284,530,531,282,283,296,301,318,319,529,532,306,270,271,272,305,315,33432;BF889C41A13EC6B538CD0312496D210B
+                    </XMP-tiff:NativeDigest>
+                    <XMP-xmp:ModifyDate>2009:05:08 11:54:47+02:00</XMP-xmp:ModifyDate>
+                    <XMP-xmp:CreatorTool>Adobe Photoshop CS3 Windows</XMP-xmp:CreatorTool>
+                    <XMP-xmp:CreateDate>2009:05:08 10:00:17+02:00</XMP-xmp:CreateDate>
+                    <XMP-xmp:MetadataDate>2009:05:08 11:54:47+02:00</XMP-xmp:MetadataDate>
+                    <XMP-dc:Creator>Business Graphics Datentechnik GmbH</XMP-dc:Creator>
+                    <XMP-dc:Format>image/tiff</XMP-dc:Format>
+                    <XMP-photoshop:ColorMode>RGB</XMP-photoshop:ColorMode>
+                    <XMP-photoshop:History/>
+                    <XMP-xmpMM:InstanceID>uuid:510D92B0AF3BDE1182E0D3F9C6F475B8</XMP-xmpMM:InstanceID>
+                    <XMP-exif:ExifImageWidth>5854</XMP-exif:ExifImageWidth>
+                    <XMP-exif:ExifImageHeight>8221</XMP-exif:ExifImageHeight>
+                    <XMP-exif:ColorSpace>Unknown (-1)</XMP-exif:ColorSpace>
+                    <XMP-exif:NativeDigest>
+                      36864,40960,40961,37121,37122,40962,40963,37510,40964,36867,36868,33434,33437,34850,34852,34855,34856,37377,37378,37379,37380,37381,37382,37383,37384,37385,37386,37396,41483,41484,41486,41487,41488,41492,41493,41495,41728,41729,41730,41985,41986,41987,41988,41989,41990,41991,41992,41993,41994,41995,41996,42016,0,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,22,23,24,25,26,27,28,30;1C797031BECDD617D322F4171212D47E
+                    </XMP-exif:NativeDigest>
+                    <IPTC:ApplicationRecordVersion>0</IPTC:ApplicationRecordVersion>
+                    <IPTC:By-line>Business Graphics Datentechnik G</IPTC:By-line>
+                    <IPTC2:ApplicationRecordVersion>0</IPTC2:ApplicationRecordVersion>
+                    <IPTC2:By-line>Business Graphics Datentechnik G</IPTC2:By-line>
+                    <Photoshop:IPTCDigest>bf8a4ad7792cb081a898ce1813d65daa</Photoshop:IPTCDigest>
+                    <Photoshop:XResolution>300</Photoshop:XResolution>
+                    <Photoshop:DisplayedUnitsX>inches</Photoshop:DisplayedUnitsX>
+                    <Photoshop:YResolution>300</Photoshop:YResolution>
+                    <Photoshop:DisplayedUnitsY>inches</Photoshop:DisplayedUnitsY>
+                    <Photoshop:GlobalAngle>30</Photoshop:GlobalAngle>
+                    <Photoshop:GlobalAltitude>30</Photoshop:GlobalAltitude>
+                    <Photoshop:CopyrightFlag>False</Photoshop:CopyrightFlag>
+                    <Photoshop:PhotoshopThumbnail>(Binary data 6494 bytes, use -b option to extract)
+                    </Photoshop:PhotoshopThumbnail>
+                    <ExifIFD:ColorSpace>Uncalibrated</ExifIFD:ColorSpace>
+                    <ExifIFD:ExifImageWidth>5854</ExifIFD:ExifImageWidth>
+                    <ExifIFD:ExifImageHeight>8221</ExifIFD:ExifImageHeight>
+                    <Composite:ImageSize>5854x8221</Composite:ImageSize>
+                    <Composite:Megapixels>48.1</Composite:Megapixels>
+                  </rdf:Description>
+                </rdf:RDF>
+                <MediaInfo xmlns="https://mediaarea.net/mediainfo"
+                           xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd"
+                           version="2.0">
+                  <creatingLibrary version="18.03" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
+                  <media
+                      ref="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-82ddf70a-8752-4032-b6be-fa1e503ea1b5/objects/preservation/test_0001.tif">
+                    <track type="General">
+                      <ImageCount>1</ImageCount>
+                      <FileExtension>tif</FileExtension>
+                      <Format>TIFF</Format>
+                      <FileSize>144401772</FileSize>
+                      <File_Modified_Date>UTC 2017-10-06 10:55:56</File_Modified_Date>
+                      <File_Modified_Date_Local>2017-10-06 10:55:56</File_Modified_Date_Local>
+                    </track>
+                    <track type="Image">
+                      <Format>Raw</Format>
+                      <Width>5854</Width>
+                      <Height>8221</Height>
+                      <ColorSpace>RGB</ColorSpace>
+                      <BitDepth>8</BitDepth>
+                      <Compression_Mode>Lossless</Compression_Mode>
+                    </track>
+                  </media>
+                </MediaInfo>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/preservation/test_0001.tif</premis:originalName>
+            <premis:relationship>
+              <premis:relationshipType>derivation</premis:relationshipType>
+              <premis:relationshipSubType>is source of</premis:relationshipSubType>
+              <premis:relatedObjectIdentification>
+                <premis:relatedObjectIdentifierType>UUID</premis:relatedObjectIdentifierType>
+                <premis:relatedObjectIdentifierValue>cc57423a-9f2d-4691-9e34-e51233fdd8d0
+                </premis:relatedObjectIdentifierValue>
+              </premis:relatedObjectIdentification>
+              <premis:relatedEventIdentification>
+                <premis:relatedEventIdentifierType>UUID</premis:relatedEventIdentifierType>
+                <premis:relatedEventIdentifierValue>845fe54e-2c58-4d71-bc18-243d99384c2a
+                </premis:relatedEventIdentifierValue>
+              </premis:relatedEventIdentification>
+            </premis:relationship>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:fileSec>
+    <mets:fileGrp USE="original">
+      <mets:file GROUPID="Group-2a863aca-eff6-4bb7-812f-cb797e75f793" ID="file-2a863aca-eff6-4bb7-812f-cb797e75f793"
+                 ADMID="amdSec_5">
+        <mets:FLocat xlink:href="objects/preservation/test_0001.tif" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+    </mets:fileGrp>
+    <mets:fileGrp USE="submissionDocumentation">
+      <mets:file GROUPID="Group-bb6b9e99-e309-4e76-a50f-ab3c8ab56868" ID="file-bb6b9e99-e309-4e76-a50f-ab3c8ab56868"
+                 ADMID="amdSec_6">
+        <mets:FLocat
+            xlink:href="objects/submissionDocumentation/transfer-test-82ddf70a-8752-4032-b6be-fa1e503ea1b5/METS.xml"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+    </mets:fileGrp>
+    <mets:fileGrp USE="preservation">
+      <mets:file GROUPID="Group-2a863aca-eff6-4bb7-812f-cb797e75f793" ID="file-cc57423a-9f2d-4691-9e34-e51233fdd8d0"
+                 ADMID="amdSec_4">
+        <mets:FLocat xlink:href="objects/preservation/test_0001-cc57423a-9f2d-4691-9e34-e51233fdd8d0.tif"
+                     LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+    </mets:fileGrp>
+    <mets:fileGrp USE="metadata">
+      <mets:file GROUPID="Group-7278ce5e-8733-47f3-ab68-6fc329517bce" ID="file-7278ce5e-8733-47f3-ab68-6fc329517bce"
+                 ADMID="amdSec_1">
+        <mets:FLocat
+            xlink:href="objects/metadata/transfers/test-82ddf70a-8752-4032-b6be-fa1e503ea1b5/directory_tree.txt"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-636a880f-c452-431c-8255-9dcf3e6f831a" ID="file-636a880f-c452-431c-8255-9dcf3e6f831a"
+                 ADMID="amdSec_2">
+        <mets:FLocat
+            xlink:href="objects/metadata/transfers/test-82ddf70a-8752-4032-b6be-fa1e503ea1b5/identifiers.json"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-469d56ca-2460-4796-ad3e-8b95bad47704" ID="file-469d56ca-2460-4796-ad3e-8b95bad47704"
+                 ADMID="amdSec_3">
+        <mets:FLocat
+            xlink:href="objects/metadata/transfers/test-82ddf70a-8752-4032-b6be-fa1e503ea1b5/mets_structmap.xml"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+    </mets:fileGrp>
+  </mets:fileSec>
+  <mets:structMap ID="structMap_1" LABEL="Archivematica default" TYPE="physical">
+    <mets:div LABEL="test-a061b951-8c8e-4d20-b54a-6f090bb20f27" TYPE="Directory" DMDID="dmdSec_1">
+      <mets:div LABEL="objects" TYPE="Directory">
+        <mets:div LABEL="metadata" TYPE="Directory">
+          <mets:div LABEL="transfers" TYPE="Directory">
+            <mets:div LABEL="test-82ddf70a-8752-4032-b6be-fa1e503ea1b5" TYPE="Directory">
+              <mets:div LABEL="directory_tree.txt" TYPE="Item">
+                <mets:fptr FILEID="file-7278ce5e-8733-47f3-ab68-6fc329517bce"/>
+              </mets:div>
+              <mets:div LABEL="identifiers.json" TYPE="Item">
+                <mets:fptr FILEID="file-636a880f-c452-431c-8255-9dcf3e6f831a"/>
+              </mets:div>
+              <mets:div LABEL="mets_structmap.xml" TYPE="Item">
+                <mets:fptr FILEID="file-469d56ca-2460-4796-ad3e-8b95bad47704"/>
+              </mets:div>
+            </mets:div>
+          </mets:div>
+        </mets:div>
+        <mets:div LABEL="preservation" TYPE="Directory" DMDID="dmdSec_2">
+          <mets:div LABEL="test_0001.tif" TYPE="Item">
+            <mets:fptr FILEID="file-2a863aca-eff6-4bb7-812f-cb797e75f793"/>
+          </mets:div>
+        </mets:div>
+        <mets:div LABEL="submissionDocumentation" TYPE="Directory">
+          <mets:div LABEL="transfer-test-82ddf70a-8752-4032-b6be-fa1e503ea1b5" TYPE="Directory">
+            <mets:div LABEL="METS.xml" TYPE="Item">
+              <mets:fptr FILEID="file-bb6b9e99-e309-4e76-a50f-ab3c8ab56868"/>
+            </mets:div>
+          </mets:div>
+        </mets:div>
+      </mets:div>
+    </mets:div>
+  </mets:structMap>
+  <mets:structMap TYPE="logical" ID="structMap_iish" LABEL="IISH structure">
+    <mets:div>
+      <mets:div TYPE="page" ORDER="1" LABEL="Page 1">
+        <mets:fptr CONTENTIDS="preservation/N30051001316352_0001.tif"
+                   FILEID="file-2a863aca-eff6-4bb7-812f-cb797e75f793"/>
+      </mets:div>
+    </mets:div>
+  </mets:structMap>
+</mets:mets>

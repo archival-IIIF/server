@@ -1,8 +1,9 @@
-import {client} from './Redis';
+import {getClient} from './Redis';
 import logger from './Logger';
 
 export async function cache<T>(type: string, group: string, id: string,
                                content: () => Promise<T>, secondsToExpire = 86400): Promise<T> {
+    const client = getClient();
     if (!client)
         return await content();
 
@@ -26,6 +27,7 @@ export async function cache<T>(type: string, group: string, id: string,
 }
 
 export async function evictCache(type: string, group: string): Promise<void> {
+    const client = getClient();
     if (!client)
         return;
 

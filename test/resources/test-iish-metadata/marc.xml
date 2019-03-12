@@ -1,0 +1,44 @@
+<marc:record xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:marc="http://www.loc.gov/MARC21/slim"
+             xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd">
+  <marc:leader>00380nkm a22001577a 4500</marc:leader>
+  <marc:controlfield tag="001">12345</marc:controlfield>
+  <marc:controlfield tag="003">NL-AMISG</marc:controlfield>
+  <marc:datafield tag="040" ind1=" " ind2=" ">
+    <marc:subfield code="a">NL-AmISG</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="100" ind1="1" ind2=" ">
+    <marc:subfield code="a">Name of the author</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="245" ind1="1" ind2="0">
+    <marc:subfield code="a">The title.</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="260" ind1=" " ind2=" ">
+    <marc:subfield code="c">2019.</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="300" ind1=" " ind2=" ">
+    <marc:subfield code="a">100 p.</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="500" ind1=" " ind2=" ">
+    <marc:subfield code="a">A description of this object.</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="542" ind1=" " ind2=" ">
+    <marc:subfield code="m">pictoright</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="600" ind1="1" ind2=" ">
+    <marc:subfield code="a">Another person</marc:subfield>
+    <marc:subfield code="e">A subject person</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="852" ind1="4" ind2=" ">
+    <marc:subfield code="a">IISG</marc:subfield>
+    <marc:subfield code="b">IISG</marc:subfield>
+    <marc:subfield code="c">IISG</marc:subfield>
+    <marc:subfield code="n">Available</marc:subfield>
+    <marc:subfield code="p">N12345</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="856" ind1="4" ind2="0">
+    <marc:subfield code="u">http://hdl.handle.net/10622/N12345</marc:subfield>
+  </marc:datafield>
+  <marc:datafield tag="902" ind1=" " ind2=" ">
+    <marc:subfield code="a">10622/N12345</marc:subfield>
+  </marc:datafield>
+</marc:record>

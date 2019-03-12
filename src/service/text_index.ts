@@ -12,42 +12,46 @@ import {indexTexts, deleteTexts, readAlto} from '../lib/Text';
 const readFileAsync = promisify(fs.readFile);
 
 export default async function processText({collectionId, items}: TextParams) {
-    await deleteTexts(collectionId);
+    try {
+        const textItems = await Promise.all(items.map(async item => {
+            const text = await getTextFromFile(path.join(config.dataPath, item.uri));
+            return {
+                id: item.id,
+                item_id: item.itemId,
+                collection_id: collectionId,
+                type: item.type,
+                language: item.language,
+                uri: item.uri,
+                text
+            };
+        }));
 
-    const textItems = await Promise.all(items.map(async item => {
-        const text = await getTextFromFile(item);
-        return {
-            id: item.id,
-            item_id: item.itemId,
-            collection_id: collectionId,
-            type: item.type,
-            language: item.language,
-            uri: item.uri,
-            text
-        };
-    }));
-
-    await indexTexts(textItems);
-}
-
-async function getTextFromFile(item: { uri: string }): Promise<string> {
-    const extension = path.extname(item.uri);
-    switch (extension) {
-        case 'xml':
-            return await getAltoText(item);
-        case 'txt':
-        default:
-            return await getPlainText(item);
+        await deleteTexts(collectionId);
+        await indexTexts(textItems);
+    }
+    catch (e) {
+        throw new Error(`Failed to process the texts for ${collectionId}: ${e.message}`);
     }
 }
 
-async function getPlainText(item: { uri: string }): Promise<string> {
-    const textBuffer = await readFileAsync(path.join(config.dataPath, item.uri));
+export async function getTextFromFile(uri: string): Promise<string> {
+    const extension = path.extname(uri);
+    switch (extension) {
+        case '.xml':
+            return await getAltoText(uri);
+        case '.txt':
+        default:
+            return await getPlainText(uri);
+    }
+}
+
+async function getPlainText(uri: string): Promise<string> {
+    const textBuffer = await readFileAsync(uri);
     const encodingDetection = jschardet.detect(textBuffer) as { encoding: string };
     return iconv.decode(textBuffer, encodingDetection.encoding);
 }
 
-async function getAltoText(item: { uri: string }): Promise<string> {
-    const altoWords = await readAlto(path.join(config.dataPath, item.uri));
+async function getAltoText(uri: string): Promise<string> {
+    const altoWords = await readAlto(uri);
     return altoWords.map(altoWord => altoWord.word).join(' ');
 }

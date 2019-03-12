@@ -2,6 +2,7 @@ import * as elasticsearch from 'elasticsearch';
 import config from './Config';
 import logger from './Logger';
 
+let testClient: elasticsearch.Client | null = null;
 const client = new elasticsearch.Client({
     host: config.elasticSearchUrl,
     apiVersion: '6.5',
@@ -12,7 +13,23 @@ const client = new elasticsearch.Client({
     }
 });
 
+export default function getClient(): elasticsearch.Client {
+    if (config.env === 'test' && testClient)
+        return testClient;
+
+    return client;
+}
+
+// For test purposes
+export function setElasticSearchClient(client: elasticsearch.Client): void {
+    if (config.env === 'test')
+        testClient = client;
+}
+
 (async function setMapping() {
+    if (config.env === 'test')
+        return;
+
     try {
         await client.ping({});
 
@@ -119,7 +136,7 @@ const client = new elasticsearch.Client({
                 }
             });
 
-            logger.info("Created the index 'items' with a mapping");
+            logger.info('Created the index \'items\' with a mapping');
         }
 
         const textsExists = await client.indices.exists({index: 'texts'});
@@ -157,7 +174,7 @@ const client = new elasticsearch.Client({
                 }
             });
 
-            logger.info("Created the index 'texts' with a mapping");
+            logger.info('Created the index \'texts\' with a mapping');
         }
 
         const tokensExists = await client.indices.exists({index: 'tokens'});
@@ -186,12 +203,10 @@ const client = new elasticsearch.Client({
                 }
             });
 
-            logger.info("Created the index 'tokens' with a mapping");
+            logger.info('Created the index \'tokens\' with a mapping');
         }
     }
     catch (e) {
         setMapping();
     }
 })();
-
-export default client;

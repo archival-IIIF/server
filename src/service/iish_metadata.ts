@@ -17,29 +17,38 @@ export default async function processMetadata({oaiIdentifier, collectionId}: Met
     if (!config.metadataOaiUrl || !config.metadataSrwUrl)
         throw new Error('Cannot process metadata, as there is no OAI or SRW URL configured!');
 
-    if (!oaiIdentifier && collectionId) {
-        if (collectionId.includes('ARCH') || collectionId.includes('COLL')) {
-            const rootId = collectionId.split('.')[0];
-            oaiIdentifier = `oai:socialhistoryservices.org:10622/${rootId}`;
-        }
-        else {
-            const response = await request({
-                uri: config.metadataSrwUrl, strictSSL: false, qs: {
-                    operation: 'searchRetrieve',
-                    query: `marc.852$p="${collectionId}"`
-                }
-            });
+    try {
+        if (!oaiIdentifier && collectionId)
+            oaiIdentifier = await getOAIIdentifier(collectionId, config.metadataSrwUrl);
 
-            const srwResults = libxmljs.parseXml(response);
-            const marcId = srwResults.get('//marc:controlfield[@tag="001"]', ns);
+        if (oaiIdentifier)
+            await updateWithIdentifier(oaiIdentifier, collectionId);
+    }
+    catch (e) {
+        throw new Error(`Failed to process the metadata for ${collectionId}: ${e.message}`);
+    }
+}
 
-            if (marcId)
-                oaiIdentifier = `oai:socialhistoryservices.org:${marcId.text()}`;
-        }
+export async function getOAIIdentifier(collectionId: string, uri: string): Promise<string | null> {
+    if (collectionId.includes('ARCH') || collectionId.includes('COLL')) {
+        const rootId = collectionId.split('.')[0];
+        return `oai:socialhistoryservices.org:10622/${rootId}`;
     }
 
-    if (oaiIdentifier)
-        await updateWithIdentifier(oaiIdentifier, collectionId);
+    const response = await request({
+        uri, strictSSL: false, qs: {
+            operation: 'searchRetrieve',
+            query: `marc.852$p="${collectionId}"`
+        }
+    });
+
+    const srwResults = libxmljs.parseXml(response);
+    const marcId = srwResults.get('//marc:controlfield[@tag="001"]', ns);
+
+    if (marcId)
+        return `oai:socialhistoryservices.org:${marcId.text()}`;
+
+    return null;
 }
 
 async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string): Promise<void> {
@@ -69,7 +78,7 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
     await updateItems(allMetadata);
 }
 
-function updateEAD(xml: string, oaiIdentifier: string, collectionId: string): MinimalItem[] {
+export function updateEAD(xml: string, oaiIdentifier: string, collectionId: string): MinimalItem[] {
     const [rootId, unitId] = collectionId.split('.');
 
     const access = EAD.getAccess(collectionId, xml);
@@ -112,7 +121,7 @@ function updateEAD(xml: string, oaiIdentifier: string, collectionId: string): Mi
     });
 }
 
-function updateMarc(xml: string, oaiIdentifier: string, collectionId: string): MinimalItem[] {
+export function updateMarc(xml: string, oaiIdentifier: string, collectionId: string): MinimalItem[] {
     const access = MarcXML.getAccess(collectionId, xml);
     const metadata = MarcXML.getMetadata(collectionId, xml);
 

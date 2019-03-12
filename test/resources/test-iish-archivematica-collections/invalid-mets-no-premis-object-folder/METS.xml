@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:xlink="http://www.w3.org/1999/xlink"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version111/mets.xsd">
+    <mets:dmdSec ID="dmdSec_1">
+        <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+            <mets:xmlData>
+                <premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:intellectualEntity"
+                               xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd"
+                               version="3.0">
+                    <premis:objectIdentifier>
+                        <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+                        <premis:objectIdentifierValue>a061b951-8c8e-4d20-b54a-6f090bb20f27</premis:objectIdentifierValue>
+                    </premis:objectIdentifier>
+                    <premis:originalName>test-a061b951-8c8e-4d20-b54a-6f090bb20f27</premis:originalName>
+                </premis:object>
+            </mets:xmlData>
+        </mets:mdWrap>
+    </mets:dmdSec>
+    <mets:fileSec>
+        <mets:fileGrp USE="original">
+            <mets:file GROUPID="Group-2a863aca-eff6-4bb7-812f-cb797e75f793" ID="file-2a863aca-eff6-4bb7-812f-cb797e75f793"
+                       ADMID="amdSec_5">
+                <mets:FLocat xlink:href="objects/test/test_0001.tif" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+            </mets:file>
+        </mets:fileGrp>
+        <mets:fileGrp USE="submissionDocumentation">
+            <mets:file GROUPID="Group-bb6b9e99-e309-4e76-a50f-ab3c8ab56868" ID="file-bb6b9e99-e309-4e76-a50f-ab3c8ab56868"
+                       ADMID="amdSec_6">
+                <mets:FLocat
+                    xlink:href="objects/submissionDocumentation/transfer-test-82ddf70a-8752-4032-b6be-fa1e503ea1b5/METS.xml"
+                    LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+            </mets:file>
+        </mets:fileGrp>
+        <mets:fileGrp USE="metadata">
+            <mets:file GROUPID="Group-7278ce5e-8733-47f3-ab68-6fc329517bce" ID="file-7278ce5e-8733-47f3-ab68-6fc329517bce"
+                       ADMID="amdSec_1">
+                <mets:FLocat
+                    xlink:href="objects/metadata/transfers/test-82ddf70a-8752-4032-b6be-fa1e503ea1b5/directory_tree.txt"
+                    LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+            </mets:file>
+        </mets:fileGrp>
+    </mets:fileSec>
+    <mets:structMap ID="structMap_1" LABEL="Archivematica default" TYPE="physical">
+        <mets:div LABEL="test-a061b951-8c8e-4d20-b54a-6f090bb20f27" TYPE="Directory" DMDID="dmdSec_1">
+            <mets:div LABEL="objects" TYPE="Directory">
+                <mets:div LABEL="metadata" TYPE="Directory">
+                    <mets:div LABEL="transfers" TYPE="Directory">
+                        <mets:div LABEL="test-82ddf70a-8752-4032-b6be-fa1e503ea1b5" TYPE="Directory">
+                            <mets:div LABEL="directory_tree.txt" TYPE="Item">
+                                <mets:fptr FILEID="file-7278ce5e-8733-47f3-ab68-6fc329517bce"/>
+                            </mets:div>
+                        </mets:div>
+                    </mets:div>
+                </mets:div>
+                <mets:div LABEL="test" TYPE="Directory" DMDID="dmdSec_2">
+                    <mets:div LABEL="test_0001.tif" TYPE="Item">
+                        <mets:fptr FILEID="file-2a863aca-eff6-4bb7-812f-cb797e75f793"/>
+                    </mets:div>
+                </mets:div>
+                <mets:div LABEL="submissionDocumentation" TYPE="Directory">
+                    <mets:div LABEL="transfer-test-82ddf70a-8752-4032-b6be-fa1e503ea1b5" TYPE="Directory">
+                        <mets:div LABEL="METS.xml" TYPE="Item">
+                            <mets:fptr FILEID="file-bb6b9e99-e309-4e76-a50f-ab3c8ab56868"/>
+                        </mets:div>
+                    </mets:div>
+                </mets:div>
+            </mets:div>
+        </mets:div>
+    </mets:structMap>
+</mets:mets>
