@@ -5,7 +5,7 @@ import logger from './Logger';
 let testClient: elasticsearch.Client | null = null;
 const client = new elasticsearch.Client({
     host: config.elasticSearchUrl,
-    apiVersion: '6.5',
+    apiVersion: '6.7',
     log: {
         type: 'file',
         level: 'error',
