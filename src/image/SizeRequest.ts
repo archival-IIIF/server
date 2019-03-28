@@ -1,4 +1,4 @@
-import {ImageProcessingInfo, ImageRequest, Size} from './ImageProcessing';
+import {ImageProcessingInfo, ImageRequest} from './ImageProcessing';
 import {RequestError} from './errors';
 import {Sharp} from 'sharp';
 
@@ -9,7 +9,7 @@ export default class SizeRequest implements ImageRequest {
 
     private static SIZE_TO_WIDTH = /^([0-9]+),$/;
     private static SIZE_TO_HEIGHT = /^,([0-9]+)$/;
-    private static SIZE_TO_PERCENTAGE = /^pct:([0-9]+.?[0-9]*)$/;
+    private static SIZE_TO_PERCENTAGE = /^pct:([0-9]+\.?[0-9]*)$/;
     private static SIZE_TO_WIDTH_HEIGHT = /^([0-9]+),([0-9]+)$/;
     private static SIZE_TO_BEST_FIT = /^!([0-9]+),([0-9]+)$/;
 
@@ -40,8 +40,11 @@ export default class SizeRequest implements ImageRequest {
             }
             else if ((result = SizeRequest.SIZE_TO_BEST_FIT.exec(this.request)) !== null) {
                 [, this.newSize.width, this.newSize.height] = result.map(i => parseInt(i));
-                this.isMax = (this.newSize.width === processingInfo.size.width)
-                    && (this.newSize.height === processingInfo.size.height);
+                const isMaxWidth = (processingInfo.size.width > processingInfo.size.height) &&
+                    (processingInfo.size.width === this.newSize.width);
+                const isMaxHeight = (processingInfo.size.height > processingInfo.size.width) &&
+                    (processingInfo.size.height === this.newSize.height);
+                this.isMax = isMaxWidth || isMaxHeight;
                 this.bestFit = true;
             }
             else
@@ -54,7 +57,7 @@ export default class SizeRequest implements ImageRequest {
         }
     }
 
-    updateProcessingInfo(processingInfo: ImageProcessingInfo): void {
+    private updateProcessingInfo(processingInfo: ImageProcessingInfo): void {
         if (this.isMax)
             return;
 

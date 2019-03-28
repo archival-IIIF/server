@@ -164,11 +164,13 @@ function walkTree({id, mets, objects, relativeRootPath, curNode, curNodePhysical
         }
         else if (!structureIISH || (parent === 'preservation')) {
             const fileInfo = readFile(id, label, mets, objects, relativeRootPath, nodePhysical, structureIISH, parent);
-            items.push(fileInfo);
+            if (fileInfo)
+                items.push(fileInfo);
         }
         else if (structureIISH && parent && (parent === 'transcription' || parent.startsWith('translation_'))) {
             const textInfo = readText(id, label, mets, objects, relativeRootPath, nodePhysical, structureIISH, parent);
-            texts.push(textInfo);
+            if (textInfo)
+                texts.push(textInfo);
         }
     });
 
@@ -179,36 +181,34 @@ function readFolder(rootId: string, label: string, mets: Document, node: Element
                     nodePhysical: Element, parent: string | null): Item | null {
     const dmdIdAttr = node.attr('DMDID') ? node.attr('DMDID') : nodePhysical.attr('DMDID');
     const dmdId = dmdIdAttr ? dmdIdAttr.value() : null;
+    if (!dmdId)
+        return null;
 
-    if (dmdId) {
-        const premisObj = mets.get(`//mets:dmdSec[@ID="${dmdId}"]/mets:mdWrap/mets:xmlData/premisv3:object`, ns);
-        if (!premisObj)
-            throw new Error(`No premis object found for DMD id ${dmdId}`);
+    const premisObj = mets.get(`//mets:dmdSec[@ID="${dmdId}"]/mets:mdWrap/mets:xmlData/premisv3:object`, ns);
+    if (!premisObj)
+        throw new Error(`No premis object found for DMD id ${dmdId}`);
 
-        const originalNameElem = premisObj.get(`./premisv3:originalName`, ns);
-        if (!originalNameElem)
-            throw new Error(`No original name found for object with DMD id ${dmdId}`);
+    const originalNameElem = premisObj.get(`./premisv3:originalName`, ns);
+    if (!originalNameElem)
+        throw new Error(`No original name found for object with DMD id ${dmdId}`);
 
-        const originalName = originalNameElem.text();
-        const name = path.basename(originalName);
-        const id = getIdentifier(premisObj, 'premisv3');
-        if (!id)
-            throw new Error(`No identifier found for object with DMD id ${dmdId}`);
+    const originalName = originalNameElem.text();
+    const name = path.basename(originalName);
+    const id = getIdentifier(premisObj, 'premisv3');
+    if (!id)
+        throw new Error(`No identifier found for object with DMD id ${dmdId}`);
 
-        return createItem({
-            'id': id,
-            'parent_id': parent || rootId,
-            'collection_id': rootId,
-            'type': 'folder',
-            'label': name
-        } as FolderItem);
-    }
-
-    return null;
+    return createItem({
+        'id': id,
+        'parent_id': parent || rootId,
+        'collection_id': rootId,
+        'type': 'folder',
+        'label': name
+    } as FolderItem);
 }
 
 function readFile(rootId: string, label: string, mets: Document, objects: string[], relativeRootPath: string,
-                  node: Element, structureIISH: Element | null, parent: string | null): Item {
+                  node: Element, structureIISH: Element | null, parent: string | null): Item | null {
     const fptrElem = node.get('mets:fptr', ns);
     if (!fptrElem || !fptrElem.attr('FILEID'))
         throw new Error(`Missing a fptr or file id for a file with the label ${label}`);
@@ -217,7 +217,7 @@ function readFile(rootId: string, label: string, mets: Document, objects: string
     const internalId = fileId.substring(5);
     const premisObj = findPremisObj(mets, fileId);
     if (!premisObj)
-        throw new Error(`No premis object found for a file with the label ${label}`);
+        return null;
 
     const originalNameElem = premisObj.get(`./premis:originalName`, ns);
     if (!originalNameElem)
@@ -292,7 +292,7 @@ function readFile(rootId: string, label: string, mets: Document, objects: string
 }
 
 function readText(rootId: string, label: string, mets: Document, objects: string[], relativeRootPath: string,
-                  node: Element, structureIISH: Element, parent: string): TextItem {
+                  node: Element, structureIISH: Element, parent: string): TextItem | null {
     const fptrElem = node.get('mets:fptr', ns);
     if (!fptrElem || !fptrElem.attr('FILEID'))
         throw new Error(`Missing a fptr or file id for a file with the label ${label}`);
@@ -305,7 +305,7 @@ function readText(rootId: string, label: string, mets: Document, objects: string
 
     const premisObj = findPremisObj(mets, fileId);
     if (!premisObj)
-        throw new Error(`No premis object found for a file with the label ${label}`);
+        return null;
 
     const id = getIdentifier(premisObj, 'premis');
     if (!id)

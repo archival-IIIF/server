@@ -14,7 +14,6 @@ import {IIIFMetadata} from '../../service/util/types';
 import {PresentationBuilder} from './PresentationBuilder';
 
 import Image from '../../image/Image';
-import {getProfile} from '../../image/imageServer';
 
 import Collection from '../elem/v2/Collection';
 import Manifest from '../elem/v2/Manifest';
@@ -238,7 +237,6 @@ async function getImageResource(item: ImageItem, size = 'full'): Promise<Resourc
         : `${prefixImageUrl}/${item.id}/full/${size}/0/default.jpg`;
 
     const image = new Image(`${prefixImageUrl}/${item.id}`, item.width, item.height);
-    image.setProfile(Array.isArray(getProfile()) ? getProfile()[0] : getProfile());
     await setAuthenticationServices(item, image);
 
     const resource = new Resource(id, (size === 'full') ? item.width : null,

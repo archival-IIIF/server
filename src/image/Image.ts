@@ -1,15 +1,16 @@
+import {ImageProfile} from './profiles';
+
 import Base from '../presentation/elem/v2/Base';
 import {AccessTier} from '../lib/Security';
 
-export type ImageProfile = string | [string, { formats: string[], qualities: string[], supports: string[] }];
-
 export default class Image extends Base {
+    profile: string | [string, ImageProfile] = 'http://iiif.io/api/image/2/level2.json';
+
     protocol: string;
     width: number;
     height: number;
     sizes: [];
 
-    profile?: ImageProfile;
     maxWidth?: number;
     maxHeight?: number;
 
@@ -22,7 +23,7 @@ export default class Image extends Base {
     }
 
     setProfile(profile: ImageProfile): void {
-        this.profile = profile;
+        this.profile = ['http://iiif.io/api/image/2/level2.json', profile];
     }
 
     setTier(tier: AccessTier, seperator: string): void {

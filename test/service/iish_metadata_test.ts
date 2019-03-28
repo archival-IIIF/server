@@ -78,7 +78,7 @@ describe('iish_metadata', () => {
 
     describe('#updateEAD()', () => {
         it('should parse the metadata from an EAD description', async () => {
-            const eadXml = await readFileAsync(join(__dirname, '../resources/test-iish-metadata/ead.xml'), 'utf8');
+            const eadXml = await readFileAsync(join(__dirname, 'test-iish-metadata/ead.xml'), 'utf8');
             const metadata = updateEAD(eadXml, 'oai:socialhistoryservices.org:10622/ARCH12345', 'ARCH12345.3');
 
             expect(metadata).to.deep.equal([
@@ -137,7 +137,7 @@ describe('iish_metadata', () => {
 
     describe('#updateMarc()', () => {
         it('should parse the metadata from an EAD description', async () => {
-            const marcXml = await readFileAsync(join(__dirname, '../resources/test-iish-metadata/marc.xml'), 'utf8');
+            const marcXml = await readFileAsync(join(__dirname, 'test-iish-metadata/marc.xml'), 'utf8');
             const metadata = updateMarc(marcXml, 'oai:socialhistoryservices.org:12345', 'N12345');
 
             expect(metadata).to.deep.equal([

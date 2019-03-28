@@ -5,8 +5,6 @@ import {IIIFMetadataParams} from '../../lib/Service';
 import getPronomInfo, {PronomInfo} from '../../lib/Pronom';
 import {FileItem, ImageItem, Item, RootItem} from '../../lib/ItemInterfaces';
 
-import {getProfile} from '../../image/imageServer';
-
 import {IIIFMetadata} from '../../service/util/types';
 import {PresentationBuilder} from './PresentationBuilder';
 
@@ -128,7 +126,7 @@ function getImageResource(item: ImageItem, size = 'full'): Resource {
     const resource = new Resource(id, 'Image', 'image/jpeg',
         (size === 'full') ? item.width : null, (size === 'full') ? item.height : null);
     const service = new Service(`${prefixImageUrl}/${item.id}`, Service.IMAGE_SERVICE_2,
-        Array.isArray(getProfile()) ? getProfile()[0] : getProfile() as string);
+        'http://iiif.io/api/image/2/level2.json');
     resource.setService(service);
 
     return resource;

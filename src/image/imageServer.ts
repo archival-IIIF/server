@@ -1,6 +1,7 @@
-import Image, {ImageProfile} from './Image';
+import Image from './Image';
 import SizeRequest from './SizeRequest';
 import {ImageProcessingInfo} from './ImageProcessing';
+import {ImageProfile, sharpProfile, lorisProfile} from './profiles';
 
 import logger from '../lib/Logger';
 import config from '../lib/Config';
@@ -24,7 +25,7 @@ export interface ImageResult {
     contentLength: number | null
 }
 
-export async function getInfo(item: ImageItem, tier: AccessTier | undefined, id: string): Promise<Image> {
+export async function getInfo(item: ImageItem, tier?: AccessTier, id?: string): Promise<Image> {
     if (!id)
         id = item.id;
 
@@ -48,8 +49,7 @@ export async function getInfo(item: ImageItem, tier: AccessTier | undefined, id:
     return imageInfo;
 }
 
-export async function getImage(item: ImageItem, tier: AccessTier | undefined,
-                               imageOptions: ImageOptions): Promise<ImageResult> {
+export async function getImage(item: ImageItem, imageOptions: ImageOptions, tier?: AccessTier): Promise<ImageResult> {
     if (typeof tier === 'object') {
         logger.debug(`Validate the size requested with the maximum size of tier ${tier}`);
 
@@ -74,7 +74,5 @@ export async function getImage(item: ImageItem, tier: AccessTier | undefined,
 }
 
 export function getProfile(): ImageProfile {
-    if (!config.imageServerUrl)
-        return require('./profile/sharp');
-    return require('./profile/loris');
+    return !config.imageServerUrl ? sharpProfile : lorisProfile;
 }

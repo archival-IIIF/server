@@ -75,7 +75,7 @@ export async function getItem(id: string): Promise<Item | null> {
 export async function getChildItems(id: string, sortByOrder = false): Promise<Item[]> {
     const items = await getItems(`parent_id:"${id}"`);
     if (sortByOrder)
-        items.sort((cA, cB) => (cA.order && cB.order && cA.order < cB.order) ? -1 : 1);
+        items.sort((cA, cB) => (cA.order !== null && cB.order !== null && cA.order < cB.order) ? -1 : 1);
     return items;
 }
 

@@ -63,13 +63,13 @@ router.get('/:id/:region/:size/:rotation/:quality.:format', async ctx => {
     if ((access.state === AccessState.CLOSED) || ((access.state === AccessState.TIERED) && (access.tier.name !== tier)))
         throw new HttpError(401, 'Access denied!');
 
-    const image = await getImage(item as ImageItem, access.tier, {
+    const image = await getImage(item as ImageItem, {
         region: ctx.params.region,
         size: ctx.params.size,
         rotation: ctx.params.rotation,
         quality: ctx.params.quality,
         format: ctx.params.format
-    });
+    }, access.tier);
 
     ctx.body = image.image;
     ctx.status = image.status;
