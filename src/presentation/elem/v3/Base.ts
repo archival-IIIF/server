@@ -5,6 +5,7 @@ export type Internationalized = string | { [language: string]: string[] };
 export type LabelValue = { label: Internationalized; value: Internationalized };
 
 type SeeAlso = Ref & { format?: string; profile?: string; };
+type ViewingDirection = 'left-to-right' | 'right-to-left' | 'top-to-bottom' | 'bottom-to-top';
 
 export interface Ref {
     id?: string;
@@ -31,6 +32,7 @@ export default class Base implements Ref {
     metadata?: LabelValue[];
     seeAlso?: Ref & { format?: string; profile?: string; }[];
     behavior?: string[];
+    viewingDirection?: ViewingDirection;
 
     constructor(id?: string, type?: string, label?: Internationalized) {
         if (id) this.id = id;
@@ -157,5 +159,9 @@ export default class Base implements Ref {
             behavior.forEach(b => this.addBehavior(b));
         else
             this.behavior.push(behavior);
+    }
+
+    setViewingDirection(viewingDirection: ViewingDirection): void {
+        this.viewingDirection = viewingDirection;
     }
 }

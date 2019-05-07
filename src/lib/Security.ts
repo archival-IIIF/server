@@ -30,15 +30,9 @@ export interface Token {
     to: Date | null;
 }
 
-const isLoginEnabled = !config.loginDisabled;
-const isExternalEnabled = config.internalIpAddresses.length > 0;
-const isAuthenticationEnabled = isLoginEnabled || isExternalEnabled;
-
-export const enabledAuthServices: ('login' | 'external')[] = [];
-if (isLoginEnabled)
-    enabledAuthServices.push('login');
-if (isExternalEnabled)
-    enabledAuthServices.push('external');
+const isLoginEnabled = () => !config.loginDisabled;
+const isExternalEnabled = () => config.internalIpAddresses.length > 0;
+const isAuthenticationEnabled = () => isLoginEnabled() || isExternalEnabled();
 
 export enum AccessState {
     OPEN = 'open',
@@ -46,11 +40,22 @@ export enum AccessState {
     TIERED = 'tiered'
 }
 
+export function getEnabledAuthServices(): ('login' | 'external')[] {
+    const enabledAuthServices: ('login' | 'external')[] = [];
+
+    if (isLoginEnabled())
+        enabledAuthServices.push('login');
+    if (isExternalEnabled())
+        enabledAuthServices.push('external');
+
+    return enabledAuthServices;
+}
+
 export async function hasAccess(ctx: Context, item: Item, acceptToken = false): Promise<Access> {
     if (hasAdminAccess(ctx))
         return {state: AccessState.OPEN};
 
-    if (isAuthenticationEnabled) {
+    if (isAuthenticationEnabled()) {
         const ip = ctx.ip;
         const accessId = await getAccessIdFromRequest(ctx, acceptToken);
         const accessIdInfo = await getIdentitiesAndTokensForAccessId(accessId);
@@ -81,7 +86,7 @@ export function hasAdminAccess(ctx: Context): boolean {
 }
 
 export async function requiresAuthentication(item: Item): Promise<boolean> {
-    if (isAuthenticationEnabled) {
+    if (isAuthenticationEnabled()) {
         const access = await runTaskWithResponse<AccessParams, Access>('access', {item});
         return access.state !== AccessState.OPEN;
     }
@@ -94,7 +99,7 @@ export async function getAuthTexts(item: Item): Promise<AuthTextsByType> {
 }
 
 export function isIpInRange(ip: string): boolean {
-    if (isExternalEnabled) {
+    if (isExternalEnabled()) {
         const foundMatch = config.internalIpAddresses.find(ipRange => rangeCheck.inRange(ip, ipRange));
         return foundMatch !== undefined;
     }
@@ -129,18 +134,18 @@ export async function checkTokenDb(tokens: string[]): Promise<Token[]> {
     }
 }
 
-async function getIdentitiesAndTokensForAccessId(acccesId: string | null): Promise<{ identities: string[]; token: string; } | null> {
+async function getIdentitiesAndTokensForAccessId(accessId: string | null): Promise<{ identities: string[]; token: string; } | null> {
     const client = getClient();
     if (!client)
         throw new Error('Redis is required for authentication!');
 
-    const accessIdInfo = await client.get(`access-id:${acccesId}`);
+    const accessIdInfo = await client.get(`access-id:${accessId}`);
     if (accessIdInfo)
         return JSON.parse(accessIdInfo);
     return null;
 }
 
-export async function setAccessIdForIdentity(identity: string, accessId: string | null): Promise<string> {
+export async function setAccessIdForIdentity(identity: string, accessId: string | null = null): Promise<string> {
     const client = getClient();
     if (!client)
         throw new Error('Redis is required for authentication!');
@@ -196,7 +201,7 @@ export async function getAccessIdFromRequest(ctx: Context, acceptToken = false):
         return await getAccessIdForAccessToken(accessToken);
     }
 
-    const accessCookie = ctx.cookies.get('access');
+    const accessCookie = ctx.cookies.get('access') || null;
     if (accessCookie)
         logger.debug('Found access cookie for current request');
 

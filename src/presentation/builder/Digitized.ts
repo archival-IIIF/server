@@ -140,10 +140,8 @@ function addThumbnail(base: Base, item: RootItem | FileItem, childItem?: FileIte
 }
 
 function addBehavior(base: Base, item: Item, hasMultipleItems = true): void {
-    if (item.type === 'image' && hasMultipleItems)
-        base.addBehavior('paged');
-    else
-        base.addBehavior('individuals');
+    base.addBehavior('individuals');
+    base.setViewingDirection('left-to-right');
 }
 
 function addDefaults(manifest: Manifest): void {

@@ -38,7 +38,7 @@ export async function indexItems(items: Item[]): Promise<void> {
             {index: {_index: 'items', _type: '_doc', _id: item.id}},
             item
         ]);
-        const result = await getClient().bulk({body: [].concat(...body as [])});
+        const result = await getClient().bulk({refresh: 'wait_for', body: [].concat(...body as [])});
         if (result.errors)
             throw new Error('Failed to index the items');
     }

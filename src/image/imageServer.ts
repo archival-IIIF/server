@@ -6,7 +6,7 @@ import {ImageProfile, sharpProfile, lorisProfile} from './profiles';
 import logger from '../lib/Logger';
 import config from '../lib/Config';
 import {ImageItem} from '../lib/ItemInterfaces';
-import {enabledAuthServices, requiresAuthentication, getAuthTexts, AccessTier} from '../lib/Security';
+import {getEnabledAuthServices, requiresAuthentication, getAuthTexts, AccessTier} from '../lib/Security';
 
 import AuthService from '../presentation/elem/v2/AuthService';
 
@@ -35,7 +35,7 @@ export async function getInfo(item: ImageItem, tier?: AccessTier, id?: string): 
 
     if (await requiresAuthentication(item)) {
         const authTexts = await getAuthTexts(item);
-        enabledAuthServices.forEach(type => {
+        getEnabledAuthServices().forEach(type => {
             const service = AuthService.getAuthenticationService(
                 `${config.baseUrl}/iiif/auth`, authTexts, type);
             if (service !== null)

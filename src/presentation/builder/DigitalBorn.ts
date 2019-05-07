@@ -8,7 +8,7 @@ import {runTaskWithResponse} from '../../lib/Task';
 import {iconsByExtension} from '../../lib/FileIcon';
 import {IIIFMetadataParams} from '../../lib/Service';
 import {AudioItem, FileItem, FolderItem, ImageItem, Item, PdfItem, VideoItem} from '../../lib/ItemInterfaces';
-import {Access, AccessState, enabledAuthServices, requiresAuthentication, getAuthTexts} from '../../lib/Security';
+import {Access, AccessState, getEnabledAuthServices, requiresAuthentication, getAuthTexts} from '../../lib/Security';
 
 import {IIIFMetadata} from '../../service/util/types';
 import {PresentationBuilder} from './PresentationBuilder';
@@ -277,7 +277,7 @@ function setDefaults(base: Base): void {
 async function setAuthenticationServices(item: Item, base: Base): Promise<void> {
     if (await requiresAuthentication(item)) {
         const authTexts = await getAuthTexts(item);
-        enabledAuthServices.forEach(type => {
+        getEnabledAuthServices().forEach(type => {
             const service = AuthService.getAuthenticationService(prefixAuthUrl, authTexts, type);
             if (service)
                 base.setService(service);
