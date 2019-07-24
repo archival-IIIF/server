@@ -2,7 +2,7 @@ import * as uuid from 'uuid/v4';
 import * as moment from 'moment';
 
 import HttpError from '../lib/HttpError';
-import getClient from '../lib/ElasticSearch';
+import getClient, {IndexRequest} from '../lib/ElasticSearch';
 import {Token} from '../lib/Security';
 
 export default async function registerToken(token: string | null, collection: string | null,
@@ -30,9 +30,8 @@ export default async function registerToken(token: string | null, collection: st
         to: to ? to.toDate() : null
     };
 
-    await getClient().index({
+    await getClient().index(<IndexRequest<Token>>{
         index: 'tokens',
-        type: '_doc',
         id: token,
         body: tokenInfo
     });

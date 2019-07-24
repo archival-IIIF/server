@@ -93,17 +93,17 @@ describe('Item', () => {
         it('should send a valid bulk index action to ElasticSearch', async () => {
             const items = [{id: '123', label: 'A'}, {id: '456', label: 'B'}, {id: '789', label: 'C'}] as Item[];
             const bulkBody = [
-                {index: {_index: 'items', _type: '_doc', _id: '123'}},
+                {index: {_index: 'items', _id: '123'}},
                 {id: '123', label: 'A'},
-                {index: {_index: 'items', _type: '_doc', _id: '456'}},
+                {index: {_index: 'items', _id: '456'}},
                 {id: '456', label: 'B'},
-                {index: {_index: 'items', _type: '_doc', _id: '789'}},
+                {index: {_index: 'items', _id: '789'}},
                 {id: '789', label: 'C'}
             ];
 
             await indexItems(items);
 
-            expect(elasticSearch.bulk).to.have.been.calledWithExactly({body: bulkBody});
+            expect(elasticSearch.bulk).to.have.been.calledWithExactly({refresh: 'wait_for', body: bulkBody});
         });
 
         it('should send no bulk index action to ElasticSearch on empty input', async () => {
@@ -116,17 +116,17 @@ describe('Item', () => {
         it('should send a valid bulk update action to ElasticSearch', async () => {
             const items = [{id: '123', label: 'A'}, {id: '456', label: 'B'}, {id: '789', label: 'C'}] as Item[];
             const bulkBody = [
-                {update: {_index: 'items', _type: '_doc', _id: '123'}},
+                {update: {_index: 'items', _id: '123'}},
                 {
                     doc: {id: '123', label: 'A'},
                     upsert: createItem({id: '123', label: 'A'} as MinimalItem)
                 },
-                {update: {_index: 'items', _type: '_doc', _id: '456'}},
+                {update: {_index: 'items', _id: '456'}},
                 {
                     doc: {id: '456', label: 'B'},
                     upsert: createItem({id: '456', label: 'B'} as MinimalItem)
                 },
-                {update: {_index: 'items', _type: '_doc', _id: '789'}},
+                {update: {_index: 'items', _id: '789'}},
                 {
                     doc: {id: '789', label: 'C'},
                     upsert: createItem({id: '789', label: 'C'} as MinimalItem)

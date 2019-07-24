@@ -1,7 +1,10 @@
 import * as path from 'path';
 import config from './Config';
-import getClient from './ElasticSearch';
 import {Item, MinimalItem} from './ItemInterfaces';
+import getClient, {
+    GetRequest, SearchRequest, ScrollRequest, DeleteByQueryRequest, IndexBulkRequest, UpdateBulkRequest,
+    GetResponse, SearchResponse
+} from './ElasticSearch';
 
 export function createItem(obj: MinimalItem): Item {
     return {
@@ -33,39 +36,61 @@ export function createItem(obj: MinimalItem): Item {
 }
 
 export async function indexItems(items: Item[]): Promise<void> {
-    while (items.length > 0) {
-        const body = items.splice(0, 100).map(item => [
-            {index: {_index: 'items', _type: '_doc', _id: item.id}},
-            item
-        ]);
-        const result = await getClient().bulk({refresh: 'wait_for', body: [].concat(...body as [])});
-        if (result.errors)
-            throw new Error('Failed to index the items');
+    try {
+        while (items.length > 0) {
+            const body = items
+                .splice(0, 100)
+                .map(item => [
+                    {index: {_index: 'items', _id: item.id}},
+                    item
+                ]);
+
+            await getClient().bulk(<IndexBulkRequest<'items', Item>>{
+                refresh: 'wait_for',
+                body: [].concat(...body as [])
+            });
+        }
+    }
+    catch (e) {
+        throw new Error('Failed to index the items!');
     }
 }
 
 export async function updateItems(items: MinimalItem[]): Promise<void> {
-    const uniqueItems = items.filter((item, i) =>
-        items.findIndex(otherItem => otherItem.id === item.id) === i);
-    while (uniqueItems.length > 0) {
-        const body = uniqueItems.splice(0, 100).map(item => [
-            {update: {_index: 'items', _type: '_doc', _id: item.id}},
-            {doc: item, upsert: createItem(item)}
-        ]);
-        const result = await getClient().bulk({body: [].concat(...body as [])});
-        if (result.errors)
-            throw new Error('Failed to update the items');
+    try {
+        const uniqueItems = items.filter((item, i) =>
+            items.findIndex(otherItem => otherItem.id === item.id) === i);
+
+        while (uniqueItems.length > 0) {
+            const body = uniqueItems
+                .splice(0, 100)
+                .map(item => [
+                    {update: {_index: 'items', _id: item.id}},
+                    {doc: item, upsert: createItem(item)}
+                ]);
+
+            await getClient().bulk(<UpdateBulkRequest<'items', MinimalItem, Item>>{
+                body: [].concat(...body as [])
+            });
+        }
+    }
+    catch (e) {
+        throw new Error('Failed to update the items!');
     }
 }
 
 export async function deleteItems(collectionId: string): Promise<void> {
-    await getClient().deleteByQuery({index: 'items', q: `collection_id:"${collectionId}"`});
+    await getClient().deleteByQuery(<DeleteByQueryRequest>{
+        index: 'items',
+        q: `collection_id:"${collectionId}"`,
+        body: {}
+    });
 }
 
 export async function getItem(id: string): Promise<Item | null> {
     try {
-        const response = await getClient().get<Item>({index: 'items', type: '_doc', id: id});
-        return response._source;
+        const response: GetResponse<Item> = await getClient().get(<GetRequest>{index: 'items', id: id});
+        return response.body._source;
     }
     catch (err) {
         return null;
@@ -93,7 +118,7 @@ async function getItems(q: string): Promise<Item[]> {
     const items: Item[] = [];
 
     try {
-        let {_scroll_id, hits} = await getClient().search<Item>({
+        const response: SearchResponse<Item> = await getClient().search(<SearchRequest>{
             index: 'items',
             sort: 'label:asc',
             size: 1000,
@@ -101,13 +126,18 @@ async function getItems(q: string): Promise<Item[]> {
             q
         });
 
+        let {_scroll_id, hits} = response.body;
         while (hits && hits.hits.length) {
             items.push(...hits.hits.map(hit => hit._source));
 
             if (_scroll_id) {
-                const scrollResults = await getClient().scroll<Item>({scrollId: _scroll_id, scroll: '10s'});
-                _scroll_id = scrollResults._scroll_id;
-                hits = scrollResults.hits;
+                const scrollResults: SearchResponse<Item> = await getClient().scroll(<ScrollRequest>{
+                    scrollId: _scroll_id,
+                    scroll: '10s'
+                });
+
+                _scroll_id = scrollResults.body._scroll_id;
+                hits = scrollResults.body.hits;
             }
             else {
                 hits.hits = [];

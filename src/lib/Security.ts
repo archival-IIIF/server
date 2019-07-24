@@ -7,7 +7,7 @@ import {Context} from 'koa';
 import {getClient} from './Redis';
 import config from './Config';
 import logger from './Logger';
-import getEsClient from './ElasticSearch';
+import getEsClient, {TokenSearchRequest, SearchResponse} from './ElasticSearch';
 import {runTaskWithResponse} from './Task';
 import {Item} from './ItemInterfaces';
 
@@ -108,7 +108,7 @@ export function isIpInRange(ip: string): boolean {
 
 export async function checkTokenDb(tokens: string[]): Promise<Token[]> {
     try {
-        const response = await getEsClient().search<Token>({
+        const response: SearchResponse<Token> = await getEsClient().search(<TokenSearchRequest>{
             index: 'tokens',
             size: 100,
             body: {
@@ -118,7 +118,7 @@ export async function checkTokenDb(tokens: string[]): Promise<Token[]> {
             },
         });
 
-        const tokensInfo = response.hits.hits.map(hit => hit._source);
+        const tokensInfo = response.body.hits.hits.map(hit => hit._source);
         return tokensInfo.filter(tokenInfo => {
             if (tokenInfo.from && tokenInfo.to && !moment().isBetween(moment(tokenInfo.from), moment(tokenInfo.to)))
                 return false;

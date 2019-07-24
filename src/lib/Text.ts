@@ -5,7 +5,7 @@ import * as libxmljs from 'libxmljs';
 import {Attribute} from 'libxmljs';
 
 import config from '../lib/Config';
-import getClient from '../lib/ElasticSearch';
+import getClient, {DeleteByQueryRequest, IndexBulkRequest} from './ElasticSearch';
 
 export interface Text {
     id: string;
@@ -20,19 +20,32 @@ export interface Text {
 const readFileAsync = promisify(fs.readFile);
 
 export async function indexTexts(textItems: Text[]): Promise<void> {
-    while (textItems.length > 0) {
-        const body = textItems.splice(0, 100).map(item => [
-            {index: {_index: 'texts', _type: '_doc', _id: item.id}},
-            item
-        ]);
-        const result = await getClient().bulk({refresh: 'wait_for', body: [].concat(...body as [])});
-        if (result.errors)
-            throw new Error('Failed to index the text items');
+    try {
+        while (textItems.length > 0) {
+            const body = textItems
+                .splice(0, 100)
+                .map(item => [
+                    {index: {_index: 'texts', _id: item.id}},
+                    item
+                ]);
+
+            await getClient().bulk(<IndexBulkRequest<'texts', Text>>{
+                refresh: 'wait_for',
+                body: [].concat(...body as [])
+            });
+        }
+    }
+    catch (e) {
+        throw new Error('Failed to index the text items!');
     }
 }
 
 export async function deleteTexts(collectionId: string): Promise<void> {
-    await getClient().deleteByQuery({index: 'texts', q: `collection_id:${collectionId}`});
+    await getClient().deleteByQuery(<DeleteByQueryRequest>{
+        index: 'texts',
+        q: `collection_id:${collectionId}`,
+        body: {}
+    });
 }
 
 export async function readAlto(uri: string): Promise<{ x: number, y: number, width: number, height: number, word: string }[]> {
