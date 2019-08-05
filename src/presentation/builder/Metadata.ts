@@ -5,11 +5,13 @@ import {IIIFMetadataParams} from '../../lib/Service';
 import {MetadataItem} from '../../lib/ItemInterfaces';
 
 import Collection from '../elem/v2/Collection';
+import Resource from '../elem/v2/Resource';
+import Image from '../elem/v2/Image';
 import Base from '../elem/v2/Base';
 
 import {IIIFMetadata} from '../../service/util/types';
 
-const prefixFileUrl = `${config.baseUrl}/file`;
+const prefixImageUrl = `${config.baseUrl}/iiif/image`;
 const prefixPresentationUrl = `${config.baseUrl}/iiif/presentation`;
 
 export async function getCollection(item: MetadataItem, builder: any): Promise<Collection> {
@@ -70,9 +72,22 @@ async function addMetadata(base: Base, root: MetadataItem): Promise<void> {
         base.addSeeAlso(md.seeAlso);
 }
 
+function getLogo(size = 'full'): Resource {
+    const [width, height] = config.logoDimensions as [number, number];
+    const id = `${prefixImageUrl}/logo/full/${size}/0/default.png`;
+    const image = new Image(`${prefixImageUrl}/logo`, width, height);
+
+    const resource = new Resource(id, (size === 'full') ? width : null,
+        (size === 'full') ? height : null, 'image/png', 'dctypes:Image');
+    resource.setService(image);
+
+    return resource;
+}
+
 function setDefaults(collection: Collection): void {
     collection.setContext();
-    collection.setLogo(`${prefixFileUrl}/logo`);
+    if (config.logoRelativePath)
+        collection.setLogo(getLogo());
     if (config.attribution)
         collection.setAttribution(config.attribution);
 }

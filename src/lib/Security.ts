@@ -103,6 +103,12 @@ export function isIpInRange(ip: string): boolean {
     return true;
 }
 
+export async function hasToken(item: Item, identities: string[]): Promise<boolean> {
+    const tokensInfo = await checkTokenDb(identities);
+    const tokenInfo = tokensInfo.find(tokenInfo => tokenInfo.collection_id === item.collection_id);
+    return tokenInfo !== undefined;
+}
+
 export async function checkTokenDb(tokens: string[]): Promise<Token[]> {
     try {
         const response: SearchResponse<Token> = await getEsClient().search(<TokenSearchRequest>{

@@ -119,13 +119,22 @@ function getResource(item: FileItem): Resource {
 }
 
 function getImageResource(item: ImageItem, size = 'full'): Resource {
-    const id = (size === 'full')
-        ? `${prefixImageUrl}/${item.id}/full/${size}/0/default.jpg`
-        : `${prefixImageUrl}/${item.id}/full/${size}/0/default.jpg`;
-
+    const id = `${prefixImageUrl}/${item.id}/full/${size}/0/default.jpg`;
     const resource = new Resource(id, 'Image', 'image/jpeg',
         (size === 'full') ? item.width : null, (size === 'full') ? item.height : null);
     const service = new Service(`${prefixImageUrl}/${item.id}`, Service.IMAGE_SERVICE_2,
+        'http://iiif.io/api/image/2/level2.json');
+    resource.setService(service);
+
+    return resource;
+}
+
+function getLogo(size = 'full'): Resource {
+    const [width, height] = config.logoDimensions as [number, number];
+    const id = `${prefixImageUrl}/logo/full/${size}/0/default.png`;
+    const resource = new Resource(id, 'Image', 'image/png',
+        (size === 'full') ? width : null, (size === 'full') ? height : null);
+    const service = new Service(`${prefixImageUrl}/logo`, Service.IMAGE_SERVICE_2,
         'http://iiif.io/api/image/2/level2.json');
     resource.setService(service);
 
@@ -146,7 +155,8 @@ function addBehavior(base: Base, item: Item, hasMultipleItems = true): void {
 
 function addDefaults(manifest: Manifest): void {
     manifest.setContext();
-    manifest.setLogo(new Resource(`${prefixFileUrl}/logo`, 'Image'));
+    if (config.logoRelativePath)
+        manifest.setLogo(getLogo());
     if (config.attribution)
         manifest.setAttribution(config.attribution);
 }

@@ -78,7 +78,9 @@ export async function processCollection(collectionPath: string): Promise<Collect
 
     const objectsPath = path.join(collectionPath, 'objects');
     const objects = fs.existsSync(objectsPath) ? await readdirAsync(objectsPath) : [];
-    const relativeRootPath = objectsPath.replace(`${config.dataPath}/`, '');
+    const relativeRootPath = objectsPath
+        .replace(`${config.dataRootPath}/`, '')
+        .replace(`${config.collectionsRelativePath}/`, '');
 
     const rootItem = getRootItem(mets, rootStructureIISH);
     const [childItems, textItems] = walkTree({

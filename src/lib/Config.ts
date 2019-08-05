@@ -6,7 +6,6 @@ else if (process.env.NODE_ENV !== 'production')
 export interface Config {
     env?: string;
     appInstance?: string;
-    logo?: string;
     attribution?: string;
     universalViewerPath?: string;
     archivalViewerPath?: string;
@@ -16,6 +15,8 @@ export interface Config {
     imageServerUrl?: string;
     metadataOaiUrl?: string;
     metadataSrwUrl?: string;
+    logoRelativePath?: string;
+    logoDimensions?: [number, number],
     imageTierSeparator: string;
     cacheDisabled: boolean;
     services: string[];
@@ -24,7 +25,8 @@ export interface Config {
     port: number;
     logLevel: string;
     baseUrl: string;
-    dataPath: string;
+    dataRootPath: string;
+    collectionsRelativePath: string;
     internalIpAddresses: string[];
     loginDisabled: boolean;
     elasticSearchUrl: string;
@@ -37,7 +39,6 @@ export interface Config {
 const config: Config = {
     env: process.env.NODE_ENV,
     appInstance: process.env.NODE_APP_INSTANCE,
-    logo: process.env.IIIF_SERVER_LOGO,
     attribution: process.env.IIIF_SERVER_ATTRIBUTION,
     universalViewerPath: process.env.IIIF_SERVER_UNIVERSAL_VIEWER_PATH,
     archivalViewerPath: process.env.IIIF_SERVER_ARCHIVAL_VIEWER_PATH,
@@ -47,6 +48,15 @@ const config: Config = {
     imageServerUrl: process.env.IIIF_SERVER_IMAGE_SERVER_URL,
     metadataOaiUrl: process.env.IIIF_SERVER_METADATA_OAI_URL,
     metadataSrwUrl: process.env.IIIF_SERVER_METADATA_SRW_URL,
+    logoRelativePath: process.env.IIIF_SERVER_LOGO_REL_PATH,
+
+    logoDimensions: (() => {
+        if (!process.env.IIIF_SERVER_LOGO_DIM || (process.env.IIIF_SERVER_LOGO_DIM === 'null'))
+            return undefined;
+
+        const dimensions = process.env.IIIF_SERVER_LOGO_DIM.split(':');
+        return [parseInt(dimensions[0]), parseInt(dimensions[1])] as [number, number];
+    })(),
 
     imageTierSeparator: (() => {
         if (!process.env.IIIF_SERVER_IMAGE_TIER_SEPARATOR || (process.env.IIIF_SERVER_IMAGE_TIER_SEPARATOR === 'null'))
@@ -93,10 +103,16 @@ const config: Config = {
         return process.env.IIIF_SERVER_BASE_URL;
     })(),
 
-    dataPath: (() => {
-        if (!process.env.IIIF_SERVER_DATA_PATH || (process.env.IIIF_SERVER_DATA_PATH === 'null'))
-            throw new Error('The collection data path is not defined');
-        return process.env.IIIF_SERVER_DATA_PATH;
+    dataRootPath: (() => {
+        if (!process.env.IIIF_SERVER_DATA_ROOT_PATH || (process.env.IIIF_SERVER_DATA_ROOT_PATH === 'null'))
+            throw new Error('The data root path is not defined');
+        return process.env.IIIF_SERVER_DATA_ROOT_PATH;
+    })(),
+
+    collectionsRelativePath: (() => {
+        if (!process.env.IIIF_SERVER_COLLECTIONS_REL_PATH || (process.env.IIIF_SERVER_COLLECTIONS_REL_PATH === 'null'))
+            throw new Error('The collections relative path is not defined');
+        return process.env.IIIF_SERVER_COLLECTIONS_REL_PATH;
     })(),
 
     internalIpAddresses: (() => {

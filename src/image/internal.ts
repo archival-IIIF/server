@@ -1,6 +1,3 @@
-import {getFullPath} from '../lib/Item';
-import {ImageItem} from '../lib/ItemInterfaces';
-
 import {ImageOptions, ImageResult} from './imageServer';
 import ImageProcessing, {ImageProcessingInfo} from './ImageProcessing';
 import RegionRequest from './RegionRequest';
@@ -10,8 +7,8 @@ import QualityRequest from './QualityRequest';
 import FormatRequest from './FormatRequest';
 import {RequestError, NotImplementedError} from './errors';
 
-export default async function serveImage(
-    item: ImageItem, {region, size, rotation, quality, format}: ImageOptions): Promise<ImageResult> {
+export default async function serveImage(processingInfo: ImageProcessingInfo,
+                                         {region, size, rotation, quality, format}: ImageOptions): Promise<ImageResult> {
     const result: ImageResult = {
         image: null,
         status: 200,
@@ -20,8 +17,6 @@ export default async function serveImage(
     };
 
     try {
-        const processingInfo: ImageProcessingInfo =
-            {uri: getFullPath(item), size: {width: item.width, height: item.height}};
         const imageProcessing = new ImageProcessing(processingInfo, [
             new RegionRequest(region),
             new SizeRequest(size),

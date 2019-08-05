@@ -1,6 +1,5 @@
-import {Item} from '../lib/ItemInterfaces';
 import {AccessParams} from '../lib/Service';
-import {AccessState, isIpInRange, checkTokenDb, Access} from '../lib/Security';
+import {AccessState, isIpInRange, hasToken, Access} from '../lib/Security';
 
 export default async function hasAccess({item, ip, identities = []}: AccessParams): Promise<Access> {
     if (item.collection_id === null)
@@ -10,14 +9,14 @@ export default async function hasAccess({item, ip, identities = []}: AccessParam
     if (accessCode === 'open')
         return {state: AccessState.OPEN};
 
-    if (accessCode === 'eadRestricted') {
-        if ((ip && isIpInRange(ip)) || await hasToken(item, identities))
+    if (accessCode === 'restricted' && item.iish.type === 'ead') {
+        if (await hasToken(item, identities))
             return {state: AccessState.OPEN};
 
         return {state: AccessState.CLOSED};
     }
 
-    if (accessCode === 'restricted') {
+    if (accessCode === 'restricted' && item.iish.type === 'marcxml') {
         if ((ip && isIpInRange(ip)) || await hasToken(item, identities))
             return {state: AccessState.OPEN};
 
@@ -37,14 +36,8 @@ export default async function hasAccess({item, ip, identities = []}: AccessParam
         return {state: AccessState.CLOSED};
     }
 
-    if ((ip && isIpInRange(ip)) || await hasToken(item, identities))
+    if ((item.iish.type === 'marcxml') && ((ip && isIpInRange(ip)) || await hasToken(item, identities)))
         return {state: AccessState.OPEN};
 
     return {state: AccessState.CLOSED};
-}
-
-async function hasToken(item: Item, identities: string[]): Promise<boolean> {
-    const tokensInfo = await checkTokenDb(identities);
-    const tokenInfo = tokensInfo.find(tokenInfo => tokenInfo.collection_id === item.collection_id);
-    return tokenInfo !== undefined;
 }

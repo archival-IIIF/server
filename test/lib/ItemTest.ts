@@ -16,7 +16,8 @@ const expect = chai.expect;
 describe('Item', () => {
     let elasticSearch: any;
 
-    const dataPath = '/data/collections';
+    const dataPath = '/data';
+    const collectionsPath = 'collections';
 
     const itemWithOriginal = {
         original: {uri: 'dip/with/original/file.txt', puid: 'fmt/org'},
@@ -33,7 +34,9 @@ describe('Item', () => {
             bulk: sinon.stub().resolves({})
         };
 
-        setConfig('dataPath', dataPath);
+        setConfig('dataRootPath', dataPath);
+        setConfig('collectionsRelativePath', collectionsPath);
+
         setElasticSearchClient(elasticSearch);
     });
 

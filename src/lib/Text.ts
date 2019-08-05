@@ -63,5 +63,5 @@ export async function readAlto(uri: string): Promise<{ x: number, y: number, wid
 }
 
 export function getFullPath(item: Text): string {
-    return path.join(config.dataPath, item.uri);
+    return path.join(config.dataRootPath, config.collectionsRelativePath, item.uri);
 }

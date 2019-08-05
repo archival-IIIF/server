@@ -60,7 +60,7 @@ export function getAccess(collectionId: string, eadXml: string): string {
             return 'closed';
         case 'beperkt':
         case 'restricted':
-            return 'eadRestricted';
+            return 'restricted';
         case 'date':
             return 'date';
         default:

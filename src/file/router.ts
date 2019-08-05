@@ -7,14 +7,12 @@ import * as fs from 'fs';
 import {promisify} from 'util';
 
 import logger from '../lib/Logger';
-import config from '../lib/Config';
 import getPronomInfo from '../lib/Pronom';
 import HttpError from '../lib/HttpError';
 import {AccessState, hasAccess, hasAdminAccess} from '../lib/Security';
 import {getItem, getFullPath, getPronom, getAvailableType} from '../lib/Item';
 
 const statAsync = promisify(fs.stat);
-const readFileAsync = promisify(fs.readFile);
 
 const router = new Router({prefix: '/file'});
 
@@ -50,21 +48,6 @@ router.use(async (ctx, next) => {
         ctx.status = 206;
         ctx.set('Content-Range', `bytes ${start}-${end}/${length}`);
         ctx.set('Content-Length', String(end - start + 1));
-    }
-});
-
-router.get('/logo', async ctx => {
-    if (!config.logo)
-        throw new HttpError(404, 'No logo');
-
-    try {
-        const contentType = mime.contentType(path.basename(config.logo));
-        if (contentType)
-            ctx.set('Content-Type', contentType);
-        ctx.body = await readFileAsync(config.logo);
-    }
-    catch (err) {
-        throw new HttpError(404, 'No logo');
     }
 });
 

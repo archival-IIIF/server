@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import * as path from 'path';
+import {join, extname} from 'path';
 import {promisify} from 'util';
 import * as iconv from 'iconv-lite';
 // @ts-ignore
@@ -14,7 +14,8 @@ const readFileAsync = promisify(fs.readFile);
 export default async function processText({collectionId, items}: TextParams) {
     try {
         const textItems = await Promise.all(items.map(async item => {
-            const text = await getTextFromFile(path.join(config.dataPath, item.uri));
+            const path = join(config.dataRootPath, config.collectionsRelativePath, item.uri);
+            const text = await getTextFromFile(path);
             return {
                 id: item.id,
                 item_id: item.itemId,
@@ -35,7 +36,7 @@ export default async function processText({collectionId, items}: TextParams) {
 }
 
 export async function getTextFromFile(uri: string): Promise<string> {
-    const extension = path.extname(uri);
+    const extension = extname(uri);
     switch (extension) {
         case '.xml':
             return await getAltoText(uri);

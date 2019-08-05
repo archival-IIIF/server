@@ -153,16 +153,16 @@ async function getItems(q: string): Promise<Item[]> {
 
 export function getFullPath(item: Item, type: 'access' | 'original' | null = null): string {
     const relativePath = getRelativePath(item, type);
-    return path.join(config.dataPath, relativePath);
+    return path.join(config.dataRootPath, relativePath);
 }
 
 export function getRelativePath(item: Item, type: 'access' | 'original' | null = null): string {
     type = type || getAvailableType(item);
 
     if (type === 'access')
-        return item.access.uri as string;
+        return path.join(config.collectionsRelativePath, item.access.uri as string);
     else
-        return item.original.uri as string;
+        return path.join(config.collectionsRelativePath, item.original.uri as string);
 }
 
 export function getPronom(item: Item, type: 'access' | 'original' | null = null): string {

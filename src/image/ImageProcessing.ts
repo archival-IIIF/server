@@ -7,7 +7,8 @@ export interface ImageRequest {
 }
 
 export interface ImageProcessingInfo {
-    uri?: string;
+    fullPath: string;
+    relativePath: string;
     size: Size;
 }
 
@@ -22,7 +23,7 @@ export default class ImageProcessing {
     }
 
     async process(): Promise<{ data: Buffer, info: sharp.OutputInfo }> {
-        const image = sharp(this.processingInfo.uri);
+        const image = sharp(this.processingInfo.fullPath);
         if (this.requests.filter(request => request.requiresImageProcessing()).length > 0)
             this.requests.forEach(request => request.executeImageProcessing(image));
         return await image.toBuffer({resolveWithObject: true});

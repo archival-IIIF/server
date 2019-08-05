@@ -2,16 +2,16 @@
 
 ## Components
 
-![](https://github.com/archival-IIIF/server/blob/master/components.png)
+![](./components.png)
 
 ## Installation
 
-Use the provided Docker Compose or the provided Ansible scripts. Or install manually:
+Use the provided Docker Compose or install manually:
 
-1. Install [Node.js](https://nodejs.org/en)
+1. Install [Node.js 10.x LTS](https://nodejs.org/en)
 1. Install [yarn](https://yarnpkg.com) or [npm](https://www.npmjs.com)
-1. Install [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch)
-1. (Optional) Install [Redis](https://redis.io) (Required for caching, workers and/or IIIF authentication)
+1. Install [ElasticSearch 7.3.x](https://www.elastic.co/webinars/getting-started-elasticsearch)
+1. (Optional) Install [Redis 5.x](https://redis.io) (Required for caching, workers and/or IIIF authentication)
 1. (Optional) Install IIIF image server (e.g. [Loris](https://github.com/loris-imageserver/loris))
 1. (Optional) Install [pm2](https://pm2.io/runtime/)
 1. Set up the configuration: (See .env.example for the environment variables)
@@ -50,12 +50,14 @@ Use the provided Docker Compose or the provided Ansible scripts. Or install manu
 - `IIIF_SERVER_IMAGE_TIER_SEPARATOR`: Separator character to separate between the image identifier and the image tier
 - `IIIF_SERVER_CACHE_DISABLED`: Turn caching on/off (Requires Redis)
 - `IIIF_SERVER_PORT`: Port to run the web server
-- `IIIF_SERVER_LOGO`: Path to the image with the logo to add to the IIIF manifests
 - `IIIF_SERVER_ATTRIBUTION`: Attribution to add to the IIIF manifests
 - `IIIF_SERVER_BASE_URL`: The public base URL of the application
 - `IIIF_SERVER_HOT_FOLDER_PATH`: The path to the hot folder where new collections to be indexed are placed
 - `IIIF_SERVER_HOT_FOLDER_PATTERN`: The pattern of a file in the root of a new collection to trigger indexing
-- `IIIF_SERVER_DATA_PATH`: The root path of the collections to serve
+- `IIIF_SERVER_DATA_ROOT_PATH`: The root path of the data storage
+- `IIIF_SERVER_COLLECTIONS_REL_PATH`: The relative path of the (read-only) collections under the data storage root path
+- `IIIF_SERVER_LOGO_REL_PATH`: The relative path to the image with the logo to add to the IIIF manifests
+- `IIIF_SERVER_LOGO_DIM`: The dimensions of the logo, separated by a ':'
 - `IIIF_SERVER_LOG_LEVEL`: The logging level
 - `IIIF_SERVER_INTERNAL_IP_ADDRESSES`: If access may be granted based on IP address, provide a comma separated white list of ip addresses (Requires Redis)
 - `IIIF_SERVER_LOGIN_DISABLED`: Turn login based authentication on/off (Requires Redis)

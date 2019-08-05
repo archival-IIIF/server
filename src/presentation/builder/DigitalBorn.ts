@@ -13,8 +13,7 @@ import {Access, AccessState, getEnabledAuthServices, requiresAuthentication, get
 import {IIIFMetadata} from '../../service/util/types';
 import {PresentationBuilder} from './PresentationBuilder';
 
-import Image from '../../image/Image';
-
+import Image from '../elem/v2/Image';
 import Collection from '../elem/v2/Collection';
 import Manifest from '../elem/v2/Manifest';
 import Sequence from '../elem/v2/Sequence';
@@ -232,15 +231,24 @@ async function addMetadata(base: Base, root: Item): Promise<void> {
 }
 
 async function getImageResource(item: ImageItem, size = 'full'): Promise<Resource> {
-    const id = (size === 'full')
-        ? `${prefixImageUrl}/${item.id}/full/${size}/0/default.jpg`
-        : `${prefixImageUrl}/${item.id}/full/${size}/0/default.jpg`;
-
+    const id = `${prefixImageUrl}/${item.id}/full/${size}/0/default.jpg`;
     const image = new Image(`${prefixImageUrl}/${item.id}`, item.width, item.height);
     await setAuthenticationServices(item, image);
 
     const resource = new Resource(id, (size === 'full') ? item.width : null,
         (size === 'full') ? item.height : null, 'image/jpeg', 'dctypes:Image');
+    resource.setService(image);
+
+    return resource;
+}
+
+function getLogo(size = 'full'): Resource {
+    const [width, height] = config.logoDimensions as [number, number];
+    const id = `${prefixImageUrl}/logo/full/${size}/0/default.png`;
+    const image = new Image(`${prefixImageUrl}/logo`, width, height);
+
+    const resource = new Resource(id, (size === 'full') ? width : null,
+        (size === 'full') ? height : null, 'image/png', 'dctypes:Image');
     resource.setService(image);
 
     return resource;
@@ -269,7 +277,8 @@ function addFileTypeThumbnail(base: Base, pronom: string | null, fileExtension: 
 
 function setDefaults(base: Base): void {
     base.setContext();
-    base.setLogo(`${prefixFileUrl}/logo`);
+    if (config.logoRelativePath)
+        base.setLogo(getLogo());
     if (config.attribution)
         base.setAttribution(config.attribution);
 }

@@ -93,6 +93,7 @@ export function updateEAD(xml: string, oaiIdentifier: string, collectionId: stri
             metadata_id: oaiIdentifier,
             label: md.title as string,
             iish: {
+                type: 'ead',
                 metadataHdl: '10622/' + collectionId
             }
         };
@@ -133,6 +134,7 @@ export function updateMarc(xml: string, oaiIdentifier: string, collectionId: str
             label: md.title as string,
             iish: {
                 access,
+                type: 'marcxml',
                 metadataHdl: md.metadataHdl
             }
         };

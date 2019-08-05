@@ -32,7 +32,7 @@ export default function watchDirectoryForFileTrigger(): void {
 
 async function startIndexForNewCollection(path: string): Promise<void> {
     const relativePath = path.replace(config.hotFolderPath as string, '.');
-    const newPath = resolve(config.dataPath, relativePath);
+    const newPath = resolve(config.dataRootPath, config.collectionsRelativePath, relativePath);
     logger.info(`Move collection from hot folder ${path} to ${newPath}`);
 
     await move(path, newPath);
