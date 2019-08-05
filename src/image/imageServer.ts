@@ -1,14 +1,14 @@
-import Image from './Image';
 import SizeRequest from './SizeRequest';
 import {ImageProcessingInfo} from './ImageProcessing';
-import {ImageProfile, sharpProfile, lorisProfile} from './profiles';
+import {sharpProfile, lorisProfile} from './profiles';
 
 import logger from '../lib/Logger';
 import config from '../lib/Config';
 import {ImageItem} from '../lib/ItemInterfaces';
-import {getEnabledAuthServices, requiresAuthentication, getAuthTexts, AccessTier} from '../lib/Security';
+import {getEnabledAuthServices, requiresAuthentication, getAuthTexts} from '../lib/Security';
 
 import AuthService from '../presentation/elem/v2/AuthService';
+import Image, {ImageProfile, AccessTier} from '../presentation/elem/v2/Image';
 
 export interface ImageOptions {
     region: string,

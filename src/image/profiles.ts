@@ -1,4 +1,4 @@
-export type ImageProfile = { formats: string[], qualities: string[], supports: string[] };
+import {ImageProfile} from '../presentation/elem/v2/Image';
 
 export const sharpProfile: ImageProfile = {
     formats: [

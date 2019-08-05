@@ -14,14 +14,11 @@ import {Item} from './ItemInterfaces';
 import {AuthTextsByType} from '../service/util/types';
 import {AccessParams, AuthTextsParams} from './Service';
 
+import {AccessTier} from '../presentation/elem/v2/Image';
+
 export type Access =
     { state: AccessState.OPEN | AccessState.CLOSED, tier?: undefined } |
     { state: AccessState.TIERED, tier: AccessTier };
-
-export interface AccessTier {
-    name: string;
-    maxSize: number;
-}
 
 export interface Token {
     token: string;

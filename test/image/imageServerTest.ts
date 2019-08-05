@@ -5,9 +5,8 @@ import {Buffer} from 'buffer';
 import {createItem} from '../../src/lib/Item';
 import {ImageItem} from '../../src/lib/ItemInterfaces';
 
-import Image from '../../src/image/Image';
 import {getInfo, getImage} from '../../src/image/imageServer';
-import {AccessTier} from '../../src/lib/Security';
+import Image, {AccessTier} from '../../src/presentation/elem/v2/Image';
 
 describe('imageServer', () => {
     const item = createItem({
