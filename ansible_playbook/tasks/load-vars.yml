@@ -1,5 +1,0 @@
-# Variables that are constant over all environments.
----
-- include_vars: "environment/shared-secrets.yml"
-- include_vars: "{{ inventory_dir }}/secrets.yml"
-- include_vars: "environment/shared-vars.yml"
