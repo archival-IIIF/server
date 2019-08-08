@@ -23,7 +23,7 @@ export default async function updateMetadata(): Promise<void> {
         });
     }
     catch (err) {
-        logger.error(`Failed to run the recurring update metadata procedure: ${err.message}`);
+        logger.error(`Failed to run the recurring update metadata procedure: ${err.message}`, {err});
     }
 }
 

@@ -22,6 +22,8 @@ export default async function processAudioItems({collectionId}: WaveformParams):
         }));
     }
     catch (e) {
-        throw new Error(`Failed to process the audio items for ${collectionId}: ${e.message}`);
+        const err = new Error(`Failed to process the audio items for ${collectionId}: ${e.message}`);
+        err.stack = e.stack;
+        throw err;
     }
 }

@@ -3,10 +3,7 @@ export default class HttpError extends Error {
 
     constructor(status: number, ...params: any[]) {
         super(...params);
-
-        if (Error.captureStackTrace)
-            Error.captureStackTrace(this, HttpError);
-
         this.status = status;
+        Error.captureStackTrace(this, HttpError);
     }
 }

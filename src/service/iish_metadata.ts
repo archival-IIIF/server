@@ -25,7 +25,9 @@ export default async function processMetadata({oaiIdentifier, collectionId}: Met
             await updateWithIdentifier(oaiIdentifier, collectionId);
     }
     catch (e) {
-        throw new Error(`Failed to process the metadata for ${collectionId}: ${e.message}`);
+        const err = new Error(`Failed to process the metadata for ${collectionId}: ${e.message}`);
+        err.stack = e.stack;
+        throw err;
     }
 }
 

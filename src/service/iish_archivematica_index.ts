@@ -14,6 +14,7 @@ import {MinimalItem, FileItem, FolderItem, Item} from '../lib/ItemInterfaces';
 
 import {TextItem} from './util/types';
 import {getTypeForPronom, pronomByExtension} from './util/archivematica_pronom_data';
+import logger from '../lib/Logger';
 
 type WalkTreeParams = {
     id: string;
@@ -50,8 +51,12 @@ export default async function processDip({collectionPath}: IndexParams): Promise
     try {
         const {rootItem, childItems, textItems} = await processCollection(collectionPath);
 
+        logger.debug(`Collection ${collectionPath} processed; running cleanup and index`);
+
         await cleanup(rootItem.id);
         await indexItems([rootItem, ...childItems]);
+
+        logger.debug(`Collection ${collectionPath} indexed; running metadata index, text index and derivative services`);
 
         runTask<MetadataParams>('metadata', {collectionId: rootItem.id});
         runTask<TextParams>('text', {collectionId: rootItem.id, items: textItems});

@@ -31,7 +31,9 @@ export default async function processText({collectionId, items}: TextParams) {
         await indexTexts(textItems);
     }
     catch (e) {
-        throw new Error(`Failed to process the texts for ${collectionId}: ${e.message}`);
+        const err = new Error(`Failed to process the texts for ${collectionId}: ${e.message}`);
+        err.stack = e.stack;
+        throw err;
     }
 }
 
