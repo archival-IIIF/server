@@ -12,6 +12,7 @@ export interface Item {
     collection_id: string;
     metadata_id: string | null;
     type: string;
+    formats: string[];
     label: string;
     description: string | null;
     authors: { type: string; name: string; }[];
@@ -24,7 +25,7 @@ export interface Item {
     height: number | null;
     resolution: number | null;
     duration: number | null;
-    metadata: [];
+    metadata: { label: string; value: string | string[]; }[];
     original: {
         uri: string | null,
         puid: string | null
@@ -47,7 +48,6 @@ export interface MetadataItem extends Item {
     height: null;
     resolution: null;
     duration: null;
-    metadata: [],
     original: {
         uri: null,
         puid: null

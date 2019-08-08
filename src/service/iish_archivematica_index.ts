@@ -9,7 +9,7 @@ import config from '../lib/Config';
 import {runTask} from '../lib/Task';
 import {evictCache} from '../lib/Cache';
 import {createItem, indexItems, deleteItems} from '../lib/Item';
-import {IndexParams, MetadataParams, TextParams} from '../lib/Service';
+import {IndexParams, MetadataParams, TextParams, WaveformParams} from '../lib/Service';
 import {MinimalItem, FileItem, FolderItem, Item} from '../lib/ItemInterfaces';
 
 import {TextItem} from './util/types';
@@ -55,9 +55,14 @@ export default async function processDip({collectionPath}: IndexParams): Promise
 
         runTask<MetadataParams>('metadata', {collectionId: rootItem.id});
         runTask<TextParams>('text', {collectionId: rootItem.id, items: textItems});
+
+        // Run derivative services
+        runTask<WaveformParams>('waveform', {collectionId: rootItem.id});
     }
     catch (e) {
-        throw new Error(`Failed to index the collection ${collectionPath}: ${e.message}`);
+        const err = new Error(`Failed to index the collection ${collectionPath}: ${e.message}`);
+        err.stack = e.stack;
+        throw err;
     }
 }
 
@@ -79,8 +84,7 @@ export async function processCollection(collectionPath: string): Promise<Collect
     const objectsPath = path.join(collectionPath, 'objects');
     const objects = fs.existsSync(objectsPath) ? await readdirAsync(objectsPath) : [];
     const relativeRootPath = objectsPath
-        .replace(`${config.dataRootPath}/`, '')
-        .replace(`${config.collectionsRelativePath}/`, '');
+        .replace(`${config.dataRootPath}/${config.collectionsRelativePath}/`, '');
 
     const rootItem = getRootItem(mets, rootStructureIISH);
     const [childItems, textItems] = walkTree({

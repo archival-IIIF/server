@@ -91,7 +91,9 @@ export function updateEAD(xml: string, oaiIdentifier: string, collectionId: stri
             id: id,
             collection_id: id,
             metadata_id: oaiIdentifier,
-            label: md.title as string,
+            formats: md.formats,
+            label: md.title,
+            metadata: [],
             iish: {
                 type: 'ead',
                 metadataHdl: '10622/' + collectionId
@@ -116,6 +118,12 @@ export function updateEAD(xml: string, oaiIdentifier: string, collectionId: stri
         if (md.unitId === unitId)
             item.iish.access = access;
 
+        if (md.eadTitle)
+            item.metadata.push({label: 'Part of', value: md.eadTitle});
+
+        if (md.unitIdIsInventoryNumber)
+            item.metadata.push({label: 'Inventory number', value: md.unitId});
+
         prevUnitId = item.id;
 
         return item;
@@ -131,7 +139,9 @@ export function updateMarc(xml: string, oaiIdentifier: string, collectionId: str
             id: collectionId,
             collection_id: collectionId,
             metadata_id: oaiIdentifier,
-            label: md.title as string,
+            formats: [md.format],
+            label: md.title,
+            metadata: [],
             iish: {
                 access,
                 type: 'marcxml',
@@ -150,6 +160,9 @@ export function updateMarc(xml: string, oaiIdentifier: string, collectionId: str
 
         if (md.physical)
             item.physical = md.physical;
+
+        if (md.signature)
+            item.metadata.push({label: 'Holding', value: md.signature});
 
         return item;
     });

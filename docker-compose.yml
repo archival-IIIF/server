@@ -4,13 +4,15 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.3.0
     restart: always
+    environment:
+      - discovery.type=single-node
     volumes:
       - indexes:/usr/share/elasticsearch/data
     networks:
       - back-tier
 
   redis:
-    image: redis
+    image: redis:5
     restart: always
     volumes:
       - redis-persistance:/data
@@ -21,7 +23,7 @@ services:
     build: ./loris
     restart: always
     volumes:
-      - collections:/data/collections
+      - data:/data
       - loris-conf:/etc/loris2/loris2.conf
     networks:
       - back-tier
@@ -32,8 +34,7 @@ services:
     ports:
       - "8000:3333"
     volumes:
-      - additional:/data/additional
-      - collections:/data/collections
+      - data:/data
       - app-conf:/opt/iiif-server/config.yaml
       - universal-viewer-conf:/opt/universalviewer-config.json
     networks:
@@ -44,8 +45,7 @@ volumes:
   app-conf:
   universal-viewer-conf:
   loris-conf:
-  additional:
-  collections:
+  data:
   indexes:
   redis-persistance:
 

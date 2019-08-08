@@ -147,7 +147,7 @@ const config: Config = {
 };
 
 // For test purposes
-export function setConfig(property: keyof Config, value: Config[keyof Config]): void {
+export function setConfig<P extends keyof Config, V extends Config[P]>(property: P, value: V): void {
     if (config.env === 'test')
         config[property] = value;
 }

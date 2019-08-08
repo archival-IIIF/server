@@ -88,6 +88,9 @@ export type SearchResponse<T> = ApiResponse<{
                             type: {
                                 type: 'keyword'
                             },
+                            formats: {
+                                type: 'keyword'
+                            },
                             label: {
                                 type: 'text',
                                 fielddata: true
@@ -96,6 +99,7 @@ export type SearchResponse<T> = ApiResponse<{
                                 type: 'text'
                             },
                             authors: {
+                                type: 'nested',
                                 properties: {
                                     type: {
                                         type: 'keyword'
@@ -133,6 +137,7 @@ export type SearchResponse<T> = ApiResponse<{
                                 type: 'short'
                             },
                             metadata: {
+                                type: 'nested',
                                 properties: {
                                     label: {
                                         type: 'keyword'

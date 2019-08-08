@@ -63,6 +63,7 @@ describe('Item', () => {
                 collection_id: '67890',
                 metadata_id: null,
                 type: 'pdf',
+                formats: [],
                 label: 'A label',
                 description: null,
                 authors: [],
@@ -172,22 +173,22 @@ describe('Item', () => {
     describe('#getRelativePath', () => {
         it('should return the original relative path of the original uri', () => {
             const path = getRelativePath(itemWithBoth, 'original');
-            expect(path).to.equal('dip/with/both/original.txt');
+            expect(path).to.equal('collections/dip/with/both/original.txt');
         });
 
         it('should return the access relative path of the access uri', () => {
             const path = getRelativePath(itemWithBoth, 'access');
-            expect(path).to.equal('dip/with/both/access.txt');
+            expect(path).to.equal('collections/dip/with/both/access.txt');
         });
 
         it('should return the relative path of the access uri, as is prefers access', () => {
             const path = getRelativePath(itemWithBoth);
-            expect(path).to.equal('dip/with/both/access.txt');
+            expect(path).to.equal('collections/dip/with/both/access.txt');
         });
 
         it('should return the relative path of the original uri, if there is no access', () => {
             const path = getRelativePath(itemWithOriginal);
-            expect(path).to.equal('dip/with/original/file.txt');
+            expect(path).to.equal('collections/dip/with/original/file.txt');
         });
     });
 

@@ -8,7 +8,7 @@ export interface IIIFMetadata {
     seeAlso: IIIFMetadataSeeAlso;
 }
 
-export type IIIFMetadataHomepage = { id: string; label: string; } | null;
+export type IIIFMetadataHomepage = { id: string; label: string; }[];
 export type IIIFMetadataPairs = { label: string; value: string; }[];
 export type IIIFMetadataSeeAlso = { id: string; format: string; profile: string; label: string; }[];
 

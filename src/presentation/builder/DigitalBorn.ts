@@ -221,7 +221,7 @@ async function addMetadata(base: Base, root: Item): Promise<void> {
 
     const md = await runTaskWithResponse<IIIFMetadataParams, IIIFMetadata>('iiif-metadata', {item: root});
     if (md.homepage)
-        base.setRelated(md.homepage.id, md.homepage.label);
+        base.setRelated(md.homepage);
 
     if (md.metadata && md.metadata.length > 0)
         base.addMetadata(md.metadata);

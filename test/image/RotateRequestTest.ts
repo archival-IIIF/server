@@ -6,7 +6,7 @@ import RotateRequest from '../../src/image/RotateRequest';
 import {RequestError} from '../../src/image/errors';
 
 describe('RotateRequest', () => {
-    const imageProcessingInfo = {uri: 'test', size: {width: 200, height: 100}};
+    const imageProcessingInfo = {fullPath: 'test', relativePath: 'test', size: {width: 200, height: 100}};
 
     describe('#parseImageRequest()', () => {
         [

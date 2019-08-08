@@ -2,27 +2,31 @@ import * as libxmljs from 'libxmljs';
 import {Element} from 'libxmljs';
 
 export interface MARCXMLMetadata {
-    title?: string;
+    format?: string;
+    title: string;
     description?: string;
     physical?: string;
     authors?: { type: string, name: string }[];
     dates?: string[];
     metadataHdl?: string;
+    signature?: string;
 }
 
 const ns = {'marc': 'http://www.loc.gov/MARC21/slim'};
 
 export function getMetadata(collectionId: string, marcXml: string): MARCXMLMetadata[] {
     const marc = libxmljs.parseXml(marcXml).root();
-    const metadata: MARCXMLMetadata = {};
+    const metadata: MARCXMLMetadata = {title: 'No title'};
 
     if (marc) {
+        extractFormat(marc, metadata);
         extractTitle(marc, metadata);
         extractDescription(marc, metadata);
         extractPhysicalDescription(marc, metadata);
         extractAuthors(marc, metadata);
         extractDates(marc, metadata);
         extractHdlToMetadata(marc, metadata);
+        extractSignature(marc, collectionId, metadata);
 
         return [metadata];
     }
@@ -40,8 +44,55 @@ export function getAccess(collectionId: string, marcXml: string): string {
     return 'open'; // TODO: Always open or always closed (depending on type?)
 }
 
+function extractFormat(marc: Element, metadata: MARCXMLMetadata): void {
+    const marcLeader = marc.get('//marc:leader', ns) as Element;
+    const format = marcLeader.text().trim().substring(6, 8);
+
+    switch (format) {
+        case 'ab':
+            metadata.format = 'article';
+            break;
+        case 'aa':
+        case 'ar':
+        case 'as':
+        case 'ps':
+        case 'ac':
+            metadata.format = 'serial';
+            break;
+        case 'am':
+        case 'pm':
+            metadata.format = 'book';
+            break;
+        case 'im':
+        case 'pi':
+        case 'ic':
+        case 'jm':
+        case 'jc':
+            metadata.format = 'sound';
+            break;
+        case 'av':
+        case 'rm':
+        case 'pv':
+        case 'km':
+        case 'kc':
+        case 'rc':
+            metadata.format = 'visual';
+            break;
+        case 'gm':
+        case 'gc':
+            metadata.format = 'moving visual';
+            break;
+        case 'bm':
+        case 'do':
+        case 'oc':
+        case 'pc':
+            metadata.format = 'archive';
+            break;
+    }
+}
+
 function extractTitle(marc: Element, metadata: MARCXMLMetadata): void {
-    metadata['title'] = normalize(
+    metadata.title = normalize(
         (marc.find('//marc:datafield[@tag="245"]/marc:subfield[@code="a" or @code="b"]', ns) as Element[])
             .map(titleMarc => titleMarc.text().trim())
     );
@@ -52,13 +103,13 @@ function extractDescription(marc: Element, metadata: MARCXMLMetadata): void {
         .map(descrMarc => descrMarc.text().trim());
 
     if (marc520.length > 0)
-        metadata['description'] = normalize(marc520);
+        metadata.description = normalize(marc520, false);
 
     const marc500 = (marc.find('//marc:datafield[@tag="500"]/marc:subfield', ns) as Element[])
         .map(descrMarc => descrMarc.text().trim());
 
     if (marc500.length > 0)
-        metadata['description'] = normalize(marc500);
+        metadata.description = normalize(marc500, false);
 }
 
 function extractPhysicalDescription(marc: Element, metadata: MARCXMLMetadata): void {
@@ -66,7 +117,7 @@ function extractPhysicalDescription(marc: Element, metadata: MARCXMLMetadata): v
         .map(physical => physical.text().trim());
 
     if (marc300.length > 0)
-        metadata['physical'] = normalize(marc300);
+        metadata.physical = normalize(marc300);
 }
 
 function extractAuthors(marc: Element, metadata: MARCXMLMetadata): void {
@@ -106,7 +157,7 @@ function extractAuthors(marc: Element, metadata: MARCXMLMetadata): void {
         });
 
     if (authors.length > 0)
-        metadata['authors'] = authors;
+        metadata.authors = authors;
 }
 
 function extractDates(marc: Element, metadata: MARCXMLMetadata): void {
@@ -114,20 +165,34 @@ function extractDates(marc: Element, metadata: MARCXMLMetadata): void {
         .map(marcDates => normalize(marcDates.text().trim()));
 
     if (dates.length > 0)
-        metadata['dates'] = dates;
+        metadata.dates = dates;
 }
 
 function extractHdlToMetadata(marc: Element, metadata: MARCXMLMetadata): void {
     const metadataHdl = marc.get('//marc:datafield[@tag="902"]', ns);
     if (metadataHdl)
-        metadata['metadataHdl'] = metadataHdl.text().trim();
+        metadata.metadataHdl = metadataHdl.text().trim();
 }
 
-function normalize(value: string | string[]): string {
-    if (Array.isArray(value))
-        return value.map(val => normalize(val)).join(' ');
+function extractSignature(marc: Element, collectionId: string, metadata: MARCXMLMetadata): void {
+    const marc852 = (marc.find('//marc:datafield[@tag="852"]', ns) as Element[]).find(marc852 => {
+        const marc852p = marc852.get('./marc:subfield[@code="p"]', ns);
+        return marc852p && marc852p.text().trim() === collectionId;
+    });
 
-    if (value.endsWith('.'))
+    if (marc852) {
+        const marc852c = marc852.get('./marc:subfield[@code="c"]', ns);
+        const marc852j = marc852.get('./marc:subfield[@code="j"]', ns);
+
+        metadata.signature = `${marc852c ? marc852c.text().trim() : ''} ${marc852j ? marc852j.text().trim() : ''}`.trim();
+    }
+}
+
+function normalize(value: string | string[], removePeriod: boolean = true): string {
+    if (Array.isArray(value))
+        return value.map(val => normalize(val, removePeriod)).join(' ');
+
+    if (value.endsWith('.') && removePeriod)
         value = value.slice(0, value.length - 1).trim();
 
     if (value.endsWith('/'))

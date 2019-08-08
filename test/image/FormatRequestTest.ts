@@ -6,7 +6,7 @@ import FormatRequest from '../../src/image/FormatRequest';
 import {NotImplementedError, RequestError} from '../../src/image/errors';
 
 describe('FormatRequest', () => {
-    const imageProcessingInfo = {uri: 'test', size: {width: 200, height: 100}};
+    const imageProcessingInfo = {fullPath: 'test', relativePath: 'test', size: {width: 200, height: 100}};
 
     describe('#parseImageRequest()', () => {
         [

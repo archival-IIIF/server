@@ -6,8 +6,8 @@ import RegionRequest from '../../src/image/RegionRequest';
 import {RequestError} from '../../src/image/errors';
 
 describe('RegionRequest', () => {
-    const getImageProcessingInfo =
-        (width: number, height: number) => ({uri: 'test', size: {width: width, height: height}});
+    const getImageProcessingInfo = (width: number, height: number) =>
+        ({fullPath: 'test', relativePath: 'test', size: {width: width, height: height}});
 
     describe('#parseImageRequest()', () => {
         describe('having an image of 200 by 200', () => {

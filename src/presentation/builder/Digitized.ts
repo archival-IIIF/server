@@ -1,8 +1,10 @@
+import {existsSync} from 'fs';
+
 import config from '../../lib/Config';
-import {getChildItems} from '../../lib/Item';
 import {runTaskWithResponse} from '../../lib/Task';
 import {IIIFMetadataParams} from '../../lib/Service';
 import getPronomInfo, {PronomInfo} from '../../lib/Pronom';
+import {getChildItems, getDerivativePath} from '../../lib/Item';
 import {FileItem, ImageItem, Item, RootItem} from '../../lib/ItemInterfaces';
 
 import {IIIFMetadata} from '../../service/util/types';
@@ -51,7 +53,7 @@ async function addContent(manifest: Manifest, parentItem: RootItem): Promise<voi
     const items = await getChildItems(parentItem.id, true) as FileItem[];
     const firstItem = items[0];
 
-    addBehavior(manifest, firstItem, items.length > 1);
+    addBehavior(manifest, parentItem, items.length > 1);
     addThumbnail(manifest, parentItem, firstItem);
 
     const manifestItems = await Promise.all(items.map(async item => {
@@ -69,11 +71,26 @@ async function addContent(manifest: Manifest, parentItem: RootItem): Promise<voi
 
         await addMetadata(canvas, item);
         addThumbnail(canvas, item);
+        addDerivatives(annotation, item);
 
         return canvas;
     }));
 
     manifest.setItems(manifestItems);
+}
+
+function addDerivatives(annotation: Annotation, item: Item) {
+    if (item.type === 'audio') {
+        const waveFormFile = getDerivativePath(item, 'waveform', 'dat');
+        if (existsSync(waveFormFile)) {
+            annotation.addSeeAlso({
+                id: `${prefixFileUrl}/${item.id}/waveform`,
+                type: 'Dataset',
+                format: 'application/octet-stream',
+                profile: 'http://waveform.prototyping.bbc.co.uk'
+            });
+        }
+    }
 }
 
 async function addMetadata(base: Base, root: Item): Promise<void> {
@@ -99,7 +116,7 @@ async function addMetadata(base: Base, root: Item): Promise<void> {
 
     const md = await runTaskWithResponse<IIIFMetadataParams, IIIFMetadata>('iiif-metadata', {item: root});
     if (md.homepage)
-        base.setHomepage(md.homepage.id, md.homepage.label);
+        base.setHomepage(md.homepage);
 
     if (md.metadata && md.metadata.length > 0)
         base.addMetadata(md.metadata);
@@ -149,8 +166,12 @@ function addThumbnail(base: Base, item: RootItem | FileItem, childItem?: FileIte
 }
 
 function addBehavior(base: Base, item: Item, hasMultipleItems = true): void {
-    base.addBehavior('individuals');
     base.setViewingDirection('left-to-right');
+
+    if (hasMultipleItems && item.formats.includes('book'))
+        base.addBehavior('paged');
+    else
+        base.addBehavior('individuals');
 }
 
 function addDefaults(manifest: Manifest): void {

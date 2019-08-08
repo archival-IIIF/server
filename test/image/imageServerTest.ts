@@ -7,6 +7,7 @@ import {ImageItem} from '../../src/lib/ItemInterfaces';
 
 import {getInfo, getImage} from '../../src/image/imageServer';
 import Image, {AccessTier} from '../../src/presentation/elem/v2/Image';
+import {setConfig} from '../../src/lib/Config';
 
 describe('imageServer', () => {
     const item = createItem({
@@ -27,6 +28,8 @@ describe('imageServer', () => {
     }) as ImageItem;
 
     const tier: AccessTier = {name: 'tierName', maxSize: 150};
+
+    setConfig('collectionsRelativePath', 'collections');
 
     describe('#getInfo()', () => {
         const imageInfoKeys = ['@context', '@id', 'profile', 'protocol', 'width', 'height', 'sizes'];
@@ -101,7 +104,7 @@ describe('imageServer', () => {
 
         beforeEach(() => {
             nock('http://localhost:8080')
-                .get(uri => uri.startsWith('/' + item.access.uri))
+                .get(uri => uri.startsWith('/collections/' + item.access.uri))
                 .reply(200, image, {
                     'Content-Type': 'image/jpeg',
                     'Content-Length': '500'

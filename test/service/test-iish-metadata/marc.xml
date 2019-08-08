@@ -32,6 +32,7 @@
     <marc:subfield code="a">IISG</marc:subfield>
     <marc:subfield code="b">IISG</marc:subfield>
     <marc:subfield code="c">IISG</marc:subfield>
+    <marc:subfield code="j">123</marc:subfield>
     <marc:subfield code="n">Available</marc:subfield>
     <marc:subfield code="p">N12345</marc:subfield>
   </marc:datafield>

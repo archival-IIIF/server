@@ -86,9 +86,12 @@ describe('iish_metadata', () => {
                     'id': 'ARCH12345',
                     'collection_id': 'ARCH12345',
                     'metadata_id': 'oai:socialhistoryservices.org:10622/ARCH12345',
+                    'formats': [],
                     'label': 'Collection title',
+                    'metadata': [],
                     'iish': {
-                        'metadataHdl': '10622/ARCH12345.3'
+                        'metadataHdl': '10622/ARCH12345.3',
+                        'type': 'ead'
                     },
                     'description': 'The content of this archive.<br/>Is described in here.',
                     'authors': [
@@ -110,9 +113,15 @@ describe('iish_metadata', () => {
                     'id': 'ARCH12345.dda3da21e3f74df90a6160aebac41f6b',
                     'collection_id': 'ARCH12345.dda3da21e3f74df90a6160aebac41f6b',
                     'metadata_id': 'oai:socialhistoryservices.org:10622/ARCH12345',
+                    'formats': [],
                     'label': 'Second set',
+                    'metadata': [{
+                        'label': 'Part of',
+                        'value': 'Collection title'
+                    }],
                     'iish': {
-                        'metadataHdl': '10622/ARCH12345.3'
+                        'metadataHdl': '10622/ARCH12345.3',
+                        'type': 'ead'
                     },
                     'parent_id': 'ARCH12345'
                 },
@@ -120,10 +129,22 @@ describe('iish_metadata', () => {
                     'id': 'ARCH12345.3',
                     'collection_id': 'ARCH12345.3',
                     'metadata_id': 'oai:socialhistoryservices.org:10622/ARCH12345',
+                    'formats': [],
                     'label': 'No 3 from 2019',
+                    'metadata': [
+                        {
+                            'label': 'Part of',
+                            'value': 'Collection title'
+                        },
+                        {
+                            'label': 'Inventory number',
+                            'value': '3'
+                        }
+                    ],
                     'iish': {
                         'metadataHdl': '10622/ARCH12345.3',
-                        'access': 'open'
+                        'access': 'open',
+                        'type': 'ead'
                     },
                     'parent_id': 'ARCH12345.dda3da21e3f74df90a6160aebac41f6b',
                     'dates': [
@@ -136,7 +157,7 @@ describe('iish_metadata', () => {
     });
 
     describe('#updateMarc()', () => {
-        it('should parse the metadata from an EAD description', async () => {
+        it('should parse the metadata from an MARC XML description', async () => {
             const marcXml = await readFileAsync(join(__dirname, 'test-iish-metadata/marc.xml'), 'utf8');
             const metadata = updateMarc(marcXml, 'oai:socialhistoryservices.org:12345', 'N12345');
 
@@ -145,12 +166,18 @@ describe('iish_metadata', () => {
                     'id': 'N12345',
                     'collection_id': 'N12345',
                     'metadata_id': 'oai:socialhistoryservices.org:12345',
+                    'formats': ['visual'],
                     'label': 'The title',
+                    'metadata': [{
+                        'label': 'Holding',
+                        'value': 'IISG 123'
+                    }],
                     'iish': {
                         'access': 'pictoright',
-                        'metadataHdl': '10622/N12345'
+                        'metadataHdl': '10622/N12345',
+                        'type': 'marcxml'
                     },
-                    'description': 'A description of this object',
+                    'description': 'A description of this object.',
                     'authors': [
                         {
                             'type': 'Author',

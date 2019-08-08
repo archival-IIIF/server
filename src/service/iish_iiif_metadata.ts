@@ -12,13 +12,31 @@ export default async function getIIIFMetadata({item}: IIIFMetadataParams): Promi
 }
 
 function getHomepage(item: Item): IIIFMetadataHomepage {
+    const homepages = [];
+
     if (item.iish && item.iish.metadataHdl)
-        return {
+        homepages.push({
             id: `https://hdl.handle.net/${item.iish.metadataHdl}`,
             label: 'Homepage'
-        };
+        });
 
-    return null;
+    if (item.iish && item.iish.type === 'marcxml' && item.metadata_id) {
+        const id = item.metadata_id.replace('oai:socialhistoryservices.org:', '');
+        homepages.push({
+            id: `https://iisg.amsterdam/id/item/${id}`,
+            label: 'RDF'
+        });
+    }
+
+    if (item.iish && item.iish.type === 'ead' && item.metadata_id) {
+        const id = item.metadata_id.replace('oai:socialhistoryservices.org:10622/', '');
+        homepages.push({
+            id: `https://iisg.amsterdam/id/collection/${id}`,
+            label: 'RDF'
+        });
+    }
+
+    return homepages;
 }
 
 function getMetadata(item: Item): IIIFMetadataPairs {

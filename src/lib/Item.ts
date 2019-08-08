@@ -11,6 +11,7 @@ export function createItem(obj: MinimalItem): Item {
         parent_id: null,
         metadata_id: null,
         type: 'metadata',
+        formats: [],
         description: null,
         authors: [],
         dates: [],
@@ -104,6 +105,10 @@ export async function getChildItems(id: string, sortByOrder = false): Promise<It
     return items;
 }
 
+export async function getChildItemsByType(id: string, type: string): Promise<Item[]> {
+    return await getItems(`parent_id:"${id}" AND type:"${type}"`);
+}
+
 export async function getRootItemByCollectionId(id: string): Promise<Item | null> {
     const items = await getItems(`id:"${id}" AND collection_id:"${id}"`);
     return (items.length > 0) ? items[0] : null;
@@ -161,8 +166,12 @@ export function getRelativePath(item: Item, type: 'access' | 'original' | null =
 
     if (type === 'access')
         return path.join(config.collectionsRelativePath, item.access.uri as string);
-    else
-        return path.join(config.collectionsRelativePath, item.original.uri as string);
+
+    return path.join(config.collectionsRelativePath, item.original.uri as string);
+}
+
+export function getDerivativePath(item: Item, type: string, extension: string): string {
+    return path.join(config.dataRootPath, type, ...item.id.split('-'), `${item.id}.${extension}`);
 }
 
 export function getPronom(item: Item, type: 'access' | 'original' | null = null): string {
@@ -170,10 +179,17 @@ export function getPronom(item: Item, type: 'access' | 'original' | null = null)
 
     if (type === 'access')
         return item.access.puid as string;
-    else
-        return item.original.puid as string;
+
+    return item.original.puid as string;
 }
 
 export function getAvailableType(item: Item): 'access' | 'original' {
     return item.access.uri ? 'access' : 'original';
+}
+
+export function hasType(item: Item, type: 'access' | 'original'): boolean {
+    if (type === 'access')
+        return !!item.access.uri;
+
+    return !!item.original.uri;
 }
