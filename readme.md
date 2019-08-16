@@ -1,23 +1,65 @@
 # Archival IIIF server
 
+The Archival IIIF server indexes and provides [IIIF](https://iiif.io) services for digital collections. 
+The server can be configured with a number of different services to index the digital collections 
+and to create derivatives. 
+
+The [IISH](https://iisg.amsterdam) (International Institute of Social History)  has created a number of services 
+to index the DIPs created by [Archivematica](https://www.archivematica.org) and to give access through IIIF. 
+
 ## Components
 
 ![](./components.png)
 
+The Archival IIIF server is composed of a web application and various service workers. 
+The service workers index collections to [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch), 
+while the web environment gives access to the index through various [IIIF API's](https://iiif.io/technical-details). 
+[Redis](https://redis.io) is used to manage the communication between various service workers 
+and provides additional caching capabilities.
+
+## Services
+
+_TODO_
+
 ## Installation
 
-Use the provided Docker Compose or install manually:
+Use the provided Docker Compose or install manually.
 
-1. Install [Node.js 10.x LTS](https://nodejs.org/en)
-1. Install [yarn](https://yarnpkg.com) or [npm](https://www.npmjs.com)
-1. Install [ElasticSearch 7.3.x](https://www.elastic.co/webinars/getting-started-elasticsearch)
-1. (Optional) Install [Redis 5.x](https://redis.io) (Required for caching, workers and/or IIIF authentication)
-1. (Optional) Install IIIF image server (e.g. [Loris](https://github.com/loris-imageserver/loris))
-1. (Optional) Install [pm2](https://pm2.io/runtime/)
-1. Set up the configuration: (See .env.example for the environment variables)
+### Docker Compose
+
+1. Adapt the provided `docker-compose.yml`:
+    * Clone the `web` service definition to create multiple services and use the env variable `IIIF_SERVER_SERVICES` 
+    to define which services that container should run 
+1. Set up volumes for the following:
+    * `app-conf`: The PM2 configuration file
+    * `universal-viewer-conf`: The Universal Viewer configuration file
+    * `loris-conf`: The Loris configuration file
+    * `data`: The volume which contains the collections to be indexed or files to be read, 
+    but also allows write access for derivative creation
+    * `indexes`: The volume for ElasticSearch indexes to be stored
+    * `redis-persistance`: The volume for Redis storage
+1. Set up the configuration (See .env.example for the example configuration)
+   * [Set up a config.yml file](https://pm2.io/doc/en/runtime/guide/ecosystem-file/) with the environment variables
+   * [Configure Loris](https://github.com/loris-imageserver/loris/blob/development/doc/configuration.md) 
+   Especially the `src_img_root` configuration should point to the `data` volume
+   * [Configure Universal Viewer](https://github.com/UniversalViewer/universalviewer/wiki/Configuration)
+
+### Manual installation
+
+1. Install
+    * [Node.js 10.x LTS](https://nodejs.org/en)
+    * [yarn](https://yarnpkg.com) or [npm](https://www.npmjs.com)
+    * [ElasticSearch 7.3.x](https://www.elastic.co/webinars/getting-started-elasticsearch)
+    * (Optional) [Redis 5.x](https://redis.io) (Required for caching, workers and/or IIIF authentication)
+    * (Optional) IIIF image server (Required for production, e.g. [Loris](https://github.com/loris-imageserver/loris))
+    * (Optional) [pm2](https://github.com/Unitech/pm2) (Required for managing the processes)
+1. Install optional dependencies for derivative creation
+    * [audiowaveform](https://github.com/bbc/audiowaveform) (Required by the `waveform` service)
+1. Set up the configuration (See .env.example for the example configuration)
     * Copy .env.example to .env and set up the parameters for development
     * Set up the environment variables for production
-    * With PM2, [set up a config.yml file](https://pm2.io/doc/en/runtime/guide/ecosystem-file/) with the environment variables
+    * With PM2, [set up a config.yml file](https://pm2.io/doc/en/runtime/guide/ecosystem-file/) 
+    with the environment variables
 1. `yarn install` or `npm install` (Use the `--production` flag for production with an external IIIF image server)
 1. Start the application:
     * Run `yarn run start` or `npm run start`
@@ -25,20 +67,27 @@ Use the provided Docker Compose or install manually:
 
 ## Configuration
 
-### Application configuration: environment variables
+The environment variables used to configure the application:
 
 - `NODE_ENV`: Should be `production` in a production environment
 - `IIIF_SERVER_SERVICES`: Comma separated list of services to run on this instance:
-  - `web`: Sets up a **web server** and the web environment
-  - `directory-watcher-changes`:  Runs a **standalone** script that watches a directory for new collections to index: when a collection has had no changes for a certain amount of time, the index is triggered
-  - `directory-watcher-file-trigger`: Runs a **standalone** script that watches a directory for new collections to index: when a collection includes a trigger file, the index is triggered
-  - `text-index`: Runs a **worker** that indexes texts (transcriptions, translations, etc.)
-  - `iish-archivematica-index`: Runs a **worker** that indexes IISH DIPs from Archivematica
-  - `iish-metadata`: Runs a **worker** that indexes IISH metadata (MARCXML / EAD)
-  - `iish-metadata-update`: Runs a **cron job** that processes changes in the IISH metadata
-  - `iish-access`: Loads a **library** that determines access to items for IISH collections
-  - `iish-auth-texts`: Loads a **library** that provides authentication assistance texts of items from IISH collections
-  - `iish-iiif-metadata`: Loads a **library** that provides IIIF metadata of items from IISH collections
+    - General services:
+        - `web`: Sets up a **web server** and the web environment
+        - `directory-watcher-changes`:  Runs a **standalone** script that watches a directory for new collections 
+        to index: when a collection has had no changes for a certain amount of time, the index is triggered
+        - `directory-watcher-file-trigger`: Runs a **standalone** script that watches a directory for new collections 
+        to index: when a collection includes a trigger file, the index is triggered
+        - `text-index`: Runs a **worker** that indexes texts (transcriptions, translations, etc.)
+    - Derivative services:
+        - `waveform`: Runs a **worker** that creates waveforms from audio files
+    - IISH specific services:
+        - `iish-archivematica-index`: Runs a **worker** that indexes IISH DIPs from Archivematica
+        - `iish-metadata`: Runs a **worker** that indexes IISH metadata (MARCXML / EAD)
+        - `iish-metadata-update`: Runs a **cron job** that processes changes in the IISH metadata
+        - `iish-access`: Loads a **library** that determines access to items for IISH collections
+        - `iish-auth-texts`: Loads a **library** that provides authentication assistance texts 
+        of items from IISH collections
+        - `iish-iiif-metadata`: Loads a **library** that provides IIIF metadata of items from IISH collections
 - `IIIF_SERVER_SECRET`: Signed cookie key
 - `IIIF_SERVER_ACCESS_TOKEN`: Access token for administrator access
 - `IIIF_SERVER_ARCHIVAL_VIEWER_PATH`: Path to the Archival Viewer
@@ -59,7 +108,8 @@ Use the provided Docker Compose or install manually:
 - `IIIF_SERVER_LOGO_REL_PATH`: The relative path to the image with the logo to add to the IIIF manifests
 - `IIIF_SERVER_LOGO_DIM`: The dimensions of the logo, separated by a ':'
 - `IIIF_SERVER_LOG_LEVEL`: The logging level
-- `IIIF_SERVER_INTERNAL_IP_ADDRESSES`: If access may be granted based on IP address, provide a comma separated white list of ip addresses (Requires Redis)
+- `IIIF_SERVER_INTERNAL_IP_ADDRESSES`: If access may be granted based on IP address, 
+provide a comma separated white list of ip addresses (Requires Redis)
 - `IIIF_SERVER_LOGIN_DISABLED`: Turn login based authentication on/off (Requires Redis)
 - `IIIF_SERVER_ELASTICSEARCH_URL`: URL of the ElasticSearch indexer
 - `IIIF_SERVER_REDIS_DISABLED`: Turn Redis on/off
