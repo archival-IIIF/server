@@ -1,56 +1,86 @@
-import {getClient, createNewClient} from './Redis';
-import {RedisMessage} from './Task';
-import logger from './Logger';
 import {IHandyRedis} from 'handy-redis';
 
-export default function onTask<A, R>(type: string, process: (args: A) => Promise<R>,
-                                     blockingClient = createNewClient()): void {
+import logger from './Logger';
+import {RedisMessage} from './Task';
+import {getClient, createNewClient} from './Redis';
+
+export default async function onTask<A, R>(type: string, process: (args: A) => Promise<R>): Promise<void> {
     const client = getClient();
-    if (!client)
+    const blockingClient = createNewClient();
+
+    if (!client || !blockingClient)
         throw new Error('Redis is required for for setting up workers!');
 
-    logger.debug(`Waiting for a new task with type '${type}'`);
+    await moveExpiredTasksToQueue(type, client);
 
-    blockingClient.blpop(['tasks:' + type], 0).then(async (msg: string[] | undefined) => {
-        if (!client)
-            throw new Error('Redis is required for for setting up workers!');
-
-        if (msg !== undefined) {
-            onTask(type, process, blockingClient);
-
-            const task = JSON.parse(msg[1]) as RedisMessage<A>;
-            await handleMessage(type, task, process, client);
-        }
-    }).catch(err => {
-        logger.error(`Failure loading a new task with type '${type}'`, {err});
-        onTask(type, process, blockingClient);
-    });
+    waitForTask(type, process, client, blockingClient);
 }
 
-export async function handleMessage<A, R>(type: string, task: RedisMessage<A>,
+export async function moveExpiredTasksToQueue<A>(type: string, client: IHandyRedis): Promise<void> {
+    try {
+        const nameQueue = 'tasks:' + type;
+        const nameProgressList = 'tasks:' + type + ':progress';
+
+        const tasksInProgress = await client.lrange(nameProgressList, 0, -1);
+        const expiredTasks = await Promise.all(tasksInProgress.map(async msg => {
+            const task = JSON.parse(msg) as RedisMessage<A>;
+            const hasNotExpired = await client.get('tasks:' + type + ':' + task.identifier);
+
+            return hasNotExpired ? null : msg;
+        }));
+
+        await client.rpush(nameQueue, ...expiredTasks.filter(task => task !== null));
+    }
+    catch (err) {
+        logger.error(`Failure moving expired tasks with type '${type}' back to the queue`, {err});
+    }
+}
+
+export async function waitForTask<A, R>(type: string, process: (args: A) => Promise<R>,
+                                        client: IHandyRedis, blockingClient: IHandyRedis): Promise<void> {
+    try {
+        logger.debug(`Waiting for a new task with type '${type}'`);
+
+        const nameQueue = 'tasks:' + type;
+        const nameProgressList = 'tasks:' + type + ':progress';
+
+        const msg = await blockingClient.brpoplpush(nameQueue, nameProgressList, 0);
+        if (msg !== undefined) {
+            waitForTask(type, process, client, blockingClient);
+
+            const task = JSON.parse(msg) as RedisMessage<A>;
+            await handleMessage(type, task, msg, process, client);
+        }
+    }
+    catch (err) {
+        logger.error(`Failure loading a new task with type '${type}'`, {err});
+        waitForTask(type, process, client, blockingClient);
+    }
+}
+
+export async function handleMessage<A, R>(type: string, task: RedisMessage<A>, msg: string,
                                           process: (args: A) => Promise<R>, client: IHandyRedis): Promise<void> {
     try {
         logger.debug(`Received a new task with type '${type}' and identifier '${task.identifier}'`);
 
-        const noAdded = await client.sadd('tasks:' + type + ':progress', task.identifier);
-        if (noAdded !== 1) {
-            logger.debug(`Task with type '${type}' and identifier '${task.identifier}' is already added to the progress list`);
-            return;
-        }
+        const nameQueue = 'tasks:' + type;
+        const nameProgressList = 'tasks:' + type + ':progress';
+        const nameExpiration = 'tasks:' + type + ':' + task.identifier;
 
-        logger.debug(`Start progress on task with type '${type}' and identifier '${task.identifier}'`);
-        const data = task.data;
-        const result = await process(data);
-        logger.debug(`Finished progress on task with type '${type}' and identifier '${task.identifier}'`);
+        await client.setex(nameExpiration, 60 * 5, task.identifier);
+
+        const result = await process(task.data);
 
         await client.execMulti(
             client.multi()
-                .srem('tasks:' + type + ':progress', task.identifier)
-                .publish('tasks:' + type, JSON.stringify({identifier: task.identifier, data: result}))
+                .lrem(nameProgressList, 1, msg)
+                .publish(nameQueue, JSON.stringify({identifier: task.identifier, data: result}))
         );
+
+        logger.debug(`Finished task with type '${type}' and identifier '${task.identifier}'`);
     }
     catch (err) {
-        await client.srem('tasks:' + type + ':progress', task.identifier);
+        await client.lrem('tasks:' + type + ':progress', 1, JSON.stringify(task));
         logger.error(`Failure during task with type '${type}' and identifier '${task.identifier}'`, {err});
     }
 }
