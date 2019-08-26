@@ -29,7 +29,9 @@ export async function moveExpiredTasksToQueue<A>(type: string, client: IHandyRed
             return hasNotExpired ? null : msg;
         }));
 
-        await client.rpush(nameQueue, ...expiredTasks.filter(task => task !== null));
+        const filteredExpiredTasks = expiredTasks.filter(task => task !== null);
+        if (filteredExpiredTasks.length > 0)
+            await client.rpush(nameQueue, ...filteredExpiredTasks);
     }
     catch (err) {
         logger.error(`Failure moving expired tasks with type '${type}' back to the queue`, {err});
@@ -61,7 +63,7 @@ export async function waitForTask<A, R>(type: string, process: (args: A) => Prom
 export async function handleMessage<A, R>(type: string, task: RedisMessage<A>, msg: string,
                                           process: (args: A) => Promise<R>, client: IHandyRedis): Promise<void> {
     try {
-        logger.debug(`Received a new task with type '${type}' and identifier '${task.identifier}'`);
+        logger.debug(`Received a new task with type '${type}' and identifier '${task.identifier}' and data ${JSON.stringify(task.data)}`);
 
         const nameQueue = 'tasks:' + type;
         const nameProgressList = 'tasks:' + type + ':progress';
@@ -77,10 +79,10 @@ export async function handleMessage<A, R>(type: string, task: RedisMessage<A>, m
                 .publish(nameQueue, JSON.stringify({identifier: task.identifier, data: result}))
         );
 
-        logger.debug(`Finished task with type '${type}' and identifier '${task.identifier}'`);
+        logger.debug(`Finished task with type '${type}' and identifier '${task.identifier}' and data ${JSON.stringify(task.data)}`);
     }
     catch (err) {
         await client.lrem('tasks:' + type + ':progress', 1, JSON.stringify(task));
-        logger.error(`Failure during task with type '${type}' and identifier '${task.identifier}'`, {err});
+        logger.error(`Failure during task with type '${type}' and identifier '${task.identifier}' and data ${JSON.stringify(task.data)}`, {err});
     }
 }

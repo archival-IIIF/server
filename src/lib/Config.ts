@@ -13,6 +13,7 @@ export interface Config {
     hotFolderPath?: string;
     hotFolderPattern?: string;
     imageServerUrl?: string;
+    imageServerName?: 'loris' | 'sharp';
     metadataOaiUrl?: string;
     metadataSrwUrl?: string;
     logoRelativePath?: string;
@@ -49,6 +50,15 @@ const config: Config = {
     metadataOaiUrl: process.env.IIIF_SERVER_METADATA_OAI_URL,
     metadataSrwUrl: process.env.IIIF_SERVER_METADATA_SRW_URL,
     logoRelativePath: process.env.IIIF_SERVER_LOGO_REL_PATH,
+
+    imageServerName: (() => {
+        if (!process.env.IIIF_SERVER_IMAGE_SERVER_NAME)
+            return undefined;
+
+        if (!['loris', 'sharp'].includes(process.env.IIIF_SERVER_IMAGE_SERVER_NAME))
+            throw new Error('Image server name should either be \'loris\' or \'sharp\'');
+        return process.env.IIIF_SERVER_IMAGE_SERVER_NAME as 'loris' | 'sharp';
+    })(),
 
     logoDimensions: (() => {
         if (!process.env.IIIF_SERVER_LOGO_DIM || (process.env.IIIF_SERVER_LOGO_DIM === 'null'))

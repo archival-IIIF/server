@@ -59,7 +59,8 @@ export default async function processDip({collectionPath}: IndexParams): Promise
         logger.debug(`Collection ${collectionPath} indexed; running metadata index, text index and derivative services`);
 
         runTask<MetadataParams>('metadata', {collectionId: rootItem.id});
-        runTask<TextParams>('text', {collectionId: rootItem.id, items: textItems});
+        if (textItems.length > 0)
+            runTask<TextParams>('text', {collectionId: rootItem.id, items: textItems});
 
         // Run derivative services
         runTask<WaveformParams>('waveform', {collectionId: rootItem.id});

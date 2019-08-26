@@ -6,8 +6,7 @@ import SizeRequest from '../../src/image/SizeRequest';
 import {RequestError} from '../../src/image/errors';
 
 describe('SizeRequest', () => {
-    const getImageProcessingInfo = (width: number, height: number) =>
-        ({fullPath: 'test', relativePath: 'test', size: {width: width, height: height}});
+    const getSize = (width: number, height: number) => ({width: width, height: height});
 
     describe('#parseImageRequest()', () => {
         describe('having an image of 200 by 100', () => {
@@ -26,17 +25,17 @@ describe('SizeRequest', () => {
                 it(`should not throw an error for ${request.request}`, () => {
                     const sizeRequest = new SizeRequest(request.request);
                     expect(() => {
-                        sizeRequest.parseImageRequest(getImageProcessingInfo(width, height));
+                        sizeRequest.parseImageRequest(getSize(width, height));
                     }).to.not.throw();
                 });
 
                 it(`should update the size of the ImageProcessingInfo object correctly for ${request.request}`, () => {
-                    const imageProcessingInfo = getImageProcessingInfo(width, height);
+                    const size = getSize(width, height);
                     const sizeRequest = new SizeRequest(request.request);
-                    sizeRequest.parseImageRequest(imageProcessingInfo);
+                    sizeRequest.parseImageRequest(size);
 
-                    expect(imageProcessingInfo.size.width).to.equal(request.width);
-                    expect(imageProcessingInfo.size.height).to.equal(request.height);
+                    expect(size.width).to.equal(request.width);
+                    expect(size.height).to.equal(request.height);
                 });
             });
 
@@ -60,7 +59,7 @@ describe('SizeRequest', () => {
                 it(`should throw a request error for ${request}`, () => {
                     const sizeRequest = new SizeRequest(request);
                     expect(() => {
-                        sizeRequest.parseImageRequest(getImageProcessingInfo(width, height));
+                        sizeRequest.parseImageRequest(getSize(width, height));
                     }).to.throw(RequestError);
                 });
             });
@@ -80,7 +79,7 @@ describe('SizeRequest', () => {
             ].forEach((request) => {
                 it(`should require operation in case of ${request}`, () => {
                     const sizeRequest = new SizeRequest(request);
-                    sizeRequest.parseImageRequest(getImageProcessingInfo(width, height));
+                    sizeRequest.parseImageRequest(getSize(width, height));
                     expect(sizeRequest.requiresImageProcessing()).to.be.true;
                 });
             });
@@ -96,7 +95,7 @@ describe('SizeRequest', () => {
             ].forEach((request) => {
                 it(`should not require operation in case of ${request}`, () => {
                     const sizeRequest = new SizeRequest(request);
-                    sizeRequest.parseImageRequest(getImageProcessingInfo(width, height));
+                    sizeRequest.parseImageRequest(getSize(width, height));
                     expect(sizeRequest.requiresImageProcessing()).to.be.false;
                 });
             });
@@ -133,7 +132,7 @@ describe('SizeRequest', () => {
                         .never();
 
                     const sizeRequest = new SizeRequest(request);
-                    sizeRequest.parseImageRequest(getImageProcessingInfo(width, height));
+                    sizeRequest.parseImageRequest(getSize(width, height));
                     sizeRequest.executeImageProcessing(image);
 
                     imageMock.verify();
@@ -154,7 +153,7 @@ describe('SizeRequest', () => {
                         .withArgs(testCase.width, testCase.height, {fit: testCase.fit});
 
                     const sizeRequest = new SizeRequest(testCase.request);
-                    sizeRequest.parseImageRequest(getImageProcessingInfo(width, height));
+                    sizeRequest.parseImageRequest(getSize(width, height));
                     sizeRequest.executeImageProcessing(image);
 
                     imageMock.verify();

@@ -1,4 +1,4 @@
-import {ImageProcessingInfo, ImageRequest} from './ImageProcessing';
+import {Size, ImageRequest} from './ImageProcessing';
 import {NotImplementedError, RequestError} from './errors';
 import {JpegOptions, OutputOptions, PngOptions, Sharp, TiffOptions, WebpOptions} from 'sharp';
 
@@ -30,7 +30,7 @@ export default class FormatRequest implements ImageRequest {
     constructor(private request: string) {
     }
 
-    parseImageRequest(processingInfo: ImageProcessingInfo): void {
+    parseImageRequest(size: Size): void {
         switch (this.request) {
             case 'jpg':
             case 'png':

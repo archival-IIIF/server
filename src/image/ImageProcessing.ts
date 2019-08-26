@@ -1,15 +1,16 @@
+import {join} from 'path';
 import * as sharp from 'sharp';
 
 export interface ImageRequest {
-    parseImageRequest(processingInfo: ImageProcessingInfo): void;
+    parseImageRequest(size: Size): void;
     requiresImageProcessing(): boolean;
     executeImageProcessing(image: sharp.Sharp): void;
 }
 
 export interface ImageProcessingInfo {
-    fullPath: string;
+    rootPath: string,
     relativePath: string;
-    size: Size;
+    size?: Size;
 }
 
 export interface Size {
@@ -19,13 +20,26 @@ export interface Size {
 
 export default class ImageProcessing {
     constructor(private processingInfo: ImageProcessingInfo, private requests: ImageRequest[]) {
-        this.requests.forEach(request => request.parseImageRequest(this.processingInfo));
     }
 
     async process(): Promise<{ data: Buffer, info: sharp.OutputInfo }> {
-        const image = sharp(this.processingInfo.fullPath);
+        const size = this.processingInfo.size || await this.getSize();
+        this.requests.forEach(request => request.parseImageRequest(size));
+
+        const pipeline = this.getPipeline();
         if (this.requests.filter(request => request.requiresImageProcessing()).length > 0)
-            this.requests.forEach(request => request.executeImageProcessing(image));
-        return await image.toBuffer({resolveWithObject: true});
+            this.requests.forEach(request => request.executeImageProcessing(pipeline));
+
+        return pipeline.toBuffer({resolveWithObject: true});
+    }
+
+    private getPipeline(): sharp.Sharp {
+        return sharp(join(this.processingInfo.rootPath, this.processingInfo.relativePath));
+    }
+
+    private async getSize(): Promise<Size> {
+        const pipeline = this.getPipeline();
+        const metadata = await pipeline.metadata();
+        return {width: metadata.width as number, height: metadata.height as number};
     }
 }

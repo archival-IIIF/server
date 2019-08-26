@@ -2,6 +2,7 @@ import * as path from 'path';
 import config from './Config';
 import {Item, MinimalItem} from './ItemInterfaces';
 import getClient, {
+    search,
     GetRequest, SearchRequest, ScrollRequest, DeleteByQueryRequest, IndexBulkRequest, UpdateBulkRequest,
     GetResponse, SearchResponse
 } from './ElasticSearch';
@@ -120,40 +121,7 @@ export async function getCollectionsByMetadataId(id: string): Promise<string[]> 
 }
 
 async function getItems(q: string): Promise<Item[]> {
-    const items: Item[] = [];
-
-    try {
-        const response: SearchResponse<Item> = await getClient().search(<SearchRequest>{
-            index: 'items',
-            sort: 'label:asc',
-            size: 1000,
-            scroll: '10s',
-            q
-        });
-
-        let {_scroll_id, hits} = response.body;
-        while (hits && hits.hits.length) {
-            items.push(...hits.hits.map(hit => hit._source));
-
-            if (_scroll_id) {
-                const scrollResults: SearchResponse<Item> = await getClient().scroll(<ScrollRequest>{
-                    scrollId: _scroll_id,
-                    scroll: '10s'
-                });
-
-                _scroll_id = scrollResults.body._scroll_id;
-                hits = scrollResults.body.hits;
-            }
-            else {
-                hits.hits = [];
-            }
-        }
-
-        return items;
-    }
-    catch (err) {
-        return items;
-    }
+    return search<Item>('items', q, 'label:asc');
 }
 
 export function getFullPath(item: Item, type: 'access' | 'original' | null = null): string {

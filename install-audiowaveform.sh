@@ -5,12 +5,11 @@
 apk add --no-cache --virtual build-dependencies make cmake gcc g++ libmad-dev libid3tag-dev libsndfile-dev gd-dev boost-dev
 
 # Clone the source code
-git clone https://github.com/bbc/audiowaveform.git /opt/audiowaveform
-cd /opt/audiowaveform
+git clone https://github.com/bbc/audiowaveform.git /opt/build/audiowaveform
 
 # Create a build directory
-mkdir build
-cd build
+mkdir -p /opt/build/audiowaveform/build
+cd /opt/build/audiowaveform/build
 
 # Start the build
 cmake -D ENABLE_TESTS=0 ..

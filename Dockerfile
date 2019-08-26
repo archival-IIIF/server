@@ -26,5 +26,11 @@ RUN tsc
 # Cleanup tooling
 RUN apk del dependencies
 
+# Cleanup global NPM tooling
+RUN npm uninstall yarn typescript grunt-cli -g
+
+# Cleanup build directories
+RUN rm -rf /opt/build
+
 # Run the application
 CMD ["pm2-runtime", "start", "config.yaml"]

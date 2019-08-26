@@ -1,4 +1,4 @@
-import {ImageProcessingInfo, ImageRequest} from './ImageProcessing';
+import {Size, ImageRequest} from './ImageProcessing';
 import {RequestError} from './errors';
 import {Sharp} from 'sharp';
 
@@ -16,34 +16,31 @@ export default class SizeRequest implements ImageRequest {
     constructor(private request: string) {
     }
 
-    parseImageRequest(processingInfo: ImageProcessingInfo): void {
+    parseImageRequest(size: Size): void {
         if (this.request === 'full' || this.request === 'max')
             this.isMax = true;
         else {
             let result;
             if ((result = SizeRequest.SIZE_TO_WIDTH.exec(this.request)) !== null) {
                 [, this.newSize.width] = result.map(i => parseInt(i));
-                this.isMax = (this.newSize.width === processingInfo.size.width);
+                this.isMax = (this.newSize.width === size.width);
             }
             else if ((result = SizeRequest.SIZE_TO_HEIGHT.exec(this.request)) !== null) {
                 [, this.newSize.height] = result.map(i => parseInt(i));
-                this.isMax = (this.newSize.height === processingInfo.size.height);
+                this.isMax = (this.newSize.height === size.height);
             }
             else if ((result = SizeRequest.SIZE_TO_PERCENTAGE.exec(this.request)) !== null) {
-                [, this.newSize.width] = result.map(i => Math.round((processingInfo.size.width / 100) * parseFloat(i)));
-                this.isMax = (this.newSize.width === processingInfo.size.width);
+                [, this.newSize.width] = result.map(i => Math.round((size.width / 100) * parseFloat(i)));
+                this.isMax = (this.newSize.width === size.width);
             }
             else if ((result = SizeRequest.SIZE_TO_WIDTH_HEIGHT.exec(this.request)) !== null) {
                 [, this.newSize.width, this.newSize.height] = result.map(i => parseInt(i));
-                this.isMax = (this.newSize.width === processingInfo.size.width)
-                    && (this.newSize.height === processingInfo.size.height);
+                this.isMax = (this.newSize.width === size.width) && (this.newSize.height === size.height);
             }
             else if ((result = SizeRequest.SIZE_TO_BEST_FIT.exec(this.request)) !== null) {
                 [, this.newSize.width, this.newSize.height] = result.map(i => parseInt(i));
-                const isMaxWidth = (processingInfo.size.width > processingInfo.size.height) &&
-                    (processingInfo.size.width === this.newSize.width);
-                const isMaxHeight = (processingInfo.size.height > processingInfo.size.width) &&
-                    (processingInfo.size.height === this.newSize.height);
+                const isMaxWidth = (size.width > size.height) && (size.width === this.newSize.width);
+                const isMaxHeight = (size.height > size.width) && (size.height === this.newSize.height);
                 this.isMax = isMaxWidth || isMaxHeight;
                 this.bestFit = true;
             }
@@ -53,16 +50,16 @@ export default class SizeRequest implements ImageRequest {
             if ((this.newSize.width === 0) || (this.newSize.height === 0))
                 throw new RequestError('Size width and/or height should not be zero');
 
-            this.updateProcessingInfo(processingInfo);
+            this.updateProcessingInfo(size);
         }
     }
 
-    private updateProcessingInfo(processingInfo: ImageProcessingInfo): void {
+    private updateProcessingInfo(size: Size): void {
         if (this.isMax)
             return;
 
-        let width = processingInfo.size.width;
-        let height = processingInfo.size.height;
+        let width = size.width;
+        let height = size.height;
 
         if (this.newSize.width && this.newSize.height && this.bestFit) {
             const newWidth = Math.round(width * this.newSize.height / height);
@@ -90,7 +87,8 @@ export default class SizeRequest implements ImageRequest {
             height = this.newSize.height;
         }
 
-        processingInfo.size = {width, height};
+        size.width = width;
+        size.height = height;
     }
 
     requiresImageProcessing(): boolean {

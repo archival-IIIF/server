@@ -27,13 +27,18 @@ Use the provided Docker Compose or install manually.
 
 ### Docker Compose
 
+1. Decide which image server to use:
+    * The application comes with a build-in image server using [Sharp](https://sharp.pixelplumbing.com). 
+    Don't configure an image server URL or start a container with the `image` service to use this image server.
+    * Or set up any IIIF image compliant server. 
+    The docker compose comes with support for [Loris](https://github.com/loris-imageserver/loris).
 1. Adapt the provided `docker-compose.yml`:
     * Clone the `web` service definition to create multiple services and use the env variable `IIIF_SERVER_SERVICES` 
     to define which services that container should run 
 1. Set up volumes for the following:
     * `app-conf`: The PM2 configuration file
     * `universal-viewer-conf`: The Universal Viewer configuration file
-    * `loris-conf`: The Loris configuration file
+    * `loris-conf`: The Loris configuration file (if Loris is used)
     * `data`: The volume which contains the collections to be indexed or files to be read, 
     but also allows write access for derivative creation
     * `indexes`: The volume for ElasticSearch indexes to be stored
@@ -46,12 +51,16 @@ Use the provided Docker Compose or install manually.
 
 ### Manual installation
 
+1. Decide which image server to use:
+    * The application comes with a build-in image server using [Sharp](https://sharp.pixelplumbing.com). 
+    Don't configure an image server URL or start the `image` service to use this image server.
+    * Or set up any IIIF image compliant server.
 1. Install
     * [Node.js 10.x LTS](https://nodejs.org/en)
     * [yarn](https://yarnpkg.com) or [npm](https://www.npmjs.com)
     * [ElasticSearch 7.3.x](https://www.elastic.co/webinars/getting-started-elasticsearch)
     * (Optional) [Redis 5.x](https://redis.io) (Required for caching, workers and/or IIIF authentication)
-    * (Optional) IIIF image server (Required for production, e.g. [Loris](https://github.com/loris-imageserver/loris))
+    * (Optional) IIIF image server (e.g. [Loris](https://github.com/loris-imageserver/loris))
     * (Optional) [pm2](https://github.com/Unitech/pm2) (Required for managing the processes)
 1. Install optional dependencies for derivative creation
     * [audiowaveform](https://github.com/bbc/audiowaveform) (Required by the `waveform` service)
@@ -73,6 +82,7 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_SERVICES`: Comma separated list of services to run on this instance:
     - General services:
         - `web`: Sets up a **web server** and the web environment
+        - `image`: Sets up an **IIIF image server** using [Sharp](https://sharp.pixelplumbing.com)
         - `directory-watcher-changes`:  Runs a **standalone** script that watches a directory for new collections 
         to index: when a collection has had no changes for a certain amount of time, the index is triggered
         - `directory-watcher-file-trigger`: Runs a **standalone** script that watches a directory for new collections 
@@ -94,6 +104,7 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_UNIVERSAL_VIEWER_PATH`: Path to the Universal Viewer
 - `IIIF_SERVER_UNIVERSAL_VIEWER_CONFIG_PATH`: Path to the configuration file of the Universal Viewer
 - `IIIF_SERVER_IMAGE_SERVER_URL`: URL of the external IIIF image server (such as Loris)
+- `IIIF_SERVER_IMAGE_SERVER_NAME`: Name of the image server (either 'loris' or 'sharp')
 - `IIIF_SERVER_METADATA_OAI_URL`: URL of the OAI metadata provider
 - `IIIF_SERVER_METADATA_SRW_URL`: URL of the SRW metadata provider
 - `IIIF_SERVER_IMAGE_TIER_SEPARATOR`: Separator character to separate between the image identifier and the image tier

@@ -6,7 +6,7 @@ import FormatRequest from '../../src/image/FormatRequest';
 import {NotImplementedError, RequestError} from '../../src/image/errors';
 
 describe('FormatRequest', () => {
-    const imageProcessingInfo = {fullPath: 'test', relativePath: 'test', size: {width: 200, height: 100}};
+    const size = {width: 200, height: 100};
 
     describe('#parseImageRequest()', () => {
         [
@@ -18,7 +18,7 @@ describe('FormatRequest', () => {
             it(`should not throw an error for ${request}`, () => {
                 const formatRequest = new FormatRequest(request);
                 expect(() => {
-                    formatRequest.parseImageRequest(imageProcessingInfo);
+                    formatRequest.parseImageRequest(size);
                 }).to.not.throw();
             });
         });
@@ -31,7 +31,7 @@ describe('FormatRequest', () => {
             it(`should throw a request error for ${request}`, () => {
                 const formatRequest = new FormatRequest(request);
                 expect(() => {
-                    formatRequest.parseImageRequest(imageProcessingInfo);
+                    formatRequest.parseImageRequest(size);
                 }).to.throw(RequestError);
             });
         });
@@ -44,7 +44,7 @@ describe('FormatRequest', () => {
             it(`should throw a not implemented error for ${request}`, () => {
                 const formatRequest = new FormatRequest(request);
                 expect(() => {
-                    formatRequest.parseImageRequest(imageProcessingInfo);
+                    formatRequest.parseImageRequest(size);
                 }).to.throw(NotImplementedError);
             });
         });
@@ -59,7 +59,7 @@ describe('FormatRequest', () => {
         ].forEach((request) => {
             it(`should always require operation in case of ${request}`, () => {
                 const formatRequest = new FormatRequest(request);
-                formatRequest.parseImageRequest(imageProcessingInfo);
+                formatRequest.parseImageRequest(size);
                 expect(formatRequest.requiresImageProcessing()).to.be.true;
             });
         });
@@ -90,7 +90,7 @@ describe('FormatRequest', () => {
                     .withArgs(testCase.id);
 
                 const formatRequest = new FormatRequest(testCase.request);
-                formatRequest.parseImageRequest(imageProcessingInfo);
+                formatRequest.parseImageRequest(size);
                 formatRequest.executeImageProcessing(image);
 
                 imageMock.verify();

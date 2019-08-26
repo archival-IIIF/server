@@ -19,7 +19,7 @@ services:
     networks:
       - back-tier
 
-  image:
+  loris-image:
     build: ./loris
     restart: always
     volumes:
@@ -28,9 +28,35 @@ services:
     networks:
       - back-tier
 
+  sharp-image:
+    build: .
+    restart: always
+    environment:
+      - IIIF_SERVER_SERVICES=image
+    ports:
+      - "5000:3333"
+    volumes:
+      - data:/data
+      - app-conf:/opt/iiif-server/config.yaml
+    networks:
+      - back-tier
+
+  worker:
+    build: .
+    restart: always
+    environment:
+      - IIIF_SERVER_SERVICES=text-index,waveform
+    volumes:
+      - data:/data
+      - app-conf:/opt/iiif-server/config.yaml
+    networks:
+      - back-tier
+
   web:
     build: .
     restart: always
+    environment:
+      - IIIF_SERVER_SERVICES=web
     ports:
       - "8000:3333"
     volumes:

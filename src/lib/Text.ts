@@ -5,7 +5,7 @@ import * as libxmljs from 'libxmljs';
 import {Attribute} from 'libxmljs';
 
 import config from '../lib/Config';
-import getClient, {DeleteByQueryRequest, IndexBulkRequest} from './ElasticSearch';
+import getClient, {search, DeleteByQueryRequest, IndexBulkRequest} from './ElasticSearch';
 
 export interface Text {
     id: string;
@@ -14,7 +14,16 @@ export interface Text {
     type: string;
     language: string | null;
     uri: string;
+    source: string;
     text: string;
+}
+
+export interface OcrWord {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    word: string;
 }
 
 const readFileAsync = promisify(fs.readFile);
@@ -48,7 +57,24 @@ export async function deleteTexts(collectionId: string): Promise<void> {
     });
 }
 
-export async function readAlto(uri: string): Promise<{ x: number, y: number, width: number, height: number, word: string }[]> {
+export async function getTextsForCollectionId(collectionId: string, type?: string, source?: string): Promise<Text[]> {
+    if (type && source)
+        return getTexts(`collection_id:"${collectionId}" AND type:"${type}" AND source:"${source}"`);
+
+    if (type)
+        return getTexts(`collection_id:"${collectionId}" AND type:"${type}"`);
+
+    if (source)
+        return getTexts(`collection_id:"${collectionId}" AND source:"${source}"`);
+
+    return getTexts(`collection_id:"${collectionId}`);
+}
+
+async function getTexts(q: string): Promise<Text[]> {
+    return search<Text>('texts', q);
+}
+
+export async function readAlto(uri: string): Promise<OcrWord[]> {
     const altoXml = await readFileAsync(uri, 'utf8');
     const alto = libxmljs.parseXml(altoXml);
     return alto.find('//String').map(stringElem => {

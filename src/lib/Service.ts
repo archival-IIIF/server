@@ -41,6 +41,10 @@ export const allServices: Service[] = [{
     type: 'web',
     runAs: 'web',
 }, {
+    name: 'image',
+    type: 'image',
+    runAs: 'image',
+}, {
     name: 'directory-watcher-changes',
     type: 'watcher',
     runAs: 'standalone',

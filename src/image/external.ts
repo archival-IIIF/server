@@ -7,7 +7,8 @@ import {ImageOptions, ImageResult} from './imageServer';
 
 export default async function serveImage(processingInfo: ImageProcessingInfo,
                                          {region, size, rotation, quality, format}: ImageOptions): Promise<ImageResult> {
-    const url = `${config.imageServerUrl}/${processingInfo.relativePath}/${region}/${size}/${rotation}/${quality}.${format}`;
+    const encodedPath = encodeURIComponent(processingInfo.relativePath);
+    const url = `${config.imageServerUrl}/${encodedPath}/${region}/${size}/${rotation}/${quality}.${format}`;
     const response = await request({uri: url, encoding: null, resolveWithFullResponse: true, simple: false});
 
     const result = {

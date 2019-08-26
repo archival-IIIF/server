@@ -6,7 +6,7 @@ import QualityRequest from '../../src/image/QualityRequest';
 import {RequestError} from '../../src/image/errors';
 
 describe('QualityRequest', () => {
-    const imageProcessingInfo = {fullPath: 'test', relativePath: 'test', size: {width: 200, height: 100}};
+    const size = {width: 200, height: 100};
 
     describe('#parseImageRequest()', () => {
         [
@@ -18,7 +18,7 @@ describe('QualityRequest', () => {
             it(`should not throw an error for ${request}`, () => {
                 const qualityRequest = new QualityRequest(request);
                 expect(() => {
-                    qualityRequest.parseImageRequest(imageProcessingInfo);
+                    qualityRequest.parseImageRequest(size);
                 }).to.not.throw();
             });
         });
@@ -31,7 +31,7 @@ describe('QualityRequest', () => {
             it(`should throw a request error for ${request}`, () => {
                 const qualityRequest = new QualityRequest(request);
                 expect(() => {
-                    qualityRequest.parseImageRequest(imageProcessingInfo);
+                    qualityRequest.parseImageRequest(size);
                 }).to.throw(RequestError);
             });
         });
@@ -44,7 +44,7 @@ describe('QualityRequest', () => {
         ].forEach((request) => {
             it(`should require operation in case of ${request}`, () => {
                 const qualityRequest = new QualityRequest(request);
-                qualityRequest.parseImageRequest(imageProcessingInfo);
+                qualityRequest.parseImageRequest(size);
                 expect(qualityRequest.requiresImageProcessing()).to.be.true;
             });
         });
@@ -55,7 +55,7 @@ describe('QualityRequest', () => {
         ].forEach((request) => {
             it(`should not require operation in case of ${request}`, () => {
                 const qualityRequest = new QualityRequest(request);
-                qualityRequest.parseImageRequest(imageProcessingInfo);
+                qualityRequest.parseImageRequest(size);
                 expect(qualityRequest.requiresImageProcessing()).to.be.false;
             });
         });
@@ -84,7 +84,7 @@ describe('QualityRequest', () => {
                 .once();
 
             const qualityRequest = new QualityRequest('gray');
-            qualityRequest.parseImageRequest(imageProcessingInfo);
+            qualityRequest.parseImageRequest(size);
             qualityRequest.executeImageProcessing(image);
 
             imageMock.verify();
@@ -96,7 +96,7 @@ describe('QualityRequest', () => {
                 .once();
 
             const qualityRequest = new QualityRequest('bitonal');
-            qualityRequest.parseImageRequest(imageProcessingInfo);
+            qualityRequest.parseImageRequest(size);
             qualityRequest.executeImageProcessing(image);
 
             imageMock.verify();

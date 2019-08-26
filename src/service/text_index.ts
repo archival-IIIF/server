@@ -15,6 +15,7 @@ export default async function processText({collectionId, items}: TextParams) {
     try {
         const textItems = await Promise.all(items.map(async item => {
             const path = join(config.dataRootPath, config.collectionsRelativePath, item.uri);
+            const source = await getTextSource(path);
             const text = await getTextFromFile(path);
             return {
                 id: item.id,
@@ -23,6 +24,7 @@ export default async function processText({collectionId, items}: TextParams) {
                 type: item.type,
                 language: item.language,
                 uri: item.uri,
+                source,
                 text
             };
         }));
@@ -34,6 +36,17 @@ export default async function processText({collectionId, items}: TextParams) {
         const err = new Error(`Failed to process the texts for ${collectionId}: ${e.message}`);
         err.stack = e.stack;
         throw err;
+    }
+}
+
+function getTextSource(uri: string): string {
+    const extension = extname(uri);
+    switch (extension) {
+        case '.xml':
+            return 'alto';
+        case '.txt':
+        default:
+            return 'plain';
     }
 }
 

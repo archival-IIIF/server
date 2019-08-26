@@ -6,8 +6,7 @@ import RegionRequest from '../../src/image/RegionRequest';
 import {RequestError} from '../../src/image/errors';
 
 describe('RegionRequest', () => {
-    const getImageProcessingInfo = (width: number, height: number) =>
-        ({fullPath: 'test', relativePath: 'test', size: {width: width, height: height}});
+    const getSize = (width: number, height: number) => ({width: width, height: height});
 
     describe('#parseImageRequest()', () => {
         describe('having an image of 200 by 200', () => {
@@ -27,17 +26,17 @@ describe('RegionRequest', () => {
                 it(`should not throw an error for ${request.request}`, () => {
                     const regionRequest = new RegionRequest(request.request);
                     expect(() => {
-                        regionRequest.parseImageRequest(getImageProcessingInfo(width, height));
+                        regionRequest.parseImageRequest(getSize(width, height));
                     }).to.not.throw();
                 });
 
                 it(`should update the size of the ImageProcessingInfo object correctly for ${request.request}`, () => {
-                    const imageProcessingInfo = getImageProcessingInfo(width, height);
+                    const size = getSize(width, height);
                     const regionRequest = new RegionRequest(request.request);
-                    regionRequest.parseImageRequest(imageProcessingInfo);
+                    regionRequest.parseImageRequest(size);
 
-                    expect(imageProcessingInfo.size.width).to.equal(request.width);
-                    expect(imageProcessingInfo.size.height).to.equal(request.height);
+                    expect(size.width).to.equal(request.width);
+                    expect(size.height).to.equal(request.height);
                 });
             });
 
@@ -60,7 +59,7 @@ describe('RegionRequest', () => {
                 it(`should throw a request error for ${request}`, () => {
                     const regionRequest = new RegionRequest(request);
                     expect(() => {
-                        regionRequest.parseImageRequest(getImageProcessingInfo(width, height));
+                        regionRequest.parseImageRequest(getSize(width, height));
                     }).to.throw(RequestError);
                 });
             });
@@ -70,12 +69,12 @@ describe('RegionRequest', () => {
             const width = 300, height = 100;
 
             it(`should update the size of the ImageProcessingInfo object correctly for square`, () => {
-                const imageProcessingInfo = getImageProcessingInfo(width, height);
+                const size = getSize(width, height);
                 const regionRequest = new RegionRequest('square');
-                regionRequest.parseImageRequest(imageProcessingInfo);
+                regionRequest.parseImageRequest(size);
 
-                expect(imageProcessingInfo.size.width).to.equal(100);
-                expect(imageProcessingInfo.size.height).to.equal(100);
+                expect(size.width).to.equal(100);
+                expect(size.height).to.equal(100);
             });
         });
     });
@@ -91,7 +90,7 @@ describe('RegionRequest', () => {
             ].forEach((request) => {
                 it(`should require operation in case of ${request}`, () => {
                     const regionRequest = new RegionRequest(request);
-                    regionRequest.parseImageRequest(getImageProcessingInfo(width, height));
+                    regionRequest.parseImageRequest(getSize(width, height));
                     expect(regionRequest.requiresImageProcessing()).to.be.true;
                 });
             });
@@ -106,7 +105,7 @@ describe('RegionRequest', () => {
             ].forEach((request) => {
                 it(`should not require operation in case of ${request}`, () => {
                     const regionRequest = new RegionRequest(request);
-                    regionRequest.parseImageRequest(getImageProcessingInfo(width, height));
+                    regionRequest.parseImageRequest(getSize(width, height));
                     expect(regionRequest.requiresImageProcessing()).to.be.false;
                 });
             });
@@ -117,7 +116,7 @@ describe('RegionRequest', () => {
 
             it(`should require operation in case of square`, () => {
                 const regionRequest = new RegionRequest('square');
-                regionRequest.parseImageRequest(getImageProcessingInfo(width, height));
+                regionRequest.parseImageRequest(getSize(width, height));
                 expect(regionRequest.requiresImageProcessing()).to.be.true;
             });
         });
@@ -152,7 +151,7 @@ describe('RegionRequest', () => {
                         .never();
 
                     const regionRequest = new RegionRequest(request);
-                    regionRequest.parseImageRequest(getImageProcessingInfo(width, height));
+                    regionRequest.parseImageRequest(getSize(width, height));
                     regionRequest.executeImageProcessing(image);
 
                     imageMock.verify();
@@ -177,7 +176,7 @@ describe('RegionRequest', () => {
                         });
 
                     const regionRequest = new RegionRequest(testCase.request);
-                    regionRequest.parseImageRequest(getImageProcessingInfo(width, height));
+                    regionRequest.parseImageRequest(getSize(width, height));
                     regionRequest.executeImageProcessing(image);
 
                     imageMock.verify();
@@ -196,7 +195,7 @@ describe('RegionRequest', () => {
                     .withArgs(expectedWidth, expectedHeight, {fit: 'cover', position: 'attention'});
 
                 const regionRequest = new RegionRequest('square');
-                regionRequest.parseImageRequest(getImageProcessingInfo(width, height));
+                regionRequest.parseImageRequest(getSize(width, height));
                 regionRequest.executeImageProcessing(image);
 
                 imageMock.verify();

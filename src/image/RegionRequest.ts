@@ -1,4 +1,4 @@
-import {ImageProcessingInfo, ImageRequest} from './ImageProcessing';
+import {Size, ImageRequest} from './ImageProcessing';
 import {RequestError} from './errors';
 import {Sharp} from 'sharp';
 
@@ -17,7 +17,7 @@ export default class RegionRequest implements ImageRequest {
 
     constructor(private request: string) { }
 
-    parseImageRequest(processingInfo: ImageProcessingInfo): void {
+    parseImageRequest(size: Size): void {
         if (this.request === 'full') {
             this.isFull = true;
             return;
@@ -26,20 +26,21 @@ export default class RegionRequest implements ImageRequest {
         if (this.request === 'square') {
             this.isSquare = true;
 
-            if (processingInfo.size.width === processingInfo.size.height)
+            if (size.width === size.height)
                 this.isFull = true;
             else {
-                const shortestDimension = Math.min(processingInfo.size.width, processingInfo.size.height);
-                processingInfo.size = {width: shortestDimension, height: shortestDimension};
+                const shortestDimension = Math.min(size.width, size.height);
+                size.width = shortestDimension;
+                size.height = shortestDimension;
             }
 
-            this.width = processingInfo.size.width;
-            this.height = processingInfo.size.height;
+            this.width = size.width;
+            this.height = size.height;
 
             return;
         }
 
-        const imageSize = processingInfo.size;
+        const imageSize = size;
 
         let result;
         if ((result = RegionRequest.REGION_IN_PIXELS.exec(this.request)) !== null) {
@@ -68,8 +69,10 @@ export default class RegionRequest implements ImageRequest {
         const isFullWidthAndHeight = ((this.width === imageSize.width) && (this.height === imageSize.height));
         if (isUpperLeftCorner && isFullWidthAndHeight)
             this.isFull = true;
-        else
-            processingInfo.size = {width: this.width, height: this.height};
+        else {
+            size.width = this.width;
+            size.height = this.height;
+        }
     }
 
     requiresImageProcessing(): boolean {

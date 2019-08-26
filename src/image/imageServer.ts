@@ -1,5 +1,3 @@
-import {join} from 'path';
-
 import SizeRequest from './SizeRequest';
 import {ImageProcessingInfo} from './ImageProcessing';
 import {sharpProfile, lorisProfile} from './profiles';
@@ -7,7 +5,7 @@ import {sharpProfile, lorisProfile} from './profiles';
 import logger from '../lib/Logger';
 import config from '../lib/Config';
 import {ImageItem} from '../lib/ItemInterfaces';
-import {getFullPath, getRelativePath} from '../lib/Item';
+import {getRelativePath} from '../lib/Item';
 import {getEnabledAuthServices, requiresAuthentication, getAuthTexts} from '../lib/Security';
 
 import AuthService from '../presentation/elem/v2/AuthService';
@@ -63,10 +61,9 @@ export async function getLogoInfo(): Promise<Image> {
 }
 
 export async function getImage(item: ImageItem, imageOptions: ImageOptions, tier?: AccessTier): Promise<ImageResult> {
+    const size = {width: item.width, height: item.height};
     const processingInfo: ImageProcessingInfo = {
-        fullPath: getFullPath(item),
-        relativePath: getRelativePath(item),
-        size: {width: item.width, height: item.height}
+        rootPath: config.dataRootPath, relativePath: getRelativePath(item), size
     };
 
     if (typeof tier === 'object') {
@@ -74,10 +71,9 @@ export async function getImage(item: ImageItem, imageOptions: ImageOptions, tier
 
         const maxSize = Image.computeMaxSize(tier, item.width, item.height);
         const sizeRequest = new SizeRequest(imageOptions.size);
-        sizeRequest.parseImageRequest(processingInfo);
+        sizeRequest.parseImageRequest(size);
 
-        if (maxSize &&
-            ((processingInfo.size.width > maxSize.maxWidth) || (processingInfo.size.height > maxSize.maxHeight)))
+        if (maxSize && ((size.width > maxSize.maxWidth) || (size.height > maxSize.maxHeight)))
             return {
                 image: null,
                 status: 401,
@@ -93,9 +89,7 @@ export async function getImage(item: ImageItem, imageOptions: ImageOptions, tier
 export async function getLogo(imageOptions: ImageOptions): Promise<ImageResult> {
     const [width, height] = config.logoDimensions as [number, number];
     const processingInfo: ImageProcessingInfo = {
-        fullPath: join(config.dataRootPath, config.logoRelativePath as string),
-        relativePath: config.logoRelativePath as string,
-        size: {width, height}
+        rootPath: config.dataRootPath, relativePath: config.logoRelativePath as string, size: {width, height}
     };
 
     const serveImage = await import(config.imageServerUrl ? './external' : './internal');
@@ -103,5 +97,8 @@ export async function getLogo(imageOptions: ImageOptions): Promise<ImageResult> 
 }
 
 export function getProfile(): ImageProfile {
-    return !config.imageServerUrl ? sharpProfile : lorisProfile;
+    if (!config.imageServerUrl || config.imageServerName === 'sharp')
+        return sharpProfile;
+
+    return lorisProfile;
 }

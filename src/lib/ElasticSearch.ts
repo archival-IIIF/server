@@ -18,6 +18,43 @@ export function setElasticSearchClient(client: Client): void {
         testClient = client;
 }
 
+export async function search<T>(index: string, q: string, sort?: string): Promise<T[]> {
+    const results: T[] = [];
+
+    try {
+        const response: SearchResponse<T> = await getClient().search(<SearchRequest>{
+            index,
+            sort,
+            size: 1000,
+            scroll: '10s',
+            q
+        });
+
+        let {_scroll_id, hits} = response.body;
+        while (hits && hits.hits.length) {
+            results.push(...hits.hits.map(hit => hit._source));
+
+            if (_scroll_id) {
+                const scrollResults: SearchResponse<T> = await getClient().scroll(<ScrollRequest>{
+                    scrollId: _scroll_id,
+                    scroll: '10s'
+                });
+
+                _scroll_id = scrollResults.body._scroll_id;
+                hits = scrollResults.body.hits;
+            }
+            else {
+                hits.hits = [];
+            }
+        }
+
+        return results;
+    }
+    catch (err) {
+        return results;
+    }
+}
+
 export type GetRequest = RequestParams.Get;
 export type SearchRequest = RequestParams.Search<undefined>;
 export type ScrollRequest = RequestParams.Scroll<undefined>;
@@ -198,6 +235,9 @@ export type SearchResponse<T> = ApiResponse<{
                                 type: 'keyword'
                             },
                             uri: {
+                                type: 'keyword'
+                            },
+                            source: {
                                 type: 'keyword'
                             },
                             text: {

@@ -1,4 +1,4 @@
-import {ImageProcessingInfo, ImageRequest} from './ImageProcessing';
+import {Size, ImageRequest} from './ImageProcessing';
 import {RequestError} from './errors';
 import {Sharp} from 'sharp';
 
@@ -9,7 +9,7 @@ export default class RotateRequest implements ImageRequest {
     constructor(private request: string) {
     }
 
-    parseImageRequest(processingInfo: ImageProcessingInfo): void {
+    parseImageRequest(size: Size): void {
         let request = this.request;
         if (request.startsWith('!')) {
             request = request.substr(1);

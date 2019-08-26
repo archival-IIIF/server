@@ -1,4 +1,4 @@
-import {ImageProcessingInfo, ImageRequest} from './ImageProcessing';
+import {Size, ImageRequest} from './ImageProcessing';
 import {RequestError} from './errors';
 import {Sharp} from 'sharp';
 
@@ -8,7 +8,7 @@ export default class QualityRequest implements ImageRequest {
     constructor(private request: string) {
     }
 
-    parseImageRequest(processingInfo: ImageProcessingInfo): void {
+    parseImageRequest(size: Size): void {
         switch (this.request) {
             case 'color':
             case 'default':
