@@ -7,6 +7,24 @@ and to create derivatives.
 The [IISH](https://iisg.amsterdam) (International Institute of Social History)  has created a number of services 
 to index the DIPs created by [Archivematica](https://www.archivematica.org) and to give access through IIIF. 
 
+1. [Components](#components)
+1. [Services](#services)
+    1. [Default services](#default-services)
+    1. [Workers](#workers)
+    1. [Cron jobs](#cron-jobs)
+    1. [Standalones](#standalones)
+    1. [Libraries](#libraries)
+1. [Web API](#web-api)
+    1. [IIIF Image API](#iiif-image-api)
+    1. [IIIF Presentation API](#iiif-presentation-api)
+    1. [IIIF Authentication API](#iiif-authentication-api)
+    1. [File API](#file-api)
+    1. [Admin API](#admin-api)
+1. [Installation](#installation)
+    1. [Docker Compose](#docker-compose)
+    1. [Manual installation](#manual-installation)
+1. [Configuration](#configuration)
+
 ## Components
 
 The Archival IIIF server is composed of a web application and various service workers. 
@@ -24,7 +42,7 @@ The Archival IIIF server comes with several services that can be turned on or of
 
 ![](./docs/iiif-services.png)
 
-### Default services 'web' and 'image'
+### Default services
 The `web` service runs the IIIF web environment. The `image` service runs an IIIF image server based on 
 [Sharp](https://sharp.pixelplumbing.com). 
 
@@ -77,6 +95,131 @@ three different libraries:
 - **Authentication texts**: Provides implementation specific texts to help the user with authenticating. 
 Current implementations:
     - `iish-auth-texts`: IISH specific implementation.
+
+## Web API
+
+### IIIF Image API
+
+_See also the [IIIF Image API 2.1](https://iiif.io/api/image/2.1/) 
+and the [IIIF Image API 3.0](https://iiif.io/api/image/3.0/)_
+
+**URL**: `/iiif/image/[id]` / `/iiif/image/[id]/logo/info.json`
+
+**Method**: `GET`
+
+IIIF Image API. Returns the JSON-LD description for the image with the given id.
+
+---
+
+**URL**: `/iiif/image/[id]/[region]/[size]/[rotation]/[quality].[format]`
+
+**Method**: `GET`
+
+IIIF Image API. Returns the image with the given id for the specified options.
+
+### IIIF Presentation API
+
+_See also the [IIIF Presentation API 2.1](https://iiif.io/api/presentation/2.1/) 
+and the [IIIF Presentation API 3.0](https://iiif.io/api/presentation/3.0/)_
+
+**URL**: `/iiif/presentation/collection/[id]`
+
+**Method**: `GET`
+
+IIIF Presentation API. Returns the JSON-LD description for the collection with the given id.
+
+---
+
+**URL**: `/iiif/presentation/[id]/manifest`
+
+**Method**: `GET`
+
+IIIF Presentation API. Returns the JSON-LD description for the manifest with the given id.
+
+### IIIF Authentication API
+
+_See also the [IIIF Authentication API](https://iiif.io/api/auth/1.0/)_
+
+**URL**: `/iiif/auth/login`
+
+**Method**: `GET`
+
+IIIF login service. Shows a login screen based on an internal token store.
+
+---
+
+**URL**: `/iiif/auth/login`
+
+**Method**: `POST`
+
+**Parameters**: `token`
+
+Checks the provided token with the internal token store.
+
+---
+
+**URL**: `/iiif/auth/token`
+
+**Method**: `GET`
+
+**Parameters**: `token`
+
+IIIF token service.
+
+---
+
+**URL**: `/iiif/auth/logout`
+
+**Method**: `GET`
+
+IIIF logout service.
+
+### File API
+
+**URL**: `/file/[id]` / `/file/[id]/original` / `/file/[id]/access`
+
+**Method**: `GET`
+
+Provides access to the file with the given id. Explicit access to the original copy or the access copy can be provided.
+
+---
+
+**URL**: `/file/[id]/<derivative type>`
+
+**Method**: `GET`
+
+Provides access to the derivative of the given type for the file with the given id.
+
+### Admin API
+
+**URL**: `/index`
+
+**Method**: `POST`
+
+**Parameters**: `access_token`, `path`
+
+Creates a job for the index worker to index the collection on the given path. 
+Can only be used by an administrator with a valid access token.
+
+---
+
+**URL**: `/index_api`
+
+**Method**: `POST`
+
+Indexes the request body right away.
+Can only be used by an administrator with a valid access token.
+
+---
+
+**URL**: `/register_token`
+
+**Method**: `POST`
+
+**Parameters**: `access_token`, `token`, `collection`, `from`, `to`
+
+Registers a token which may give access to a specific collection for a specific period of time.
+Can only be used by an administrator with a valid access token.
 
 ## Installation
 
