@@ -9,17 +9,74 @@ to index the DIPs created by [Archivematica](https://www.archivematica.org) and 
 
 ## Components
 
-![](./components.png)
-
 The Archival IIIF server is composed of a web application and various service workers. 
 The service workers index collections to [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch), 
 while the web environment gives access to the index through various [IIIF API's](https://iiif.io/technical-details). 
 [Redis](https://redis.io) is used to manage the communication between various service workers 
 and provides additional caching capabilities.
 
+![](./docs/components.png)
+
 ## Services
 
-_TODO_
+The Archival IIIF server comes with several services that can be turned on or off using the env variable 
+`IIIF_SERVER_SERVICES`. 
+
+![](./docs/iiif-services.png)
+
+### Default services 'web' and 'image'
+The `web` service runs the IIIF web environment. The `image` service runs an IIIF image server based on 
+[Sharp](https://sharp.pixelplumbing.com). 
+
+### Workers
+The worker services wait for new jobs to appear in a queue in [Redis](https://redis.io). A distinction is made 
+between index workers that indexes data in 
+[ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch) and derivative workers that create 
+specific derivatives of collection items. At the moment, the Archival IIIF server identifies four different types 
+of worker services:
+- **Index worker**: Gets a job with the path of a collection to be indexed in
+[ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch). Current implementations:
+    - `iish-archivematica-index`: A specific IISH implementation of the index worker. Indexes DIPs created by the 
+    Archivematica instance of the IISH.
+- **Text index worker**: Gets a job with a collection id and a list of all transcriptions/transliterations 
+to be indexed in [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch). 
+Current implementations:
+    - `text-index`: Indexes plain text files and ALTO files.
+ - **Metadata index worker**: Gets a job with a collection id and/or a OAI identifier and obtains the metadata from
+an OAI endpoint to be indexed in [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch). 
+Current implementations:
+    - `iish-metadata`: Looks for and indexes metadata from the OAI service of the IISH.
+ - **Waveform derivative worker**: Gets a job with a collection id and then builds waveform representations of all 
+audio files of the collection with the given collection id. Current implementations:
+    - `waveform`: Default implementation.
+
+### Cron jobs
+The cron job services run periodically. At the moment, the Archival IIIF server identifies one cron job:
+- **Metadata update**: Checks periodically whether some metadata has to be updated. Current implementations:
+    - `iish-metadata-update`: Runs daily to query the OAI service of the IISH for updates and 
+    sends those to the metadata indexer.
+
+### Standalones
+The standalone services do not wait on a trigger like the workers or cron jobs. At the moment, the Archival IIIF server 
+identifies one standalone service:
+- **Directory watcher**: Watches a directory for any changes (new collections) and sends those to the index worker 
+to be indexed. Current implementations:
+    - `directory-watcher-changes`: When a directory has had no changes for a certain amount of time, 
+    it is assumed that it is safe to send the directory to the index worker to be indexed.
+    - `directory-watcher-file-trigger`: When a directory is updated with a specific file, it triggers the index worker 
+    to be indexed.
+
+### Libraries
+The libraries are lightweight services with specific implementation details that can run together with the 
+`web` service on the same running instance. At the moment, the Archival IIIF server identifies 
+three different libraries:
+- **Access**: Determines whether a user has (limited) access to a specific item. Current implementations:
+    - `iish-access`: IISH specific implementation.
+- **IIIF metadata**: Provides implementation specific IIIF metadata. Current implementations:
+    - `iish-iiif-metadata`: IISH specific implementation.
+- **Authentication texts**: Provides implementation specific texts to help the user with authenticating. 
+Current implementations:
+    - `iish-auth-texts`: IISH specific implementation.
 
 ## Installation
 
@@ -34,7 +91,7 @@ Use the provided Docker Compose or install manually.
     The docker compose comes with support for [Loris](https://github.com/loris-imageserver/loris).
 1. Adapt the provided `docker-compose.yml`:
     * Clone the `web` service definition to create multiple services and use the env variable `IIIF_SERVER_SERVICES` 
-    to define which services that container should run 
+    to define which services that container should run.
 1. Set up volumes for the following:
     * `app-conf`: The PM2 configuration file
     * `universal-viewer-conf`: The Universal Viewer configuration file
