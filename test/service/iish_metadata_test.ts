@@ -169,7 +169,7 @@ describe('iish_metadata', () => {
                     'formats': ['visual'],
                     'label': 'The title',
                     'metadata': [{
-                        'label': 'Holding',
+                        'label': 'Call number',
                         'value': 'IISG 123'
                     }],
                     'iish': {

@@ -1,9 +1,7 @@
 import * as fs from 'fs';
-import {join, extname} from 'path';
 import {promisify} from 'util';
+import {join, extname} from 'path';
 import * as iconv from 'iconv-lite';
-// @ts-ignore
-import * as jschardet from 'jschardet';
 
 import config from '../lib/Config';
 import {TextParams} from '../lib/Service';
@@ -15,8 +13,10 @@ export default async function processText({collectionId, items}: TextParams) {
     try {
         const textItems = await Promise.all(items.map(async item => {
             const path = join(config.dataRootPath, config.collectionsRelativePath, item.uri);
+
             const source = await getTextSource(path);
-            const text = await getTextFromFile(path);
+            const text = await getTextFromFile(path, item.encoding);
+
             return {
                 id: item.id,
                 item_id: item.itemId,
@@ -50,24 +50,23 @@ function getTextSource(uri: string): string {
     }
 }
 
-export async function getTextFromFile(uri: string): Promise<string> {
+export async function getTextFromFile(uri: string, encoding: string | null): Promise<string> {
     const extension = extname(uri);
     switch (extension) {
         case '.xml':
             return await getAltoText(uri);
         case '.txt':
         default:
-            return await getPlainText(uri);
+            return await getPlainText(uri, encoding);
     }
-}
-
-async function getPlainText(uri: string): Promise<string> {
-    const textBuffer = await readFileAsync(uri);
-    const encodingDetection = jschardet.detect(textBuffer) as { encoding: string };
-    return iconv.decode(textBuffer, encodingDetection.encoding);
 }
 
 async function getAltoText(uri: string): Promise<string> {
     const altoWords = await readAlto(uri);
     return altoWords.map(altoWord => altoWord.word).join(' ');
+}
+
+async function getPlainText(uri: string, encoding: string | null): Promise<string> {
+    const textBuffer = await readFileAsync(uri);
+    return iconv.decode(textBuffer, encoding || 'utf8');
 }

@@ -164,7 +164,7 @@ export function updateMarc(xml: string, oaiIdentifier: string, collectionId: str
             item.physical = md.physical;
 
         if (md.signature)
-            item.metadata.push({label: 'Holding', value: md.signature});
+            item.metadata.push({label: 'Call number', value: md.signature});
 
         return item;
     });

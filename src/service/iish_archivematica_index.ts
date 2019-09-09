@@ -145,7 +145,8 @@ function walkTree({id, mets, objects, relativeRootPath, curNode, curNodePhysical
     let items: Item[] = [];
     let texts: TextItem[] = [];
 
-    (curNode.find('./mets:div', ns) as Element[]).forEach(node => {
+    const nodes = curNode.find('./mets:div', ns) as Element[];
+    nodes.forEach(node => {
         const labelAttr = node.attr('LABEL');
         const label = labelAttr ? labelAttr.value() : null;
         if (!label)
@@ -323,6 +324,14 @@ function readText(rootId: string, label: string, mets: Document, objects: string
     if (!id)
         throw new Error(`No identifier found for object with file id ${fileId}`);
 
+    const objCharacteristics = premisObj.get('./premis:objectCharacteristics', ns);
+    const objCharacteristicsExt = objCharacteristics
+        ? objCharacteristics.get('./premis:objectCharacteristicsExtension', ns) : null;
+    if (!objCharacteristics || !objCharacteristicsExt)
+        throw new Error(`No object characteristics found for object with file id ${fileId}`);
+
+    const encoding = determineEncoding(objCharacteristicsExt);
+
     const fptrs = (structureIISH.find(`./mets:div[@TYPE="page"]/mets:fptr[@FILEID="${fileId}"]/../mets:fptr`, ns) as Element[]);
     const fptr = fptrs.find(fptrElem => {
         const fileIdAttr = fptrElem.attr('FILEID');
@@ -354,7 +363,7 @@ function readText(rootId: string, label: string, mets: Document, objects: string
         language = type.split('_')[1];
     }
 
-    return {id, itemId, type, language, uri: path.join(relativeRootPath, file)};
+    return {id, itemId, type, language, encoding, uri: path.join(relativeRootPath, file)};
 }
 
 function findPremisObj(mets: Document, fileId: string): Element | null {
@@ -490,6 +499,17 @@ export function determineDuration(objCharacteristicsExt: Element): number | null
             duration = curDuration;
     });
     if (duration) return duration;
+
+    return null;
+}
+
+export function determineEncoding(objCharacteristicsExt: Element): string | null {
+    const md = objCharacteristicsExt.get('./fits:fits/fits:toolOutput/fits:tool[@name="Tika"]/metadata', ns);
+    if (md) {
+        const contentEncodingValueElem = md.get('./field[@name="Content-Encoding"]/value', ns);
+        if (contentEncodingValueElem)
+            return contentEncodingValueElem.text().trim();
+    }
 
     return null;
 }

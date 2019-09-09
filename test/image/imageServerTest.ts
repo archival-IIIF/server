@@ -104,7 +104,7 @@ describe('imageServer', () => {
 
         beforeEach(() => {
             nock('http://localhost:8080')
-                .get(uri => uri.startsWith('/collections/' + item.access.uri))
+                .get(uri => uri.startsWith('/' + encodeURIComponent('collections/' + item.access.uri)))
                 .reply(200, image, {
                     'Content-Type': 'image/jpeg',
                     'Content-Length': '500'
