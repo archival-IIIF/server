@@ -103,7 +103,7 @@ Current implementations:
 _See also the [IIIF Image API 2.1](https://iiif.io/api/image/2.1/) 
 and the [IIIF Image API 3.0](https://iiif.io/api/image/3.0/)_
 
-**URL**: `/iiif/image/[id]` / `/iiif/image/[id]/logo/info.json`
+**URL**: `/iiif/image/[id]` / `/iiif/image/[id]/info.json`
 
 **Method**: `GET`
 
@@ -232,8 +232,8 @@ Use the provided Docker Compose or install manually.
     Don't configure an image server URL or start a container with the `image` service to use this image server.
     * Or set up any IIIF image compliant server. 
     The docker compose comes with support for [Loris](https://github.com/loris-imageserver/loris).
-1. Adapt the provided `docker-compose.yml`:
-    * Clone the `web` service definition to create multiple services and use the env variable `IIIF_SERVER_SERVICES` 
+1. See for example the provided `docker-compose.yml.example`:
+    * Note: Clone the `web` service definition to create multiple services and use the env variable `IIIF_SERVER_SERVICES` 
     to define which services that container should run.
 1. Set up volumes for the following:
     * `app-conf`: The PM2 configuration file
