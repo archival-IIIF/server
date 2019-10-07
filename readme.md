@@ -258,7 +258,7 @@ Use the provided Docker Compose or install manually.
 1. Install
     * [Node.js 10.x LTS](https://nodejs.org/en)
     * [yarn](https://yarnpkg.com) or [npm](https://www.npmjs.com)
-    * [ElasticSearch 7.3.x](https://www.elastic.co/webinars/getting-started-elasticsearch)
+    * [ElasticSearch 7.4.x](https://www.elastic.co/webinars/getting-started-elasticsearch)
     * (Optional) [Redis 5.x](https://redis.io) (Required for caching, workers and/or IIIF authentication)
     * (Optional) IIIF image server (e.g. [Loris](https://github.com/loris-imageserver/loris))
     * (Optional) [pm2](https://github.com/Unitech/pm2) (Required for managing the processes)

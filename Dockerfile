@@ -4,7 +4,7 @@ FROM node:lts-alpine
 RUN apk add --no-cache --virtual dependencies git
 
 # Install global NPM tooling
-RUN npm install yarn typescript grunt-cli pm2 -g
+RUN npm install typescript grunt-cli pm2 -g
 
 # Copy the application
 RUN mkdir -p /opt/iiif-server
@@ -18,7 +18,7 @@ RUN chmod +x ./install-audiowaveform.sh && ./install-audiowaveform.sh
 RUN chmod +x ./install-viewers.sh && ./install-viewers.sh
 
 # Install the application
-RUN yarn install --production
+RUN npm install --production --build-from-source
 
 # Transpile the application
 RUN tsc
@@ -27,7 +27,7 @@ RUN tsc
 RUN apk del dependencies
 
 # Cleanup global NPM tooling
-RUN npm uninstall yarn typescript grunt-cli -g
+RUN npm uninstall typescript grunt-cli -g
 
 # Cleanup build directories
 RUN rm -rf /opt/build
