@@ -1,7 +1,6 @@
-import * as hummus from 'hummus';
+// TODO: Wait for musl update
+// import * as hummus from 'hummus';
 import {join} from 'path';
-
-import PDFWStreamForBuffer from './PDFWStreamForBuffer';
 
 import {ImageItem} from '../lib/ItemInterfaces';
 import {Text, readAlto, getFullPath} from '../lib/Text';
@@ -10,8 +9,8 @@ import {getImage} from '../image/imageServer';
 import {AccessTier} from '../presentation/elem/v2/Image';
 
 export default async function createPDF(items: ImageItem[], texts: Text[], tier?: AccessTier): Promise<Buffer> {
-    const bufferWriter = new PDFWStreamForBuffer();
-    const pdf = hummus.createWriter(bufferWriter as any);
+    /*const bufferWriter = new hummus.PDFWStreamForBuffer();
+    const pdf = hummus.createWriter(bufferWriter);
     const font = (texts.length > 0) ? pdf.getFontForFile(join(__dirname, 'NotoMono-Regular.ttf')) : null;
 
     for (const item of items) {
@@ -21,10 +20,12 @@ export default async function createPDF(items: ImageItem[], texts: Text[], tier?
 
     pdf.end();
 
-    return bufferWriter.buffer as Buffer;
+    return bufferWriter.buffer;*/
+
+    return Buffer.alloc(1);
 }
 
-async function createPdfPage(pdf: hummus.PDFWriter, font: hummus.UsedFont | null, item: ImageItem,
+/*async function createPdfPage(pdf: hummus.PDFWriter, font: hummus.UsedFont | null, item: ImageItem,
                              text?: Text, tier?: AccessTier) {
     const image = await getImage(item, {
         region: 'full',
@@ -67,4 +68,4 @@ async function addText(ctx: hummus.PageContentContext, font: hummus.UsedFont, te
             .Tj(word.word) // The text
             .ET(); // End text
     });
-}
+}*/

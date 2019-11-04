@@ -15,13 +15,10 @@ const getServiceByType = (type: string): ArgService =>
 export function runTask<T>(type: string, task: T, identifier: string = uuid()): void {
     const service = getServiceByType(type);
     if (service && service.getService) {
-        try {
-            const serviceFunc = service.getService();
-            serviceFunc(task);
-        }
-        catch (err) {
+        const serviceFunc = service.getService();
+        serviceFunc(task).catch(err => {
             logger.error(`Failure during task with type '${type}' and identifier '${identifier}'`, {err});
-        }
+        });
 
         return;
     }

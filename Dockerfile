@@ -1,10 +1,10 @@
-FROM node:lts-alpine
+FROM node:12.13.0-alpine AS builder
 
 # Install tooling
-RUN apk add --no-cache --virtual dependencies git
+RUN apk add git python3 g++ make cmake gcc libmad-dev libid3tag-dev libsndfile-dev gd-dev boost-dev
 
 # Install global NPM tooling
-RUN npm install typescript grunt-cli pm2 -g
+RUN npm install typescript grunt-cli -g
 
 # Copy the application
 RUN mkdir -p /opt/iiif-server
@@ -12,25 +12,27 @@ COPY . /opt/iiif-server
 WORKDIR /opt/iiif-server
 
 # Build audiowaveform (No Alpine or Debian package)
-RUN chmod +x ./install-audiowaveform.sh && ./install-audiowaveform.sh
+RUN chmod +x ./build-audiowaveform.sh && ./build-audiowaveform.sh
 
-# Install viewers
-RUN chmod +x ./install-viewers.sh && ./install-viewers.sh
+# Build viewers
+RUN chmod +x ./build-viewers.sh && ./build-viewers.sh
 
 # Install the application
-RUN npm install --production --build-from-source
+RUN npm install --production
 
 # Transpile the application
 RUN tsc
 
-# Cleanup tooling
-RUN apk del dependencies
+# Create the actual image
+FROM node:12.13.0-alpine
 
-# Cleanup global NPM tooling
-RUN npm uninstall typescript grunt-cli -g
+# Copy audiowaveform from builder
+COPY --from=builder /usr/local/bin/audiowaveform /usr/local/bin/
 
-# Cleanup build directories
-RUN rm -rf /opt/build
+# Copy application build from builder
+COPY --from=builder /opt/ /opt/
+WORKDIR /opt/iiif-server
 
 # Run the application
-CMD ["pm2-runtime", "start", "config.yaml"]
+CMD ["node", "src/app.js"]
+

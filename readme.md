@@ -233,21 +233,17 @@ Use the provided Docker Compose or install manually.
     * Or set up any IIIF image compliant server. 
     The docker compose comes with support for [Loris](https://github.com/loris-imageserver/loris).
 1. See for example the provided `docker-compose.yml.example`:
-    * Note: Clone the `web` service definition to create multiple services and use the env variable `IIIF_SERVER_SERVICES` 
-    to define which services that container should run.
+    * Note: Clone the `web` service definition to create multiple services and use the env variable 
+    `IIIF_SERVER_SERVICES` to define which services that container should run.
+1. Set up the configuration (See .env.example for the example configuration)
+    * Set up the environment variables in the Docker Compose file
 1. Set up volumes for the following:
-    * `app-conf`: The PM2 configuration file
     * `universal-viewer-conf`: The Universal Viewer configuration file
     * `loris-conf`: The Loris configuration file (if Loris is used)
     * `data`: The volume which contains the collections to be indexed or files to be read, 
     but also allows write access for derivative creation
     * `indexes`: The volume for ElasticSearch indexes to be stored
     * `redis-persistance`: The volume for Redis storage
-1. Set up the configuration (See .env.example for the example configuration)
-   * [Set up a config.yml file](https://pm2.io/doc/en/runtime/guide/ecosystem-file/) with the environment variables
-   * [Configure Loris](https://github.com/loris-imageserver/loris/blob/development/doc/configuration.md) 
-   Especially the `src_img_root` configuration should point to the `data` volume
-   * [Configure Universal Viewer](https://github.com/UniversalViewer/universalviewer/wiki/Configuration)
 
 ### Manual installation
 
@@ -256,9 +252,9 @@ Use the provided Docker Compose or install manually.
     Don't configure an image server URL or start the `image` service to use this image server.
     * Or set up any IIIF image compliant server.
 1. Install
-    * [Node.js 10.x LTS](https://nodejs.org/en)
+    * [Node.js 12.x LTS](https://nodejs.org/en)
     * [yarn](https://yarnpkg.com) or [npm](https://www.npmjs.com)
-    * [ElasticSearch 7.4.x](https://www.elastic.co/webinars/getting-started-elasticsearch)
+    * [ElasticSearch 7.x.x](https://www.elastic.co/webinars/getting-started-elasticsearch)
     * (Optional) [Redis 5.x](https://redis.io) (Required for caching, workers and/or IIIF authentication)
     * (Optional) IIIF image server (e.g. [Loris](https://github.com/loris-imageserver/loris))
     * (Optional) [pm2](https://github.com/Unitech/pm2) (Required for managing the processes)

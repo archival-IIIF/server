@@ -10,6 +10,7 @@ declare module 'hummus' {
     export let PDFWStreamForFile: PDFWStreamForFile;
     export let PDFRStreamForFile: PDFRStreamForFile;
     export let PDFRStreamForBuffer: PDFRStreamForBuffer;
+    export let PDFWStreamForBuffer: PDFWStreamForBuffer;
     export let PDFStreamForResponse: PDFStreamForResponse;
 
     export function createWriter(
@@ -211,6 +212,11 @@ declare module 'hummus' {
     export interface PDFWStreamForFile extends WriteStream {
         new (inPath: string): PDFWStreamForFile;
         close(inCallback?: () => void): void;
+    }
+
+    export interface PDFWStreamForBuffer extends WriteStream {
+        new (): PDFWStreamForBuffer;
+        buffer: Buffer;
     }
 
     export interface PDFStreamForResponse extends WriteStream {
@@ -668,7 +674,7 @@ declare module 'hummus' {
         createPDFTextString();
         createPDFDate();
         */
-        getImageDimensions(inFontFilePath: FilePath): RectangleDimension;
+        getImageDimensions(inFontFilePath: FilePath | ReadStream): RectangleDimension;
         /*
         getImagePagesCount();
         getImageType();
