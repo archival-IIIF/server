@@ -1,4 +1,4 @@
-FROM node:12.13.0-alpine AS builder
+FROM node:12.13.1-alpine AS builder
 
 # Install tooling
 RUN apk add git python3 g++ make cmake gcc libmad-dev libid3tag-dev libsndfile-dev gd-dev boost-dev
@@ -24,7 +24,7 @@ RUN npm install --production
 RUN tsc
 
 # Create the actual image
-FROM node:12.13.0-alpine
+FROM node:12.13.1-alpine
 
 # Copy audiowaveform from builder
 COPY --from=builder /usr/local/bin/audiowaveform /usr/local/bin/
