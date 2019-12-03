@@ -1,7 +1,9 @@
+import {existsSync} from 'fs';
 import * as Router from 'koa-router';
 
-import {runTask} from '../lib/Task';
 import HttpError from '../lib/HttpError';
+import {runTask} from '../lib/Task';
+import {workerStatus} from '../lib/Worker';
 import {hasAdminAccess} from '../lib/Security';
 import {IndexParams} from '../lib/Service';
 
@@ -10,11 +12,14 @@ import indexCollection from './api_index';
 
 const router = new Router({prefix: '/admin'});
 
-router.use((ctx, next) => {
+router.use(async (ctx, next) => {
     if (!hasAdminAccess(ctx))
         throw new HttpError(403, 'Access denied');
+    await next();
+});
 
-    next();
+router.get('/worker_status', async ctx => {
+    ctx.body = await workerStatus();
 });
 
 router.post('/index_api', async ctx => {
@@ -26,7 +31,11 @@ router.post('/index', async ctx => {
     if (!ctx.request.body.path)
         throw new HttpError(400, 'Please provide a path');
 
-    runTask<IndexParams>('index', {collectionPath: ctx.request.body.path});
+    const path = ctx.request.body.path;
+    if (!existsSync(path))
+        throw new HttpError(400, `The provided path "${path}" does not seem to exist`);
+
+    runTask<IndexParams>('index', {collectionPath: path});
     ctx.body = 'Collection is sent to the queue for indexing';
 });
 

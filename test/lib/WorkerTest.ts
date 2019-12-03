@@ -22,6 +22,7 @@ describe('Worker', () => {
 
         redisMulti = {
             lrem: () => redisMulti,
+            del: () => redisMulti,
             publish: sinon.stub().returns(redisMulti)
         };
     });
@@ -32,7 +33,7 @@ describe('Worker', () => {
 
     describe('#waitForTask()', () => {
         it('should monitor a queue', () => {
-            waitForTask('test', async () => null, redis, redis);
+            waitForTask('test', async () => null, [], redis, redis);
 
             expect(redis.brpoplpush).to.be.calledOnce;
             expect(redis.brpoplpush).to.be.calledWithExactly('tasks:test', 'tasks:test:progress', 0);
