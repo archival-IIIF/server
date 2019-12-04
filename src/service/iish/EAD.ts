@@ -17,7 +17,11 @@ export interface EADMetadata {
 const ns = {'ead': 'urn:isbn:1-931666-22-9'};
 
 export function getMetadata(collectionId: string, eadXml: string): EADMetadata[] {
-    const [id, unitId] = collectionId.split('.');
+    const collectionIdSplitted = collectionId.split('.');
+
+    collectionIdSplitted.shift();
+    const unitId = collectionIdSplitted.join('.');
+
     const ead = libxmljs.parseXml(eadXml);
 
     const archdesc = ead.get('//ead:ead/ead:archdesc', ns);
