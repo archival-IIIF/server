@@ -2,9 +2,7 @@ import * as path from 'path';
 import config from './Config';
 import {Item, MinimalItem} from './ItemInterfaces';
 import getClient, {
-    search,
-    GetRequest, SearchRequest, ScrollRequest, DeleteByQueryRequest, IndexBulkRequest, UpdateBulkRequest,
-    GetResponse, SearchResponse
+    search, GetRequest, DeleteByQueryRequest, IndexBulkRequest, UpdateBulkRequest, GetResponse
 } from './ElasticSearch';
 
 export function createItem(obj: MinimalItem): Item {
@@ -97,6 +95,16 @@ export async function getItem(id: string): Promise<Item | null> {
     catch (err) {
         return null;
     }
+}
+
+export async function determineItem(id: string): Promise<Item | null> {
+    const item = await getItem(id);
+    if (item && item.type === 'root') {
+        const children = await getChildItems(item.id);
+        const firstChild = children.find(child => child.order === 1);
+        return firstChild || children[0];
+    }
+    return item;
 }
 
 export async function getChildItems(id: string, sortByOrder = false): Promise<Item[]> {

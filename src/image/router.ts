@@ -7,8 +7,8 @@ import logger from '../lib/Logger';
 import config from '../lib/Config';
 import HttpError from '../lib/HttpError';
 import {cache} from '../lib/Cache';
-import {getItem, getChildItems} from '../lib/Item';
-import {ImageItem, Item} from '../lib/ItemInterfaces';
+import {determineItem} from '../lib/Item';
+import {ImageItem} from '../lib/ItemInterfaces';
 import {AccessState, hasAccess} from '../lib/Security';
 
 const prefix = '/iiif/image';
@@ -109,16 +109,6 @@ router.get('/:id/:region/:size/:rotation/:quality.:format', async ctx => {
 
     logger.info(`Sending an image with id ${id} and tier ${tier}`);
 });
-
-async function determineItem(id: string): Promise<Item | null> {
-    const item = await getItem(id);
-    if (item && item.type === 'root') {
-        const children = await getChildItems(item.id);
-        const firstChild = children.find(child => child.order === 1);
-        return firstChild || children[0];
-    }
-    return item;
-}
 
 function setContentType(ctx: Context): void {
     switch (ctx.accepts('application/ld+json', 'application/json')) {

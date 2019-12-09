@@ -16,18 +16,25 @@ export interface EADMetadata {
 
 const ns = {'ead': 'urn:isbn:1-931666-22-9'};
 
+export function getRootId(collectionId: string): string {
+    return collectionId.split('.')[0];
+}
+
+export function getUnitId(collectionId: string): string {
+    const collectionIdSplit = collectionId.split('.');
+    collectionIdSplit.shift();
+
+    return collectionIdSplit.join('.');
+}
+
 export function getMetadata(collectionId: string, eadXml: string): EADMetadata[] {
-    const collectionIdSplitted = collectionId.split('.');
-
-    collectionIdSplitted.shift();
-    const unitId = collectionIdSplitted.join('.');
-
     const ead = libxmljs.parseXml(eadXml);
 
     const archdesc = ead.get('//ead:ead/ead:archdesc', ns);
-
     if (archdesc) {
+        const unitId = getUnitId(collectionId);
         const metadata = extractMetadataFromLevel(archdesc);
+
         return [
             metadata,
             ...walkThroughLevels(archdesc.get(`.//ead:unitid[text()="${unitId}"]/../..`, ns), metadata)
@@ -38,7 +45,6 @@ export function getMetadata(collectionId: string, eadXml: string): EADMetadata[]
 }
 
 export function getAccess(collectionId: string, eadXml: string): string {
-    const [id, unitId] = collectionId.split('.');
     const ead = libxmljs.parseXml(eadXml);
 
     let restriction: string | null = null;
@@ -49,6 +55,7 @@ export function getAccess(collectionId: string, eadXml: string): string {
         if (accessValue)
             restriction = accessValue.text().toLowerCase().trim();
 
+        const unitId = getUnitId(collectionId);
         const accessType = accessRestrict.attr('type');
         if (accessType && (accessType.value() === 'part')) {
             const itemAccessRestrict = ead

@@ -42,14 +42,16 @@ export default function getPronomInfo(puid: string): PronomInfo | null {
         const mimeType = node.attr('MIMEType');
         const mimes = mimeType ? mimeType.value().split(',') : [];
 
-        let mime = 'application/octet-stream';
+        let mime: string | null = null;
         mimes.forEach(curMime => {
             curMime = curMime.trim();
             if (!mime || (curMime.indexOf('application') !== 0))
                 mime = curMime;
         });
 
-        if (mime === 'audio/mpeg' && extensions.includes('mp3'))
+        if (mime === null)
+            mime = 'application/octet-stream';
+        else if (mime === 'audio/mpeg' && extensions.includes('mp3'))
             mime = 'audio/mp3';
 
         const result = {id, name, url, extensions, mime};

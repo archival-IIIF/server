@@ -33,7 +33,7 @@ export default async function processMetadata({oaiIdentifier, collectionId}: Met
 
 export async function getOAIIdentifier(collectionId: string, uri: string): Promise<string | null> {
     if (collectionId.includes('ARCH') || collectionId.includes('COLL')) {
-        const rootId = collectionId.split('.')[0];
+        const rootId = EAD.getRootId(collectionId);
         return `oai:socialhistoryservices.org:10622/${rootId}`;
     }
 
@@ -54,8 +54,7 @@ export async function getOAIIdentifier(collectionId: string, uri: string): Promi
 }
 
 async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string): Promise<void> {
-    const metadataPrefix = (oaiIdentifier.includes('ARCH') || oaiIdentifier.includes('COLL'))
-        ? 'ead' : 'marcxml';
+    const metadataPrefix = oaiIdentifier.includes('ARCH') || oaiIdentifier.includes('COLL') ? 'ead' : 'marcxml';
     const xml = await request({
         uri: config.metadataOaiUrl as string, strictSSL: false, qs: {
             verb: 'GetRecord',
@@ -81,7 +80,8 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
 }
 
 export function updateEAD(xml: string, oaiIdentifier: string, collectionId: string): MinimalItem[] {
-    const [rootId, unitId] = collectionId.split('.');
+    const rootId = EAD.getRootId(collectionId);
+    const unitId = EAD.getUnitId(collectionId);
 
     const access = EAD.getAccess(collectionId, xml);
     const metadata = EAD.getMetadata(collectionId, xml);

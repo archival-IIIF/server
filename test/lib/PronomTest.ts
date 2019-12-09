@@ -4,6 +4,11 @@ import getPronomInfo, {PronomInfo} from '../../src/lib/Pronom';
 describe('Pronom', () => {
     describe('#getPronomInfo()', () => {
         const pronomInfoObjects: { [puid: string]: PronomInfo } = {
+            'fmt/19': {
+                id: 618, name: 'Acrobat PDF 1.5 - Portable Document Format',
+                url: 'https://www.nationalarchives.gov.uk/PRONOM/Format/proFormatSearch.aspx?status=detailReport&id=618',
+                extensions: ['pdf'], mime: 'application/pdf'
+            },
             'fmt/43': {
                 id: 668, name: 'JPEG File Interchange Format',
                 url: 'https://www.nationalarchives.gov.uk/PRONOM/Format/proFormatSearch.aspx?status=detailReport&id=668',

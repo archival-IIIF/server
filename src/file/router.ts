@@ -10,7 +10,7 @@ import logger from '../lib/Logger';
 import HttpError from '../lib/HttpError';
 import getPronomInfo from '../lib/Pronom';
 import {AccessState, hasAccess, hasAdminAccess} from '../lib/Security';
-import {getItem, getFullPath, getPronom, getAvailableType, hasType, getDerivativePath} from '../lib/Item';
+import {determineItem, getFullPath, getPronom, getAvailableType, hasType, getDerivativePath} from '../lib/Item';
 
 const statAsync = promisify(fs.stat);
 
@@ -58,7 +58,7 @@ router.use(async (ctx, next) => {
 router.get('/:id/:type(original|access)?', async ctx => {
     logger.info(`Received a request for a file with id ${ctx.params.id}`);
 
-    const item = await getItem(ctx.params.id);
+    const item = await determineItem(ctx.params.id);
     if (!item)
         throw new HttpError(404, `No file found with the id ${ctx.params.id}`);
 
@@ -104,7 +104,7 @@ router.get('/:id/:derivative', async ctx => {
         throw new HttpError(404, `No derivative of type ${ctx.params.derivative}`);
 
     const info = derivatives[ctx.params.derivative];
-    const item = await getItem(ctx.params.id);
+    const item = await determineItem(ctx.params.id);
     if (!item)
         throw new HttpError(404, `No file found with the id ${ctx.params.id}`);
 
