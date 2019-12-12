@@ -1,6 +1,7 @@
 import {promisify} from 'util';
 import {IHandyRedis} from 'handy-redis';
 
+import config from './Config';
 import logger from './Logger';
 import {RedisMessage} from './Task';
 import getEsClient from './ElasticSearch';
@@ -12,7 +13,6 @@ type WorkerStatus = { waiting: RedisMessage<any>[], working: RedisMessage<any>[]
 type WorkerStatusType = { type: string } & WorkerStatus;
 
 const sleep = promisify(setTimeout);
-const maxTasksPerWorker = 5;
 let shutdown = false;
 
 export async function workerStatus(): Promise<{ [type: string]: WorkerStatus }> {
@@ -125,7 +125,7 @@ export async function gracefulShutdown<A>(type: string, tasksInProgress: string[
 export async function waitForTask<A, R>(type: string, process: (args: A) => Promise<R>, tasksInProgress: string[],
                                         client: IHandyRedis, blockingClient: IHandyRedis): Promise<void> {
     try {
-        while (tasksInProgress.length >= maxTasksPerWorker) {
+        while (tasksInProgress.length >= config.maxTasksPerWorker) {
             logger.debug('Too many tasks running; waiting to continue...');
             await sleep(500);
         }

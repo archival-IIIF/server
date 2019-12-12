@@ -20,6 +20,7 @@ export interface Config {
     logoDimensions?: [number, number],
     imageTierSeparator: string;
     cacheDisabled: boolean;
+    maxTasksPerWorker: number;
     services: string[];
     secret: string;
     accessToken: string;
@@ -77,6 +78,12 @@ const config: Config = {
     cacheDisabled: (() => {
         const cacheDisabled = process.env.IIIF_SERVER_CACHE_DISABLED;
         return (cacheDisabled !== undefined && (cacheDisabled.toLowerCase() === 'true' || cacheDisabled === '1'));
+    })(),
+
+    maxTasksPerWorker: (() => {
+        const maxTasksPerWorker = process.env.IIIF_SERVER_MAX_TASKS_PER_WORKER
+            ? parseInt(process.env.IIIF_SERVER_MAX_TASKS_PER_WORKER) : 0;
+        return (maxTasksPerWorker >= 0) ? maxTasksPerWorker : 5;
     })(),
 
     services: (() => {

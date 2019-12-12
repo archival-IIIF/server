@@ -305,6 +305,7 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_METADATA_SRW_URL`: URL of the SRW metadata provider
 - `IIIF_SERVER_IMAGE_TIER_SEPARATOR`: Separator character to separate between the image identifier and the image tier
 - `IIIF_SERVER_CACHE_DISABLED`: Turn caching on/off (Requires Redis)
+- `IIIF_SERVER_MAX_TASKS_PER_WORKER`: The maximum number of tasks a single type of worker can load at the same time
 - `IIIF_SERVER_PORT`: Port to run the web server
 - `IIIF_SERVER_ATTRIBUTION`: Attribution to add to the IIIF manifests
 - `IIIF_SERVER_BASE_URL`: The public base URL of the application
