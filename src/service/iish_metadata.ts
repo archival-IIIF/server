@@ -64,22 +64,20 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
     });
 
     const allMetadata: MinimalItem[] = [];
+    const xmlParsed = libxmljs.parseXml(xml);
 
-    const collections = await getCollectionsByMetadataId(oaiIdentifier);
-    if (collectionId && !collections.includes(collectionId))
-        collections.push(collectionId);
-
+    const collections = collectionId ? [collectionId] : await getCollectionsByMetadataId(oaiIdentifier);
     collections.forEach(collectionId => {
         const metadataItems = (metadataPrefix === 'ead')
-            ? updateEAD(xml, oaiIdentifier, collectionId)
-            : updateMarc(xml, oaiIdentifier, collectionId);
+            ? updateEAD(xmlParsed, oaiIdentifier, collectionId)
+            : updateMarc(xmlParsed, oaiIdentifier, collectionId);
         allMetadata.push(...metadataItems);
     });
 
     await updateItems(allMetadata);
 }
 
-export function updateEAD(xml: string, oaiIdentifier: string, collectionId: string): MinimalItem[] {
+export function updateEAD(xml: libxmljs.Document, oaiIdentifier: string, collectionId: string): MinimalItem[] {
     const rootId = EAD.getRootId(collectionId);
     const unitId = EAD.getUnitId(collectionId);
 
@@ -132,7 +130,7 @@ export function updateEAD(xml: string, oaiIdentifier: string, collectionId: stri
     });
 }
 
-export function updateMarc(xml: string, oaiIdentifier: string, collectionId: string): MinimalItem[] {
+export function updateMarc(xml: libxmljs.Document, oaiIdentifier: string, collectionId: string): MinimalItem[] {
     const access = MarcXML.getAccess(collectionId, xml);
     const metadata = MarcXML.getMetadata(collectionId, xml);
 

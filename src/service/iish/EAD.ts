@@ -1,6 +1,5 @@
 import * as crypto from 'crypto';
-import * as libxmljs from 'libxmljs';
-import {Element} from 'libxmljs';
+import {Document, Element} from 'libxmljs';
 
 export interface EADMetadata {
     formats: string[];
@@ -27,9 +26,7 @@ export function getUnitId(collectionId: string): string {
     return collectionIdSplit.join('.');
 }
 
-export function getMetadata(collectionId: string, eadXml: string): EADMetadata[] {
-    const ead = libxmljs.parseXml(eadXml);
-
+export function getMetadata(collectionId: string, ead: Document): EADMetadata[] {
     const archdesc = ead.get('//ead:ead/ead:archdesc', ns);
     if (archdesc) {
         const unitId = getUnitId(collectionId);
@@ -44,9 +41,7 @@ export function getMetadata(collectionId: string, eadXml: string): EADMetadata[]
     return [];
 }
 
-export function getAccess(collectionId: string, eadXml: string): string {
-    const ead = libxmljs.parseXml(eadXml);
-
+export function getAccess(collectionId: string, ead: Document): string {
     let restriction: string | null = null;
     const accessRestrict = ead
         .get('//ead:ead/ead:archdesc/ead:descgrp[@type="access_and_use"]/ead:accessrestrict', ns);

@@ -2,6 +2,7 @@ import {join} from 'path';
 import {readFile} from 'fs';
 import {promisify} from 'util';
 
+import * as libxmljs from 'libxmljs';
 import * as nock from 'nock';
 import {expect} from 'chai';
 
@@ -79,7 +80,8 @@ describe('iish_metadata', () => {
     describe('#updateEAD()', () => {
         it('should parse the metadata from an EAD description', async () => {
             const eadXml = await readFileAsync(join(__dirname, 'test-iish-metadata/ead.xml'), 'utf8');
-            const metadata = updateEAD(eadXml, 'oai:socialhistoryservices.org:10622/ARCH12345', 'ARCH12345.3');
+            const xml = libxmljs.parseXml(eadXml);
+            const metadata = updateEAD(xml, 'oai:socialhistoryservices.org:10622/ARCH12345', 'ARCH12345.3');
 
             expect(metadata).to.deep.equal([
                 {
@@ -159,7 +161,8 @@ describe('iish_metadata', () => {
     describe('#updateMarc()', () => {
         it('should parse the metadata from an MARC XML description', async () => {
             const marcXml = await readFileAsync(join(__dirname, 'test-iish-metadata/marc.xml'), 'utf8');
-            const metadata = updateMarc(marcXml, 'oai:socialhistoryservices.org:12345', 'N12345');
+            const xml = libxmljs.parseXml(marcXml);
+            const metadata = updateMarc(xml, 'oai:socialhistoryservices.org:12345', 'N12345');
 
             expect(metadata).to.deep.equal([
                 {

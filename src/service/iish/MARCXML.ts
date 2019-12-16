@@ -1,5 +1,4 @@
-import * as libxmljs from 'libxmljs';
-import {Element} from 'libxmljs';
+import {Document, Element} from 'libxmljs';
 
 export interface MARCXMLMetadata {
     format?: string;
@@ -14,19 +13,19 @@ export interface MARCXMLMetadata {
 
 const ns = {'marc': 'http://www.loc.gov/MARC21/slim'};
 
-export function getMetadata(collectionId: string, marcXml: string): MARCXMLMetadata[] {
-    const marc = libxmljs.parseXml(marcXml).root();
+export function getMetadata(collectionId: string, marc: Document): MARCXMLMetadata[] {
     const metadata: MARCXMLMetadata = {title: 'No title'};
 
-    if (marc) {
-        extractFormat(marc, metadata);
-        extractTitle(marc, metadata);
-        extractDescription(marc, metadata);
-        extractPhysicalDescription(marc, metadata);
-        extractAuthors(marc, metadata);
-        extractDates(marc, metadata);
-        extractHdlToMetadata(marc, metadata);
-        extractSignature(marc, collectionId, metadata);
+    const marcRoot = marc.root();
+    if (marcRoot) {
+        extractFormat(marcRoot, metadata);
+        extractTitle(marcRoot, metadata);
+        extractDescription(marcRoot, metadata);
+        extractPhysicalDescription(marcRoot, metadata);
+        extractAuthors(marcRoot, metadata);
+        extractDates(marcRoot, metadata);
+        extractHdlToMetadata(marcRoot, metadata);
+        extractSignature(marcRoot, collectionId, metadata);
 
         return [metadata];
     }
@@ -34,9 +33,7 @@ export function getMetadata(collectionId: string, marcXml: string): MARCXMLMetad
     return [];
 }
 
-export function getAccess(collectionId: string, marcXml: string): string {
-    const marc = libxmljs.parseXml(marcXml);
-
+export function getAccess(collectionId: string, marc: Document): string {
     const marc542m = marc.get('//marc:datafield[@tag="542"]/marc:subfield[@code="m"]', ns);
     if (marc542m)
         return marc542m.text();
