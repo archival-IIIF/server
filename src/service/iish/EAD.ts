@@ -34,7 +34,7 @@ export function getMetadata(collectionId: string, ead: Document): EADMetadata[] 
 
         return [
             metadata,
-            ...walkThroughLevels(archdesc.get(`.//ead:unitid[text()="${unitId}"]/../..`, ns), metadata)
+            ...walkThroughLevels(archdesc.get(`.//ead:unitid[normalize-space()="${unitId}"]/../..`, ns), metadata)
         ];
     }
 
@@ -54,7 +54,7 @@ export function getAccess(collectionId: string, ead: Document): string {
         const accessType = accessRestrict.attr('type');
         if (accessType && (accessType.value() === 'part')) {
             const itemAccessRestrict = ead
-                .get(`//ead:ead/ead:archdesc//ead:unitid[text()="${unitId}"]/../../ead:accessrestrict`, ns);
+                .get(`//ead:ead/ead:archdesc//ead:unitid[normalize-space()="${unitId}"]/../../ead:accessrestrict`, ns);
 
             if (itemAccessRestrict) {
                 const itemAccessRestrictAttr = itemAccessRestrict.attr('type');
