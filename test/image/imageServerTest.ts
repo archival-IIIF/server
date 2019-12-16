@@ -124,7 +124,7 @@ describe('imageServer', () => {
                 image: image,
                 status: 200,
                 contentType: 'image/jpeg',
-                contentLength: '500'
+                contentLength: 500
             });
         });
 

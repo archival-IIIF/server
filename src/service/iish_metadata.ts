@@ -1,5 +1,5 @@
+import * as got from 'got';
 import * as libxmljs from 'libxmljs';
-import * as request from 'request-promise-native';
 
 import config from '../lib/Config';
 import {MetadataParams} from '../lib/Service';
@@ -37,8 +37,8 @@ export async function getOAIIdentifier(collectionId: string, uri: string): Promi
         return `oai:socialhistoryservices.org:10622/${rootId}`;
     }
 
-    const response = await request({
-        uri, strictSSL: false, qs: {
+    const response = await got.default(uri, {
+        rejectUnauthorized: false, resolveBodyOnly: true, searchParams: {
             operation: 'searchRetrieve',
             query: `marc.852$p="${collectionId}"`
         }
@@ -55,8 +55,8 @@ export async function getOAIIdentifier(collectionId: string, uri: string): Promi
 
 async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string): Promise<void> {
     const metadataPrefix = oaiIdentifier.includes('ARCH') || oaiIdentifier.includes('COLL') ? 'ead' : 'marcxml';
-    const xml = await request({
-        uri: config.metadataOaiUrl as string, strictSSL: false, qs: {
+    const xml = await got.default(config.metadataOaiUrl as string, {
+        rejectUnauthorized: false, resolveBodyOnly: true, searchParams: {
             verb: 'GetRecord',
             identifier: oaiIdentifier,
             metadataPrefix

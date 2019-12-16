@@ -1,4 +1,4 @@
-import * as request from 'request-promise-native';
+import * as got from 'got';
 
 import config from '../lib/Config';
 
@@ -9,9 +9,9 @@ export default async function serveImage(processingInfo: ImageProcessingInfo,
                                          {region, size, rotation, quality, format}: ImageOptions): Promise<ImageResult> {
     const encodedPath = encodeURIComponent(processingInfo.relativePath);
     const url = `${config.imageServerUrl}/${encodedPath}/${region}/${size}/${rotation}/${quality}.${format}`;
-    const response = await request({uri: url, encoding: null, resolveWithFullResponse: true, simple: false});
+    const response = await got.default(url, {responseType: 'buffer', throwHttpErrors: false});
 
-    const result = {
+    const result: ImageResult = {
         image: null,
         status: response.statusCode,
         contentType: null,
@@ -20,8 +20,8 @@ export default async function serveImage(processingInfo: ImageProcessingInfo,
 
     if (response.statusCode === 200) {
         result.image = response.body;
-        result.contentType = response.headers['content-type'];
-        result.contentLength = response.headers['content-length'];
+        result.contentType = response.headers['content-type'] as string;
+        result.contentLength = parseInt(response.headers['content-length'] as string);
     }
 
     return result;

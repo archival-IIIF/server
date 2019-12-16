@@ -1,6 +1,6 @@
+import * as got from 'got';
 import * as moment from 'moment';
 import * as libxmljs from 'libxmljs';
-import * as request from 'request-promise-native';
 
 import config from '../lib/Config';
 import logger from '../lib/Logger';
@@ -32,12 +32,12 @@ export async function getOAIIdentifiersOfUpdated(fromDate: string, uri: string):
 
     let resumptionToken = null;
     while (resumptionToken !== false) {
-        const response = await request({
-            uri, strictSSL: false, qs: {
+        const response = await got.default(uri, {
+            rejectUnauthorized: false, resolveBodyOnly: true, searchParams: {
                 verb: 'ListIdentifiers',
                 metadataPrefix: 'marcxml',
                 from: fromDate,
-                resumptionToken: resumptionToken || undefined
+                ...(resumptionToken ? {resumptionToken} : {})
             }
         });
 
