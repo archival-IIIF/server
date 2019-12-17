@@ -27,13 +27,13 @@ router.get('/collection/:id', async ctx => {
     const access = await hasAccess(ctx, item, true);
     if (access.state === AccessState.CLOSED) {
         ctx.status = 401;
-        setContent(ctx, await getCollection(item, access));
+        setContent(ctx, await getCollection(item, access, ctx.query.v3));
         return;
     }
 
     setContent(
         ctx,
-        await cache('collection', item.collection_id, item.id, async () => await getCollection(item, access))
+        await cache('collection', item.collection_id, item.id, async () => await getCollection(item, access, ctx.query.v3))
     );
 
     logger.info(`Sending a IIIF collection with id ${ctx.params.id}`);
@@ -49,13 +49,13 @@ router.get('/:id/manifest', async ctx => {
     const access = await hasAccess(ctx, item, true);
     if (access.state === AccessState.CLOSED) {
         ctx.status = 401;
-        setContent(ctx, await getManifest(item, access));
+        setContent(ctx, await getManifest(item, access, ctx.query.v3));
         return;
     }
 
     setContent(
         ctx,
-        await cache('manifest', item.collection_id, item.id, async () => await getManifest(item, access))
+        await cache('manifest', item.collection_id, item.id, async () => await getManifest(item, access, ctx.query.v3))
     );
 
     logger.info(`Sending a IIIF manifest with id ${ctx.params.id}`);
