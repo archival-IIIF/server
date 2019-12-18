@@ -45,10 +45,10 @@ export async function getCollection(item: Item, access: Access, v3?: string): Pr
 
 export async function getManifest(item: Item, access: Access, v3?: string): Promise<ManifestV2 | ManifestV3 | null> {
     if (item && (item.type === 'root'))
-        return await Digitized.getManifest(item as RootItem, builder);
+        return await Digitized.getManifest(item as RootItem);
 
     if (item && (item.type !== 'metadata' && item.type !== 'folder' && !item.order) && typeof v3 === 'string')
-        return await DigitalBornV3.getManifest(item as FileItem, access, builder);
+        return await DigitalBornV3.getManifest(item as FileItem, access);
 
     if (item && (item.type !== 'metadata' && item.type !== 'folder' && !item.order))
         return await DigitalBorn.getManifest(item as FileItem, access, builder);
@@ -58,16 +58,16 @@ export async function getManifest(item: Item, access: Access, v3?: string): Prom
 
 export async function getReference(item: Item, v3?: string): Promise<CollectionV2 | CollectionV3 | ManifestV2 | ManifestV3 | null> {
     if (item && (item.type === 'metadata') && typeof v3 === 'string')
-        return await MetadataV3.getReference(item as MetadataItem, builder);
+        return await MetadataV3.getReference(item as MetadataItem);
 
     if (item && (item.type === 'metadata'))
         return await Metadata.getReference(item as MetadataItem, builder);
 
     if (item && (item.type === 'root'))
-        return await Digitized.getReference(item as RootItem, builder);
+        return await Digitized.getReference(item as RootItem);
 
     if (item && ((item.type === 'folder') || !item.order) && typeof v3 === 'string')
-        return await DigitalBornV3.getReference(item as FileItem, builder);
+        return await DigitalBornV3.getReference(item as FileItem);
 
     if (item && ((item.type === 'folder') || !item.order))
         return await DigitalBorn.getReference(item as FileItem, builder);
