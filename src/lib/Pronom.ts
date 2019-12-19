@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as libxmljs from 'libxmljs';
+import * as libxmljs from 'libxmljs2';
 import logger from './Logger';
 
 export interface PronomInfo {

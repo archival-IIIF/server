@@ -1,5 +1,5 @@
 import * as got from 'got';
-import * as libxmljs from 'libxmljs';
+import * as libxmljs from 'libxmljs2';
 
 import config from '../lib/Config';
 import {MetadataParams} from '../lib/Service';

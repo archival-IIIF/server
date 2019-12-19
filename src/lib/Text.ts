@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import {promisify} from 'util';
-import * as libxmljs from 'libxmljs';
-import {Attribute} from 'libxmljs';
+import * as libxmljs from 'libxmljs2';
+import {Attribute} from 'libxmljs2';
 
 import config from '../lib/Config';
 import getClient, {search, DeleteByQueryRequest, IndexBulkRequest} from './ElasticSearch';

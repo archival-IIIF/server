@@ -2,7 +2,7 @@ import {join} from 'path';
 import {readFile} from 'fs';
 import {promisify} from 'util';
 
-import * as libxmljs from 'libxmljs';
+import * as libxmljs from 'libxmljs2';
 import * as nock from 'nock';
 import {expect} from 'chai';
 

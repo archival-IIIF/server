@@ -1,4 +1,4 @@
-import {Document, Element} from 'libxmljs';
+import {Document, Element} from 'libxmljs2';
 
 export interface MARCXMLMetadata {
     format?: string;

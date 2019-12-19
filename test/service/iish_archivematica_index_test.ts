@@ -1,8 +1,8 @@
 import {join} from 'path';
 import {expect} from 'chai';
 
-import * as libxmljs from 'libxmljs';
-import {Element} from 'libxmljs';
+import * as libxmljs from 'libxmljs2';
+import {Element} from 'libxmljs2';
 
 import {createItem} from '../../src/lib/Item';
 import {
