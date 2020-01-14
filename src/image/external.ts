@@ -7,6 +7,7 @@ import {ImageOptions, ImageResult} from './imageServer';
 
 export default async function serveImage(processingInfo: ImageProcessingInfo,
                                          {region, size, rotation, quality, format}: ImageOptions): Promise<ImageResult> {
+    size = (size === 'max') ? 'full' : size;
     const encodedPath = encodeURIComponent(processingInfo.relativePath);
     const url = `${config.imageServerUrl}/${encodedPath}/${region}/${size}/${rotation}/${quality}.${format}`;
     const response = await got.default(url, {responseType: 'buffer', throwHttpErrors: false});
