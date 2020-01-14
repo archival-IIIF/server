@@ -16,7 +16,7 @@ export default class SizeRequest implements ImageRequest {
     constructor(private request: string) {
     }
 
-    parseImageRequest(size: Size): void {
+    parseImageRequest(size: Size, maxSize?: Size): void {
         if (this.request === 'full' || this.request === 'max')
             this.isMax = true;
         else {
@@ -49,14 +49,21 @@ export default class SizeRequest implements ImageRequest {
 
             if ((this.newSize.width === 0) || (this.newSize.height === 0))
                 throw new RequestError('Size width and/or height should not be zero');
-
-            this.updateProcessingInfo(size);
         }
+
+        this.updateProcessingInfo(size, maxSize);
     }
 
-    private updateProcessingInfo(size: Size): void {
-        if (this.isMax)
+    private updateProcessingInfo(size: Size, maxSize?: Size): void {
+        if (this.isMax && (!maxSize || (maxSize.width === size.width && maxSize.height === size.height)))
             return;
+
+        if (this.isMax && maxSize) {
+            this.isMax = false;
+            this.newSize.width = maxSize.width;
+            this.newSize.height = maxSize.height;
+            return;
+        }
 
         let width = size.width;
         let height = size.height;

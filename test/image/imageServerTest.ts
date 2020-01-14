@@ -127,22 +127,5 @@ describe('imageServer', () => {
                 contentLength: 500
             });
         });
-
-        it('should fail requesting images over the max size', async () => {
-            const result = await getImage(item, {
-                region: 'full',
-                size: '200,',
-                rotation: '0',
-                quality: 'default',
-                format: 'jpg'
-            }, tier);
-
-            expect(result).to.deep.equal({
-                image: null,
-                status: 401,
-                contentType: null,
-                contentLength: null
-            });
-        });
     });
 });

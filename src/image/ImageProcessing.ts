@@ -2,7 +2,7 @@ import {join} from 'path';
 import * as sharp from 'sharp';
 
 export interface ImageRequest {
-    parseImageRequest(size: Size): void;
+    parseImageRequest(size: Size, maxSize?: Size): void;
     requiresImageProcessing(): boolean;
     executeImageProcessing(image: sharp.Sharp): void;
 }
@@ -11,6 +11,7 @@ export interface ImageProcessingInfo {
     rootPath: string,
     relativePath: string;
     size?: Size;
+    maxSize?: Size;
 }
 
 export interface Size {
@@ -24,7 +25,7 @@ export default class ImageProcessing {
 
     async process(): Promise<{ data: Buffer, info: sharp.OutputInfo }> {
         const size = this.processingInfo.size || await this.getSize();
-        this.requests.forEach(request => request.parseImageRequest(size));
+        this.requests.forEach(request => request.parseImageRequest(size, this.processingInfo.maxSize));
 
         const pipeline = this.getPipeline();
         if (this.requests.filter(request => request.requiresImageProcessing()).length > 0)

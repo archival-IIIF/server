@@ -1,8 +1,5 @@
-import SizeRequest from './SizeRequest';
-import {ImageProcessingInfo} from './ImageProcessing';
 import {sharpProfile, lorisProfile} from './profiles';
 
-import logger from '../lib/Logger';
 import config from '../lib/Config';
 import {ImageItem} from '../lib/ItemInterfaces';
 import {getRelativePath} from '../lib/Item';
@@ -61,39 +58,26 @@ export async function getLogoInfo(): Promise<Image> {
 }
 
 export async function getImage(item: ImageItem, imageOptions: ImageOptions, tier?: AccessTier): Promise<ImageResult> {
-    const size = {width: item.width, height: item.height};
-    const processingInfo: ImageProcessingInfo = {
-        rootPath: config.dataRootPath, relativePath: getRelativePath(item), size
-    };
-
-    if (typeof tier === 'object') {
-        logger.debug(`Validate the size requested with the maximum size of tier ${tier}`);
-
-        const maxSize = Image.computeMaxSize(tier, item.width, item.height);
-        const sizeRequest = new SizeRequest(imageOptions.size);
-        sizeRequest.parseImageRequest(size);
-
-        if (maxSize && ((size.width > maxSize.maxWidth) || (size.height > maxSize.maxHeight)))
-            return {
-                image: null,
-                status: 401,
-                contentType: null,
-                contentLength: null
-            };
-    }
-
+    const maxSize = tier ? Image.computeMaxSize(tier, item.width, item.height) : undefined;
     const serveImage = await import(config.imageServerUrl ? './external' : './internal');
-    return serveImage.default(processingInfo, imageOptions);
+
+    return serveImage.default({
+        rootPath: config.dataRootPath,
+        relativePath: getRelativePath(item),
+        size: {width: item.width, height: item.height},
+        maxSize
+    }, imageOptions);
 }
 
 export async function getLogo(imageOptions: ImageOptions): Promise<ImageResult> {
     const [width, height] = config.logoDimensions as [number, number];
-    const processingInfo: ImageProcessingInfo = {
-        rootPath: config.dataRootPath, relativePath: config.logoRelativePath as string, size: {width, height}
-    };
-
     const serveImage = await import(config.imageServerUrl ? './external' : './internal');
-    return serveImage.default(processingInfo, imageOptions);
+
+    return serveImage.default({
+        rootPath: config.dataRootPath,
+        relativePath: config.logoRelativePath as string,
+        size: {width, height}
+    }, imageOptions);
 }
 
 export function getProfile(): ImageProfile {
