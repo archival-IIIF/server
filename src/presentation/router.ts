@@ -1,5 +1,5 @@
 import {Context} from 'koa';
-import * as Router from 'koa-router';
+import * as Router from '@koa/router';
 
 import HttpError from '../lib/HttpError';
 import logger from '../lib/Logger';

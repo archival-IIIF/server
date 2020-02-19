@@ -1,5 +1,5 @@
 import * as got from 'got';
-import * as libxmljs from 'libxmljs2';
+import {parseXml, Document, Element} from 'libxmljs2';
 
 import config from '../lib/Config';
 import {MetadataParams} from '../lib/Service';
@@ -44,8 +44,8 @@ export async function getOAIIdentifier(collectionId: string, uri: string): Promi
         }
     });
 
-    const srwResults = libxmljs.parseXml(response);
-    const marcId = srwResults.get('//marc:controlfield[@tag="001"]', ns);
+    const srwResults = parseXml(response);
+    const marcId = srwResults.get<Element>('//marc:controlfield[@tag="001"]', ns);
 
     if (marcId)
         return `oai:socialhistoryservices.org:${marcId.text()}`;
@@ -64,7 +64,7 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
     });
 
     const allMetadata: MinimalItem[] = [];
-    const xmlParsed = libxmljs.parseXml(xml);
+    const xmlParsed = parseXml(xml);
 
     const collections = collectionId ? [collectionId] : await getCollectionsByMetadataId(oaiIdentifier);
     collections.forEach(collectionId => {
@@ -77,7 +77,7 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
     await updateItems(allMetadata);
 }
 
-export function updateEAD(xml: libxmljs.Document, oaiIdentifier: string, collectionId: string): MinimalItem[] {
+export function updateEAD(xml: Document, oaiIdentifier: string, collectionId: string): MinimalItem[] {
     const rootId = EAD.getRootId(collectionId);
     const unitId = EAD.getUnitId(collectionId);
 
@@ -130,7 +130,7 @@ export function updateEAD(xml: libxmljs.Document, oaiIdentifier: string, collect
     });
 }
 
-export function updateMarc(xml: libxmljs.Document, oaiIdentifier: string, collectionId: string): MinimalItem[] {
+export function updateMarc(xml: Document, oaiIdentifier: string, collectionId: string): MinimalItem[] {
     const access = MarcXML.getAccess(collectionId, xml);
     const metadata = MarcXML.getMetadata(collectionId, xml);
 

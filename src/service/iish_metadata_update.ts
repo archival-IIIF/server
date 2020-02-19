@@ -1,7 +1,6 @@
 import * as got from 'got';
 import * as moment from 'moment';
-import * as libxmljs from 'libxmljs2';
-import {Element} from 'libxmljs2';
+import {parseXml, Element} from 'libxmljs2';
 
 import config from '../lib/Config';
 import logger from '../lib/Logger';
@@ -42,16 +41,16 @@ export async function getOAIIdentifiersOfUpdated(fromDate: string, uri: string):
             }
         });
 
-        const oaiResults = libxmljs.parseXml(response);
+        const oaiResults = parseXml(response);
 
-        const resumptionTokenElem = oaiResults.get('//oai:resumptionToken', ns);
+        const resumptionTokenElem = oaiResults.get<Element>('//oai:resumptionToken', ns);
         resumptionToken = resumptionTokenElem ? resumptionTokenElem.text() : false;
 
         const foundIdentifiers = (oaiResults.root() as Element)
-            .find('//oai:header', ns)
-            .map(headerElem => (headerElem as Element).get('./oai:identifier', ns))
+            .find<Element>('//oai:header', ns)
+            .map(headerElem => headerElem.get<Element>('./oai:identifier', ns))
             .filter(identifierElem => identifierElem !== null)
-            .map(identifierElem => (identifierElem as libxmljs.Element).text());
+            .map(identifierElem => (identifierElem as Element).text());
 
         oaiIdentifiers.push(...foundIdentifiers);
     }

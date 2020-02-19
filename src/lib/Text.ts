@@ -1,8 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import {promisify} from 'util';
-import * as libxmljs from 'libxmljs2';
-import {Attribute} from 'libxmljs2';
+import {parseXml, Element, Attribute} from 'libxmljs2';
 
 import config from '../lib/Config';
 import getClient, {search, DeleteByQueryRequest, IndexBulkRequest} from './ElasticSearch';
@@ -76,8 +75,8 @@ async function getTexts(q: string): Promise<Text[]> {
 
 export async function readAlto(uri: string): Promise<OcrWord[]> {
     const altoXml = await readFileAsync(uri, 'utf8');
-    const alto = libxmljs.parseXml(altoXml);
-    return alto.find('//String').map(stringElem => {
+    const alto = parseXml(altoXml);
+    return alto.find<Element>('//String').map(stringElem => {
         return {
             x: parseInt((stringElem.attr('VPOS') as Attribute).value()),
             y: parseInt((stringElem.attr('HPOS') as Attribute).value()),

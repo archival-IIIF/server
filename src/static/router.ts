@@ -1,5 +1,5 @@
 import {createReadStream} from 'fs';
-import * as Router from 'koa-router';
+import * as Router from '@koa/router';
 import * as send from 'koa-send';
 
 import config from '../lib/Config';

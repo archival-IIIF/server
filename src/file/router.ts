@@ -1,5 +1,5 @@
 import {Context} from 'koa';
-import * as Router from 'koa-router';
+import * as Router from '@koa/router';
 
 import * as fs from 'fs';
 import * as path from 'path';

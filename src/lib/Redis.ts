@@ -18,7 +18,10 @@ export function createNewClient(): IHandyRedis {
     if (config.env === 'test' && testClient)
         return testClient;
 
-    return createHandyClient(config.redis);
+    return createHandyClient({
+        retry_strategy: options => Math.min(options.attempt * 100, 3000),
+        ...config.redis
+    });
 }
 
 // For test purposes

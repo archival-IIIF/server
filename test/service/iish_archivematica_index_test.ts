@@ -1,8 +1,7 @@
 import {join} from 'path';
 import {expect} from 'chai';
 
-import * as libxmljs from 'libxmljs2';
-import {Element} from 'libxmljs2';
+import {parseXml, Element} from 'libxmljs2';
 
 import {createItem} from '../../src/lib/Item';
 import {
@@ -947,7 +946,7 @@ describe('iish_archivematica_index', () => {
 
     describe('#getIdentifier()', () => {
         it('should prefer the identifier of a handle over an UUID', () => {
-            const premisElem = libxmljs.parseXml(`
+            const premisElem = parseXml(`
                 <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
                 xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
                 version="2.2">
@@ -968,7 +967,7 @@ describe('iish_archivematica_index', () => {
         });
 
         it('should prefer the UUID identifier over anything else (if not a handle)', () => {
-            const premisElem = libxmljs.parseXml(`
+            const premisElem = parseXml(`
                 <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
                 xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
                 version="2.2">
@@ -989,7 +988,7 @@ describe('iish_archivematica_index', () => {
         });
 
         it('should fail to return an identifier if there is neither an UUID or handle', () => {
-            const premisElem = libxmljs.parseXml(`
+            const premisElem = parseXml(`
                 <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
                 xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
                 version="2.2">
@@ -1008,7 +1007,7 @@ describe('iish_archivematica_index', () => {
 
     describe('#determineResolution()', () => {
         it('should correctly obtain the resolution from MediaInfo', () => {
-            const objCharsExtElem = libxmljs.parseXml(`
+            const objCharsExtElem = parseXml(`
               <premis:objectCharacteristicsExtension>
                 <MediaInfo xmlns="https://mediaarea.net/mediainfo" xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd" version="2.0">
                   <creatingLibrary version="18.03" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
@@ -1095,7 +1094,7 @@ describe('iish_archivematica_index', () => {
         });
 
         it('should correctly obtain the resolution from FFprobe', () => {
-            const objCharsExtElem = libxmljs.parseXml(`
+            const objCharsExtElem = parseXml(`
               <premis:objectCharacteristicsExtension>
                 <ffprobe>
                   <program_version version="3.3.2-1~16.04.york2" copyright="Copyright (c) 2007-2017 the FFmpeg developers" compiler_ident="gcc 5.4.0 (Ubuntu 5.4.0-6ubuntu1~16.04.4) 20160609" configuration="--prefix=/usr --extra-version='1~16.04.york2' --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --enable-gpl --disable-stripping --enable-avresample --enable-avisynth --enable-gnutls --enable-ladspa --enable-libass --enable-libbluray --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libgme --enable-libgsm --enable-libmp3lame --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libpulse --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libssh --enable-libtheora --enable-libtwolame --enable-libvorbis --enable-libvpx --enable-libwavpack --enable-libwebp --enable-libx265 --enable-libxvid --enable-libzmq --enable-libzvbi --enable-omx --enable-openal --enable-opengl --enable-sdl2 --enable-libdc1394 --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-libopencv --enable-libx264 --enable-shared"/>
@@ -1129,7 +1128,7 @@ describe('iish_archivematica_index', () => {
         });
 
         it('should correctly obtain the resolution from the EXIF tool', () => {
-            const objCharsExtElem = libxmljs.parseXml(`
+            const objCharsExtElem = parseXml(`
               <premis:objectCharacteristicsExtension>
                 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
                   <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/" xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/" xmlns:File="http://ns.exiftool.ca/File/1.0/" xmlns:RIFF="http://ns.exiftool.ca/RIFF/RIFF/1.0/" xmlns:Composite="http://ns.exiftool.ca/Composite/1.0/" et:toolkit="Image::ExifTool 10.10">
@@ -1185,7 +1184,7 @@ describe('iish_archivematica_index', () => {
         });
 
         it('should correctly obtain the resolution from FITS (EXIF tool)', () => {
-            const objCharsExtElem = libxmljs.parseXml(`
+            const objCharsExtElem = parseXml(`
               <premis:objectCharacteristicsExtension>
                 <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output" xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd" version="0.8.4" timestamp="8/9/18 10:15 AM">
                   <identification>
@@ -1269,7 +1268,7 @@ describe('iish_archivematica_index', () => {
 
     describe('#determineDpi()', () => {
         it('should correctly obtain the DPI from the EXIF tool', () => {
-            const objCharsExtElem = libxmljs.parseXml(`
+            const objCharsExtElem = parseXml(`
               <premis:objectCharacteristicsExtension>
                 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
                   <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/" xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/" xmlns:File="http://ns.exiftool.ca/File/1.0/" xmlns:IFD0="http://ns.exiftool.ca/EXIF/IFD0/1.0/" xmlns:ExifIFD="http://ns.exiftool.ca/EXIF/ExifIFD/1.0/" et:toolkit="Image::ExifTool 10.10">
@@ -1341,7 +1340,7 @@ describe('iish_archivematica_index', () => {
         });
 
         it('should correctly obtain the DPI from FITS (EXIF tool)', () => {
-            const objCharsExtElem = libxmljs.parseXml(`
+            const objCharsExtElem = parseXml(`
               <premis:objectCharacteristicsExtension>
                 <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output" xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd" version="0.8.4" timestamp="8/9/18 10:15 AM">
                   <identification>
@@ -1425,7 +1424,7 @@ describe('iish_archivematica_index', () => {
 
     describe('#determineDuration()', () => {
         it('should correctly obtain the duration from MediaInfo', () => {
-            const objCharsExtElem = libxmljs.parseXml(`
+            const objCharsExtElem = parseXml(`
               <premis:objectCharacteristicsExtension>
                 <MediaInfo xmlns="https://mediaarea.net/mediainfo" xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd" version="2.0">
                   <creatingLibrary version="18.03" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
@@ -1512,7 +1511,7 @@ describe('iish_archivematica_index', () => {
         });
 
         it('should correctly obtain the duration from FFprobe', () => {
-            const objCharsExtElem = libxmljs.parseXml(`
+            const objCharsExtElem = parseXml(`
               <premis:objectCharacteristicsExtension>
                 <ffprobe>
                   <program_version version="3.3.2-1~16.04.york2" copyright="Copyright (c) 2007-2017 the FFmpeg developers" compiler_ident="gcc 5.4.0 (Ubuntu 5.4.0-6ubuntu1~16.04.4) 20160609" configuration="--prefix=/usr --extra-version='1~16.04.york2' --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --enable-gpl --disable-stripping --enable-avresample --enable-avisynth --enable-gnutls --enable-ladspa --enable-libass --enable-libbluray --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libgme --enable-libgsm --enable-libmp3lame --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libpulse --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libssh --enable-libtheora --enable-libtwolame --enable-libvorbis --enable-libvpx --enable-libwavpack --enable-libwebp --enable-libx265 --enable-libxvid --enable-libzmq --enable-libzvbi --enable-omx --enable-openal --enable-opengl --enable-sdl2 --enable-libdc1394 --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-libopencv --enable-libx264 --enable-shared"/>
@@ -1548,7 +1547,7 @@ describe('iish_archivematica_index', () => {
 
     describe('#determineEncoding()', () => {
         it('should correctly obtain the duration from Fits / Tika', () => {
-            const objCharsExtElem = libxmljs.parseXml(`
+            const objCharsExtElem = parseXml(`
               <premis:objectCharacteristicsExtension>
                <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output" xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd" version="1.1.0">
                 <toolOutput>

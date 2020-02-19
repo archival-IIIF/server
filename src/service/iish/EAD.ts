@@ -27,14 +27,14 @@ export function getUnitId(collectionId: string): string {
 }
 
 export function getMetadata(collectionId: string, ead: Document): EADMetadata[] {
-    const archdesc = ead.get('//ead:ead/ead:archdesc', ns);
+    const archdesc = ead.get<Element>('//ead:ead/ead:archdesc', ns);
     if (archdesc) {
         const unitId = getUnitId(collectionId);
         const metadata = extractMetadataFromLevel(archdesc);
 
         return [
             metadata,
-            ...walkThroughLevels(archdesc.get(`.//ead:unitid[normalize-space()="${unitId}"]/../..`, ns), metadata)
+            ...walkThroughLevels(archdesc.get<Element>(`.//ead:unitid[normalize-space()="${unitId}"]/../..`, ns), metadata)
         ];
     }
 
@@ -44,9 +44,9 @@ export function getMetadata(collectionId: string, ead: Document): EADMetadata[] 
 export function getAccess(collectionId: string, ead: Document): string {
     let restriction: string | null = null;
     const accessRestrict = ead
-        .get('//ead:ead/ead:archdesc/ead:descgrp[@type="access_and_use"]/ead:accessrestrict', ns);
+        .get<Element>('//ead:ead/ead:archdesc/ead:descgrp[@type="access_and_use"]/ead:accessrestrict', ns);
     if (accessRestrict) {
-        const accessValue = accessRestrict.get('./ead:p', ns);
+        const accessValue = accessRestrict.get<Element>('./ead:p', ns);
         if (accessValue)
             restriction = accessValue.text().toLowerCase().trim();
 
@@ -54,7 +54,7 @@ export function getAccess(collectionId: string, ead: Document): string {
         const accessType = accessRestrict.attr('type');
         if (accessType && (accessType.value() === 'part')) {
             const itemAccessRestrict = ead
-                .get(`//ead:ead/ead:archdesc//ead:unitid[normalize-space()="${unitId}"]/../../ead:accessrestrict`, ns);
+                .get<Element>(`//ead:ead/ead:archdesc//ead:unitid[normalize-space()="${unitId}"]/../../ead:accessrestrict`, ns);
 
             if (itemAccessRestrict) {
                 const itemAccessRestrictAttr = itemAccessRestrict.attr('type');
@@ -84,7 +84,7 @@ function walkThroughLevels(level: Element | null, parentMetadata: EADMetadata): 
         return [];
 
     const metadata = extractMetadataFromLevel(level, parentMetadata);
-    const parent = level.get('.//preceding-sibling::ead:did/..', ns);
+    const parent = level.get<Element>('.//preceding-sibling::ead:did/..', ns);
     if (parent && parent.name() !== level.name())
         return [...walkThroughLevels(parent, metadata), metadata];
 
@@ -109,8 +109,8 @@ function extractMetadataFromLevel(level: Element | null, parentMetadata: EADMeta
 }
 
 function extractFormats(ead: Element, metadata: EADMetadata, parentMetadata: EADMetadata | null): void {
-    const formatElems = ead.find('./ead:descgrp[@type="content_and_structure"]/' +
-        'ead:controlaccess/ead:controlaccess/ead:genreform', ns) as Element[];
+    const formatElems = ead.find<Element>('./ead:descgrp[@type="content_and_structure"]/' +
+        'ead:controlaccess/ead:controlaccess/ead:genreform', ns);
 
     const formats = formatElems.map(formatElem => {
         const format = formatElem.text().toLowerCase();
@@ -144,14 +144,14 @@ function extractFormats(ead: Element, metadata: EADMetadata, parentMetadata: EAD
 }
 
 function extractTitle(ead: Element, metadata: EADMetadata): void {
-    const title = ead.get('./ead:did/ead:unittitle', ns);
+    const title = ead.get<Element>('./ead:did/ead:unittitle', ns);
     if (title)
         metadata.title = title.text().trim();
 }
 
 function extractUnitId(ead: Element, metadata: EADMetadata, parentMetadata: EADMetadata | null): void {
     if (metadata.title) {
-        const unitId = ead.get('./ead:did/ead:unitid', ns);
+        const unitId = ead.get<Element>('./ead:did/ead:unitid', ns);
         metadata.unitIdIsInventoryNumber = !!unitId && parentMetadata !== null;
         metadata.unitId = unitId
             ? unitId.text().trim()
@@ -160,7 +160,7 @@ function extractUnitId(ead: Element, metadata: EADMetadata, parentMetadata: EADM
 }
 
 function extractContent(ead: Element, metadata: EADMetadata): void {
-    const content = ead.find('./ead:descgrp[@type="content_and_structure"]/ead:scopecontent/ead:p', ns) as Element[];
+    const content = ead.find<Element>('./ead:descgrp[@type="content_and_structure"]/ead:scopecontent/ead:p', ns);
 
     if (content.length > 0)
         metadata.content = content
@@ -169,13 +169,13 @@ function extractContent(ead: Element, metadata: EADMetadata): void {
 }
 
 function extractExtent(ead: Element, metadata: EADMetadata): void {
-    const extent = ead.get('./ead:did/ead:physdesc//ead:extent', ns);
+    const extent = ead.get<Element>('./ead:did/ead:physdesc//ead:extent', ns);
     if (extent)
         metadata.extent = extent.text().trim();
 }
 
 function extractAuthors(ead: Element, metadata: EADMetadata): void {
-    const origination = (ead.find('./ead:did//ead:origination', ns) as Element[]).map(origin => {
+    const origination = ead.find<Element>('./ead:did//ead:origination', ns).map(origin => {
         const type = origin.attr('label');
         return {type: type ? type.value() : 'Author', name: origin.text().trim()};
     });
@@ -185,7 +185,7 @@ function extractAuthors(ead: Element, metadata: EADMetadata): void {
 }
 
 function extractDates(ead: Element, metadata: EADMetadata): void {
-    const dates = (ead.find('./ead:did//ead:unitdate', ns) as Element[]).map(date => date.text().trim());
+    const dates = ead.find<Element>('./ead:did//ead:unitdate', ns).map(date => date.text().trim());
     if (dates.length > 0)
         metadata.dates = dates;
 }

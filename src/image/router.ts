@@ -1,5 +1,5 @@
 import {Context} from 'koa';
-import * as Router from 'koa-router';
+import * as Router from '@koa/router';
 
 import SizeRequest from './SizeRequest';
 import {getInfo, getLogoInfo, getImage, getLogo} from './imageServer';

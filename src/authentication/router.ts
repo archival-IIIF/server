@@ -1,7 +1,7 @@
 import {createReadStream} from 'fs';
 import * as path from 'path';
 import * as moment from 'moment';
-import * as Router from 'koa-router';
+import * as Router from '@koa/router';
 import * as security from '../lib/Security';
 
 type Message = { messageId?: string };

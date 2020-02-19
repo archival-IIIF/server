@@ -1,4 +1,4 @@
-import * as Router from 'koa-router';
+import * as Router from '@koa/router';
 
 import config from '../lib/Config';
 import logger from '../lib/Logger';

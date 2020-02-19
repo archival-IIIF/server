@@ -34,7 +34,7 @@ export function getMetadata(collectionId: string, marc: Document): MARCXMLMetada
 }
 
 export function getAccess(collectionId: string, marc: Document): string {
-    const marc542m = marc.get('//marc:datafield[@tag="542"]/marc:subfield[@code="m"]', ns);
+    const marc542m = marc.get<Element>('//marc:datafield[@tag="542"]/marc:subfield[@code="m"]', ns);
     if (marc542m)
         return marc542m.text();
 
@@ -42,7 +42,7 @@ export function getAccess(collectionId: string, marc: Document): string {
 }
 
 function extractFormat(marc: Element, metadata: MARCXMLMetadata): void {
-    const marcLeader = marc.get('//marc:leader', ns) as Element;
+    const marcLeader = marc.get<Element>('//marc:leader', ns) as Element;
     const format = marcLeader.text().trim().substring(6, 8);
 
     switch (format) {
@@ -90,19 +90,19 @@ function extractFormat(marc: Element, metadata: MARCXMLMetadata): void {
 
 function extractTitle(marc: Element, metadata: MARCXMLMetadata): void {
     metadata.title = normalize(
-        (marc.find('//marc:datafield[@tag="245"]/marc:subfield[@code="a" or @code="b"]', ns) as Element[])
+        marc.find<Element>('//marc:datafield[@tag="245"]/marc:subfield[@code="a" or @code="b"]', ns)
             .map(titleMarc => titleMarc.text().trim())
     );
 }
 
 function extractDescription(marc: Element, metadata: MARCXMLMetadata): void {
-    const marc520 = (marc.find('//marc:datafield[@tag="520"]/marc:subfield', ns) as Element[])
+    const marc520 = marc.find<Element>('//marc:datafield[@tag="520"]/marc:subfield', ns)
         .map(descrMarc => descrMarc.text().trim());
 
     if (marc520.length > 0)
         metadata.description = normalize(marc520, false);
 
-    const marc500 = (marc.find('//marc:datafield[@tag="500"]/marc:subfield', ns) as Element[])
+    const marc500 = marc.find<Element>('//marc:datafield[@tag="500"]/marc:subfield', ns)
         .map(descrMarc => descrMarc.text().trim());
 
     if (marc500.length > 0)
@@ -110,7 +110,7 @@ function extractDescription(marc: Element, metadata: MARCXMLMetadata): void {
 }
 
 function extractPhysicalDescription(marc: Element, metadata: MARCXMLMetadata): void {
-    const marc300 = (marc.find('//marc:datafield[@tag="300"]/marc:subfield', ns) as Element[])
+    const marc300 = marc.find<Element>('//marc:datafield[@tag="300"]/marc:subfield', ns)
         .map(physical => physical.text().trim());
 
     if (marc300.length > 0)
@@ -128,27 +128,27 @@ function extractAuthors(marc: Element, metadata: MARCXMLMetadata): void {
         {tag: 700, role: 'Other author'},
         {tag: 710, role: 'Other organization'},
         {tag: 711, role: 'Other congress'}
-    ].map(({tag, role}) => ({marcAuthors: marc.find(`//marc:datafield[@tag="${tag}"]`, ns) as Element[], role}))
+    ].map(({tag, role}) => ({marcAuthors: marc.find<Element>(`//marc:datafield[@tag="${tag}"]`, ns), role}))
         .reduce<{ marcAuthor: Element, role: string }[]>((acc, {marcAuthors, role}) => acc.concat(marcAuthors.map(i => ({
             marcAuthor: i,
             role
         }))), [])
         .map(({marcAuthor, role}) => {
-            let name = normalize((marcAuthor.get('./marc:subfield[@code="a"]', ns) as Element).text().trim());
+            let name = normalize((marcAuthor.get<Element>('./marc:subfield[@code="a"]', ns) as Element).text().trim());
 
-            const bElem = marcAuthor.get('./marc:subfield[@code="b"]', ns);
+            const bElem = marcAuthor.get<Element>('./marc:subfield[@code="b"]', ns);
             if (bElem)
                 name = name + ' ' + normalize(bElem.text().trim());
 
-            const cElem = marcAuthor.get('./marc:subfield[@code="b"]', ns);
+            const cElem = marcAuthor.get<Element>('./marc:subfield[@code="b"]', ns);
             if (cElem)
                 name = name + ' ' + normalize(cElem.text().trim());
 
-            const dElem = marcAuthor.get('./marc:subfield[@code="b"]', ns);
+            const dElem = marcAuthor.get<Element>('./marc:subfield[@code="b"]', ns);
             if (dElem)
                 name = name + ' ' + normalize(dElem.text().trim());
 
-            const marcAuthorsType = marcAuthor.get('./marc:subfield[@code="e"]', ns);
+            const marcAuthorsType = marcAuthor.get<Element>('./marc:subfield[@code="e"]', ns);
 
             return {type: marcAuthorsType ? normalize(marcAuthorsType.text().trim()) : role, name};
         });
@@ -158,7 +158,7 @@ function extractAuthors(marc: Element, metadata: MARCXMLMetadata): void {
 }
 
 function extractDates(marc: Element, metadata: MARCXMLMetadata): void {
-    const dates = (marc.find('//marc:datafield[@tag="260" or @tag="264"]/marc:subfield[@code="c"]', ns) as Element[])
+    const dates = marc.find<Element>('//marc:datafield[@tag="260" or @tag="264"]/marc:subfield[@code="c"]', ns)
         .map(marcDates => normalize(marcDates.text().trim()));
 
     if (dates.length > 0)
@@ -166,20 +166,20 @@ function extractDates(marc: Element, metadata: MARCXMLMetadata): void {
 }
 
 function extractHdlToMetadata(marc: Element, metadata: MARCXMLMetadata): void {
-    const metadataHdl = marc.get('//marc:datafield[@tag="902"]', ns);
+    const metadataHdl = marc.get<Element>('//marc:datafield[@tag="902"]', ns);
     if (metadataHdl)
         metadata.metadataHdl = metadataHdl.text().trim();
 }
 
 function extractSignature(marc: Element, collectionId: string, metadata: MARCXMLMetadata): void {
-    const marc852 = (marc.find('//marc:datafield[@tag="852"]', ns) as Element[]).find(marc852 => {
-        const marc852p = marc852.get('./marc:subfield[@code="p"]', ns);
+    const marc852 = marc.find<Element>('//marc:datafield[@tag="852"]', ns).find(marc852 => {
+        const marc852p = marc852.get<Element>('./marc:subfield[@code="p"]', ns);
         return marc852p && marc852p.text().trim() === collectionId;
     });
 
     if (marc852) {
-        const marc852c = marc852.get('./marc:subfield[@code="c"]', ns);
-        const marc852j = marc852.get('./marc:subfield[@code="j"]', ns);
+        const marc852c = marc852.get<Element>('./marc:subfield[@code="c"]', ns);
+        const marc852j = marc852.get<Element>('./marc:subfield[@code="j"]', ns);
 
         metadata.signature = `${marc852c ? marc852c.text().trim() : ''} ${marc852j ? marc852j.text().trim() : ''}`.trim();
     }
