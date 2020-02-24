@@ -1,7 +1,6 @@
 import * as moment from 'moment';
-// @ts-ignore
-import * as rangeCheck from 'range_check';
-import * as uuid from 'uuid/v4';
+import {inRange} from 'range_check';
+import {v4 as uuid} from 'uuid';
 import {Context} from 'koa';
 
 import {getClient} from './Redis';
@@ -97,7 +96,7 @@ export async function getAuthTexts(item: Item): Promise<AuthTextsByType> {
 
 export function isIpInRange(ip: string): boolean {
     if (isExternalEnabled()) {
-        const foundMatch = config.internalIpAddresses.find(ipRange => rangeCheck.inRange(ip, ipRange));
+        const foundMatch = config.internalIpAddresses.find(ipRange => inRange(ip, ipRange));
         return foundMatch !== undefined;
     }
     return true;

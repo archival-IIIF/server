@@ -1,4 +1,4 @@
-import * as uuid from 'uuid/v4';
+import {v4 as uuid} from 'uuid';
 import * as moment from 'moment';
 
 import HttpError from '../lib/HttpError';

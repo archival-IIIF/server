@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "strict": true,
-    "alwaysStrict": true,
     "target": "es2020",
     "module": "commonjs",
     "sourceMap": true

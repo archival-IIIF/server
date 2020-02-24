@@ -12,10 +12,10 @@
     "winston": "3.2.1",
     "mime-types": "2.1.26",
     "libxmljs2": "0.25.0",
-    "got": "10.5.7",
+    "got": "10.6.0",
     "file-icon-vectors": "1.0.0",
     "handy-redis": "1.8.0",
-    "uuid": "3.4.0",
+    "uuid": "7.0.0",
     "moment": "2.24.0",
     "range_check": "1.4.0",
     "node-cron": "2.0.3",
@@ -26,7 +26,7 @@
     "sharp": "0.24.1",
     "@koa/router": "8.0.8",
     "@elastic/elasticsearch": "7.6.0",
-    "@types/node": "12.12.27",
+    "@types/node": "12.12.28",
     "@types/koa": "2.11.1",
     "@types/koa-morgan": "1.0.4",
     "@types/koa-json": "2.0.18",
@@ -35,6 +35,7 @@
     "@types/koa-compress": "2.0.9",
     "@types/mime-types": "2.1.0",
     "@types/uuid": "3.4.7",
+    "@types/range_check": "1.4.0",
     "@types/node-cron": "2.0.3",
     "@types/fs-extra": "8.1.0",
     "@types/sharp": "0.24.0",
@@ -46,12 +47,12 @@
     "@types/koa__router": "8.0.2"
   },
   "devDependencies": {
-    "typescript": "3.7.5",
+    "typescript": "3.8.2",
     "dotenv": "8.2.0",
     "mocha": "7.0.1",
-    "sinon": "8.1.1",
+    "sinon": "9.0.0",
     "chai": "4.2.0",
-    "sinon-chai": "3.4.0",
-    "nock": "12.0.0"
+    "sinon-chai": "3.5.0",
+    "nock": "12.0.1"
   }
 }
