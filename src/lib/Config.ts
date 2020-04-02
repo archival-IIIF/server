@@ -29,6 +29,7 @@ export interface Config {
     baseUrl: string;
     dataRootPath: string;
     collectionsRelativePath: string;
+    derivativeRelativePath: string;
     internalIpAddresses: string[];
     loginDisabled: boolean;
     elasticSearchUrl: string;
@@ -130,6 +131,12 @@ const config: Config = {
         if (!process.env.IIIF_SERVER_COLLECTIONS_REL_PATH || (process.env.IIIF_SERVER_COLLECTIONS_REL_PATH === 'null'))
             throw new Error('The collections relative path is not defined');
         return process.env.IIIF_SERVER_COLLECTIONS_REL_PATH;
+    })(),
+
+    derivativeRelativePath: (() => {
+        if (!process.env.IIIF_SERVER_DERIVATIVE_REL_PATH || (process.env.IIIF_SERVER_DERIVATIVE_REL_PATH === 'null'))
+            throw new Error('The derivative relative path is not defined');
+        return process.env.IIIF_SERVER_DERIVATIVE_REL_PATH;
     })(),
 
     internalIpAddresses: (() => {

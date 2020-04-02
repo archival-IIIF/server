@@ -147,7 +147,8 @@ export function getRelativePath(item: Item, type: 'access' | 'original' | null =
 }
 
 export function getDerivativePath(item: Item, type: string, extension: string): string {
-    return path.join(config.dataRootPath, type, ...item.id.split('-'), `${item.id}.${extension}`);
+    return path.join(config.dataRootPath, config.derivativeRelativePath, type,
+        ...item.id.split('-'), `${item.id}.${extension}`);
 }
 
 export function getPronom(item: Item, type: 'access' | 'original' | null = null): string {

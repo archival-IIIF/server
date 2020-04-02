@@ -1,3 +1,5 @@
+import * as got from 'got';
+
 import {sharpProfile, lorisProfile} from './profiles';
 
 import config from '../lib/Config';
@@ -57,27 +59,12 @@ export async function getLogoInfo(): Promise<Image> {
     return imageInfo;
 }
 
-export async function getImage(item: ImageItem, imageOptions: ImageOptions, tier?: AccessTier): Promise<ImageResult> {
-    const maxSize = tier ? Image.computeMaxSize(tier, item.width, item.height) : undefined;
-    const serveImage = await import(config.imageServerUrl ? './external' : './internal');
-
-    return serveImage.default({
-        rootPath: config.dataRootPath,
-        relativePath: getRelativePath(item),
-        size: {width: item.width, height: item.height},
-        maxSize
-    }, imageOptions);
+export async function getImage(item: ImageItem, imageOptions: ImageOptions): Promise<ImageResult> {
+    return serveImage(getRelativePath(item), imageOptions);
 }
 
 export async function getLogo(imageOptions: ImageOptions): Promise<ImageResult> {
-    const [width, height] = config.logoDimensions as [number, number];
-    const serveImage = await import(config.imageServerUrl ? './external' : './internal');
-
-    return serveImage.default({
-        rootPath: config.dataRootPath,
-        relativePath: config.logoRelativePath as string,
-        size: {width, height}
-    }, imageOptions);
+    return serveImage(config.logoRelativePath as string, imageOptions);
 }
 
 export function getProfile(): ImageProfile {
@@ -85,4 +72,20 @@ export function getProfile(): ImageProfile {
         return sharpProfile;
 
     return lorisProfile;
+}
+
+async function serveImage(relativePath: string,
+                          {region, size, rotation, quality, format}: ImageOptions): Promise<ImageResult> {
+    size = (size === 'max') ? 'full' : size;
+
+    const encodedPath = encodeURIComponent(relativePath);
+    const url = `${config.imageServerUrl}/${encodedPath}/${region}/${size}/${rotation}/${quality}.${format}`;
+    const response = await got.default(url, {responseType: 'buffer', throwHttpErrors: false});
+
+    return {
+        image: (response.statusCode === 200) ? response.body : null,
+        status: response.statusCode,
+        contentType: (response.statusCode === 200) ? response.headers['content-type'] as string : null,
+        contentLength: (response.statusCode === 200) ? parseInt(response.headers['content-length'] as string) : null
+    };
 }

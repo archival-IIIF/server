@@ -19,25 +19,12 @@ services:
     networks:
       - back-tier
 
-  loris-image:
+  image:
     build: ./loris
     restart: always
     volumes:
       - data:/data
       - loris-conf:/etc/loris2/loris2.conf
-    networks:
-      - back-tier
-
-  sharp-image:
-    build: .
-    restart: always
-    environment:
-      - NODE_ENV=production
-      - IIIF_SERVER_SERVICES=image
-    ports:
-      - "5000:3333"
-    volumes:
-      - data:/data
     networks:
       - back-tier
 
@@ -76,6 +63,7 @@ services:
       - IIIF_SERVER_HOT_FOLDER_PATTERN=METS\..*\.xml
       - IIIF_SERVER_DATA_ROOT_PATH=/data
       - IIIF_SERVER_COLLECTIONS_REL_PATH=collections
+      - IIIF_SERVER_DERIVATIVE_REL_PATH=data
       - IIIF_SERVER_LOGO_REL_PATH=logo.png
       - IIIF_SERVER_LOGO_DIM=100:150
       - IIIF_SERVER_LOG_LEVEL=debug

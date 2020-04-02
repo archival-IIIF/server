@@ -1,7 +1,7 @@
 import {Context} from 'koa';
 import * as Router from '@koa/router';
 
-import SizeRequest from './SizeRequest';
+import parseSize from './sizeParser';
 import {getInfo, getLogoInfo, getImage, getLogo} from './imageServer';
 
 import logger from '../lib/Logger';
@@ -102,24 +102,22 @@ router.get('/:id/:region/:size/:rotation/:quality.:format', async ctx => {
         ctx.redirect(`${prefix}/${id}${config.imageTierSeparator}${access.tier.name}/${ctx.params.region}/${ctx.params.size}/${ctx.params.rotation}/${ctx.params.quality}.${ctx.params.format}`);
     else {
         const imageItem = item as ImageItem;
-        const size = tier
-            ? Image.computeMaxSize(tier, imageItem.width, imageItem.height)
+        const size = access.tier
+            ? Image.computeMaxSize(access.tier, imageItem.width, imageItem.height)
             : {width: imageItem.width, height: imageItem.height};
 
-        const requestedSize = {width: size.width, height: size.height};
-        const sizeRequest = new SizeRequest(ctx.params.size);
-        sizeRequest.parseImageRequest(requestedSize);
-
-        if ((requestedSize.width > size.width) || (requestedSize.height > size.height))
+        const requestedSize = parseSize(ctx.params.size, size);
+        if (requestedSize && (requestedSize.width > size.width || requestedSize.height > size.height))
             ctx.redirect(`${prefix}/${ctx.params.id}/${ctx.params.region}/max/${ctx.params.rotation}/${ctx.params.quality}.${ctx.params.format}`);
         else {
             const image = await getImage(item as ImageItem, {
                 region: ctx.params.region,
-                size: ctx.params.size,
+                size: (ctx.params.size === 'max' || ctx.params.size === 'full')
+                    ? `${size.width},${size.height}` : ctx.params.size,
                 rotation: ctx.params.rotation,
                 quality: ctx.params.quality,
                 format: ctx.params.format
-            }, access.tier);
+            });
 
             ctx.body = image.image;
             ctx.status = image.status;

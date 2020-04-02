@@ -30,7 +30,7 @@ async function createPdfPage(pdf: hummus.PDFWriter, font: hummus.UsedFont | null
         rotation: '0',
         quality: 'default',
         format: 'jpg'
-    }, tier);
+    });
 
     if (image.image) {
         const imgReadStream = new hummus.PDFRStreamForBuffer(image.image);

@@ -42,9 +42,8 @@ The Archival IIIF server comes with several services that can be turned on or of
 
 ![](./docs/iiif-services.png)
 
-### Default services
-The `web` service runs the IIIF web environment. The `image` service runs an IIIF image server based on 
-[Sharp](https://sharp.pixelplumbing.com). 
+### Default service
+The `web` service runs the IIIF web environment.
 
 ### Workers
 The worker services wait for new jobs to appear in a queue in [Redis](https://redis.io). A distinction is made 
@@ -227,11 +226,9 @@ Use the provided Docker Compose or install manually.
 
 ### Docker Compose
 
-1. Decide which image server to use:
-    * The application comes with a build-in image server using [Sharp](https://sharp.pixelplumbing.com). 
-    Don't configure an image server URL or start a container with the `image` service to use this image server.
-    * Or set up any IIIF image compliant server. 
-    The docker compose comes with support for [Loris](https://github.com/loris-imageserver/loris).
+1. Set up any IIIF image compliant server:
+    * The Docker Compose comes with support for [Loris](https://github.com/loris-imageserver/loris).
+    * Or use our [image server](https://github.com/archival-IIIF/image).
 1. See for example the provided `docker-compose.yml.example`:
     * Note: Clone the `web` service definition to create multiple services and use the env variable 
     `IIIF_SERVER_SERVICES` to define which services that container should run.
@@ -247,9 +244,8 @@ Use the provided Docker Compose or install manually.
 
 ### Manual installation
 
-1. Decide which image server to use:
-    * The application comes with a build-in image server using [Sharp](https://sharp.pixelplumbing.com). 
-    Don't configure an image server URL or start the `image` service to use this image server.
+1. Set up any IIIF image compliant server:
+    * Use our [image server](https://github.com/archival-IIIF/image).
     * Or set up any IIIF image compliant server.
 1. Install
     * [Node.js 12.x LTS](https://nodejs.org/en)
@@ -278,7 +274,6 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_SERVICES`: Comma separated list of services to run on this instance:
     - General services:
         - `web`: Sets up a **web server** and the web environment
-        - `image`: Sets up an **IIIF image server** using [Sharp](https://sharp.pixelplumbing.com)
         - `directory-watcher-changes`:  Runs a **standalone** script that watches a directory for new collections 
         to index: when a collection has had no changes for a certain amount of time, the index is triggered
         - `directory-watcher-file-trigger`: Runs a **standalone** script that watches a directory for new collections 
@@ -313,6 +308,7 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_HOT_FOLDER_PATTERN`: The pattern of a file in the root of a new collection to trigger indexing
 - `IIIF_SERVER_DATA_ROOT_PATH`: The root path of the data storage
 - `IIIF_SERVER_COLLECTIONS_REL_PATH`: The relative path of the (read-only) collections under the data storage root path
+- `IIIF_SERVER_DERIVATIVE_REL_PATH`: The relative path of the (read-write) derivatives under the data storage root path
 - `IIIF_SERVER_LOGO_REL_PATH`: The relative path to the image with the logo to add to the IIIF manifests
 - `IIIF_SERVER_LOGO_DIM`: The dimensions of the logo, separated by a ':'
 - `IIIF_SERVER_LOG_LEVEL`: The logging level
