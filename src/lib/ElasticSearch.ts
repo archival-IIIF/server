@@ -3,7 +3,12 @@ import logger from './Logger';
 import {Client, RequestParams, ApiResponse} from '@elastic/elasticsearch';
 
 let testClient: Client | null = null;
-const client = new Client({node: config.elasticSearchUrl});
+const client = (config.elasticSearchUser && config.elasticSearchPassword)
+    ? new Client({
+        node: config.elasticSearchUrl,
+        auth: {username: config.elasticSearchUser, password: config.elasticSearchPassword}
+    })
+    : new Client({node: config.elasticSearchUrl});
 
 export default function getClient(): Client {
     if (config.env === 'test' && testClient)

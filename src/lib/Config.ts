@@ -12,11 +12,13 @@ export interface Config {
     universalViewerConfigPath?: string;
     hotFolderPath?: string;
     hotFolderPattern?: string;
-    imageServerUrl?: string;
-    imageServerName?: 'loris' | 'sharp';
     metadataOaiUrl?: string;
     metadataSrwUrl?: string;
     logoRelativePath?: string;
+    elasticSearchUser?: string;
+    elasticSearchPassword?: string;
+    imageServerUrl: string;
+    imageServerName: 'loris' | 'sharp';
     logoDimensions?: [number, number],
     imageTierSeparator: string;
     cacheDisabled: boolean;
@@ -48,16 +50,21 @@ const config: Config = {
     universalViewerConfigPath: process.env.IIIF_SERVER_UNIVERSAL_VIEWER_CONFIG_PATH,
     hotFolderPath: process.env.IIIF_SERVER_HOT_FOLDER_PATH,
     hotFolderPattern: process.env.IIIF_SERVER_HOT_FOLDER_PATTERN,
-    imageServerUrl: process.env.IIIF_SERVER_IMAGE_SERVER_URL,
     metadataOaiUrl: process.env.IIIF_SERVER_METADATA_OAI_URL,
     metadataSrwUrl: process.env.IIIF_SERVER_METADATA_SRW_URL,
     logoRelativePath: process.env.IIIF_SERVER_LOGO_REL_PATH,
+    elasticSearchUser: process.env.IIIF_SERVER_ELASTICSEARCH_USER,
+    elasticSearchPassword: process.env.IIIF_SERVER_ELASTICSEARCH_PASSWORD,
+
+    imageServerUrl: (() => {
+        if (!process.env.IIIF_SERVER_IMAGE_SERVER_URL || (process.env.IIIF_SERVER_IMAGE_SERVER_URL === 'null'))
+            throw new Error('Image server url is not defined');
+        return process.env.IIIF_SERVER_IMAGE_SERVER_URL;
+    })(),
 
     imageServerName: (() => {
-        if (!process.env.IIIF_SERVER_IMAGE_SERVER_NAME)
-            return undefined;
-
-        if (!['loris', 'sharp'].includes(process.env.IIIF_SERVER_IMAGE_SERVER_NAME))
+        if (!process.env.IIIF_SERVER_IMAGE_SERVER_NAME ||
+            !['loris', 'sharp'].includes(process.env.IIIF_SERVER_IMAGE_SERVER_NAME))
             throw new Error('Image server name should either be \'loris\' or \'sharp\'');
         return process.env.IIIF_SERVER_IMAGE_SERVER_NAME as 'loris' | 'sharp';
     })(),
