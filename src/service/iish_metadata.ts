@@ -4,7 +4,7 @@ import {parseXml, Document, Element} from 'libxmljs2';
 import config from '../lib/Config';
 import {MetadataParams} from '../lib/Service';
 import {MinimalItem} from '../lib/ItemInterfaces';
-import {updateItems, getCollectionsByMetadataId} from '../lib/Item';
+import {updateItems, getCollectionsByMetadataId, getCollectionIdsIndexed} from '../lib/Item';
 
 import * as EAD from './iish/EAD';
 import * as MarcXML from './iish/MARCXML';
@@ -66,7 +66,17 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
     const allMetadata: MinimalItem[] = [];
     const xmlParsed = parseXml(xml);
 
-    const collections = collectionId ? [collectionId] : await getCollectionsByMetadataId(oaiIdentifier);
+    const collections = new Set<string>();
+    if (collectionId)
+        collections.add(collectionId);
+    else {
+        (await getCollectionsByMetadataId(oaiIdentifier)).forEach(colId => collections.add(colId));
+        if (metadataPrefix === 'marcxml') {
+            const collectionIds = MarcXML.getCollectionIds(xmlParsed);
+            (await getCollectionIdsIndexed(collectionIds)).forEach(colId => collections.add(colId));
+        }
+    }
+
     collections.forEach(collectionId => {
         const metadataItems = (metadataPrefix === 'ead')
             ? updateEAD(xmlParsed, oaiIdentifier, collectionId)

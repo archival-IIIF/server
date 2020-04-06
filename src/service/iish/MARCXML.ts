@@ -41,6 +41,12 @@ export function getAccess(collectionId: string, marc: Document): string {
     return 'open'; // TODO: Always open or always closed (depending on type?)
 }
 
+export function getCollectionIds(marc: Document): string[] {
+    return marc
+        .find<Element>('//marc:datafield[@tag="852"]/marc:subfield[@code="p"]', ns)
+        .map(elem => elem.text().trim());
+}
+
 function extractFormat(marc: Element, metadata: MARCXMLMetadata): void {
     const marcLeader = marc.get<Element>('//marc:leader', ns) as Element;
     const format = marcLeader.text().trim().substring(6, 8);

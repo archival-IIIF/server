@@ -128,6 +128,11 @@ export async function getCollectionsByMetadataId(id: string): Promise<string[]> 
     return Array.from(new Set(<string[]>items.map(item => item.collection_id)));
 }
 
+export async function getCollectionIdsIndexed(ids: string[]): Promise<string[]> {
+    const items = await getItems(ids.map(id => `collection_id:"${id}"`).join(' OR '));
+    return Array.from(new Set(<string[]>items.map(item => item.collection_id)));
+}
+
 async function getItems(q: string): Promise<Item[]> {
     return search<Item>('items', q, 'label:asc');
 }
