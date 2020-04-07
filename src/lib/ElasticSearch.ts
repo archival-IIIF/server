@@ -6,7 +6,8 @@ let testClient: Client | null = null;
 const client = (config.elasticSearchUser && config.elasticSearchPassword)
     ? new Client({
         node: config.elasticSearchUrl,
-        auth: {username: config.elasticSearchUser, password: config.elasticSearchPassword}
+        auth: {username: config.elasticSearchUser, password: config.elasticSearchPassword},
+        ssl: {rejectUnauthorized: false}
     })
     : new Client({node: config.elasticSearchUrl});
 
