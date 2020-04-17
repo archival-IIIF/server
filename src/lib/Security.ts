@@ -64,7 +64,10 @@ export async function hasAccess(ctx: Context, item: Item, acceptToken = false): 
         else
             logger.debug('Determining access with no access id and no identities');
 
-        return await runTaskWithResponse<AccessParams, Access>('access', {item, ip, identities});
+        const access = await runTaskWithResponse<AccessParams, Access>('access', {item, ip, identities});
+        logger.debug(`Access for ${item.id} is ${access.state} based on ip ${ip} and ${identities.length} identities`);
+
+        return access;
     }
 
     return {state: AccessState.OPEN};
@@ -95,11 +98,7 @@ export async function getAuthTexts(item: Item): Promise<AuthTextsByType> {
 }
 
 export function isIpInRange(ip: string): boolean {
-    if (isExternalEnabled()) {
-        const foundMatch = config.internalIpAddresses.find(ipRange => inRange(ip, ipRange));
-        return foundMatch !== undefined;
-    }
-    return true;
+    return isExternalEnabled() ? inRange(ip, config.internalIpAddresses) : true;
 }
 
 export async function hasToken(item: Item, identities: string[]): Promise<boolean> {
