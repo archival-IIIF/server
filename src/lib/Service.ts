@@ -66,6 +66,11 @@ export const allServices: Service[] = [{
     runAs: 'worker',
     getService: () => require('../service/iish_metadata').default
 }, {
+    name: 'iish-update-n-prefix',
+    type: 'update-n-prefix',
+    runAs: 'worker',
+    getService: () => require('../service/iish_update_n_prefix').default
+}, {
     name: 'waveform',
     type: 'waveform',
     runAs: 'worker',

@@ -18,7 +18,9 @@ export default async function processMetadata({oaiIdentifier, collectionId}: Met
         throw new Error('Cannot process metadata, as there is no OAI or SRW URL configured!');
 
     try {
-        if (!oaiIdentifier && collectionId)
+        if (!oaiIdentifier && collectionId && collectionId.startsWith('N30051'))
+            oaiIdentifier = await getOAIIdentifier(collectionId.substring(1), config.metadataSrwUrl);
+        else if (!oaiIdentifier && collectionId)
             oaiIdentifier = await getOAIIdentifier(collectionId, config.metadataSrwUrl);
 
         if (oaiIdentifier)
