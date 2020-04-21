@@ -139,6 +139,7 @@ function extractAuthors(marc: Element, metadata: MARCXMLMetadata): void {
             marcAuthor: i,
             role
         }))), [])
+        .filter(({marcAuthor, role}) => marcAuthor.get<Element>('./marc:subfield[@code="a"]', ns))
         .map(({marcAuthor, role}) => {
             let name = normalize((marcAuthor.get<Element>('./marc:subfield[@code="a"]', ns) as Element).text().trim());
 
