@@ -4,7 +4,7 @@ import * as Router from '@koa/router';
 import HttpError from '../lib/HttpError';
 import {runTask} from '../lib/Task';
 import {workerStatus} from '../lib/Worker';
-import {hasAdminAccess} from '../lib/Security';
+import {hasAdminAccess, getIpAddress} from '../lib/Security';
 import {IndexParams} from '../lib/Service';
 
 import registerToken from './register_token';
@@ -20,6 +20,14 @@ router.use(async (ctx, next) => {
 
 router.get('/worker_status', async ctx => {
     ctx.body = await workerStatus();
+});
+
+router.get('/headers', async ctx => {
+    ctx.body = {
+        ips: ctx.ips,
+        headers: ctx.headers,
+        ip: getIpAddress(ctx),
+    };
 });
 
 router.post('/index_api', async ctx => {

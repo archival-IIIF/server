@@ -84,7 +84,7 @@ export function hasAdminAccess(ctx: Context): boolean {
         && (ctx.headers.authorization.replace('Bearer', '').trim().toLowerCase() === config.accessToken));
 }
 
-function getIpAddress(ctx: Context): string {
+export function getIpAddress(ctx: Context): string {
     if (config.ipAddressHeader) {
         const ips = ctx.get(config.ipAddressHeader.toLowerCase());
         if (ips && ips.length > 0) {
