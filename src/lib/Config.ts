@@ -17,6 +17,7 @@ export interface Config {
     logoRelativePath?: string;
     elasticSearchUser?: string;
     elasticSearchPassword?: string;
+    ipAddressHeader?: string;
     imageServerUrl: string;
     imageServerName: 'loris' | 'sharp';
     logoDimensions?: [number, number],
@@ -55,6 +56,7 @@ const config: Config = {
     logoRelativePath: process.env.IIIF_SERVER_LOGO_REL_PATH,
     elasticSearchUser: process.env.IIIF_SERVER_ELASTICSEARCH_USER,
     elasticSearchPassword: process.env.IIIF_SERVER_ELASTICSEARCH_PASSWORD,
+    ipAddressHeader: process.env.IIIF_SERVER_IP_ADDRESS_HEADER,
 
     imageServerUrl: (() => {
         if (!process.env.IIIF_SERVER_IMAGE_SERVER_URL || (process.env.IIIF_SERVER_IMAGE_SERVER_URL === 'null'))

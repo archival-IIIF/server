@@ -312,6 +312,7 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_LOGO_REL_PATH`: The relative path to the image with the logo to add to the IIIF manifests
 - `IIIF_SERVER_LOGO_DIM`: The dimensions of the logo, separated by a ':'
 - `IIIF_SERVER_LOG_LEVEL`: The logging level
+- `IIIF_SERVER_IP_ADDRESS_HEADER`: The header to read the IP address from, instead of `HTTP_X_FORWARDED_FOR`
 - `IIIF_SERVER_INTERNAL_IP_ADDRESSES`: If access may be granted based on IP address, 
 provide a comma separated white list of ip addresses (Requires Redis)
 - `IIIF_SERVER_LOGIN_DISABLED`: Turn login based authentication on/off (Requires Redis)

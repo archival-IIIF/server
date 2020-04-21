@@ -52,7 +52,7 @@ export async function hasAccess(ctx: Context, item: Item, acceptToken = false): 
         return {state: AccessState.OPEN};
 
     if (isAuthenticationEnabled()) {
-        const ip = ctx.ip;
+        const ip = getIpAddress(ctx);
         const accessId = await getAccessIdFromRequest(ctx, acceptToken);
         const accessIdInfo = await getIdentitiesAndTokensForAccessId(accessId);
         const identities = accessIdInfo ? accessIdInfo.identities : [];
@@ -82,6 +82,18 @@ export function hasAdminAccess(ctx: Context): boolean {
 
     return (ctx.headers.hasOwnProperty('authorization')
         && (ctx.headers.authorization.replace('Bearer', '').trim().toLowerCase() === config.accessToken));
+}
+
+function getIpAddress(ctx: Context): string {
+    if (config.ipAddressHeader) {
+        const ips = ctx.get(config.ipAddressHeader.toLowerCase());
+        if (ips && ips.length > 0) {
+            const ip = ips.split(/\s*,\s*/)[0];
+            return ip || ctx.ip;
+        }
+    }
+
+    return ctx.ip;
 }
 
 export async function requiresAuthentication(item: Item): Promise<boolean> {
