@@ -10,6 +10,11 @@ import {getEnabledAuthServices, requiresAuthentication, getAuthTexts} from '../l
 import AuthService from '../presentation/elem/v2/AuthService';
 import Image, {ImageProfile, AccessTier} from '../presentation/elem/v2/Image';
 
+export interface Size {
+    width: number;
+    height: number;
+}
+
 export interface ImageOptions {
     region: string,
     size: string,
@@ -59,12 +64,13 @@ export async function getLogoInfo(): Promise<Image> {
     return imageInfo;
 }
 
-export async function getImage(item: ImageItem, imageOptions: ImageOptions): Promise<ImageResult> {
-    return serveImage(getRelativePath(item), imageOptions);
+export async function getImage(item: ImageItem, max: number | null,
+                               imageOptions: ImageOptions): Promise<ImageResult> {
+    return serveImage(getRelativePath(item), max, imageOptions);
 }
 
 export async function getLogo(imageOptions: ImageOptions): Promise<ImageResult> {
-    return serveImage(config.logoRelativePath as string, imageOptions);
+    return serveImage(config.logoRelativePath as string, null, imageOptions);
 }
 
 export function getProfile(): ImageProfile {
@@ -74,13 +80,17 @@ export function getProfile(): ImageProfile {
     return lorisProfile;
 }
 
-async function serveImage(relativePath: string,
+async function serveImage(relativePath: string, max: number | null,
                           {region, size, rotation, quality, format}: ImageOptions): Promise<ImageResult> {
     size = (size === 'max') ? 'full' : size;
 
     const encodedPath = encodeURIComponent(relativePath);
     const url = `${config.imageServerUrl}/${encodedPath}/${region}/${size}/${rotation}/${quality}.${format}`;
-    const response = await got.default(url, {responseType: 'buffer', throwHttpErrors: false});
+    const response = await got.default(url, {
+        responseType: 'buffer',
+        throwHttpErrors: false,
+        searchParams: max ? {max} : {},
+    });
 
     return {
         image: (response.statusCode === 200) ? response.body : null,

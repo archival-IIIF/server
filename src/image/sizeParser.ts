@@ -1,13 +1,10 @@
+import {Size} from './imageServer';
+
 const SIZE_TO_WIDTH = /^([0-9]+),$/;
 const SIZE_TO_HEIGHT = /^,([0-9]+)$/;
 const SIZE_TO_PERCENTAGE = /^pct:([0-9]+\.?[0-9]*)$/;
 const SIZE_TO_WIDTH_HEIGHT = /^([0-9]+),([0-9]+)$/;
 const SIZE_TO_BEST_FIT = /^!([0-9]+),([0-9]+)$/;
-
-interface Size {
-    width: number;
-    height: number;
-}
 
 interface ParseResult {
     isMax: boolean,
@@ -64,9 +61,6 @@ function getNewSize(parseResult: ParseResult, size: Size): Size | null {
     if ((parseResult.newSize.width === 0) || (parseResult.newSize.height === 0))
         return null;
 
-    if ((parseResult.newSize.width === null) || (parseResult.newSize.height === null))
-        return null;
-
     let width = size.width;
     let height = size.height;
 
@@ -106,6 +100,6 @@ function getNewSize(parseResult: ParseResult, size: Size): Size | null {
 
     return {
         width: size.width,
-        height: size.height = height
+        height: size.height
     };
 }

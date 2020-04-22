@@ -24,7 +24,8 @@ export default async function createPDF(items: ImageItem[], texts: Text[], tier?
 
 async function createPdfPage(pdf: hummus.PDFWriter, font: hummus.UsedFont | null, item: ImageItem,
                              text?: Text, tier?: AccessTier) {
-    const image = await getImage(item, {
+    const max = tier ? tier.maxSize : null;
+    const image = await getImage(item, max, {
         region: 'full',
         size: 'max',
         rotation: '0',

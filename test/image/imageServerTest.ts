@@ -112,7 +112,7 @@ describe('imageServer', () => {
         });
 
         it('should call an external IIIF image provider', async () => {
-            const result = await getImage(item, {
+            const result = await getImage(item, null, {
                 region: 'full',
                 size: 'max',
                 rotation: '0',

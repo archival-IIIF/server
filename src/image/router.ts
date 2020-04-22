@@ -44,8 +44,11 @@ router.get('/:id/info.json', async ctx => {
         throw new HttpError(404, `No image with the id ${id}`);
 
     const access = await hasAccess(ctx, item, true);
-    if (access.state === AccessState.CLOSED)
-        throw new HttpError(401, 'Access denied!');
+    if (access.state === AccessState.CLOSED) {
+        setContentType(ctx);
+        ctx.status = 401;
+        ctx.body = await getInfo(item as ImageItem, access.tier, id);
+    }
 
     if (access.state === AccessState.OPEN && shouldRedirect(access, tier))
         ctx.redirect(`${prefix}/${id}/info.json`);
@@ -110,10 +113,10 @@ router.get('/:id/:region/:size/:rotation/:quality.:format', async ctx => {
         if (requestedSize && (requestedSize.width > size.width || requestedSize.height > size.height))
             ctx.redirect(`${prefix}/${ctx.params.id}/${ctx.params.region}/max/${ctx.params.rotation}/${ctx.params.quality}.${ctx.params.format}`);
         else {
-            const image = await getImage(item as ImageItem, {
+            const max = access.tier ? access.tier.maxSize : null;
+            const image = await getImage(item as ImageItem, max, {
                 region: ctx.params.region,
-                size: (ctx.params.size === 'max' || ctx.params.size === 'full')
-                    ? `${size.width},${size.height}` : ctx.params.size,
+                size: ctx.params.size,
                 rotation: ctx.params.rotation,
                 quality: ctx.params.quality,
                 format: ctx.params.format
