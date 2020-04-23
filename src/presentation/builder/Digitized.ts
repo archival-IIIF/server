@@ -1,12 +1,17 @@
+import config from '../../lib/Config';
 import {getChildItems} from '../../lib/Item';
 import {Item, RootItem, FileItem} from '../../lib/ItemInterfaces';
+import {Access, AccessState, getAuthTexts} from '../../lib/Security';
 
 import {createMinimalManifest, createManifest, createCanvas, addThumbnail, addMetadata} from './PresentationUtils';
 
 import Base from '../elem/v3/Base';
 import Manifest from '../elem/v3/Manifest';
+import AuthService from '../elem/v3/AuthService';
 
-export async function getManifest(parentItem: RootItem): Promise<Manifest> {
+const prefixAuthUrl = `${config.baseUrl}/iiif/auth`;
+
+export async function getManifest(parentItem: RootItem, access: Access): Promise<Manifest> {
     const manifest = await createManifest(parentItem);
     const items = await getChildItems(parentItem.id, true) as FileItem[];
     const firstItem = items[0];
@@ -23,6 +28,9 @@ export async function getManifest(parentItem: RootItem): Promise<Manifest> {
 
         return canvas;
     })));
+
+    if (access.state === AccessState.CLOSED)
+        await setAuthenticationServices(parentItem, manifest);
 
     return manifest;
 }
@@ -46,4 +54,11 @@ function addBehavior(base: Base, item: Item, hasMultipleItems = true): void {
         base.setBehavior('paged');
     else
         base.setBehavior('individuals');
+}
+
+async function setAuthenticationServices(item: Item, base: Base): Promise<void> {
+    const authTexts = await getAuthTexts(item);
+    const service = AuthService.getAuthenticationService(prefixAuthUrl, authTexts, 'external');
+    if (service)
+        base.setService(service);
 }

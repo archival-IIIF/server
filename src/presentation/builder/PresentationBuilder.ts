@@ -45,7 +45,7 @@ export async function getCollection(item: Item, access: Access, v3?: string): Pr
 
 export async function getManifest(item: Item, access: Access, v3?: string): Promise<ManifestV2 | ManifestV3 | null> {
     if (item && (item.type === 'root'))
-        return await Digitized.getManifest(item as RootItem);
+        return await Digitized.getManifest(item as RootItem, access);
 
     if (item && (item.type !== 'metadata' && item.type !== 'folder' && !item.order) && typeof v3 === 'string')
         return await DigitalBornV3.getManifest(item as FileItem, access);
