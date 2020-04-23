@@ -1,7 +1,8 @@
 FROM node:12.16.1-alpine AS builder
 
 # Install tooling
-RUN apk add git python3 g++ make cmake gcc libmad-dev libid3tag-dev libsndfile-dev gd-dev boost-dev
+RUN apk add git python3 g++ make cmake gcc libmad-dev libid3tag-dev libsndfile-dev gd-dev boost-dev \
+  libgd libpng-dev zlib-dev zlib-static libpng-static boost-static autoconf automake libtool gettext
 
 # Install global NPM tooling
 RUN npm install typescript grunt-cli -g
