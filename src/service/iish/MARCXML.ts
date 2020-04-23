@@ -147,11 +147,11 @@ function extractAuthors(marc: Element, metadata: MARCXMLMetadata): void {
             if (bElem)
                 name = name + ' ' + normalize(bElem.text().trim());
 
-            const cElem = marcAuthor.get<Element>('./marc:subfield[@code="b"]', ns);
+            const cElem = marcAuthor.get<Element>('./marc:subfield[@code="c"]', ns);
             if (cElem)
                 name = name + ' ' + normalize(cElem.text().trim());
 
-            const dElem = marcAuthor.get<Element>('./marc:subfield[@code="b"]', ns);
+            const dElem = marcAuthor.get<Element>('./marc:subfield[@code="d"]', ns);
             if (dElem)
                 name = name + ' ' + normalize(dElem.text().trim());
 
