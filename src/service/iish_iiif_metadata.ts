@@ -62,7 +62,7 @@ function getMetadata(item: Item): IIIFMetadataPairs {
     if (item.iish && item.iish.access)
         metadata.push({
             label: 'Use restrictions for this item',
-            value: '<a href="https://socialhistory.org/en/services/copyrights" target="_blank">' +
+            value: '<a href="https://iisg.amsterdam/en/collections/using/reproductions#copyrights" target="_blank">' +
                 'Please consult the IISH copyright statement before using this item</a>'
         });
 
