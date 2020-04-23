@@ -21,23 +21,17 @@ export default async function hasAccess({item, ip, identities = []}: AccessParam
     }
 
     if (accessCode === 'restricted' && type === 'marcxml') {
-        if ((ip && isIpInRange(ip)) || await hasToken(item, identities))
+        if (item.type !== 'image' || (ip && isIpInRange(ip)) || await hasToken(item, identities))
             return {state: AccessState.OPEN};
 
-        if (item.type === 'image')
-            return {state: AccessState.TIERED, tier: {name: accessCode, maxSize: 1500}};
-
-        return {state: AccessState.CLOSED};
+        return {state: AccessState.TIERED, tier: {name: accessCode, maxSize: 1500}};
     }
 
     if (accessCode === 'minimal' || accessCode === 'pictoright') {
-        if ((ip && isIpInRange(ip)) || await hasToken(item, identities))
+        if (item.type !== 'image' || (ip && isIpInRange(ip)) || await hasToken(item, identities))
             return {state: AccessState.OPEN};
 
-        if (item.type === 'image')
-            return {state: AccessState.TIERED, tier: {name: accessCode, maxSize: 450}};
-
-        return {state: AccessState.CLOSED};
+        return {state: AccessState.TIERED, tier: {name: accessCode, maxSize: 450}};
     }
 
     if ((type === 'marcxml') && ((ip && isIpInRange(ip)) || await hasToken(item, identities)))
