@@ -35,6 +35,7 @@ export type WaveformParams = { collectionId: string };
 export type AccessParams = { item: Item, ip?: string, identities?: string[] };
 export type AuthTextsParams = { item: Item };
 export type IIIFMetadataParams = { item: Item };
+export type ProcessUpdateParams = { type: string, query: string };
 
 export const allServices: Service[] = [{
     name: 'web',
@@ -66,10 +67,10 @@ export const allServices: Service[] = [{
     runAs: 'worker',
     getService: () => require('../service/iish_metadata').default
 }, {
-    name: 'iish-update-n-prefix',
-    type: 'update-n-prefix',
+    name: 'process-update',
+    type: 'process-update',
     runAs: 'worker',
-    getService: () => require('../service/iish_update_n_prefix').default
+    getService: () => require('../service/process_update').default
 }, {
     name: 'waveform',
     type: 'waveform',
