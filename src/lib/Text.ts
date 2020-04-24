@@ -27,6 +27,10 @@ export interface OcrWord {
 
 const readFileAsync = promisify(fs.readFile);
 
+const ns = {
+    'alto': 'http://www.loc.gov/standards/alto/ns-v2#'
+};
+
 export async function indexTexts(textItems: Text[]): Promise<void> {
     try {
         while (textItems.length > 0) {
@@ -76,7 +80,7 @@ async function getTexts(q: string): Promise<Text[]> {
 export async function readAlto(uri: string): Promise<OcrWord[]> {
     const altoXml = await readFileAsync(uri, 'utf8');
     const alto = parseXml(altoXml);
-    return alto.find<Element>('//String').map(stringElem => {
+    return alto.find<Element>('//alto:String', ns).map(stringElem => {
         return {
             x: parseInt((stringElem.attr('VPOS') as Attribute).value()),
             y: parseInt((stringElem.attr('HPOS') as Attribute).value()),
