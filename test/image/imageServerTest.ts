@@ -57,7 +57,7 @@ describe('imageServer', () => {
             const imageInfo = await getInfo(item, tier);
 
             expect(imageInfo).to.be.an.instanceOf(Image);
-            expect(imageInfo).to.have.all.keys([...imageInfoKeys, 'maxWidth', 'maxHeight']);
+            expect(imageInfo).to.have.all.keys(imageInfoKeys);
 
             expect(imageInfo).to.have.nested.include({'profile[0]': 'http://iiif.io/api/image/2/level2.json'});
             expect(imageInfo).to.have.nested.property('profile[1].formats');
@@ -67,20 +67,16 @@ describe('imageServer', () => {
             expect(imageInfo).to.have.deep.property('@context', 'http://iiif.io/api/image/2/context.json');
             expect(imageInfo).to.have.deep.property('@id', 'http://localhost:3000/iiif/image/12345_tierName');
             expect(imageInfo).to.have.deep.property('protocol', 'http://iiif.io/api/image');
-            expect(imageInfo).to.have.deep.property('width', 500);
-            expect(imageInfo).to.have.deep.property('height', 200);
+            expect(imageInfo).to.have.deep.property('width', 150);
+            expect(imageInfo).to.have.deep.property('height', 60);
             expect(imageInfo).to.have.deep.property('sizes', []);
-
-            expect(imageInfo).to.have.deep.property('maxWidth', 150);
-            expect(imageInfo).to.have.deep.property('maxHeight', 60);
-
         });
 
         it('should generate an IIIF image info record for an image item with tier and original id', async () => {
             const imageInfo = await getInfo(item, tier, 'abc');
 
             expect(imageInfo).to.be.an.instanceOf(Image);
-            expect(imageInfo).to.have.all.keys([...imageInfoKeys, 'maxWidth', 'maxHeight']);
+            expect(imageInfo).to.have.all.keys(imageInfoKeys);
 
             expect(imageInfo).to.have.nested.include({'profile[0]': 'http://iiif.io/api/image/2/level2.json'});
             expect(imageInfo).to.have.nested.property('profile[1].formats');
@@ -90,12 +86,9 @@ describe('imageServer', () => {
             expect(imageInfo).to.have.deep.property('@context', 'http://iiif.io/api/image/2/context.json');
             expect(imageInfo).to.have.deep.property('@id', 'http://localhost:3000/iiif/image/abc_tierName');
             expect(imageInfo).to.have.deep.property('protocol', 'http://iiif.io/api/image');
-            expect(imageInfo).to.have.deep.property('width', 500);
-            expect(imageInfo).to.have.deep.property('height', 200);
+            expect(imageInfo).to.have.deep.property('width', 150);
+            expect(imageInfo).to.have.deep.property('height', 60);
             expect(imageInfo).to.have.deep.property('sizes', []);
-
-            expect(imageInfo).to.have.deep.property('maxWidth', 150);
-            expect(imageInfo).to.have.deep.property('maxHeight', 60);
         });
     });
 

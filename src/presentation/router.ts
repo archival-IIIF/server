@@ -7,7 +7,7 @@ import {cache} from '../lib/Cache';
 import {getItem} from '../lib/Item';
 import {AccessState, hasAccess} from '../lib/Security';
 
-import {isCollection, isManifest, getCollection, getManifest} from './builder/PresentationBuilder';
+import {getCollection, getManifest, isCollection, isManifest} from './builder/PresentationBuilder';
 import Collection from './elem/v2/Collection';
 import ManifestV2 from './elem/v2/Manifest';
 import ManifestV3 from './elem/v3/Manifest';

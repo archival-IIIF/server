@@ -202,6 +202,17 @@ Can only be used by an administrator with a valid access token.
 
 ---
 
+**URL**: `/update_metadata`
+
+**Method**: `POST`
+
+**Parameters**: `id`
+
+Creates a job for the metadata worker to force-update the metadata for the given OAI identifier. 
+Can only be used by an administrator with a valid access token.
+
+---
+
 **URL**: `/index_api`
 
 **Method**: `POST`

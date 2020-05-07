@@ -5,7 +5,7 @@ import HttpError from '../lib/HttpError';
 import {runTask} from '../lib/Task';
 import {workerStatus} from '../lib/Worker';
 import {hasAdminAccess, getIpAddress} from '../lib/Security';
-import {IndexParams} from '../lib/Service';
+import {IndexParams, MetadataParams} from '../lib/Service';
 
 import registerToken from './register_token';
 import indexCollection from './api_index';
@@ -45,6 +45,14 @@ router.post('/index', async ctx => {
 
     runTask<IndexParams>('index', {collectionPath: path});
     ctx.body = 'Collection is sent to the queue for indexing';
+});
+
+router.post('/update_metadata', async ctx => {
+    if (!ctx.request.body.id)
+        throw new HttpError(400, 'Please provide an OAI identifier of the record to update');
+
+    runTask<MetadataParams>('metadata', {oaiIdentifier: ctx.request.body.id});
+    ctx.body = 'OAI identifier is sent to the queue for metadata update';
 });
 
 router.post('/register_token', async ctx => {

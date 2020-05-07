@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<alto xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="http://schema.ccs-gmbh.com/metae/alto-1-4.xsd"
-      xmlns:xlink="http://www.w3.org/1999/xlink">
+<alto xmlns="http://www.loc.gov/standards/alto/ns-v2#" xmlns:xlink="http://www.w3.org/1999/xlink"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.loc.gov/standards/alto/ns-v2# http://www.loc.gov/standards/alto/alto-v2.0.xsd">
   <Layout>
     <Page ID="Page1" HEIGHT="4450" WIDTH="3533" PHYSICAL_IMG_NR="1" PC="0.974288224956063">
       <TopMargin HEIGHT="0" WIDTH="3533" HPOS="0" VPOS="0"/>
