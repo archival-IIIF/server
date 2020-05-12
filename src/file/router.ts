@@ -62,6 +62,11 @@ router.get('/:id/:type(original|access)?', async ctx => {
     if (!item)
         throw new HttpError(404, `No file found with the id ${ctx.params.id}`);
 
+    if ((item.type === 'image' && !hasAdminAccess(ctx))) {
+        ctx.redirect(`/iiif/image/${item.id}/full/max/0/default.jpg`);
+        return;
+    }
+
     const access = await hasAccess(ctx, item, false);
     if (access.state !== AccessState.OPEN)
         throw new HttpError(401, 'Access denied');
@@ -74,8 +79,7 @@ router.get('/:id/:type(original|access)?', async ctx => {
 
     const type = ctx.params.type || getAvailableType(item);
     const fullPath = getFullPath(item, type);
-
-    if (!fullPath || (item.type === 'image' && !hasAdminAccess(ctx)))
+    if (!fullPath)
         throw new HttpError(404, `No file found for id ${ctx.params.id} and type ${type}`);
 
     const pronom = getPronom(item, type);
