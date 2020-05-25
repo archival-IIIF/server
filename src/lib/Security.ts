@@ -3,12 +3,12 @@ import {inRange} from 'range_check';
 import {v4 as uuid} from 'uuid';
 import {Context} from 'koa';
 
-import {getClient} from './Redis';
 import config from './Config';
 import logger from './Logger';
-import getEsClient, {TokenSearchRequest, SearchResponse} from './ElasticSearch';
-import {runTaskWithResponse} from './Task';
 import {Item} from './ItemInterfaces';
+import {runTaskWithResponse} from './Task';
+import {getClient} from './Redis';
+import getEsClient, {SearchResponse} from './ElasticSearch';
 
 import {AuthTextsByType} from '../service/util/types';
 import {AccessParams, AuthTextsParams} from './Service';
@@ -121,7 +121,7 @@ export async function hasToken(item: Item, identities: string[]): Promise<boolea
 
 export async function checkTokenDb(tokens: string[]): Promise<Token[]> {
     try {
-        const response: SearchResponse<Token> = await getEsClient().search(<TokenSearchRequest>{
+        const response: SearchResponse<Token> = await getEsClient().search({
             index: 'tokens',
             size: 100,
             body: {

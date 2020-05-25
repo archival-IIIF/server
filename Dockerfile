@@ -36,4 +36,3 @@ WORKDIR /opt/iiif-server
 
 # Run the application
 CMD ["node", "src/app.js"]
-

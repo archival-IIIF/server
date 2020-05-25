@@ -1,6 +1,6 @@
 import config from './Config';
 import logger from './Logger';
-import {Client, RequestParams, ApiResponse} from '@elastic/elasticsearch';
+import {Client, ApiResponse} from '@elastic/elasticsearch';
 
 let testClient: Client | null = null;
 const client = (config.elasticSearchUser && config.elasticSearchPassword)
@@ -28,7 +28,7 @@ export async function search<T>(index: string, q: string, sort?: string): Promis
     const results: T[] = [];
 
     try {
-        const response: SearchResponse<T> = await getClient().search(<SearchRequest>{
+        const response: SearchResponse<T> = await getClient().search({
             index,
             sort,
             size: 1000,
@@ -41,8 +41,8 @@ export async function search<T>(index: string, q: string, sort?: string): Promis
             results.push(...hits.hits.map(hit => hit._source));
 
             if (_scroll_id) {
-                const scrollResults: SearchResponse<T> = await getClient().scroll(<ScrollRequest>{
-                    scrollId: _scroll_id,
+                const scrollResults: SearchResponse<T> = await getClient().scroll({
+                    scroll_id: _scroll_id,
                     scroll: '10s'
                 });
 
@@ -60,37 +60,6 @@ export async function search<T>(index: string, q: string, sort?: string): Promis
         return results;
     }
 }
-
-export type GetRequest = RequestParams.Get;
-export type SearchRequest = RequestParams.Search<undefined>;
-export type ScrollRequest = RequestParams.Scroll<undefined>;
-export type DeleteByQueryRequest = RequestParams.DeleteByQuery<{}>;
-export type IndexRequest<T> = RequestParams.Index<T>;
-
-export type IndexBulkRequest<I, B> = RequestParams.Bulk<({
-    index: {
-        _index: I;
-        _id: string;
-    };
-} | B)[]>;
-
-export type UpdateBulkRequest<I, D, U> = RequestParams.Bulk<({
-    update: {
-        _index: I;
-        _id: string;
-    };
-} | {
-    doc: D;
-    upsert: U;
-})[]>;
-
-export type TokenSearchRequest = RequestParams.Search<{
-    query: {
-        terms: { 'token': string[]; };
-    };
-}>;
-
-export type GetResponse<T> = ApiResponse<{ _source: T }>;
 
 export type SearchResponse<T> = ApiResponse<{
     _scroll_id: string;

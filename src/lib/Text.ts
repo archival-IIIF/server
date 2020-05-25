@@ -4,7 +4,7 @@ import {promisify} from 'util';
 import {parseXml, Element, Attribute} from 'libxmljs2';
 
 import config from '../lib/Config';
-import getClient, {search, DeleteByQueryRequest, IndexBulkRequest} from './ElasticSearch';
+import getClient, {search} from './ElasticSearch';
 
 export interface Text {
     id: string;
@@ -41,7 +41,7 @@ export async function indexTexts(textItems: Text[]): Promise<void> {
                     item
                 ]);
 
-            await getClient().bulk(<IndexBulkRequest<'texts', Text>>{
+            await getClient().bulk({
                 refresh: 'wait_for',
                 body: [].concat(...body as [])
             });
@@ -53,7 +53,7 @@ export async function indexTexts(textItems: Text[]): Promise<void> {
 }
 
 export async function deleteTexts(collectionId: string): Promise<void> {
-    await getClient().deleteByQuery(<DeleteByQueryRequest>{
+    await getClient().deleteByQuery({
         index: 'texts',
         q: `collection_id:${collectionId}`,
         body: {}

@@ -1,9 +1,7 @@
 import * as path from 'path';
 import config from './Config';
 import {Item, MinimalItem} from './ItemInterfaces';
-import getClient, {
-    search, GetRequest, DeleteByQueryRequest, IndexBulkRequest, UpdateBulkRequest, GetResponse
-} from './ElasticSearch';
+import getClient, {search} from './ElasticSearch';
 
 export function createItem(obj: MinimalItem): Item {
     return {
@@ -45,7 +43,7 @@ export async function indexItems(items: Item[]): Promise<void> {
                     item
                 ]);
 
-            await getClient().bulk(<IndexBulkRequest<'items', Item>>{
+            await getClient().bulk({
                 refresh: 'wait_for',
                 body: [].concat(...body as [])
             });
@@ -69,7 +67,7 @@ export async function updateItems(items: MinimalItem[]): Promise<void> {
                     {doc: item, upsert: createItem(item)}
                 ]);
 
-            await getClient().bulk(<UpdateBulkRequest<'items', MinimalItem, Item>>{
+            await getClient().bulk({
                 body: [].concat(...body as [])
             });
         }
@@ -80,7 +78,7 @@ export async function updateItems(items: MinimalItem[]): Promise<void> {
 }
 
 export async function deleteItems(collectionId: string): Promise<void> {
-    await getClient().deleteByQuery(<DeleteByQueryRequest>{
+    await getClient().deleteByQuery({
         index: 'items',
         q: `collection_id:"${collectionId}"`,
         body: {}
@@ -89,7 +87,7 @@ export async function deleteItems(collectionId: string): Promise<void> {
 
 export async function getItem(id: string): Promise<Item | null> {
     try {
-        const response: GetResponse<Item> = await getClient().get(<GetRequest>{index: 'items', id: id});
+        const response = await getClient().get({index: 'items', id: id});
         return response.body._source;
     }
     catch (err) {
@@ -101,7 +99,10 @@ export async function determineItem(id: string): Promise<Item | null> {
     const item = await getItem(id);
     if (item && item.type === 'root') {
         const children = await getChildItems(item.id);
-        const firstChild = children.find(child => child.order === 1);
+
+        const page = item.formats.includes('archive') ? 2 : 1;
+        const firstChild = children.find(child => child.order === page);
+
         return firstChild || children[0];
     }
     return item;
