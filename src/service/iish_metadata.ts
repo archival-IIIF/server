@@ -75,6 +75,10 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
             const collectionIds = MarcXML.getCollectionIds(xmlParsed);
             (await getCollectionIdsIndexed(collectionIds)).forEach(colId => collections.add(colId));
         }
+        else {
+            const collectionId = oaiIdentifier.replace('oai:socialhistoryservices.org:10622/', '');
+            (await getCollectionIdsIndexed(EAD.getRootId(collectionId))).forEach(colId => collections.add(colId));
+        }
     }
 
     collections.forEach(collectionId => {
