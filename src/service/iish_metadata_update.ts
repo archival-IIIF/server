@@ -33,7 +33,7 @@ export async function getOAIIdentifiersOfUpdated(fromDate: string, uri: string):
     let resumptionToken = null;
     while (resumptionToken !== false) {
         const response = await got.default(uri, {
-            rejectUnauthorized: false, resolveBodyOnly: true, searchParams: {
+            https: {rejectUnauthorized: false}, resolveBodyOnly: true, searchParams: {
                 verb: 'ListIdentifiers',
                 metadataPrefix: 'marcxml',
                 from: fromDate,

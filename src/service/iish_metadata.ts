@@ -38,7 +38,7 @@ export async function getOAIIdentifier(collectionId: string, uri: string): Promi
     }
 
     const response = await got.default(uri, {
-        rejectUnauthorized: false, resolveBodyOnly: true, searchParams: {
+        https: {rejectUnauthorized: false}, resolveBodyOnly: true, searchParams: {
             operation: 'searchRetrieve',
             query: `marc.852$p="${collectionId}"`
         }
@@ -56,7 +56,7 @@ export async function getOAIIdentifier(collectionId: string, uri: string): Promi
 async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string): Promise<void> {
     const metadataPrefix = oaiIdentifier.includes('ARCH') || oaiIdentifier.includes('COLL') ? 'ead' : 'marcxml';
     const xml = await got.default(config.metadataOaiUrl as string, {
-        rejectUnauthorized: false, resolveBodyOnly: true, searchParams: {
+        https: {rejectUnauthorized: false}, resolveBodyOnly: true, searchParams: {
             verb: 'GetRecord',
             identifier: oaiIdentifier,
             metadataPrefix
