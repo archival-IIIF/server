@@ -1,0 +1,501 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:xlink="http://www.w3.org/1999/xlink"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version1121/mets.xsd">
+  <mets:metsHdr CREATEDATE="2020-06-09T09:34:24"/>
+  <mets:dmdSec ID="dmdSec_1">
+    <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+      <mets:xmlData>
+        <premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:intellectualEntity"
+                       xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd"
+                       version="3.0">
+          <premis:objectIdentifier>
+            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+            <premis:objectIdentifierValue>fddf94a1-d1f9-4122-a69a-d6c2cba9b2c8</premis:objectIdentifierValue>
+          </premis:objectIdentifier>
+          <premis:originalName>test-fddf94a1-d1f9-4122-a69a-d6c2cba9b2c8</premis:originalName>
+        </premis:object>
+      </mets:xmlData>
+    </mets:mdWrap>
+  </mets:dmdSec>
+  <mets:amdSec ID="amdSec_1">
+    <mets:techMD ID="techMD_1">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:file"
+                         xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd"
+                         version="3.0">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>5cd49090-adad-4767-a642-c7bdcf1f4f8f</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>
+                  ce84062298dc9d79881b111045352a139a0459172873ebde7bb672f1ac967dd8
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>72</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Unknown</premis:formatName>
+                </premis:formatDesignation>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2020-06-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+            </premis:objectCharacteristics>
+            <premis:originalName>
+              %SIPDirectory%objects/metadata/transfers/test-bb52e019-76ea-4e52-aac6-abd700f35b18/checksum.md5
+            </premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_2">
+    <mets:techMD ID="techMD_2">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:file"
+                         xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd"
+                         version="3.0">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>685b0a4c-a32e-42e9-a28d-64640ad5b04a</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>
+                  13c482113b4ca922f2fe158ac5dffa40f255d87025bb8b603f9160ddc4e1d270
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>200</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Unknown</premis:formatName>
+                </premis:formatDesignation>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2020-06-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+            </premis:objectCharacteristics>
+            <premis:originalName>
+              %SIPDirectory%objects/metadata/transfers/test-bb52e019-76ea-4e52-aac6-abd700f35b18/directory_tree.txt
+            </premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_3">
+    <mets:techMD ID="techMD_3">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:file"
+                         xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd"
+                         version="3.0">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>951f9484-3e58-4e8c-bff9-c82a37d344d1</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>
+                  d5d2d904177c21552eb2c0156d356c90dc75e35c7bef845017825e04f915b25e
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>346</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Unknown</premis:formatName>
+                </premis:formatDesignation>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2020-06-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+            </premis:objectCharacteristics>
+            <premis:originalName>
+              %SIPDirectory%objects/metadata/transfers/test-bb52e019-76ea-4e52-aac6-abd700f35b18/identifiers.json
+            </premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_4">
+    <mets:techMD ID="techMD_4">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:file"
+                         xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd"
+                         version="3.0">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>ed5fa83a-c3db-4034-8d08-dc446536715d</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>
+                  1363d85914ba4dfeb325e71a32a38e0cbece12b9ab1b95d3c1cd72bd80c0ee5a
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>466</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Unknown</premis:formatName>
+                </premis:formatDesignation>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2020-06-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+            </premis:objectCharacteristics>
+            <premis:originalName>
+              %SIPDirectory%objects/metadata/transfers/test-bb52e019-76ea-4e52-aac6-abd700f35b18/mets_structmap.xml
+            </premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_5">
+    <mets:techMD ID="techMD_5">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:file"
+                         xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd"
+                         version="3.0">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>916cceb5-12c5-43c1-a98e-acf1647d1aca</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>URI</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>
+                https://hdl.handle.net/10622/C969A354-284F-4ECB-BAA6-62C24DF72643
+              </premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>hdl</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>10622/C969A354-284F-4ECB-BAA6-62C24DF72643</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>
+                  540c558772e856aaabc0845e16ed723cd42416a70da3ff1c026da84d23918b8e
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>64600916</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Tagged Image File Format</premis:formatName>
+                  <premis:formatVersion/>
+                </premis:formatDesignation>
+                <premis:formatRegistry>
+                  <premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+                  <premis:formatRegistryKey>fmt/353</premis:formatRegistryKey>
+                </premis:formatRegistry>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2019-01-17</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+              <premis:objectCharacteristicsExtension>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                  <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/"
+                                   xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/"
+                                   xmlns:System="http://ns.exiftool.ca/File/System/1.0/"
+                                   xmlns:File="http://ns.exiftool.ca/File/1.0/"
+                                   xmlns:IFD0="http://ns.exiftool.ca/EXIF/IFD0/1.0/"
+                                   xmlns:XMP-x="http://ns.exiftool.ca/XMP/XMP-x/1.0/"
+                                   xmlns:XMP-xmp="http://ns.exiftool.ca/XMP/XMP-xmp/1.0/"
+                                   xmlns:XMP-dc="http://ns.exiftool.ca/XMP/XMP-dc/1.0/"
+                                   xmlns:XMP-xmpMM="http://ns.exiftool.ca/XMP/XMP-xmpMM/1.0/"
+                                   xmlns:XMP-photoshop="http://ns.exiftool.ca/XMP/XMP-photoshop/1.0/"
+                                   xmlns:Photoshop="http://ns.exiftool.ca/Photoshop/Photoshop/1.0/"
+                                   xmlns:ExifIFD="http://ns.exiftool.ca/EXIF/ExifIFD/1.0/"
+                                   xmlns:ICC-header="http://ns.exiftool.ca/ICC_Profile/ICC-header/1.0/"
+                                   xmlns:ICC_Profile="http://ns.exiftool.ca/ICC_Profile/ICC_Profile/1.0/"
+                                   xmlns:Composite="http://ns.exiftool.ca/Composite/1.0/"
+                                   rdf:about="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-bb52e019-76ea-4e52-aac6-abd700f35b18/objects/preservation/test_0001.tif"
+                                   et:toolkit="Image::ExifTool 10.80">
+                    <ExifTool:ExifToolVersion>10.80</ExifTool:ExifToolVersion>
+                    <System:FileName>test_0001.tif</System:FileName>
+                    <System:Directory>
+                      /var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-bb52e019-76ea-4e52-aac6-abd700f35b18/objects/preservation
+                    </System:Directory>
+                    <System:FileSize>62 MB</System:FileSize>
+                    <System:FileModifyDate>2019:01:17 11:43:01+00:00</System:FileModifyDate>
+                    <System:FileAccessDate>2020:06:09 09:33:56+00:00</System:FileAccessDate>
+                    <System:FileInodeChangeDate>2020:06:09 09:33:45+00:00</System:FileInodeChangeDate>
+                    <System:FilePermissions>rwxr-x---</System:FilePermissions>
+                    <File:FileType>TIFF</File:FileType>
+                    <File:FileTypeExtension>tif</File:FileTypeExtension>
+                    <File:MIMEType>image/tiff</File:MIMEType>
+                    <File:ExifByteOrder>Little-endian (Intel, II)</File:ExifByteOrder>
+                    <IFD0:SubfileType>Full-resolution Image</IFD0:SubfileType>
+                    <IFD0:ImageWidth>3855</IFD0:ImageWidth>
+                    <IFD0:ImageHeight>5584</IFD0:ImageHeight>
+                    <IFD0:BitsPerSample>8 8 8</IFD0:BitsPerSample>
+                    <IFD0:Compression>Uncompressed</IFD0:Compression>
+                    <IFD0:PhotometricInterpretation>RGB</IFD0:PhotometricInterpretation>
+                    <IFD0:StripOffsets>21912</IFD0:StripOffsets>
+                    <IFD0:Orientation>Horizontal (normal)</IFD0:Orientation>
+                    <IFD0:SamplesPerPixel>3</IFD0:SamplesPerPixel>
+                    <IFD0:RowsPerStrip>5584</IFD0:RowsPerStrip>
+                    <IFD0:StripByteCounts>64578960</IFD0:StripByteCounts>
+                    <IFD0:XResolution>800</IFD0:XResolution>
+                    <IFD0:YResolution>800</IFD0:YResolution>
+                    <IFD0:PlanarConfiguration>Chunky</IFD0:PlanarConfiguration>
+                    <IFD0:ResolutionUnit>inches</IFD0:ResolutionUnit>
+                    <IFD0:Software>Adobe Photoshop CC 2017 (Windows)</IFD0:Software>
+                    <IFD0:ModifyDate>2019:01:17 12:42:58</IFD0:ModifyDate>
+                    <XMP-x:XMPToolkit>
+                      Adobe XMP Core 5.6-c138 79.159824, 2016/09/14-01:09:01
+                    </XMP-x:XMPToolkit>
+                    <XMP-xmp:CreatorTool>Adobe Photoshop CC 2017 (Windows)</XMP-xmp:CreatorTool>
+                    <XMP-xmp:CreateDate>2019:01:17 12:42:58+01:00</XMP-xmp:CreateDate>
+                    <XMP-xmp:MetadataDate>2019:01:17 12:42:58+01:00</XMP-xmp:MetadataDate>
+                    <XMP-xmp:ModifyDate>2019:01:17 12:42:58+01:00</XMP-xmp:ModifyDate>
+                    <XMP-dc:Format>image/tiff</XMP-dc:Format>
+                    <XMP-xmpMM:InstanceID>xmp.iid:fb4d95aa-4faa-8643-a713-ea80ae519e3f</XMP-xmpMM:InstanceID>
+                    <XMP-xmpMM:DocumentID>xmp.did:fb4d95aa-4faa-8643-a713-ea80ae519e3f</XMP-xmpMM:DocumentID>
+                    <XMP-xmpMM:OriginalDocumentID>xmp.did:fb4d95aa-4faa-8643-a713-ea80ae519e3f
+                    </XMP-xmpMM:OriginalDocumentID>
+                    <XMP-xmpMM:HistoryAction>created</XMP-xmpMM:HistoryAction>
+                    <XMP-xmpMM:HistoryInstanceID>xmp.iid:fb4d95aa-4faa-8643-a713-ea80ae519e3f
+                    </XMP-xmpMM:HistoryInstanceID>
+                    <XMP-xmpMM:HistoryWhen>2019:01:17 12:42:58+01:00</XMP-xmpMM:HistoryWhen>
+                    <XMP-xmpMM:HistorySoftwareAgent>Adobe Photoshop CC 2017 (Windows)</XMP-xmpMM:HistorySoftwareAgent>
+                    <XMP-photoshop:ColorMode>RGB</XMP-photoshop:ColorMode>
+                    <XMP-photoshop:ICCProfileName>EPSON Standard RGB - Gamma 1.8</XMP-photoshop:ICCProfileName>
+                    <Photoshop:IPTCDigest>00000000000000000000000000000000</Photoshop:IPTCDigest>
+                    <Photoshop:XResolution>800</Photoshop:XResolution>
+                    <Photoshop:DisplayedUnitsX>inches</Photoshop:DisplayedUnitsX>
+                    <Photoshop:YResolution>800</Photoshop:YResolution>
+                    <Photoshop:DisplayedUnitsY>inches</Photoshop:DisplayedUnitsY>
+                    <Photoshop:PrintStyle>Centered</Photoshop:PrintStyle>
+                    <Photoshop:PrintPosition>0 0</Photoshop:PrintPosition>
+                    <Photoshop:PrintScale>1</Photoshop:PrintScale>
+                    <Photoshop:GlobalAngle>90</Photoshop:GlobalAngle>
+                    <Photoshop:GlobalAltitude>30</Photoshop:GlobalAltitude>
+                    <Photoshop:URL_List>
+                      <rdf:Bag></rdf:Bag>
+                    </Photoshop:URL_List>
+                    <Photoshop:SlicesGroupName/>
+                    <Photoshop:NumSlices>1</Photoshop:NumSlices>
+                    <Photoshop:PixelAspectRatio>1</Photoshop:PixelAspectRatio>
+                    <Photoshop:PhotoshopThumbnail>(Binary data 4700 bytes, use -b option to extract)
+                    </Photoshop:PhotoshopThumbnail>
+                    <Photoshop:HasRealMergedData>Yes</Photoshop:HasRealMergedData>
+                    <Photoshop:WriterName>Adobe Photoshop</Photoshop:WriterName>
+                    <Photoshop:ReaderName>Adobe Photoshop CC 2017</Photoshop:ReaderName>
+                    <ExifIFD:ColorSpace>Uncalibrated</ExifIFD:ColorSpace>
+                    <ExifIFD:ExifImageWidth>3855</ExifIFD:ExifImageWidth>
+                    <ExifIFD:ExifImageHeight>5584</ExifIFD:ExifImageHeight>
+                    <ICC-header:ProfileCMMType>Apple Computer Inc.</ICC-header:ProfileCMMType>
+                    <ICC-header:ProfileVersion>2.2.0</ICC-header:ProfileVersion>
+                    <ICC-header:ProfileClass>Display Device Profile</ICC-header:ProfileClass>
+                    <ICC-header:ColorSpaceData>RGB</ICC-header:ColorSpaceData>
+                    <ICC-header:ProfileConnectionSpace>XYZ</ICC-header:ProfileConnectionSpace>
+                    <ICC-header:ProfileDateTime>2007:01:24 01:00:00</ICC-header:ProfileDateTime>
+                    <ICC-header:ProfileFileSignature>acsp</ICC-header:ProfileFileSignature>
+                    <ICC-header:PrimaryPlatform>Apple Computer Inc.</ICC-header:PrimaryPlatform>
+                    <ICC-header:CMMFlags>Not Embedded, Independent</ICC-header:CMMFlags>
+                    <ICC-header:DeviceManufacturer>Epson</ICC-header:DeviceManufacturer>
+                    <ICC-header:DeviceModel/>
+                    <ICC-header:DeviceAttributes>Reflective, Glossy, Positive, Color</ICC-header:DeviceAttributes>
+                    <ICC-header:RenderingIntent>Media-Relative Colorimetric</ICC-header:RenderingIntent>
+                    <ICC-header:ConnectionSpaceIlluminant>0.9642 1 0.82491</ICC-header:ConnectionSpaceIlluminant>
+                    <ICC-header:ProfileCreator>Epson</ICC-header:ProfileCreator>
+                    <ICC-header:ProfileID>0</ICC-header:ProfileID>
+                    <ICC_Profile:ProfileCopyright>
+                      Copyright (C) SEIKO EPSON CORPORATION 2007. All rights reserved.
+                    </ICC_Profile:ProfileCopyright>
+                    <ICC_Profile:ProfileDescription>EPSON Standard RGB - Gamma 1.8</ICC_Profile:ProfileDescription>
+                    <ICC_Profile:MediaWhitePoint>0.95045 1 1.08905</ICC_Profile:MediaWhitePoint>
+                    <ICC_Profile:MediaBlackPoint>0 0 0</ICC_Profile:MediaBlackPoint>
+                    <ICC_Profile:RedMatrixColumn>0.43607 0.22249 0.01392</ICC_Profile:RedMatrixColumn>
+                    <ICC_Profile:GreenMatrixColumn>0.38515 0.71687 0.09708</ICC_Profile:GreenMatrixColumn>
+                    <ICC_Profile:BlueMatrixColumn>0.14307 0.06061 0.7141</ICC_Profile:BlueMatrixColumn>
+                    <ICC_Profile:RedTRC>(Binary data 16 bytes, use -b option to extract)</ICC_Profile:RedTRC>
+                    <ICC_Profile:GreenTRC>(Binary data 16 bytes, use -b option to extract)</ICC_Profile:GreenTRC>
+                    <ICC_Profile:BlueTRC>(Binary data 16 bytes, use -b option to extract)</ICC_Profile:BlueTRC>
+                    <Composite:ImageSize>3855x5584</Composite:ImageSize>
+                    <Composite:Megapixels>21.5</Composite:Megapixels>
+                  </rdf:Description>
+                </rdf:RDF>
+                <MediaInfo xmlns="https://mediaarea.net/mediainfo"
+                           xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd"
+                           version="2.0">
+                  <creatingLibrary version="18.05" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
+                  <media
+                      ref="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/test-bb52e019-76ea-4e52-aac6-abd700f35b18/objects/preservation/test_0001.tif">
+                    <track type="General">
+                      <ImageCount>1</ImageCount>
+                      <FileExtension>tif</FileExtension>
+                      <Format>TIFF</Format>
+                      <FileSize>64600916</FileSize>
+                      <File_Modified_Date>UTC 2019-01-17 11:43:01</File_Modified_Date>
+                      <File_Modified_Date_Local>2019-01-17 11:43:01</File_Modified_Date_Local>
+                      <Encoded_Application_Name>Adobe Photoshop CC 2017 (Windows)</Encoded_Application_Name>
+                    </track>
+                    <track type="Image">
+                      <Format>Raw</Format>
+                      <Format_Settings_Endianness>Little</Format_Settings_Endianness>
+                      <Width>3855</Width>
+                      <Height>5584</Height>
+                      <ColorSpace>RGB</ColorSpace>
+                      <BitDepth>8</BitDepth>
+                      <Compression_Mode>Lossless</Compression_Mode>
+                      <Encoded_Date>2019:01:17 12:42:58</Encoded_Date>
+                      <extra>
+                        <Density_X>800.000</Density_X>
+                        <Density_Y>800.000</Density_Y>
+                        <Density_Unit>dpi</Density_Unit>
+                        <Density_String>800.000 dpi</Density_String>
+                      </extra>
+                    </track>
+                  </media>
+                </MediaInfo>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+            <premis:originalName>%transferDirectory%objects/preservation/test_0001.tif</premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:amdSec ID="amdSec_6">
+    <mets:techMD ID="techMD_6">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:file"
+                         xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd"
+                         version="3.0">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>345b07c3-8957-43e7-ad8d-f4b54214fa53</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+                <premis:messageDigest>
+                  3122ee5d9f8361bfef844a8bf5c975851e9e5ca0e0c6991156fefe4f2c70c16f
+                </premis:messageDigest>
+              </premis:fixity>
+              <premis:size>26965</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>Unknown</premis:formatName>
+                </premis:formatDesignation>
+              </premis:format>
+              <premis:creatingApplication>
+                <premis:dateCreatedByApplication>2020-06-09</premis:dateCreatedByApplication>
+              </premis:creatingApplication>
+            </premis:objectCharacteristics>
+            <premis:originalName>
+              %SIPDirectory%objects/submissionDocumentation/transfer-test-bb52e019-76ea-4e52-aac6-abd700f35b18/METS.xml
+            </premis:originalName>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:fileSec>
+    <mets:fileGrp USE="original">
+      <mets:file GROUPID="Group-916cceb5-12c5-43c1-a98e-acf1647d1aca" ID="file-916cceb5-12c5-43c1-a98e-acf1647d1aca"
+                 ADMID="amdSec_5">
+        <mets:FLocat xlink:href="objects/preservation/test_0001.tif" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+    </mets:fileGrp>
+    <mets:fileGrp USE="submissionDocumentation">
+      <mets:file GROUPID="Group-345b07c3-8957-43e7-ad8d-f4b54214fa53" ID="file-345b07c3-8957-43e7-ad8d-f4b54214fa53"
+                 ADMID="amdSec_6">
+        <mets:FLocat
+            xlink:href="objects/submissionDocumentation/transfer-test-bb52e019-76ea-4e52-aac6-abd700f35b18/METS.xml"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+    </mets:fileGrp>
+    <mets:fileGrp USE="metadata">
+      <mets:file GROUPID="Group-5cd49090-adad-4767-a642-c7bdcf1f4f8f" ID="file-5cd49090-adad-4767-a642-c7bdcf1f4f8f"
+                 ADMID="amdSec_1">
+        <mets:FLocat
+            xlink:href="objects/metadata/transfers/test-bb52e019-76ea-4e52-aac6-abd700f35b18/checksum.md5"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-685b0a4c-a32e-42e9-a28d-64640ad5b04a" ID="file-685b0a4c-a32e-42e9-a28d-64640ad5b04a"
+                 ADMID="amdSec_2">
+        <mets:FLocat
+            xlink:href="objects/metadata/transfers/test-bb52e019-76ea-4e52-aac6-abd700f35b18/directory_tree.txt"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-951f9484-3e58-4e8c-bff9-c82a37d344d1" ID="file-951f9484-3e58-4e8c-bff9-c82a37d344d1"
+                 ADMID="amdSec_3">
+        <mets:FLocat
+            xlink:href="objects/metadata/transfers/test-bb52e019-76ea-4e52-aac6-abd700f35b18/identifiers.json"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+      <mets:file GROUPID="Group-ed5fa83a-c3db-4034-8d08-dc446536715d" ID="file-ed5fa83a-c3db-4034-8d08-dc446536715d"
+                 ADMID="amdSec_4">
+        <mets:FLocat
+            xlink:href="objects/metadata/transfers/test-bb52e019-76ea-4e52-aac6-abd700f35b18/mets_structmap.xml"
+            LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+      </mets:file>
+    </mets:fileGrp>
+  </mets:fileSec>
+  <mets:structMap ID="structMap_1" LABEL="Archivematica default" TYPE="physical">
+    <mets:div LABEL="test-fddf94a1-d1f9-4122-a69a-d6c2cba9b2c8" TYPE="Directory" DMDID="dmdSec_1">
+      <mets:div LABEL="objects" TYPE="Directory">
+        <mets:div LABEL="metadata" TYPE="Directory">
+          <mets:div LABEL="transfers" TYPE="Directory">
+            <mets:div LABEL="test-bb52e019-76ea-4e52-aac6-abd700f35b18" TYPE="Directory">
+              <mets:div LABEL="checksum.md5" TYPE="Item">
+                <mets:fptr FILEID="file-5cd49090-adad-4767-a642-c7bdcf1f4f8f"/>
+              </mets:div>
+              <mets:div LABEL="directory_tree.txt" TYPE="Item">
+                <mets:fptr FILEID="file-685b0a4c-a32e-42e9-a28d-64640ad5b04a"/>
+              </mets:div>
+              <mets:div LABEL="identifiers.json" TYPE="Item">
+                <mets:fptr FILEID="file-951f9484-3e58-4e8c-bff9-c82a37d344d1"/>
+              </mets:div>
+              <mets:div LABEL="mets_structmap.xml" TYPE="Item">
+                <mets:fptr FILEID="file-ed5fa83a-c3db-4034-8d08-dc446536715d"/>
+              </mets:div>
+            </mets:div>
+          </mets:div>
+        </mets:div>
+        <mets:div LABEL="preservation" TYPE="Directory">
+          <mets:div LABEL="test_0001.tif" TYPE="Item">
+            <mets:fptr FILEID="file-916cceb5-12c5-43c1-a98e-acf1647d1aca"/>
+          </mets:div>
+        </mets:div>
+        <mets:div LABEL="submissionDocumentation" TYPE="Directory">
+          <mets:div LABEL="transfer-test-bb52e019-76ea-4e52-aac6-abd700f35b18" TYPE="Directory">
+            <mets:div LABEL="METS.xml" TYPE="Item">
+              <mets:fptr FILEID="file-345b07c3-8957-43e7-ad8d-f4b54214fa53"/>
+            </mets:div>
+          </mets:div>
+        </mets:div>
+      </mets:div>
+    </mets:div>
+  </mets:structMap>
+  <mets:structMap TYPE="logical" ID="structMap_iish" LABEL="IISH structure">
+    <mets:div>
+      <mets:div TYPE="page" ORDER="1" LABEL="Page 1">
+        <mets:fptr CONTENTIDS="preservation/test_0001.tif"
+                   FILEID="file-916cceb5-12c5-43c1-a98e-acf1647d1aca"/>
+      </mets:div>
+    </mets:div>
+  </mets:structMap>
+</mets:mets>

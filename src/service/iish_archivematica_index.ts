@@ -32,6 +32,8 @@ type CollectionProcessingResult = {
     textItems: TextItem[]
 }
 
+type premis = 'premis' | 'premisv3';
+
 const readdirAsync = promisify(fs.readdir);
 const readFileAsync = promisify(fs.readFile);
 
@@ -227,33 +229,36 @@ function readFile(rootId: string, label: string, mets: Document, objects: string
 
     const fileId = (fptrElem.attr('FILEID') as Attribute).value();
     const internalId = fileId.substring(5);
-    const premisObj = findPremisObj(mets, fileId);
-    if (!premisObj)
+
+    const premis = findPremisNsAndObj(mets, fileId);
+    if (!premis)
         return null;
 
-    const originalNameElem = premisObj.get<Element>(`./premis:originalName`, ns);
+    const [premisNS, premisObj] = premis;
+
+    const originalNameElem = premisObj.get<Element>(`./${premisNS}:originalName`, ns);
     if (!originalNameElem)
         throw new Error(`No original name found for object with file id ${fileId}`);
 
     const originalName = originalNameElem.text();
-    const id = getIdentifier(premisObj, 'premis');
+    const id = getIdentifier(premisObj, premisNS);
     if (!id)
         throw new Error(`No identifier found for object with file id ${fileId}`);
 
-    const objCharacteristics = premisObj.get<Element>('./premis:objectCharacteristics', ns);
-    const objCharacteristicsExt = objCharacteristics
-        ? objCharacteristics.get<Element>('./premis:objectCharacteristicsExtension', ns) : null;
-    if (!objCharacteristics || !objCharacteristicsExt)
+    const objCharacteristicsAndExt = getObjCharacteristicsAndExt(premisObj, premisNS);
+    if (!objCharacteristicsAndExt)
         throw new Error(`No object characteristics found for object with file id ${fileId}`);
 
-    const sizeElem = objCharacteristics.get<Element>('./premis:size', ns);
+    const [objCharacteristics, objCharacteristicsExt] = objCharacteristicsAndExt;
+
+    const sizeElem = objCharacteristics.get<Element>(`./${premisNS}:size`, ns);
     const size = sizeElem ? parseInt(sizeElem.text()) : null;
 
-    const dateCreatedByAppElem = objCharacteristics.get<Element>('.//premis:creatingApplication/premis:dateCreatedByApplication', ns);
+    const dateCreatedByAppElem = objCharacteristics.get<Element>(`.//${premisNS}:creatingApplication/${premisNS}:dateCreatedByApplication`, ns);
     const creationDate = dateCreatedByAppElem
         ? moment(dateCreatedByAppElem.text(), 'YYYY-MM-DD').toDate() : null;
 
-    const pronomKeyElem = objCharacteristics.get<Element>('./premis:format/premis:formatRegistry/premis:formatRegistryName[text()="PRONOM"]/../premis:formatRegistryKey', ns);
+    const pronomKeyElem = objCharacteristics.get<Element>(`./${premisNS}:format/${premisNS}:formatRegistry/${premisNS}:formatRegistryName[text()="PRONOM"]/../${premisNS}:formatRegistryKey`, ns);
     const pronomKey = pronomKeyElem ? pronomKeyElem.text() : null;
     const name = path.basename(originalName);
     const type = getTypeForPronom(pronomKey);
@@ -315,20 +320,21 @@ function readText(rootId: string, label: string, mets: Document, objects: string
     if (!file)
         throw new Error(`Expected to find a file starting with ${internalId}`);
 
-    const premisObj = findPremisObj(mets, fileId);
-    if (!premisObj)
+    const premis = findPremisNsAndObj(mets, fileId);
+    if (!premis)
         return null;
 
-    const id = getIdentifier(premisObj, 'premis');
+    const [premisNS, premisObj] = premis;
+
+    const id = getIdentifier(premisObj, premisNS);
     if (!id)
         throw new Error(`No identifier found for object with file id ${fileId}`);
 
-    const objCharacteristics = premisObj.get<Element>('./premis:objectCharacteristics', ns);
-    const objCharacteristicsExt = objCharacteristics
-        ? objCharacteristics.get<Element>('./premis:objectCharacteristicsExtension', ns) : null;
-    if (!objCharacteristics || !objCharacteristicsExt)
+    const objCharacteristicsAndExt = getObjCharacteristicsAndExt(premisObj, premisNS);
+    if (!objCharacteristicsAndExt)
         throw new Error(`No object characteristics found for object with file id ${fileId}`);
 
+    const [objCharacteristics, objCharacteristicsExt] = objCharacteristicsAndExt;
     const encoding = determineEncoding(objCharacteristicsExt);
 
     const fptrs = structureIISH.find<Element>(`./mets:div[@TYPE="page"]/mets:fptr[@FILEID="${fileId}"]/../mets:fptr`, ns);
@@ -347,11 +353,11 @@ function readText(rootId: string, label: string, mets: Document, objects: string
         throw new Error(`Missing a fptr or file id for a file for the text layer with label ${label}`);
 
     const itemFileId = (fptr.attr('FILEID') as Attribute).value();
-    const itemPremisObj = findPremisObj(mets, itemFileId);
+    const itemPremisObj = findPremisObj(mets, itemFileId, premisNS);
     if (!itemPremisObj)
         throw new Error(`No premis object found for file with id ${itemFileId}`);
 
-    const itemId = getIdentifier(itemPremisObj, 'premis');
+    const itemId = getIdentifier(itemPremisObj, premisNS);
     if (!itemId)
         throw new Error(`Missing a file id for a file with id ${itemFileId}`);
 
@@ -365,18 +371,24 @@ function readText(rootId: string, label: string, mets: Document, objects: string
     return {id, itemId, type, language, encoding, uri: path.join(relativeRootPath, file)};
 }
 
-function findPremisObj(mets: Document, fileId: string): Element | null {
+function findPremisNsAndObj(mets: Document, fileId: string): [premis, Element] | null {
+    return (['premisv3', 'premis'] as premis[])
+        .map(premisNS => [premisNS, findPremisObj(mets, fileId, premisNS)])
+        .find(premis => premis[1]) as [premis, Element] | null;
+}
+
+function findPremisObj(mets: Document, fileId: string, premisNS: premis = 'premis'): Element | null {
     const fileNode = mets.get<Element>(`mets:fileSec/mets:fileGrp[@USE="original"]/mets:file[@ID="${fileId}"]`, ns);
     const admIdAttr = fileNode ? fileNode.attr('ADMID') : null;
     const admId = admIdAttr ? admIdAttr.value() : null;
 
     if (admId)
-        return mets.get(`//mets:amdSec[@ID="${admId}"]/mets:techMD/mets:mdWrap/mets:xmlData/premis:object`, ns);
+        return mets.get(`//mets:amdSec[@ID="${admId}"]/mets:techMD/mets:mdWrap/mets:xmlData/${premisNS}:object`, ns);
 
     return null;
 }
 
-export function getIdentifier(premisObj: Element, premisNS: 'premis' | 'premisv3' = 'premis'): string | null {
+export function getIdentifier(premisObj: Element, premisNS: premis = 'premis'): string | null {
     const hdlObj = premisObj.get<Element>(`./${premisNS}:objectIdentifier/${premisNS}:objectIdentifierType[text()="hdl"]`, ns);
     const uuidObj = premisObj.get<Element>(`./${premisNS}:objectIdentifier/${premisNS}:objectIdentifierType[text()="UUID"]`, ns);
 
@@ -395,6 +407,16 @@ export function getIdentifier(premisObj: Element, premisNS: 'premis' | 'premisv3
     }
 
     return null;
+}
+
+export function getObjCharacteristicsAndExt(premisObj: Element, premisNS: premis = 'premis'): [Element, Element] | null {
+    const objCharacteristics = premisObj.get<Element>(`./${premisNS}:objectCharacteristics`, ns);
+    const objCharacteristicsExt = objCharacteristics
+        ? objCharacteristics.get<Element>(`./${premisNS}:objectCharacteristicsExtension`, ns) : null;
+    if (!objCharacteristics || !objCharacteristicsExt)
+        return null;
+
+    return [objCharacteristics, objCharacteristicsExt];
 }
 
 export function determineResolution(objCharacteristicsExt: Element): { width: number | null; height: number | null } {

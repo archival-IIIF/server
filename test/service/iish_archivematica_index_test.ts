@@ -941,6 +941,38 @@ describe('iish_archivematica_index', () => {
                     })
                 ]);
             });
+
+            it('should return valid items for a premis v3 METS file', async () => {
+                const path = join(__dirname, 'test-iish-archivematica-collections/premis-v3');
+                const {rootItem, childItems, textItems} = await processCollection(path);
+
+                expect(textItems).to.be.empty;
+                expect(rootItem).to.deep.equal(createItem({
+                    'type': 'root',
+                    'id': 'test',
+                    'collection_id': 'test',
+                    'label': 'test'
+                }));
+                expect(childItems).to.deep.equal([
+                    createItem({
+                        'parent_id': 'test',
+                        'type': 'image',
+                        'size': 64600916,
+                        'order': 1,
+                        'created_at': new Date('2019-01-16T23:00:00.000Z'),
+                        'width': 3855,
+                        'height': 5584,
+                        'resolution': 800,
+                        'original': {
+                            'uri': join(__dirname, 'test-iish-archivematica-collections/premis-v3/objects/916cceb5-12c5-43c1-a98e-acf1647d1aca-test_0001.tif'),
+                            'puid': 'fmt/353'
+                        },
+                        'id': 'C969A354-284F-4ECB-BAA6-62C24DF72643',
+                        'collection_id': 'test',
+                        'label': 'test_0001.tif'
+                    })
+                ]);
+            });
         });
     });
 
