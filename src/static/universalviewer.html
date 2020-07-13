@@ -6,66 +6,13 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>UniversalViewer</title>
   <link rel="stylesheet" type="text/css" href="uv.css">
+  <link rel="stylesheet" type="text/css" href="universalviewer.css">
   <script type="text/javascript" src="lib/offline.js"></script>
   <script type="text/javascript" src="helpers.js"></script>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-    }
-
-    #uv .leftPanel .views .thumbsView .thumbs .thumb .wrap.sound {
-      background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAaCAYAAACzdqxAAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4gYMDiMdhf9sgwAAAepJREFUSMetlr+LE0EUx9/bi8J5arjGRuMhKFdcYUDsrC2sxVIRDhuxEhFEZUFrtdA/JH+BqwjXROuDpLDaYglqIO6PmX3fZzMD6yXZZJO8Zpl5M5+dfd/vPJZF5CkzPySiFjWLsar24jh+1+l08qksgELXCABfR6PR2SmwSx4ve0wAx6qqIvIIgPXwJEl2NgImIirL8m4F/uU/+DrgWvi64BnwaDAYnN4I+CRcRJ5tDExEJCKHjnfU1LtERKkvYc2a3cZgAK+CIHhDRGdm5Zl5fyXxFoXnBatszrLskoi8mHnjlvFxGIYsIvf8OIqiLSfSY7ev5+emeHVgAJ+8SMaYAwB/rbU3kiTZATBw1jpsBAbw0TcaIqI8z68AKAD03Knvu70/wzDkWnBZlndmdbDKyz4ASKMo2hqPx7s+b4w5qBWPmc8vUPw7M293u91z7Xb7t6r+IiIKgmDv5NpGrmDma6pqh8PhxE2dcs+i1hVFUVwF8N59clItxWQyuQDgD4DPvuY+n6bpxaXFy7LsMoAfHmytvamqWpblbSfea7f3W2O7xXG8LSJP/DjP872KQyaqqtbaW43B88JfEBF5Pre0q4D7/X7LGHO96t+NgJdpQi1VNcy8v6C/No2ipaoviejBCj8sc6Gq+vYfbYvxXZPFwu8AAAAASUVORK5CYII=");
-    }
-
-    #uv .iiif-metadata-component .item._logo .label {
-      display: none;
-    }
-
-    #uv .centerPanel .content .attribution .header .title {
-      display: none;
-    }
-  </style>
-  <script type="text/javascript">
-      window.addEventListener('uvLoaded', function () {
-          var urlDataProvider = new UV.URLDataProvider(true);
-          var uv = createUV('#uv', {
-              root: '.',
-              configUri: './uv-config.json',
-              iiifResourceUri: urlDataProvider.get('manifest'),
-              collectionIndex: Number(urlDataProvider.get('c', 0)),
-              manifestIndex: Number(urlDataProvider.get('m', 0)),
-              sequenceIndex: Number(urlDataProvider.get('s', 0)),
-              canvasIndex: Number(urlDataProvider.get('cv', 0)),
-              rangeId: urlDataProvider.get('rid', 0),
-              rotation: Number(urlDataProvider.get('r', 0)),
-              xywh: urlDataProvider.get('xywh', ''),
-              embedded: true,
-              locales: [{name: 'en-GB'}]
-          }, urlDataProvider);
-      }, false);
-  </script>
 </head>
 <body>
-
 <div id="uv" class="uv"></div>
-
-<script type="text/javascript">
-    var $UV = $('#uv');
-
-    function resize() {
-        var windowWidth = window.innerWidth;
-        var windowHeight = window.innerHeight;
-        $UV.width(windowWidth);
-        $UV.height(windowHeight);
-    }
-
-    $(function () {
-        resize();
-        $(window).on('resize', resize);
-    });
-</script>
 <script type="text/javascript" src="uv.js"></script>
+<script type="text/javascript" src="universalviewer.js"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Install Universal Viewer
-git clone https://github.com/UniversalViewer/universalviewer.git /opt/build/universalviewer --recursive
+git clone https://github.com/archival-IIIF/universalviewer.git /opt/build/universalviewer --recursive
 cd /opt/build/universalviewer
 npm install
 grunt build --dist

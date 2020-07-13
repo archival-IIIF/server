@@ -38,6 +38,12 @@ if (config.universalViewerPath) {
         if (ctx.params.path === '/')
             return await send(ctx, '/src/static/universalviewer.html');
 
+        if (ctx.params.path === '/universalviewer.css')
+            return await send(ctx, '/src/static/universalviewer.css');
+
+        if (ctx.params.path === '/universalviewer.js')
+            return await send(ctx, '/src/static/universalviewer.js');
+
         if (ctx.params.path === '/uv-config.json' && config.universalViewerConfigPath) {
             ctx.body = createReadStream(config.universalViewerConfigPath);
             return;

@@ -6,6 +6,7 @@ export interface EADMetadata {
     title: string;
     unitId?: string;
     unitIdIsInventoryNumber: boolean;
+    order?: number;
     content?: string;
     extent?: string;
     authors?: { type: string, name: string }[];
@@ -99,6 +100,7 @@ function extractMetadataFromLevel(level: Element | null, parentMetadata: EADMeta
     extractFormats(level, metadata, parentMetadata);
     extractTitle(level, metadata);
     extractUnitId(level, metadata, parentMetadata);
+    extractOrder(level, metadata);
     extractContent(level, metadata);
     extractExtent(level, metadata);
     extractAuthors(level, metadata);
@@ -157,6 +159,10 @@ function extractUnitId(ead: Element, metadata: EADMetadata, parentMetadata: EADM
             ? unitId.text().trim()
             : crypto.createHash('md5').update(metadata.title).digest('hex');
     }
+}
+
+function extractOrder(ead: Element, metadata: EADMetadata): void {
+    metadata.order = ead.get('count(./preceding-sibling::*)', ns) as unknown as number;
 }
 
 function extractContent(ead: Element, metadata: EADMetadata): void {

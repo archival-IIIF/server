@@ -7,6 +7,7 @@ export default async function getAuthTexts({item}: AuthTextsParams): Promise<Aut
             label: 'Logout'
         },
         external: {
+            label: 'Check for access',
             failureHeader: 'Authentication Failed',
             failureDescription: 'This collection can only be requested in the reading room of the IISH.',
         },

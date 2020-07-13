@@ -31,6 +31,7 @@ async function startWeb() {
     const iiifPresentationRouter = await import('./presentation/router');
     const iiifAuthRouter = await import('./authentication/router');
     const fileRouter = await import('./file/router');
+    const pdfRouter = await import('./pdf/router');
     const adminRouter = await import('./admin/router');
     const staticRouter = await import('./static/router');
 
@@ -79,6 +80,7 @@ async function startWeb() {
     app.use(iiifAuthRouter.default.routes());
 
     app.use(fileRouter.default.routes());
+    app.use(pdfRouter.default.routes());
     app.use(adminRouter.default.routes());
     app.use(staticRouter.default.routes());
 

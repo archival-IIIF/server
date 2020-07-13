@@ -20,7 +20,7 @@ export const isCollection = (item: Item | null): boolean =>
     item !== null && (item.type === 'metadata' || item.type === 'folder');
 
 export const isManifest = (item: Item | null): boolean =>
-    item !== null && (item.type !== 'metadata' && item.type !== 'folder' && !item.order);
+    item !== null && (item.type !== 'metadata' && item.type !== 'folder' && (!item.order || item.type === 'root'));
 
 export async function getCollection(item: Item, access: Access): Promise<Collection | null> {
     if (item && (item.type === 'metadata'))

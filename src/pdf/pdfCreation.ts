@@ -1,31 +1,28 @@
-import * as hummus from 'hummus';
-import {join} from 'path';
+import {PDFDocument, PDFPage} from 'pdf-lib';
 
-import {ImageItem} from '../lib/ItemInterfaces';
-import {Text, readAlto, getFullPath} from '../lib/Text';
+import config from '../lib/Config';
+import {ImageItem, RootItem} from '../lib/ItemInterfaces';
 
 import {getImage} from '../image/imageServer';
 import {AccessTier} from '../presentation/elem/v2/Image';
 
-export default async function createPDF(items: ImageItem[], texts: Text[], tier?: AccessTier): Promise<Buffer> {
-    const bufferWriter = new hummus.PDFWStreamForBuffer();
-    const pdf = hummus.createWriter(bufferWriter);
-    const font = (texts.length > 0) ? pdf.getFontForFile(join(__dirname, 'NotoMono-Regular.ttf')) : null;
+export default async function createPDF(rootItem: RootItem, items: ImageItem[], tier?: AccessTier): Promise<Buffer> {
+    const document = await PDFDocument.create();
 
-    for (const item of items) {
-        const textOfPage = texts.find(text => text.item_id === item.id);
-        await createPdfPage(pdf, font, item, textOfPage, tier);
-    }
+    document.setTitle(rootItem.label);
+    rootItem.authors.length > 0 && document.setAuthor(rootItem.authors[0].name);
+    config.attribution && document.setProducer(config.attribution);
+    config.attribution && document.setCreator(config.attribution);
 
-    pdf.end();
+    const pages = await Promise.all(items.map(item => createPdfPage(document, item, tier)));
+    pages.forEach(page => page && document.addPage(page));
 
-    return bufferWriter.buffer;
+    const docBytes = await document.save();
+    return Buffer.from(docBytes.buffer);
 }
 
-async function createPdfPage(pdf: hummus.PDFWriter, font: hummus.UsedFont | null, item: ImageItem,
-                             text?: Text, tier?: AccessTier) {
-    const max = tier ? tier.maxSize : null;
-    const image = await getImage(item, max, {
+async function createPdfPage(document: PDFDocument, item: ImageItem, tier?: AccessTier): Promise<PDFPage | null> {
+    const image = await getImage(item, tier ? tier.maxSize : null, {
         region: 'full',
         size: 'max',
         rotation: '0',
@@ -33,37 +30,19 @@ async function createPdfPage(pdf: hummus.PDFWriter, font: hummus.UsedFont | null
         format: 'jpg'
     });
 
-    if (image.image) {
-        const imgReadStream = new hummus.PDFRStreamForBuffer(image.image);
-        const imageXObject = pdf.createImageXObjectFromJPG(imgReadStream);
+    if (!image.image)
+        return null;
 
-        const page = pdf.createPage(0, 0, item.width, item.height);
-        const ctx = pdf.startPageContentContext(page);
+    const pdfImage = await document.embedJpg(image.image);
 
-        ctx.q()
-            .cm(item.width, 0, 0, item.height, 0, 0)
-            .doXObject(imageXObject)
-            .Q();
+    const page = PDFPage.create(document);
+    page.setSize(item.width, item.height);
+    page.drawImage(pdfImage, {
+        x: 0,
+        y: 0,
+        width: item.width,
+        height: item.height,
+    })
 
-        if (font && text)
-            await addText(ctx, font, text);
-
-        pdf.writePage(page);
-    }
-}
-
-async function addText(ctx: hummus.PageContentContext, font: hummus.UsedFont, text: Text) {
-    const words = await readAlto(getFullPath(text));
-    words.forEach(word => {
-        const size = word.height / font.calculateTextDimensions(word.word, 1).height;
-        const dim = font.calculateTextDimensions(word.word, size);
-
-        ctx.BT() // Begin text
-            .Tr(3) // Invisible text mode
-            .Tf(font, size) // Font and size
-            .Tz(word.width / dim.width * 100) // Horizontal scale (exact width)
-            .Tm(1, 0, 0, 1, word.x - dim.xMin, word.y - word.height - dim.yMin) // Transformation matrix, position of text
-            .Tj(word.word) // The text
-            .ET(); // End text
-    });
+    return page;
 }

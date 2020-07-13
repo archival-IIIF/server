@@ -117,6 +117,9 @@ export function updateEAD(xml: Document, oaiIdentifier: string, collectionId: st
         if (prevUnitId)
             item.parent_id = prevUnitId;
 
+        if (md.order)
+            item.order = md.order;
+
         if (md.content)
             item.description = md.content;
 

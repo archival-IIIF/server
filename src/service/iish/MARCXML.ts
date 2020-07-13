@@ -38,7 +38,7 @@ export function getAccess(collectionId: string, marc: Document): string {
     if (marc542m)
         return marc542m.text();
 
-    return 'open'; // TODO: Always open or always closed (depending on type?)
+    return 'closed';
 }
 
 export function getCollectionIds(marc: Document): string[] {
