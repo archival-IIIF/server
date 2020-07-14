@@ -12,7 +12,7 @@
     "winston": "3.3.3",
     "mime-types": "2.1.27",
     "libxmljs2": "0.26.0",
-    "got": "11.5.0",
+    "got": "11.4.0",
     "file-icon-vectors": "1.0.0",
     "handy-redis": "1.8.3",
     "uuid": "8.2.0",
