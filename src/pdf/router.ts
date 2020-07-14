@@ -34,8 +34,11 @@ router.get('/:id', async ctx => {
     if (children.length === 0)
         throw new HttpError(400, `Not able to produce pdf for manifest with id ${ctx.params.id}`);
 
+    const pdf = await createPDF(item as RootItem, children, access.tier);
+
     ctx.set('Content-Type', 'application/pdf');
-    ctx.body = await createPDF(item as RootItem, children, access.tier);
+    ctx.set('Content-Disposition', `attachment; filename="${item.id}.pdf"`);
+    ctx.body = pdf;
 
     logger.info(`Sending a pdf with id ${ctx.params.id}`);
 });

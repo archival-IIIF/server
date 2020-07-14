@@ -20,7 +20,8 @@ export interface Config {
     ipAddressHeader?: string;
     imageServerUrl: string;
     imageServerName: 'loris' | 'sharp';
-    logoDimensions?: [number, number],
+    logoDimensions?: [number, number];
+    pdfImageSize: string;
     imageTierSeparator: string;
     cacheDisabled: boolean;
     maxTasksPerWorker: number;
@@ -58,20 +59,20 @@ const config: Config = {
     elasticSearchPassword: process.env.IIIF_SERVER_ELASTICSEARCH_PASSWORD,
     ipAddressHeader: process.env.IIIF_SERVER_IP_ADDRESS_HEADER,
 
-    imageServerUrl: (() => {
+    imageServerUrl: (_ => {
         if (!process.env.IIIF_SERVER_IMAGE_SERVER_URL || (process.env.IIIF_SERVER_IMAGE_SERVER_URL === 'null'))
             throw new Error('Image server url is not defined');
         return process.env.IIIF_SERVER_IMAGE_SERVER_URL;
     })(),
 
-    imageServerName: (() => {
+    imageServerName: (_ => {
         if (!process.env.IIIF_SERVER_IMAGE_SERVER_NAME ||
             !['loris', 'sharp'].includes(process.env.IIIF_SERVER_IMAGE_SERVER_NAME))
             throw new Error('Image server name should either be \'loris\' or \'sharp\'');
         return process.env.IIIF_SERVER_IMAGE_SERVER_NAME as 'loris' | 'sharp';
     })(),
 
-    logoDimensions: (() => {
+    logoDimensions: (_ => {
         if (!process.env.IIIF_SERVER_LOGO_DIM || (process.env.IIIF_SERVER_LOGO_DIM === 'null'))
             return undefined;
 
@@ -79,93 +80,97 @@ const config: Config = {
         return [parseInt(dimensions[0]), parseInt(dimensions[1])] as [number, number];
     })(),
 
-    imageTierSeparator: (() => {
+    pdfImageSize: (_ => {
+        return process.env.IIIF_SERVER_PDF_IMAGE_SIZE || 'max';
+    })(),
+
+    imageTierSeparator: (_ => {
         if (!process.env.IIIF_SERVER_IMAGE_TIER_SEPARATOR || (process.env.IIIF_SERVER_IMAGE_TIER_SEPARATOR === 'null'))
             throw new Error('Image tier separator is not defined');
         return process.env.IIIF_SERVER_IMAGE_TIER_SEPARATOR;
     })(),
 
-    cacheDisabled: (() => {
+    cacheDisabled: (_ => {
         const cacheDisabled = process.env.IIIF_SERVER_CACHE_DISABLED;
         return (cacheDisabled !== undefined && (cacheDisabled.toLowerCase() === 'true' || cacheDisabled === '1'));
     })(),
 
-    maxTasksPerWorker: (() => {
+    maxTasksPerWorker: (_ => {
         const maxTasksPerWorker = process.env.IIIF_SERVER_MAX_TASKS_PER_WORKER
             ? parseInt(process.env.IIIF_SERVER_MAX_TASKS_PER_WORKER) : 0;
         return (maxTasksPerWorker >= 0) ? maxTasksPerWorker : 5;
     })(),
 
-    services: (() => {
+    services: (_ => {
         if (!process.env.IIIF_SERVER_SERVICES || (process.env.IIIF_SERVER_SERVICES === 'null'))
             throw new Error('Services to run are not defined');
         return process.env.IIIF_SERVER_SERVICES.split(',');
     })(),
 
-    secret: (() => {
+    secret: (_ => {
         if (!process.env.IIIF_SERVER_SECRET || (process.env.IIIF_SERVER_SECRET === 'null'))
             throw new Error('Secret is not defined');
         return process.env.IIIF_SERVER_SECRET;
     })(),
 
-    accessToken: (() => {
+    accessToken: (_ => {
         if (!process.env.IIIF_SERVER_ACCESS_TOKEN || (process.env.IIIF_SERVER_ACCESS_TOKEN === 'null'))
             throw new Error('The access token is not defined');
         return process.env.IIIF_SERVER_ACCESS_TOKEN;
     })(),
 
-    port: (() => {
+    port: (_ => {
         const port = process.env.IIIF_SERVER_PORT ? parseInt(process.env.IIIF_SERVER_PORT) : 0;
         return (port >= 0) ? port : 3333;
     })(),
 
-    logLevel: (() => {
+    logLevel: (_ => {
         return (process.env.IIIF_SERVER_LOG_LEVEL && (process.env.IIIF_SERVER_LOG_LEVEL !== 'null'))
             ? process.env.IIIF_SERVER_LOG_LEVEL : 'debug';
     })(),
 
-    baseUrl: (() => {
+    baseUrl: (_ => {
         if (!process.env.IIIF_SERVER_BASE_URL || (process.env.IIIF_SERVER_BASE_URL === 'null'))
             throw new Error('The base url is not defined');
         return process.env.IIIF_SERVER_BASE_URL;
     })(),
 
-    dataRootPath: (() => {
+    dataRootPath: (_ => {
         if (!process.env.IIIF_SERVER_DATA_ROOT_PATH || (process.env.IIIF_SERVER_DATA_ROOT_PATH === 'null'))
             throw new Error('The data root path is not defined');
         return process.env.IIIF_SERVER_DATA_ROOT_PATH;
     })(),
 
-    collectionsRelativePath: (() => {
+    collectionsRelativePath: (_ => {
         if (!process.env.IIIF_SERVER_COLLECTIONS_REL_PATH || (process.env.IIIF_SERVER_COLLECTIONS_REL_PATH === 'null'))
             throw new Error('The collections relative path is not defined');
         return process.env.IIIF_SERVER_COLLECTIONS_REL_PATH;
     })(),
 
-    derivativeRelativePath: (() => {
+    derivativeRelativePath: (_ => {
         if (!process.env.IIIF_SERVER_DERIVATIVE_REL_PATH || (process.env.IIIF_SERVER_DERIVATIVE_REL_PATH === 'null'))
             throw new Error('The derivative relative path is not defined');
         return process.env.IIIF_SERVER_DERIVATIVE_REL_PATH;
     })(),
 
-    internalIpAddresses: (() => {
+    internalIpAddresses: (_ => {
         if (!process.env.IIIF_SERVER_INTERNAL_IP_ADDRESSES || (process.env.IIIF_SERVER_INTERNAL_IP_ADDRESSES === 'null'))
             return [];
         return process.env.IIIF_SERVER_INTERNAL_IP_ADDRESSES.split(',');
     })(),
 
-    loginDisabled: (() => {
+    loginDisabled: (_ => {
         const loginDisabled = process.env.IIIF_SERVER_LOGIN_DISABLED;
         return ((loginDisabled !== undefined) && (loginDisabled.toLowerCase() === 'true' || loginDisabled === '1'));
     })(),
 
-    elasticSearchUrl: (() => {
+    elasticSearchUrl: (_ => {
         if (!process.env.IIIF_SERVER_ELASTICSEARCH_URL || (process.env.IIIF_SERVER_ELASTICSEARCH_URL === 'null'))
             throw new Error('The ElasticSearch URL is not defined');
         return process.env.IIIF_SERVER_ELASTICSEARCH_URL;
     })(),
 
-    redis: (() => {
+    redis: (_ => {
         const redisDisabled = process.env.IIIF_SERVER_REDIS_DISABLED;
         if (redisDisabled && (redisDisabled.toLowerCase() === 'true' || redisDisabled === '1'))
             return null;

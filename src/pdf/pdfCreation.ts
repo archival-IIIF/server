@@ -18,13 +18,14 @@ export default async function createPDF(rootItem: RootItem, items: ImageItem[], 
     pages.forEach(page => page && document.addPage(page));
 
     const docBytes = await document.save();
+
     return Buffer.from(docBytes.buffer);
 }
 
 async function createPdfPage(document: PDFDocument, item: ImageItem, tier?: AccessTier): Promise<PDFPage | null> {
     const image = await getImage(item, tier ? tier.maxSize : null, {
         region: 'full',
-        size: 'max',
+        size: config.pdfImageSize,
         rotation: '0',
         quality: 'default',
         format: 'jpg'
