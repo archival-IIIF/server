@@ -21,11 +21,15 @@ router.get('/:id', async ctx => {
     if (access.state === AccessState.CLOSED)
         throw new HttpError(401, 'Access denied!');
 
-    const pages = ctx.query.pages
-        ? (ctx.query.pages as string[])
-            .map(page => parseInt(page))
-            .filter(page => !isNaN(page))
-        : [];
+    const pagesRaw: string[] = ctx.query.pages && Array.isArray(ctx.query.pages)
+        ? ctx.query.pages
+        : ctx.query.pages
+            ? [ctx.query.pages]
+            : [];
+
+    const pages = pagesRaw
+        .map(page => parseInt(page))
+        .filter(page => !isNaN(page));
 
     const children = (await getChildItems(item.id))
         .filter(item => item.type === 'image')

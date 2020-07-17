@@ -77,7 +77,7 @@ export function getResource(item: FileItem): Resource {
 
 export function addThumbnail(base: Base, item: RootItem | FileItem, childItem?: FileItem): void {
     if ((item.type === 'image') || (item.type === 'root' && childItem && childItem.type === 'image')) {
-        const resource = getImageResource(item as ImageItem, '90,');
+        const resource = getImageResource(item as ImageItem, '200,');
         base.setThumbnail(resource);
     }
 }
