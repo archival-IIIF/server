@@ -332,7 +332,11 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_DERIVATIVE_REL_PATH`: The relative path of the (read-write) derivatives under the data storage root path
 - `IIIF_SERVER_LOGO_REL_PATH`: The relative path to the image with the logo to add to the IIIF manifests
 - `IIIF_SERVER_LOGO_DIM`: The dimensions of the logo, separated by a ':'
-- `IIIF_SERVER_PDF_IMAGE_SIZE`: The (IIIF) size of images for the PDF (defaults to 'max')
+- `IIIF_SERVER_PDF_PAGES_THRESHOLD`: If defined, limit dynamic PDF creation per IP address 
+when over this configured threshold (Requires Redis)
+- `IIIF_SERVER_PDF_SESSION_SECONDS`: If defined, the number of seconds to limit 
+dynamic PDF creation per IP address (Requires Redis)
+- `IIIF_SERVER_PDF_IMAGE_SIZE`: The (IIIF) size of images for the dynamic PDF creation (defaults to 'max')
 - `IIIF_SERVER_LOG_LEVEL`: The logging level
 - `IIIF_SERVER_IP_ADDRESS_HEADER`: The header to read the IP address from, instead of `HTTP_X_FORWARDED_FOR`
 - `IIIF_SERVER_INTERNAL_IP_ADDRESSES`: If access may be granted based on IP address, 

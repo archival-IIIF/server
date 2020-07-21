@@ -1,10 +1,12 @@
 import * as Router from '@koa/router';
 
 import logger from '../lib/Logger';
+import config from '../lib/Config';
 import HttpError from '../lib/HttpError';
+import {getClient} from '../lib/Redis';
 import {ImageItem, RootItem} from '../lib/ItemInterfaces';
 import {getChildItems, getItem} from '../lib/Item';
-import {AccessState, hasAccess} from '../lib/Security';
+import {AccessState, hasAccess, getIpAddress} from '../lib/Security';
 
 import createPDF from './pdfCreation';
 
@@ -37,6 +39,17 @@ router.get('/:id', async ctx => {
 
     if (children.length === 0)
         throw new HttpError(400, `Not able to produce pdf for manifest with id ${ctx.params.id}`);
+
+    if (config.pdfPagesThreshold && config.pdfSessionSeconds && children.length > config.pdfPagesThreshold) {
+        const client = getClient();
+        const ip = getIpAddress(ctx);
+
+        if (client) {
+            const result = await client.set(`pdf:${ip}`, ip, ['EX', config.pdfSessionSeconds], 'NX');
+            if (!result)
+                throw new HttpError(429, 'Too many large PDF requests. Please try again at a later time.');
+        }
+    }
 
     const pdf = await createPDF(item as RootItem, children, access.tier);
 

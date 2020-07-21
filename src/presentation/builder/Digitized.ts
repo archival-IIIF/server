@@ -40,9 +40,7 @@ export async function getReference(item: RootItem): Promise<Manifest> {
 
     const items = await getChildItems(item.id, true) as FileItem[];
     const firstItem = items[0];
-
     addThumbnail(manifest, firstItem);
-    await addMetadata(manifest, item);
 
     return manifest;
 }

@@ -21,6 +21,8 @@ export interface Config {
     imageServerUrl: string;
     imageServerName: 'loris' | 'sharp';
     logoDimensions?: [number, number];
+    pdfPagesThreshold?: number;
+    pdfSessionSeconds?: number;
     pdfImageSize: string;
     imageTierSeparator: string;
     cacheDisabled: boolean;
@@ -78,6 +80,20 @@ const config: Config = {
 
         const dimensions = process.env.IIIF_SERVER_LOGO_DIM.split(':');
         return [parseInt(dimensions[0]), parseInt(dimensions[1])] as [number, number];
+    })(),
+
+    pdfPagesThreshold: (_ => {
+        if (!process.env.IIIF_SERVER_PDF_PAGES_THRESHOLD || (process.env.IIIF_SERVER_PDF_PAGES_THRESHOLD === 'null'))
+            return undefined;
+
+        return parseInt(process.env.IIIF_SERVER_PDF_PAGES_THRESHOLD);
+    })(),
+
+    pdfSessionSeconds: (_ => {
+        if (!process.env.IIIF_SERVER_PDF_SESSION_SECONDS || (process.env.IIIF_SERVER_PDF_SESSION_SECONDS === 'null'))
+            return undefined;
+
+        return parseInt(process.env.IIIF_SERVER_PDF_SESSION_SECONDS);
     })(),
 
     pdfImageSize: (_ => {
