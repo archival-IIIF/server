@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>IIIF Explorer</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+  </style>
+  <script type="module" src="/iiif-explorer/iiif-explorer.esm.js"></script>
+  <script nomodule="" src="/iiif-explorer/iiif-explorer.js"></script>
+  <script type="application/javascript">
+      var container;
+
+      function resize() {
+          container.style.height = window.innerHeight - 130 + 'px';
+      }
+
+      window.addEventListener('DOMContentLoaded', function () {
+          container = document.getElementById('container');
+
+          resize();
+          window.addEventListener('resize', resize);
+
+          var iiifExplorer = document.querySelector('iiif-explorer');
+          iiifExplorer.addEventListener('selectManifest', function (e) {
+              window.open('/universalviewer#?manifest=' + e.detail.id);
+          });
+      });
+  </script>
+</head>
+<body>
+<div id="container">
+  <iiif-explorer manifest="/iiif/presentation/collection/top" copy-enabled="true"></iiif-explorer>
+</div>
+</body>
+</html>

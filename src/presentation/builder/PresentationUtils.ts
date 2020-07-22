@@ -103,7 +103,7 @@ export async function addMetadata(base: Base, root: Item): Promise<void> {
     root.metadata.forEach(md => base.setMetadata(md.label, md.value));
 
     const md = await runTaskWithResponse<IIIFMetadataParams, IIIFMetadata>('iiif-metadata', {item: root});
-    if (md.homepage)
+    if (md.homepage && md.homepage.length > 0)
         base.setHomepage(md.homepage);
 
     if (md.metadata && md.metadata.length > 0)

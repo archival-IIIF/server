@@ -1,4 +1,3 @@
-import {Context} from 'koa';
 import * as Router from '@koa/router';
 
 import logger from '../lib/Logger';
@@ -8,10 +7,13 @@ import HttpError from '../lib/HttpError';
 import {AccessState, hasAccess} from '../lib/Security';
 
 import {getCollection, getManifest, isCollection, isManifest} from './builder/PresentationBuilder';
-import Collection from './elem/v3/Collection';
-import Manifest from './elem/v3/Manifest';
+
+import {setContent} from './util';
+import routerTop from './router-top';
 
 const router = new Router({prefix: '/iiif/presentation'});
+
+router.use(routerTop.routes());
 
 router.get('/collection/:id', async ctx => {
     logger.info(`Received a request for a IIIF collection with id ${ctx.params.id}`);
@@ -56,21 +58,5 @@ router.get('/:id/manifest', async ctx => {
 
     logger.info(`Sending a IIIF manifest with id ${ctx.params.id}`);
 });
-
-function setContent(ctx: Context, jsonDoc: Manifest | Collection | null): void {
-    if (jsonDoc === null)
-        return;
-
-    switch (ctx.accepts('application/ld+json', 'application/json')) {
-        case 'application/json':
-            ctx.body = jsonDoc;
-            ctx.set('Content-Type', 'application/json');
-            break;
-        case 'application/ld+json':
-        default:
-            ctx.body = jsonDoc;
-            ctx.set('Content-Type', 'application/ld+json;profile=http://iiif.io/api/presentation/3/context.json');
-    }
-}
 
 export default router;

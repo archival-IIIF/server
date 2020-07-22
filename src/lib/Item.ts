@@ -116,7 +116,7 @@ export async function getChildItems(id: string, sortByOrder = false): Promise<It
 }
 
 export async function getChildItemsByType(id: string, type: string): Promise<Item[]> {
-    return await getItems(`parent_id:"${id}" AND type:"${type}"`);
+    return getItems(`parent_id:"${id}" AND type:"${type}"`);
 }
 
 export async function getRootItemByCollectionId(id: string): Promise<Item | null> {
@@ -135,6 +135,10 @@ export async function getCollectionIdsIndexed(ids: string | string[]): Promise<s
         : `collection_id:"${ids}*"`;
     const items = await getItems(query);
     return Array.from(new Set(<string[]>items.map(item => item.collection_id)));
+}
+
+export async function getAllRootItems(): Promise<Item[]> {
+    return getItems('type:(root OR folder OR metadata) AND NOT _exists_:parent_id');
 }
 
 async function getItems(q: string): Promise<Item[]> {

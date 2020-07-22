@@ -107,11 +107,7 @@ export function updateEAD(xml: Document, oaiIdentifier: string, collectionId: st
             metadata_id: oaiIdentifier,
             formats: md.formats,
             label: md.title,
-            metadata: [],
-            iish: {
-                type: 'ead',
-                metadataHdl: '10622/' + collectionId
-            }
+            metadata: []
         };
 
         if (prevUnitId)
@@ -132,8 +128,13 @@ export function updateEAD(xml: Document, oaiIdentifier: string, collectionId: st
         if (md.extent)
             item.physical = md.extent;
 
-        if (md.unitId === unitId)
-            item.iish.access = access;
+        if (md.unitId === unitId) {
+            item.iish = {
+                type: 'ead',
+                access,
+                metadataHdl: '10622/' + collectionId
+            }
+        }
 
         if (md.eadTitle)
             item.metadata.push({label: 'Part of', value: md.eadTitle});

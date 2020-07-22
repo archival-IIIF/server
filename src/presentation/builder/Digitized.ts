@@ -36,13 +36,7 @@ export async function getManifest(parentItem: RootItem, access: Access): Promise
 }
 
 export async function getReference(item: RootItem): Promise<Manifest> {
-    const manifest = createMinimalManifest(item);
-
-    const items = await getChildItems(item.id, true) as FileItem[];
-    const firstItem = items[0];
-    addThumbnail(manifest, firstItem);
-
-    return manifest;
+    return createMinimalManifest(item);
 }
 
 function addBehavior(base: Base, item: Item, hasMultipleItems = true): void {

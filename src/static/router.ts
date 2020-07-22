@@ -1,4 +1,6 @@
+import * as path from 'path';
 import {createReadStream} from 'fs';
+
 import * as Router from '@koa/router';
 import * as send from 'koa-send';
 
@@ -15,6 +17,15 @@ router.use(async (ctx, next) => {
     catch (e) {
         throw new HttpError(404, 'Not found');
     }
+});
+
+router.get('/', async ctx => {
+    await send(ctx, '/src/static/iiif-explorer.html');
+});
+
+router.get('/iiif-explorer:path(.*)?', async ctx => {
+    const root = path.join(__dirname, '../../node_modules/iiif-explorer/dist/iiif-explorer/');
+    await send(ctx, ctx.params.path, {root});
 });
 
 router.get('/file-icon:path(.*)', async ctx => {

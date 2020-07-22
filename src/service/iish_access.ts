@@ -3,7 +3,7 @@ import {getRootItemByCollectionId} from '../lib/Item';
 import {AccessState, isIpInRange, hasToken, Access} from '../lib/Security';
 
 export default async function hasAccess({item, ip, identities = []}: AccessParams): Promise<Access> {
-    if (item.collection_id === null)
+    if (item.collection_id === null || item.type === 'metadata')
         return {state: AccessState.OPEN};
 
     const parent = await getRootItemByCollectionId(item.collection_id);

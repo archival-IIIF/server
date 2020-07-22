@@ -43,7 +43,7 @@ async function createPdfPage(document: PDFDocument, item: ImageItem, tier?: Acce
         y: 0,
         width: item.width,
         height: item.height,
-    })
+    });
 
     return page;
 }

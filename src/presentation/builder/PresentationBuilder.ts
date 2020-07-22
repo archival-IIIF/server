@@ -32,6 +32,10 @@ export async function getCollection(item: Item, access: Access): Promise<Collect
     return null;
 }
 
+export async function getCollectionWithChildren(item: MetadataItem, children: Item[]): Promise<Collection | null> {
+    return await Metadata.getCollectionWithChildren(item, children, builder);
+}
+
 export async function getManifest(item: Item, access: Access): Promise<Manifest | null> {
     if (item && (item.type === 'root'))
         return await Digitized.getManifest(item as RootItem, access);
