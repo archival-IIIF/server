@@ -5,7 +5,7 @@ import config from './Config';
 import logger from './Logger';
 import {RedisMessage} from './Task';
 import getEsClient from './ElasticSearch';
-import {getClient, createNewClient} from './Redis';
+import {getPersistentClient, createNewPersistentClient} from './Redis';
 import registerGracefulShutdownHandler from './GracefulShutdown';
 import {allServices, servicesRunning} from './Service';
 
@@ -16,9 +16,9 @@ const sleep = promisify(setTimeout);
 let shutdown = false;
 
 export async function workerStatus(): Promise<{ [type: string]: WorkerStatus }> {
-    const client = getClient();
+    const client = getPersistentClient();
     if (!client)
-        throw new Error('Redis is required for for workers!');
+        throw new Error('A persistent Redis server is required for for workers!');
 
     const results = await Promise.all(allServices
         .filter(service => service.runAs === 'worker')
@@ -44,12 +44,12 @@ export async function workerStatus(): Promise<{ [type: string]: WorkerStatus }> 
 }
 
 export default async function onTask<A, R>(type: string, process: (args: A) => Promise<R>): Promise<void> {
-    const client = getClient();
-    const blockingClient = createNewClient();
+    const client = getPersistentClient();
+    const blockingClient = createNewPersistentClient();
     const tasksInProgress: string[] = [];
 
     if (!client || !blockingClient)
-        throw new Error('Redis is required for for setting up workers!');
+        throw new Error('A persistent Redis server is required for for setting up workers!');
 
     await waitForReady(client);
     await moveExpiredTasksToQueue(type, client);

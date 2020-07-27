@@ -30,7 +30,6 @@ export interface Config {
     videoTilesRows: number,
     videoTilesColumns: number,
     imageTierSeparator: string;
-    cacheDisabled: boolean;
     maxTasksPerWorker: number;
     services: string[];
     secret: string;
@@ -43,8 +42,13 @@ export interface Config {
     derivativeRelativePath: string;
     internalIpAddresses: string[];
     loginDisabled: boolean;
+    accessTtl: number;
     elasticSearchUrl: string;
-    redis: null | {
+    redisVolatile: null | {
+        host: string;
+        port: number;
+    };
+    redisPersistent: null | {
         host: string;
         port: number;
     };
@@ -138,11 +142,6 @@ const config: Config = {
         return process.env.IIIF_SERVER_IMAGE_TIER_SEPARATOR;
     })(),
 
-    cacheDisabled: (_ => {
-        const cacheDisabled = process.env.IIIF_SERVER_CACHE_DISABLED;
-        return (cacheDisabled !== undefined && (cacheDisabled.toLowerCase() === 'true' || cacheDisabled === '1'));
-    })(),
-
     maxTasksPerWorker: (_ => {
         const maxTasksPerWorker = process.env.IIIF_SERVER_MAX_TASKS_PER_WORKER
             ? parseInt(process.env.IIIF_SERVER_MAX_TASKS_PER_WORKER) : 0;
@@ -212,21 +211,39 @@ const config: Config = {
         return ((loginDisabled !== undefined) && (loginDisabled.toLowerCase() === 'true' || loginDisabled === '1'));
     })(),
 
+    accessTtl: (_ => {
+        const accessTtl = process.env.IIIF_SERVER_ACCESS_TTL ? parseInt(process.env.IIIF_SERVER_ACCESS_TTL) : 0;
+        return (accessTtl > 0) ? accessTtl : 3600;
+    })(),
+
     elasticSearchUrl: (_ => {
         if (!process.env.IIIF_SERVER_ELASTICSEARCH_URL || (process.env.IIIF_SERVER_ELASTICSEARCH_URL === 'null'))
             throw new Error('The ElasticSearch URL is not defined');
         return process.env.IIIF_SERVER_ELASTICSEARCH_URL;
     })(),
 
-    redis: (_ => {
+    redisVolatile: (_ => {
+        const redisDisabled = process.env.IIIF_SERVER_REDIS_VOLATILE_DISABLED;
+        if (redisDisabled && (redisDisabled.toLowerCase() === 'true' || redisDisabled === '1'))
+            return null;
+
+        const host = (process.env.IIIF_SERVER_REDIS_VOLATILE_HOST && (process.env.IIIF_SERVER_REDIS_VOLATILE_HOST !== 'null'))
+            ? process.env.IIIF_SERVER_REDIS_VOLATILE_HOST : 'localhost';
+        const port = process.env.IIIF_SERVER_REDIS_VOLATILE_PORT && parseInt(process.env.IIIF_SERVER_REDIS_VOLATILE_PORT) > 0
+            ? parseInt(process.env.IIIF_SERVER_REDIS_VOLATILE_PORT) : 6379;
+
+        return {host, port};
+    })(),
+
+    redisPersistent: (_ => {
         const redisDisabled = process.env.IIIF_SERVER_REDIS_DISABLED;
         if (redisDisabled && (redisDisabled.toLowerCase() === 'true' || redisDisabled === '1'))
             return null;
 
-        const host = (process.env.IIIF_SERVER_REDIS_HOST && (process.env.IIIF_SERVER_REDIS_HOST !== 'null'))
-            ? process.env.IIIF_SERVER_REDIS_HOST : 'localhost';
-        const port = process.env.IIIF_SERVER_REDIS_PORT && parseInt(process.env.IIIF_SERVER_REDIS_PORT) > 0
-            ? parseInt(process.env.IIIF_SERVER_REDIS_PORT) : 6379;
+        const host = (process.env.IIIF_SERVER_REDIS_PERSIST_HOST && (process.env.IIIF_SERVER_REDIS_PERSIST_HOST !== 'null'))
+            ? process.env.IIIF_SERVER_REDIS_PERSIST_HOST : 'localhost';
+        const port = process.env.IIIF_SERVER_REDIS_PERSIST_PORT && parseInt(process.env.IIIF_SERVER_REDIS_PERSIST_PORT) > 0
+            ? parseInt(process.env.IIIF_SERVER_REDIS_PERSIST_PORT) : 6379;
 
         return {host, port};
     })()

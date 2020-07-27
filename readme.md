@@ -328,7 +328,6 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_METADATA_OAI_URL`: URL of the OAI metadata provider
 - `IIIF_SERVER_METADATA_SRW_URL`: URL of the SRW metadata provider
 - `IIIF_SERVER_IMAGE_TIER_SEPARATOR`: Separator character to separate between the image identifier and the image tier
-- `IIIF_SERVER_CACHE_DISABLED`: Turn caching on/off (Requires Redis)
 - `IIIF_SERVER_MAX_TASKS_PER_WORKER`: The maximum number of tasks a single type of worker can load at the same time
 - `IIIF_SERVER_PORT`: Port to run the web server
 - `IIIF_SERVER_ATTRIBUTION`: Attribution to add to the IIIF manifests
@@ -343,9 +342,9 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_LOGO_DIM`: The dimensions of the logo, separated by a ':'
 - `IIIF_SERVER_AUDIO_DIM`: The dimensions of the audio icon, separated by a ':'
 - `IIIF_SERVER_PDF_PAGES_THRESHOLD`: If defined, limit dynamic PDF creation per IP address 
-when over this configured threshold (Requires Redis)
+when over this configured threshold (Requires Redis volatile server)
 - `IIIF_SERVER_PDF_SESSION_SECONDS`: If defined, the number of seconds to limit 
-dynamic PDF creation per IP address (Requires Redis)
+dynamic PDF creation per IP address (Requires Redis volatile server)
 - `IIIF_SERVER_PDF_IMAGE_SIZE`: The (IIIF) size of images for the dynamic PDF creation (defaults to 'max')
 - `IIIF_SERVER_VIDEO_MOSAIC_WIDTH`: The width of the thumbnails in the video mosaic derivative (defaults to 500)
 - `IIIF_SERVER_VIDEO_TILES_ROWS`: The number of rows in the video mosaic derivative (defaults to 6)
@@ -353,11 +352,14 @@ dynamic PDF creation per IP address (Requires Redis)
 - `IIIF_SERVER_LOG_LEVEL`: The logging level
 - `IIIF_SERVER_IP_ADDRESS_HEADER`: The header to read the IP address from, instead of `HTTP_X_FORWARDED_FOR`
 - `IIIF_SERVER_INTERNAL_IP_ADDRESSES`: If access may be granted based on IP address, 
-provide a comma separated white list of ip addresses (Requires Redis)
-- `IIIF_SERVER_LOGIN_DISABLED`: Turn login based authentication on/off (Requires Redis)
+provide a comma separated white list of ip addresses (Requires Redis persistent server)
+- `IIIF_SERVER_LOGIN_DISABLED`: Turn login based authentication on/off (Requires Redis persistent server)
 - `IIIF_SERVER_ELASTICSEARCH_URL`: URL of the ElasticSearch indexer
 - `IIIF_SERVER_ELASTICSEARCH_USER`: Username of the ElasticSearch indexer if authentication is enabled
 - `IIIF_SERVER_ELASTICSEARCH_PASSWORD`: Password of the ElasticSearch indexer if authentication is enabled
-- `IIIF_SERVER_REDIS_DISABLED`: Turn Redis on/off
-- `IIIF_SERVER_REDIS_HOST`: Host of the Redis server (Requires Redis)
-- `IIIF_SERVER_REDIS_PORT`: Port of the Redis server (Requires Redis)
+- `IIIF_SERVER_REDIS_VOLATILE_DISABLED`: Turn Redis volatile server on/off (Sets up caching)
+- `IIIF_SERVER_REDIS_VOLATILE_HOST`: Host of the Redis caching server 
+- `IIIF_SERVER_REDIS_VOLATILE_PORT`: Port of the Redis caching server
+- `IIIF_SERVER_REDIS_PERSIST_DISABLED`: Turn Redis persistent server on/off (Sets up jobs and auth tokens)
+- `IIIF_SERVER_REDIS_PERSIST_HOST`: Host of the Redis persistent server
+- `IIIF_SERVER_REDIS_PERSIST_PORT`: Port of the Redis persistent server

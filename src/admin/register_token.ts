@@ -1,12 +1,16 @@
 import {v4 as uuid} from 'uuid';
 import moment from 'moment';
 
-import HttpError from '../lib/HttpError';
-import getClient from '../lib/ElasticSearch';
 import {Token} from '../lib/Security';
+import HttpError from '../lib/HttpError';
+import {getPersistentClient} from '../lib/Redis';
 
 export default async function registerToken(token: string | null, collection: string | null,
                                             from: moment.Moment | null, to: moment.Moment | null): Promise<Token> {
+    const client = getPersistentClient();
+    if (!client)
+        throw new HttpError(400, 'There is no persistent Redis server configured for auth!');
+
     if (!collection)
         throw new HttpError(400, 'Please provide a collection!');
 
@@ -30,11 +34,11 @@ export default async function registerToken(token: string | null, collection: st
         to: to ? to.toDate() : null
     };
 
-    await getClient().index({
-        index: 'tokens',
-        id: token,
-        body: tokenInfo
-    });
+    let multi = client.multi().set(`token:${token}`, JSON.stringify(tokenInfo));
+    if (to)
+        multi = multi.expireat(`token:${token}`, to.unix());
+
+    await client.execMulti(multi);
 
     return tokenInfo;
 }

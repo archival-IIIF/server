@@ -61,10 +61,10 @@ router.get('/:id/info.json', async ctx => {
         setContentType(ctx);
         ctx.status = 401;
         ctx.body = await getImageInfo(item, derivative, getProfile(), access);
+        logger.info(`Sending image info with id ${id} and tier ${tier}`);
         return;
     }
-
-    if (access.state === AccessState.OPEN && shouldRedirect(derivative, access, tier)) {
+    else if (access.state === AccessState.OPEN && shouldRedirect(derivative, access, tier)) {
         ctx.redirect(`${prefix}/${id}/info.json`);
         return;
     }

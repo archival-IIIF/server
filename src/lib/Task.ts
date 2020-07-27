@@ -1,6 +1,6 @@
 import {v1 as uuid} from 'uuid';
 import logger from './Logger';
-import {getClient, createNewClient} from './Redis';
+import {getPersistentClient, createNewPersistentClient} from './Redis';
 import {ArgService, servicesRunning} from './Service';
 
 export interface RedisMessage<T> {
@@ -23,9 +23,9 @@ export function runTask<T>(type: string, task: T, identifier: string = uuid()): 
         return;
     }
 
-    const client = getClient();
+    const client = getPersistentClient();
     if (!client)
-        throw new Error('Redis is required for sending tasks to workers!');
+        throw new Error('A persistent Redis server is required for sending tasks to workers!');
 
     logger.debug(`Sending a new task with type '${type}' and identifier '${identifier}'`);
     client.rpush(getChannel(type), JSON.stringify({identifier: identifier, data: task}));
@@ -36,12 +36,12 @@ export function runTaskWithResponse<T, R>(type: string, task: T, identifier: str
     if (service && service.getService)
         return service.getService()<T, R>(task);
 
-    const client = getClient();
+    const client = getPersistentClient();
     if (!client)
-        throw new Error('Redis is required for sending tasks to workers!');
+        throw new Error('A persistent Redis server is required for sending tasks to workers!');
 
     const timeout = 5000;
-    const subscriber = createNewClient();
+    const subscriber = createNewPersistentClient();
 
     return new Promise<R>((resolve, reject) => {
         subscriber.redis.subscribe(getChannel(type));

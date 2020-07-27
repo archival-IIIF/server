@@ -1,8 +1,15 @@
 import {createReadStream} from 'fs';
 import * as path from 'path';
-import moment from 'moment';
 import Router from '@koa/router';
-import * as security from '../lib/Security';
+
+import config from '../lib/Config';
+import {
+    checkTokenDb,
+    getAccessIdFromRequest,
+    removeAccessIdFromRequest,
+    setAccessIdForIdentity,
+    setAccessTokenForAccessId
+} from '../lib/Security';
 
 type Message = { messageId?: string };
 type AccessTokenMessage = Message & { accessToken: string, expiresIn: number };
@@ -19,16 +26,11 @@ router.get('/login', ctx => {
 router.post('/login', async ctx => {
     const token = ctx.request.body.token;
 
-    const tokens = await security.checkTokenDb([token]);
+    const tokens = await checkTokenDb([token]);
     if (tokens.length > 0) {
-        let accessId = await security.getAccessIdFromRequest(ctx, false);
-        accessId = await security.setAccessIdForIdentity(token, accessId);
-        ctx.cookies.set('access', accessId, {
-            signed: true,
-            maxAge: 86400000,
-            expires: moment().add(1, 'd').toDate(),
-            overwrite: true
-        });
+        let accessId = await getAccessIdFromRequest(ctx, false);
+        accessId = await setAccessIdForIdentity(token, accessId);
+        ctx.cookies.set('access', accessId, {signed: true, overwrite: true});
     }
 
     ctx.type = 'text/html';
@@ -36,11 +38,11 @@ router.post('/login', async ctx => {
 });
 
 router.get('/token', async ctx => {
-    const accessId = await security.getAccessIdFromRequest(ctx, false);
-    const token = (accessId) ? await security.setAccessTokenForAccessId(accessId) : null;
+    const accessId = await getAccessIdFromRequest(ctx, false);
+    const token = (accessId) ? await setAccessTokenForAccessId(accessId) : null;
 
     const message: AccessTokenMessage | ErrorMessage = (token)
-        ? {accessToken: token, expiresIn: 3600}
+        ? {accessToken: token, expiresIn: config.accessTtl}
         : {error: 'missingCredentials', description: 'No access cookie found!'};
 
     if (ctx.query.messageId && ctx.query.origin) {
@@ -59,7 +61,7 @@ router.get('/token', async ctx => {
 });
 
 router.get('/logout', async ctx => {
-    await security.removeAccessIdFromRequest(ctx);
+    await removeAccessIdFromRequest(ctx);
 
     ctx.type = 'text/html';
     ctx.body = createReadStream(path.join(__dirname, 'logout.html'));

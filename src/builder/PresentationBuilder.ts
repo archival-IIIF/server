@@ -45,7 +45,7 @@ export async function getCollectionWithChildren(item: MetadataItem, children: It
 
 export async function getManifest(item: Item, access: Access): Promise<Manifest | null> {
     if (item && (item.type === 'root'))
-        return await Digitized.getManifest(item as RootItem, access);
+        return await Digitized.getManifest(item as RootItem);
 
     if (item && (item.type !== 'metadata' && item.type !== 'folder' && !item.order))
         return await DigitalBorn.getManifest(item as FileItem, access);

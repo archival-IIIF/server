@@ -5,9 +5,8 @@ import sinonChai from 'sinon-chai';
 import {Context} from 'koa';
 
 import {createItem} from '../../src/lib/Item';
-import {setConfig} from '../../src/lib/Config';
 import {setRedisClient} from '../../src/lib/Redis';
-import {setElasticSearchClient} from '../../src/lib/ElasticSearch';
+import config, {setConfig} from '../../src/lib/Config';
 import {AccessParams, setServicesRunning} from '../../src/lib/Service';
 
 import {
@@ -20,7 +19,7 @@ const expect = chai.expect;
 
 describe('Security', () => {
     let redis: any;
-    let elasticSearch: any;
+    let redisMulti: any;
 
     const identity = 'identity';
     const accessId = 'access12345';
@@ -64,18 +63,22 @@ describe('Security', () => {
             .resolves(JSON.stringify({identities: [identity], token: null}));
         redisGetStub.resolves(null as any);
 
+        redisMulti = {
+            set: sinon.stub().returns(redisMulti),
+            expire: sinon.stub().returns(redisMulti),
+            del: sinon.stub().returns(redisMulti)
+        };
+
         redis = {
             set: sinon.stub().resolves('OK'),
             del: sinon.stub().resolves(1),
-            get: redisGetStub
+            get: redisGetStub,
+            multi: () => redisMulti,
+            execMulti: sinon.fake(),
         };
-        elasticSearch = {};
 
         setConfig('accessToken', adminAccessToken);
-
         setRedisClient(redis);
-        setElasticSearchClient(elasticSearch);
-
         setServicesRunning([{
             name: 'access-for-test',
             type: 'access',
@@ -128,11 +131,6 @@ describe('Security', () => {
         it('should always return open access if the request includes admin rights', async () => {
             const ctx = {...defaultCtx, request: {body: {access_token: adminAccessToken}}};
             const access = await hasAccess(ctx as Context, closedItem);
-            expect(access).to.deep.equal({state: AccessState.OPEN});
-        });
-
-        it('should always return open access if authentication is disabled', async () => {
-            const access = await hasAccess(defaultCtx as Context, closedItem);
             expect(access).to.deep.equal({state: AccessState.OPEN});
         });
 
@@ -253,7 +251,7 @@ describe('Security', () => {
             expect(redis.set).to.have.been.calledWithExactly(
                 `access-id:${accessId}`,
                 JSON.stringify({identities: [identity, 'new-identity'], token: accessToken}),
-                ['EX', 86400]
+                ['EX', config.accessTtl]
             );
         });
 
@@ -264,7 +262,7 @@ describe('Security', () => {
             expect(redis.set).to.have.been.calledWithExactly(
                 `access-id:${newAccessId}`,
                 JSON.stringify({identities: [identity], token: null}),
-                ['EX', 86400]
+                ['EX', config.accessTtl]
             );
         });
     });
@@ -272,23 +270,20 @@ describe('Security', () => {
     describe('#setAccessTokenForAccessId()', () => {
         it('should end no updates for already coupled access token with access id', async () => {
             await setAccessTokenForAccessId(accessId);
-            expect(redis.set).to.have.not.been.called;
+            expect(redis.execMulti).to.have.not.been.called;
         });
 
         it('should create an access token and send an update for a new access id without access token', async () => {
             const newAccessToken = await setAccessTokenForAccessId(newAccessId);
 
+            const expectedAccessIdInfo = JSON.stringify({identities: [identity], token: newAccessToken});
+
             expect(newAccessToken).to.be.a('string');
-            expect(redis.set).to.have.been.calledWithExactly(
-                `access-token:${newAccessToken}`,
-                newAccessId,
-                ['EX', 86400]
-            );
-            expect(redis.set).to.have.been.calledWithExactly(
-                `access-id:${newAccessId}`,
-                JSON.stringify({identities: [identity], token: newAccessToken}),
-                ['EX', 86400]
-            );
+            expect(redis.execMulti).to.have.been.called;
+            expect(redisMulti.set).to.have.been.calledWithExactly(`access-token:${newAccessToken}`, newAccessId);
+            expect(redisMulti.expire).to.have.been.calledWithExactly(`access-token:${newAccessToken}`, config.accessTtl);
+            expect(redisMulti.set).to.have.been.calledWithExactly(`access-id:${newAccessId}`, expectedAccessIdInfo);
+            expect(redisMulti.expire).to.have.been.calledWithExactly(`access-id:${newAccessId}`, config.accessTtl);
         });
     });
 
@@ -359,8 +354,8 @@ describe('Security', () => {
 
             await removeAccessIdFromRequest(ctx as Context);
 
-            expect(redis.del).to.have.been.calledWithExactly(`access-id:${accessId}`);
-            expect(redis.del).to.have.been.calledWithExactly(`access-token:${accessToken}`);
+            expect(redisMulti.del).to.have.been.calledWithExactly(`access-id:${accessId}`);
+            expect(redisMulti.del).to.have.been.calledWithExactly(`access-token:${accessToken}`);
         });
     });
 });

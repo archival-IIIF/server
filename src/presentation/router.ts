@@ -45,11 +45,6 @@ router.get('/:id/manifest', async ctx => {
         throw new HttpError(404, `No manifest found with id ${ctx.params.id}`);
 
     const access = await hasAccess(ctx, item, true);
-    if (access.state === AccessState.CLOSED) {
-        ctx.status = 401;
-        setContent(ctx, await getManifest(item, access));
-        return;
-    }
 
     setContent(
         ctx,

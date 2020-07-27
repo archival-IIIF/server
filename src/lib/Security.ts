@@ -1,14 +1,14 @@
 import moment from 'moment';
-import {inRange} from 'range_check';
-import {v4 as uuid} from 'uuid';
 import {Context} from 'koa';
+import {v4 as uuid} from 'uuid';
+import {inRange} from 'range_check';
+import {WrappedNodeRedisClient} from 'handy-redis';
 
 import config from './Config';
 import logger from './Logger';
 import {Item} from './ItemInterfaces';
 import {runTaskWithResponse} from './Task';
-import {getClient} from './Redis';
-import getEsClient, {SearchResponse} from './ElasticSearch';
+import {getPersistentClient} from './Redis';
 
 import {AuthTextsByType} from '../service/util/types';
 import {AccessParams, AuthTextsParams} from './Service';
@@ -51,26 +51,29 @@ export async function hasAccess(ctx: Context, item: Item, acceptToken = false): 
     if (hasAdminAccess(ctx))
         return {state: AccessState.OPEN};
 
-    if (isAuthenticationEnabled()) {
-        const ip = getIpAddress(ctx);
-        const accessId = await getAccessIdFromRequest(ctx, acceptToken);
-        const accessIdInfo = await getIdentitiesAndTokensForAccessId(accessId);
-        const identities = accessIdInfo ? accessIdInfo.identities : [];
-
-        if (accessId && identities.length > 0)
-            logger.debug('Determining access with an access id and matching identities');
-        else if (accessId)
-            logger.debug('Determining access with an access id but no matching identities');
-        else
-            logger.debug('Determining access with no access id and no identities');
-
-        const access = await runTaskWithResponse<AccessParams, Access>('access', {item, ip, identities});
-        logger.debug(`Access for ${item.id} is ${access.state} based on ip ${ip} and ${identities.length} identities`);
+    if (!isAuthenticationEnabled()) {
+        const access = await runTaskWithResponse<AccessParams, Access>('access', {item});
+        logger.debug(`Access for ${item.id} is ${access.state} without authentication enabled`);
 
         return access;
     }
 
-    return {state: AccessState.OPEN};
+    const ip = getIpAddress(ctx);
+    const accessId = await getAccessIdFromRequest(ctx, acceptToken);
+    const accessIdInfo = await getIdentitiesAndTokensForAccessId(accessId);
+    const identities = accessIdInfo ? accessIdInfo.identities : [];
+
+    if (accessId && identities.length > 0)
+        logger.debug('Determining access with an access id and matching identities');
+    else if (accessId)
+        logger.debug('Determining access with an access id but no matching identities');
+    else
+        logger.debug('Determining access with no access id and no identities');
+
+    const access = await runTaskWithResponse<AccessParams, Access>('access', {item, ip, identities});
+    logger.debug(`Access for ${item.id} is ${access.state} based on ip ${ip} and ${identities.length} identities`);
+
+    return access;
 }
 
 export function hasAdminAccess(ctx: Context): boolean {
@@ -124,26 +127,21 @@ export async function hasToken(item: Item, identities: string[]): Promise<boolea
 
 export async function checkTokenDb(tokens: string[]): Promise<Token[]> {
     try {
-        const response: SearchResponse<Token> = await getEsClient().search({
-            index: 'tokens',
-            size: 100,
-            body: {
-                query: {
-                    terms: {'token': tokens}
-                }
-            },
-        });
+        const tokensInfo = await getClient().mget(...tokens.map(token => `token:${token}`));
+        return tokensInfo
+            .map(tokensInfo => tokensInfo ? JSON.parse(tokensInfo) : null)
+            .filter(tokenInfo => {
+                if (!tokenInfo)
+                    return false;
 
-        const tokensInfo = response.body.hits.hits.map(hit => hit._source);
-        return tokensInfo.filter(tokenInfo => {
-            if (tokenInfo.from && tokenInfo.to && !moment().isBetween(moment(tokenInfo.from), moment(tokenInfo.to)))
-                return false;
+                if (tokenInfo.from && tokenInfo.to && !moment().isBetween(moment(tokenInfo.from), moment(tokenInfo.to)))
+                    return false;
 
-            if (tokenInfo.from && !moment().isAfter(moment(tokenInfo.from)))
-                return false;
+                if (tokenInfo.from && !moment().isAfter(moment(tokenInfo.from)))
+                    return false;
 
-            return !(tokenInfo.to && !moment().isBefore(moment(tokenInfo.to)));
-        });
+                return !(tokenInfo.to && !moment().isBefore(moment(tokenInfo.to)));
+            });
     }
     catch (err) {
         return [];
@@ -151,21 +149,11 @@ export async function checkTokenDb(tokens: string[]): Promise<Token[]> {
 }
 
 async function getIdentitiesAndTokensForAccessId(accessId: string | null): Promise<{ identities: string[]; token: string; } | null> {
-    const client = getClient();
-    if (!client)
-        throw new Error('Redis is required for authentication!');
-
-    const accessIdInfo = await client.get(`access-id:${accessId}`);
-    if (accessIdInfo)
-        return JSON.parse(accessIdInfo);
-    return null;
+    const accessIdInfo = await getClient().get(`access-id:${accessId}`);
+    return accessIdInfo ? JSON.parse(accessIdInfo) : null;
 }
 
 export async function setAccessIdForIdentity(identity: string, accessId: string | null = null): Promise<string> {
-    const client = getClient();
-    if (!client)
-        throw new Error('Redis is required for authentication!');
-
     const accessIdInfo = accessId ? await getIdentitiesAndTokensForAccessId(accessId) : null;
     const identities = accessIdInfo ? accessIdInfo.identities : [];
     const token = accessIdInfo ? accessIdInfo.token : null;
@@ -174,25 +162,28 @@ export async function setAccessIdForIdentity(identity: string, accessId: string 
 
     if (!identities.includes(identity)) {
         identities.push(identity);
-        await client.set(`access-id:${accessId}`, JSON.stringify({identities, token}), ['EX', 86400]);
+        await getClient().set(
+            `access-id:${accessId}`, JSON.stringify({identities, token}), ['EX', config.accessTtl]);
     }
 
     return accessId;
 }
 
 export async function setAccessTokenForAccessId(accessId: string): Promise<string | null> {
-    const client = getClient();
-    if (!client)
-        throw new Error('Redis is required for authentication!');
-
     const accessIdInfo = await getIdentitiesAndTokensForAccessId(accessId);
     if (accessIdInfo) {
         const identities = accessIdInfo.identities;
         const token = accessIdInfo.token || uuid();
 
         if (!accessIdInfo.token) {
-            await client.set(`access-token:${token}`, accessId, ['EX', 86400]);
-            await client.set(`access-id:${accessId}`, JSON.stringify({identities, token}), ['EX', 86400]);
+            const client = getClient();
+            await client.execMulti(
+                client.multi()
+                    .set(`access-token:${token}`, accessId)
+                    .expire(`access-token:${token}`, config.accessTtl)
+                    .set(`access-id:${accessId}`, JSON.stringify({identities, token}))
+                    .expire(`access-id:${accessId}`, config.accessTtl)
+            );
         }
 
         return token;
@@ -202,11 +193,7 @@ export async function setAccessTokenForAccessId(accessId: string): Promise<strin
 }
 
 async function getAccessIdForAccessToken(accessToken: string): Promise<string | null> {
-    const client = getClient();
-    if (!client)
-        throw new Error('Redis is required for authentication!');
-
-    return await client.get(`access-token:${accessToken}`);
+    return getClient().get(`access-token:${accessToken}`);
 }
 
 export async function getAccessIdFromRequest(ctx: Context, acceptToken = false): Promise<string | null> {
@@ -214,7 +201,7 @@ export async function getAccessIdFromRequest(ctx: Context, acceptToken = false):
         logger.debug('Found token in header for current request');
 
         const accessToken = ctx.headers.authorization.replace('Bearer', '').trim();
-        return await getAccessIdForAccessToken(accessToken);
+        return getAccessIdForAccessToken(accessToken);
     }
 
     const accessCookie = ctx.cookies.get('access') || null;
@@ -225,18 +212,25 @@ export async function getAccessIdFromRequest(ctx: Context, acceptToken = false):
 }
 
 export async function removeAccessIdFromRequest(ctx: Context): Promise<void> {
-    const client = getClient();
-    if (!client)
-        throw new Error('Redis is required for authentication!');
-
     const accessId = ctx.cookies.get('access');
     if (accessId) {
         const accessIdInfo = await getIdentitiesAndTokensForAccessId(accessId);
         if (accessIdInfo) {
-            await client.del(`access-id:${accessId}`);
+            const client = getClient();
 
+            let multi = client.multi().del(`access-id:${accessId}`);
             if (accessIdInfo.token)
-                await client.del(`access-token:${accessIdInfo.token}`);
+                multi = multi.del(`access-token:${accessIdInfo.token}`);
+
+            await client.execMulti(multi);
         }
     }
+}
+
+function getClient(): WrappedNodeRedisClient {
+    const client = getPersistentClient();
+    if (!client)
+        throw new Error('A persistent Redis server is required for authentication!');
+
+    return client;
 }

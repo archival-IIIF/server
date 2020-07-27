@@ -1,11 +1,10 @@
-import {getClient} from './Redis';
 import logger from './Logger';
-import config from './Config';
+import {getVolatileClient} from './Redis';
 
 export async function cache<T>(type: string, group: string, id: string,
                                content: () => Promise<T>, secondsToExpire = 86400): Promise<T> {
-    const client = getClient();
-    if (!client || config.cacheDisabled)
+    const client = getVolatileClient();
+    if (!client)
         return await content();
 
     const key = `${type}:${group}:${id}`;
@@ -28,8 +27,8 @@ export async function cache<T>(type: string, group: string, id: string,
 }
 
 export async function evictCache(type: string, group: string): Promise<void> {
-    const client = getClient();
-    if (!client || config.cacheDisabled)
+    const client = getVolatileClient();
+    if (!client)
         return;
 
     logger.debug(`Evicting cache for type ${type} and group ${group}`);

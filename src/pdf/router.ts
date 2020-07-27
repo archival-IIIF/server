@@ -3,7 +3,7 @@ import Router from '@koa/router';
 import logger from '../lib/Logger';
 import config from '../lib/Config';
 import HttpError from '../lib/HttpError';
-import {getClient} from '../lib/Redis';
+import {getVolatileClient} from '../lib/Redis';
 import {ImageItem, RootItem} from '../lib/ItemInterfaces';
 import {getChildItems, getItem} from '../lib/Item';
 import {AccessState, hasAccess, getIpAddress, hasAdminAccess} from '../lib/Security';
@@ -42,7 +42,7 @@ router.get('/:id', async ctx => {
 
     if (!hasAdminAccess(ctx) && config.pdfPagesThreshold && config.pdfSessionSeconds
         && children.length > config.pdfPagesThreshold) {
-        const client = getClient();
+        const client = getVolatileClient();
         const ip = getIpAddress(ctx);
 
         if (client) {

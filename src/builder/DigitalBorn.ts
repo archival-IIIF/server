@@ -55,7 +55,7 @@ export async function getManifest(item: FileItem, access: Access): Promise<Manif
     if (access.state !== AccessState.CLOSED) {
         manifest.setBehavior('unordered');
         await addMetadataDB(manifest, item);
-        setThumbnail(manifest, item);
+        await setThumbnail(manifest, item);
 
         const canvas = await createCanvas(item, item);
         manifest.setItems(canvas);
@@ -95,7 +95,7 @@ export async function getReference(item: Item): Promise<Collection | Manifest> {
     }
 
     const manifest = createMinimalManifest(item);
-    setThumbnail(manifest, item);
+    await setThumbnail(manifest, item);
 
     return manifest;
 }
@@ -142,9 +142,9 @@ async function addMetadataDB(base: Base, root: Item): Promise<void> {
     await addMetadata(base, root);
 }
 
-function setThumbnail(base: Base, item: Item) {
+async function setThumbnail(base: Base, item: Item) {
     if (item.type === 'image')
-        addThumbnail(base, item as ImageItem);
+        await addThumbnail(base, item as ImageItem);
     else {
         const extension = item.label ? path.extname(item.label).substring(1).toLowerCase() : null;
         base.setThumbnail(getFileTypeThumbnail(item.original.puid, extension, 'file'));

@@ -27,7 +27,6 @@ describe('Cache', () => {
 
         contentFunc = sinon.stub().resolves(cacheable);
 
-        setConfig('cacheDisabled', false);
         setRedisClient(redis);
     });
 

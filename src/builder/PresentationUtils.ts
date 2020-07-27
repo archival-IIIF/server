@@ -9,6 +9,7 @@ import {IIIFMetadataParams} from '../lib/Service';
 import getPronomInfo, {PronomInfo} from '../lib/Pronom';
 import {getFullDerivativePath, getItem} from '../lib/Item';
 import {Item, FileItem, ImageItem, RootItem} from '../lib/ItemInterfaces';
+import {getAuthTexts, getEnabledAuthServices, requiresAuthentication} from '../lib/Security';
 
 import Base from './elem/v3/Base';
 import Manifest from './elem/v3/Manifest';
@@ -18,10 +19,11 @@ import Resource from './elem/v3/Resource';
 import Service from './elem/v3/Service';
 import Annotation from './elem/v3/Annotation';
 import AnnotationPage from './elem/v3/AnnotationPage';
+import AuthService from './elem/v3/AuthService';
 
 import {
     annoPageUri,
-    annoUri,
+    annoUri, authUri,
     canvasUri,
     collectionUri,
     derivativeUri,
@@ -53,12 +55,12 @@ export async function createManifest(item: Item, label?: string): Promise<Manife
     return manifest;
 }
 
-export async function createCanvas(item: FileItem, parentItem: Item): Promise<Canvas> {
+export async function createCanvas(item: FileItem, parentItem: Item, setAuth: boolean = false): Promise<Canvas> {
     const canvas = new Canvas(canvasUri(parentItem.id, item.order || 0), item.width, item.height, item.duration);
     const annoPage = new AnnotationPage(annoPageUri(parentItem.id, item.id));
     canvas.setItems(annoPage);
 
-    const resource = getResource(item);
+    const resource = await getResource(item, setAuth);
     const annotation = new Annotation(annoUri(parentItem.id, item.id), resource);
     annoPage.setItems(annotation);
     annotation.setCanvas(canvas);
@@ -68,19 +70,22 @@ export async function createCanvas(item: FileItem, parentItem: Item): Promise<Ca
     return canvas;
 }
 
-export function getResource(item: FileItem): Resource {
+export async function getResource(item: FileItem, setAuth: boolean = false): Promise<Resource> {
     if (item.type === 'image')
-        return getImageResource(item as ImageItem);
+        return await getImageResource(item as ImageItem, 'full', setAuth);
 
     const accessPronomData = item.access.puid ? getPronomInfo(item.access.puid) : null;
     const originalPronomData = item.original.puid ? getPronomInfo(item.original.puid) : null;
     const defaultMime = accessPronomData ? accessPronomData.mime : (originalPronomData as PronomInfo).mime;
 
-    return new Resource(fileUri(item.id), getType(item.type), defaultMime, item.width, item.height, item.duration);
+    const resource = new Resource(fileUri(item.id), getType(item.type), defaultMime, item.width, item.height, item.duration);
+    setAuth && await setAuthServices(resource, item);
+
+    return resource;
 }
 
-export function addThumbnail(base: Base, item: RootItem | FileItem): void {
-    const resource = getImageResource(item, '200,');
+export async function addThumbnail(base: Base, item: RootItem | FileItem): Promise<void> {
+    const resource = await getImageResource(item, '200,');
     base.setThumbnail(resource);
 }
 
@@ -143,7 +148,7 @@ async function setBaseDefaults(base: Base, item: Item): Promise<void> {
     }
 }
 
-function getImageResource(item: RootItem | FileItem, size = 'max'): Resource {
+async function getImageResource(item: RootItem | FileItem, size = 'max', setAuth: boolean = false): Promise<Resource> {
     const width = (size === 'full' || size === 'max') ? item.width : null;
     const height = (size === 'full' || size === 'max') ? item.height : null;
 
@@ -151,6 +156,7 @@ function getImageResource(item: RootItem | FileItem, size = 'max'): Resource {
     const service = new Service(imageUri(item.id), Service.IMAGE_SERVICE_2, 'http://iiif.io/api/image/2/level2.json');
 
     resource.setService(service);
+    setAuth && await setAuthServices(service, item);
 
     return resource;
 }
@@ -194,4 +200,15 @@ function addDerivatives(annotation: Annotation, item: Item): void {
                 });
             }
         });
+}
+
+async function setAuthServices(base: Resource | Service, item: RootItem | FileItem): Promise<void> {
+    if (await requiresAuthentication(item)) {
+        const authTexts = await getAuthTexts(item);
+        getEnabledAuthServices().forEach(type => {
+            const service = AuthService.getAuthenticationService(authUri, authTexts, type);
+            if (service)
+                base.setService(service);
+        });
+    }
 }

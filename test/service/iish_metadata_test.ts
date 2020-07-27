@@ -91,10 +91,6 @@ describe('iish_metadata', () => {
                     'formats': [],
                     'label': 'Collection title',
                     'metadata': [],
-                    'iish': {
-                        'metadataHdl': '10622/ARCH12345.3',
-                        'type': 'ead'
-                    },
                     'description': 'The content of this archive.<br/>Is described in here.',
                     'authors': [
                         {
@@ -109,7 +105,8 @@ describe('iish_metadata', () => {
                     'dates': [
                         '2019'
                     ],
-                    'physical': '1 m.'
+                    'physical': '1 m.',
+                    'order': 1
                 },
                 {
                     'id': 'ARCH12345.dda3da21e3f74df90a6160aebac41f6b',
@@ -121,11 +118,8 @@ describe('iish_metadata', () => {
                         'label': 'Part of',
                         'value': 'Collection title'
                     }],
-                    'iish': {
-                        'metadataHdl': '10622/ARCH12345.3',
-                        'type': 'ead'
-                    },
-                    'parent_id': 'ARCH12345'
+                    'parent_id': 'ARCH12345',
+                    'order': 2
                 },
                 {
                     'id': 'ARCH12345.3',
@@ -152,7 +146,8 @@ describe('iish_metadata', () => {
                     'dates': [
                         '2019'
                     ],
-                    'physical': '1 piece'
+                    'physical': '1 piece',
+                    'order': 1
                 }
             ]);
         });
