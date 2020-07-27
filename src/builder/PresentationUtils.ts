@@ -3,6 +3,7 @@ import {existsSync} from 'fs';
 import {IIIFMetadata} from '../service/util/types';
 
 import config from '../lib/Config';
+import {Text} from '../lib/Text';
 import derivatives from '../lib/Derivative';
 import {runTaskWithResponse} from '../lib/Task';
 import {IIIFMetadataParams} from '../lib/Service';
@@ -41,6 +42,10 @@ export function createMinimalManifest(item: Item, label?: string): Manifest {
     return new Manifest(manifestUri(item.id), label || item.label);
 }
 
+export function createMinimalAnnotationPage(item: Item, text: Text): AnnotationPage {
+    return new AnnotationPage(annoPageUri(item.id, text.id));
+}
+
 export async function createCollection(item: Item, label?: string): Promise<Collection> {
     const collection = createMinimalCollection(item, label);
     await setBaseDefaults(collection, item);
@@ -53,6 +58,13 @@ export async function createManifest(item: Item, label?: string): Promise<Manife
     await setBaseDefaults(manifest, item);
 
     return manifest;
+}
+
+export function createAnnotationPage(item: Item, text: Text): AnnotationPage {
+    const annotationPage = createMinimalAnnotationPage(item, text);
+    annotationPage.setContext();
+
+    return annotationPage;
 }
 
 export async function createCanvas(item: FileItem, parentItem: Item, setAuth: boolean = false): Promise<Canvas> {
@@ -172,7 +184,6 @@ async function getImageResource(item: RootItem | FileItem, size = 'max', setAuth
         imageResourceUri(item.id, undefined, {size}),
         'Image', 'image/jpeg', width, height);
     const service = new Service(imageUri(item.id), Service.IMAGE_SERVICE_2, 'http://iiif.io/api/image/2/level2.json');
-
     resource.setService(service);
     setAuth && await setAuthServices(service, item);
 

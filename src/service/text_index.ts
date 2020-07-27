@@ -7,6 +7,8 @@ import config from '../lib/Config';
 import {TextParams} from '../lib/Service';
 import {indexTexts, deleteTexts, readAlto} from '../lib/Text';
 
+import fixCommonUTF8Problems from './util/unicode_debug_mapping';
+
 const readFileAsync = promisify(fs.readFile);
 
 export default async function processText({collectionId, items}: TextParams) {
@@ -68,5 +70,7 @@ async function getAltoText(uri: string): Promise<string> {
 
 async function getPlainText(uri: string, encoding: string | null): Promise<string> {
     const textBuffer = await readFileAsync(uri);
-    return decode(textBuffer, encoding || 'utf8');
+    const encodedText = decode(textBuffer, encoding || 'utf8')
+    const fixedText = encoding ? encodedText : fixCommonUTF8Problems(encodedText);
+    return fixedText.normalize();
 }

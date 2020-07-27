@@ -33,6 +33,7 @@ async function startWeb() {
 
     const {router: iiifImageRouter} = await import('./image/router');
     const {router: iiifPresentationRouter} = await import('./presentation/router');
+    const {router: iiifSearchRouter} = await import('./search/router');
     const {router: iiifAuthRouter} = await import('./authentication/router');
     const {router: fileRouter} = await import('./file/router');
     const {router: pdfRouter} = await import('./pdf/router');
@@ -86,6 +87,7 @@ async function startWeb() {
 
     app.use(iiifImageRouter.routes());
     app.use(iiifPresentationRouter.routes());
+    app.use(iiifSearchRouter.routes());
     app.use(iiifAuthRouter.routes());
 
     app.use(fileRouter.routes());

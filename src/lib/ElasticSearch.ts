@@ -211,7 +211,6 @@ export function setElasticSearchClient(client: Client): void {
                         }
                     }
                 }
-
             });
 
             logger.info('Created the index \'texts\' with a mapping');
