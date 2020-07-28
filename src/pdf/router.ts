@@ -6,7 +6,7 @@ import HttpError from '../lib/HttpError';
 import {getClient} from '../lib/Redis';
 import {ImageItem, RootItem} from '../lib/ItemInterfaces';
 import {getChildItems, getItem} from '../lib/Item';
-import {AccessState, hasAccess, getIpAddress} from '../lib/Security';
+import {AccessState, hasAccess, getIpAddress, hasAdminAccess} from '../lib/Security';
 
 import createPDF from './pdfCreation';
 
@@ -40,14 +40,18 @@ router.get('/:id', async ctx => {
     if (children.length === 0)
         throw new HttpError(400, `Not able to produce pdf for manifest with id ${ctx.params.id}`);
 
-    if (config.pdfPagesThreshold && config.pdfSessionSeconds && children.length > config.pdfPagesThreshold) {
+    if (!hasAdminAccess(ctx) && config.pdfPagesThreshold && config.pdfSessionSeconds
+        && children.length > config.pdfPagesThreshold) {
         const client = getClient();
         const ip = getIpAddress(ctx);
 
         if (client) {
             const result = await client.set(`pdf:${ip}`, ip, ['EX', config.pdfSessionSeconds], 'NX');
-            if (!result)
-                throw new HttpError(429, 'Too many large PDF requests. Please try again at a later time.');
+            if (!result) {
+                const minutes = Math.ceil(config.pdfSessionSeconds / 60);
+                throw new HttpError(429,
+                    `You can only request one large PDF every ${minutes} minutes. Please try again later.`);
+            }
         }
     }
 

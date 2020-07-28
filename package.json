@@ -26,7 +26,7 @@
     "pdf-lib": "1.9.0",
     "@koa/router": "9.3.1",
     "@elastic/elasticsearch": "7.8.0",
-    "@types/node": "12.12.51",
+    "@types/node": "12.12.53",
     "@types/koa": "2.11.3",
     "@types/koa-morgan": "1.0.4",
     "@types/koa-json": "2.0.18",
@@ -39,7 +39,7 @@
     "@types/fs-extra": "9.0.1",
     "@types/mocha": "8.0.0",
     "@types/sinon": "9.0.4",
-    "@types/chai": "4.2.11",
+    "@types/chai": "4.2.12",
     "@types/sinon-chai": "3.2.4",
     "@types/koa__router": "8.0.2"
   },
