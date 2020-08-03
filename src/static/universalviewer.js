@@ -27,7 +27,9 @@ window.addEventListener('uvLoaded', function () {
 
     uv.on('multiSelectionMade', function (selectionMade) {
         var parts = selectionMade.manifestUri.split('/');
-        var id = parts[parts.length - 2];
+        var id = selectionMade.manifestUri.startsWith('https://hdl.handle.net')
+            ? parts[parts.length - 1].split('?')[0]
+            : parts[parts.length - 2];
 
         var qs = '';
         if (!selectionMade.allCanvases) {
