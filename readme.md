@@ -49,7 +49,7 @@ The `web` service runs the IIIF web environment.
 The worker services wait for new jobs to appear in a queue in [Redis](https://redis.io). A distinction is made 
 between index workers that indexes data in 
 [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch) and derivative workers that create 
-specific derivatives of collection items. At the moment, the Archival IIIF server identifies four different types 
+specific derivatives of collection items. At the moment, the Archival IIIF server identifies five different types 
 of worker services:
 - **Index worker**: Gets a job with the path of a collection to be indexed in
 [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch). Current implementations:
@@ -66,6 +66,13 @@ Current implementations:
  - **Waveform derivative worker**: Gets a job with a collection id and then builds waveform representations of all 
 audio files of the collection with the given collection id. Current implementations:
     - `waveform`: Default implementation.
+ - **PDF image derivative worker**: Gets a job with a collection id and then builds JPG representations of 
+the first page of all PDF files of the collection with the given collection id. Current implementations:
+    - `pdf-image`: Default implementation.
+ - **Video image derivative worker**: Gets a job with a collection id and then extracts a still as JPG 
+ and creates a mosaic of stills with a WebVTT file from all video files of the collection with the given collection id. 
+ Current implementations:
+    - `video-image`: Default implementation.
 
 ### Cron jobs
 The cron job services run periodically. At the moment, the Archival IIIF server identifies one cron job:
@@ -331,12 +338,17 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_COLLECTIONS_REL_PATH`: The relative path of the (read-only) collections under the data storage root path
 - `IIIF_SERVER_DERIVATIVE_REL_PATH`: The relative path of the (read-write) derivatives under the data storage root path
 - `IIIF_SERVER_LOGO_REL_PATH`: The relative path to the image with the logo to add to the IIIF manifests
+- `IIIF_SERVER_AUDIO_REL_PATH`: The relative path to the image with the audio icon to add to the IIIF manifests
 - `IIIF_SERVER_LOGO_DIM`: The dimensions of the logo, separated by a ':'
+- `IIIF_SERVER_AUDIO_DIM`: The dimensions of the audio icon, separated by a ':'
 - `IIIF_SERVER_PDF_PAGES_THRESHOLD`: If defined, limit dynamic PDF creation per IP address 
 when over this configured threshold (Requires Redis)
 - `IIIF_SERVER_PDF_SESSION_SECONDS`: If defined, the number of seconds to limit 
 dynamic PDF creation per IP address (Requires Redis)
 - `IIIF_SERVER_PDF_IMAGE_SIZE`: The (IIIF) size of images for the dynamic PDF creation (defaults to 'max')
+- `IIIF_SERVER_VIDEO_MOSAIC_WIDTH`: The width of the thumbnails in the video mosaic derivative (defaults to 500)
+- `IIIF_SERVER_VIDEO_TILES_ROWS`: The number of rows in the video mosaic derivative (defaults to 6)
+- `IIIF_SERVER_VIDEO_TILES_COLUMNS`: The number of columns in the video mosaic derivative (defaults to 5)
 - `IIIF_SERVER_LOG_LEVEL`: The logging level
 - `IIIF_SERVER_IP_ADDRESS_HEADER`: The header to read the IP address from, instead of `HTTP_X_FORWARDED_FOR`
 - `IIIF_SERVER_INTERNAL_IP_ADDRESSES`: If access may be granted based on IP address, 

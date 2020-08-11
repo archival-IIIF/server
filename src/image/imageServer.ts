@@ -3,8 +3,9 @@ import * as got from 'got';
 import {sharpProfile, lorisProfile} from './profiles';
 
 import config from '../lib/Config';
-import {ImageItem} from '../lib/ItemInterfaces';
-import {getRelativePath} from '../lib/Item';
+import {Item} from '../lib/ItemInterfaces';
+import {DerivativeType} from '../lib/Derivative';
+import {getRelativePath, getRelativeDerivativePath} from '../lib/Item';
 
 import {ImageProfile} from '../builder/elem/v2/Image';
 
@@ -28,13 +29,28 @@ export interface ImageResult {
     contentLength: number | null
 }
 
-export async function getImage(item: ImageItem, max: number | null,
+export async function getImage(item: Item, derivative: DerivativeType | null, max: number | null,
                                imageOptions: ImageOptions): Promise<ImageResult> {
-    return serveImage(getRelativePath(item), max, imageOptions);
+    if (item.type === 'image')
+        return serveImage(getRelativePath(item), max, imageOptions);
+
+    if (derivative)
+        return serveImage(getRelativeDerivativePath(item, derivative), max, imageOptions);
+
+    return {
+        image: null,
+        status: 404,
+        contentType: null,
+        contentLength: null
+    };
 }
 
 export async function getLogo(imageOptions: ImageOptions): Promise<ImageResult> {
     return serveImage(config.logoRelativePath as string, null, imageOptions);
+}
+
+export async function getAudio(imageOptions: ImageOptions): Promise<ImageResult> {
+    return serveImage(config.audioRelativePath as string, null, imageOptions);
 }
 
 export function getProfile(): ImageProfile {
@@ -57,9 +73,9 @@ async function serveImage(relativePath: string, max: number | null,
     });
 
     return {
-        image: (response.statusCode === 200) ? response.body : null,
+        image: response.statusCode === 200 ? response.body : null,
         status: response.statusCode,
-        contentType: (response.statusCode === 200) ? response.headers['content-type'] as string : null,
-        contentLength: (response.statusCode === 200) ? parseInt(response.headers['content-length'] as string) : null
+        contentType: response.statusCode === 200 ? response.headers['content-type'] as string : null,
+        contentLength: response.statusCode === 200 ? parseInt(response.headers['content-length'] as string) : null
     };
 }

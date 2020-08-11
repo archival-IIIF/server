@@ -6,17 +6,15 @@ import * as path from 'path';
 import * as mime from 'mime-types';
 import {promisify} from 'util';
 
+import config from '../lib/Config';
 import logger from '../lib/Logger';
 import HttpError from '../lib/HttpError';
 import getPronomInfo from '../lib/Pronom';
+import derivatives from '../lib/Derivative';
 import {AccessState, hasAccess, hasAdminAccess} from '../lib/Security';
-import {determineItem, getFullPath, getPronom, getAvailableType, hasType, getDerivativePath} from '../lib/Item';
+import {determineItem, getFullPath, getPronom, getAvailableType, hasType, getFullDerivativePath} from '../lib/Item';
 
 const statAsync = promisify(fs.stat);
-
-const derivatives: { [name: string]: { contentType: string, extension: string } } = {
-    waveform: {contentType: 'application/octet-stream', extension: 'dat'}
-};
 
 const router = new Router({prefix: '/file'});
 
@@ -62,7 +60,7 @@ router.get('/:id/:type(original|access)?', async ctx => {
     if (!item)
         throw new HttpError(404, `No file found with the id ${ctx.params.id}`);
 
-    if ((item.type === 'image' && !hasAdminAccess(ctx))) {
+    if (item.type === 'image' && !hasAdminAccess(ctx)) {
         ctx.redirect(`/iiif/image/${item.id}/full/max/0/default.jpg`);
         return;
     }
@@ -112,11 +110,17 @@ router.get('/:id/:derivative', async ctx => {
     if (!item)
         throw new HttpError(404, `No file found with the id ${ctx.params.id}`);
 
+    if (info.to === 'image' && !hasAdminAccess(ctx)) {
+        const tier = info.imageTier ? config.imageTierSeparator + info.imageTier : '';
+        ctx.redirect(`/iiif/image/${item.id}${tier}/full/max/0/default.jpg`);
+        return;
+    }
+
     const access = await hasAccess(ctx, item, false);
     if (access.state !== AccessState.OPEN)
         throw new HttpError(401, 'Access denied');
 
-    const fullPath = getDerivativePath(item, ctx.params.derivative, info.extension);
+    const fullPath = getFullDerivativePath(item, info);
     if (!fs.existsSync(fullPath))
         throw new HttpError(404, `No derivative found for id ${ctx.params.id} of type ${ctx.params.derivative}`);
 
@@ -124,7 +128,7 @@ router.get('/:id/:derivative', async ctx => {
 
     ctx.set('Content-Type', info.contentType);
     ctx.set('Content-Length', String(stat.size));
-    ctx.set('Content-Disposition', `inline; filename="${ctx.params.derivative}-${ctx.params.id}.${info.extension}"`);
+    ctx.set('Content-Disposition', `inline; filename="${info.type}-${item.id}.${info.extension}"`);
     setBody(ctx, stat, fullPath);
 
     logger.info(`Sending a derivative with id ${ctx.params.id} of type ${ctx.params.derivative}`);

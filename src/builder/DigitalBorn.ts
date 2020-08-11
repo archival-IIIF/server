@@ -68,7 +68,7 @@ export async function getManifest(item: FileItem, access: Access): Promise<Manif
                 id: accessUri(item.id),
                 label: 'Access copy',
                 format: accessPronomData.mime,
-                type: getType(item)
+                type: getType(item.type)
             });
 
         if (item.original.uri && originalPronomData)
@@ -76,7 +76,7 @@ export async function getManifest(item: FileItem, access: Access): Promise<Manif
                 id: originalUri(item.id),
                 label: 'Original copy',
                 format: originalPronomData.mime,
-                type: getType(item)
+                type: getType(item.type)
             });
     }
     else {

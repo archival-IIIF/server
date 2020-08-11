@@ -31,7 +31,7 @@ export interface CronService extends StandaloneService {
 export type IndexParams = { collectionPath: string };
 export type TextParams = { collectionId: string, items: TextItem[] };
 export type MetadataParams = { oaiIdentifier?: string | null, collectionId?: string };
-export type WaveformParams = { collectionId: string };
+export type DerivativeParams = { collectionId: string };
 export type AccessParams = { item: Item, ip?: string, identities?: string[] };
 export type AuthTextsParams = { item: Item };
 export type IIIFMetadataParams = { item: Item };
@@ -76,6 +76,16 @@ export const allServices: Service[] = [{
     type: 'waveform',
     runAs: 'worker',
     getService: () => require('../service/waveform').default
+}, {
+    name: 'pdf-image',
+    type: 'pdf-image',
+    runAs: 'worker',
+    getService: () => require('../service/pdf_image').default
+}, {
+    name: 'video-image',
+    type: 'video-image',
+    runAs: 'worker',
+    getService: () => require('../service/video_image').default
 }, {
     name: 'iish-metadata-update',
     type: 'metadata-update',

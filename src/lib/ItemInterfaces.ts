@@ -1,3 +1,5 @@
+export type FileType = 'file' | 'pdf' | 'image' | 'audio' | 'video';
+
 export interface MinimalItem {
     id: string;
     collection_id: string;
@@ -98,7 +100,7 @@ export interface FolderItem extends Item {
 
 export interface FileItem extends Item {
     parent_id: string;
-    type: 'file' | 'pdf' | 'image' | 'audio' | 'video';
+    type: FileType;
     size: number;
     created_at: Date;
 }

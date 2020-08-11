@@ -1,5 +1,6 @@
 import * as path from 'path';
 import config from './Config';
+import {DerivativeType} from './Derivative';
 import {Item, MinimalItem} from './ItemInterfaces';
 import getClient, {search} from './ElasticSearch';
 
@@ -159,9 +160,14 @@ export function getRelativePath(item: Item, type: 'access' | 'original' | null =
     return path.join(config.collectionsRelativePath, item.original.uri as string);
 }
 
-export function getDerivativePath(item: Item, type: string, extension: string): string {
-    return path.join(config.dataRootPath, config.derivativeRelativePath, type,
-        ...item.id.split('-'), `${item.id}.${extension}`);
+export function getFullDerivativePath(item: Item, derivative: DerivativeType): string {
+    const relativePath = getRelativeDerivativePath(item, derivative);
+    return path.join(config.dataRootPath, relativePath);
+}
+
+export function getRelativeDerivativePath(item: Item, derivative: DerivativeType): string {
+    return path.join(config.derivativeRelativePath, derivative.type,
+        ...item.id.split('-'), `${item.id}.${derivative.extension}`);
 }
 
 export function getPronom(item: Item, type: 'access' | 'original' | null = null): string {

@@ -8,7 +8,7 @@ import config from '../lib/Config';
 import {runTask} from '../lib/Task';
 import {evictCache} from '../lib/Cache';
 import {createItem, indexItems, deleteItems} from '../lib/Item';
-import {IndexParams, MetadataParams, TextParams, WaveformParams} from '../lib/Service';
+import {IndexParams, MetadataParams, TextParams, DerivativeParams} from '../lib/Service';
 import {MinimalItem, FileItem, FolderItem, Item} from '../lib/ItemInterfaces';
 
 import {TextItem} from './util/types';
@@ -64,7 +64,9 @@ export default async function processDip({collectionPath}: IndexParams): Promise
             runTask<TextParams>('text', {collectionId: rootItem.id, items: textItems});
 
         // Run derivative services
-        runTask<WaveformParams>('waveform', {collectionId: rootItem.id});
+        runTask<DerivativeParams>('waveform', {collectionId: rootItem.id});
+        runTask<DerivativeParams>('pdf-image', {collectionId: rootItem.id});
+        runTask<DerivativeParams>('video-image', {collectionId: rootItem.id});
     }
     catch (e) {
         const err = new Error(`Failed to index the collection ${collectionPath}: ${e.message}`);

@@ -12,10 +12,9 @@ import AuthService from './elem/v3/AuthService';
 export async function getManifest(parentItem: RootItem, access: Access): Promise<Manifest> {
     const manifest = await createManifest(parentItem);
     const items = await getChildItems(parentItem.id, true) as FileItem[];
-    const firstItem = items[0];
 
     addBehavior(manifest, parentItem, items.length > 1);
-    addThumbnail(manifest, parentItem, firstItem);
+    addThumbnail(manifest, parentItem);
     await addMetadata(manifest, parentItem);
 
     manifest.setItems(await Promise.all(items.map(async item => {

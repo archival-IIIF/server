@@ -23,7 +23,7 @@ export default async function createPDF(rootItem: RootItem, items: ImageItem[], 
 }
 
 async function createPdfPage(document: PDFDocument, item: ImageItem, tier?: AccessTier): Promise<PDFPage | null> {
-    const image = await getImage(item, tier ? tier.maxSize : null, {
+    const image = await getImage(item, null, tier ? tier.maxSize : null, {
         region: 'full',
         size: config.pdfImageSize,
         rotation: '0',

@@ -17,11 +17,12 @@ export const annoCollUri = (id: string, type: string, language?: string | null) 
 export const annoUri = (id: string, childId: string, page: number = 0) =>
     `${prefixPresentationUrl}/${id}/annotation/${childId}/${page}`;
 
-export const imageUri = (id: string) => `${prefixImageUrl}/${id}`;
+export const imageUri = (id: string, tier?: string) =>
+    `${prefixImageUrl}/${id}${tier ? config.imageTierSeparator + tier : ''}`;
 export const imageResourceUri =
-    (id: string,
-     {region = 'full', size = 'max', rotation = '0', quality = 'default', format = 'jpg'}: { [_: string]: string }) =>
-        `${imageUri(id)}/${region}/${size}/${rotation}/${quality}.${format}`;
+    (id: string, tier?: string,
+     {region = 'full', size = 'max', rotation = '0', quality = 'default', format = 'jpg'}: { [_: string]: string } = {}) =>
+        `${imageUri(id, tier)}/${region}/${size}/${rotation}/${quality}.${format}`;
 
 export const authUri = (type: string) => `${prefixAuthUrl}/${type}`;
 

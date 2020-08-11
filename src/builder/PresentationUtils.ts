@@ -3,10 +3,11 @@ import {existsSync} from 'fs';
 import {IIIFMetadata} from '../service/util/types';
 
 import config from '../lib/Config';
-import {getDerivativePath, getItem} from '../lib/Item';
+import derivatives from '../lib/Derivative';
 import {runTaskWithResponse} from '../lib/Task';
 import {IIIFMetadataParams} from '../lib/Service';
 import getPronomInfo, {PronomInfo} from '../lib/Pronom';
+import {getFullDerivativePath, getItem} from '../lib/Item';
 import {Item, FileItem, ImageItem, RootItem} from '../lib/ItemInterfaces';
 
 import Base from './elem/v3/Base';
@@ -75,14 +76,12 @@ export function getResource(item: FileItem): Resource {
     const originalPronomData = item.original.puid ? getPronomInfo(item.original.puid) : null;
     const defaultMime = accessPronomData ? accessPronomData.mime : (originalPronomData as PronomInfo).mime;
 
-    return new Resource(fileUri(item.id), getType(item), defaultMime, item.width, item.height, item.duration);
+    return new Resource(fileUri(item.id), getType(item.type), defaultMime, item.width, item.height, item.duration);
 }
 
-export function addThumbnail(base: Base, item: RootItem | FileItem, childItem?: FileItem): void {
-    if ((item.type === 'image') || (item.type === 'root' && childItem && childItem.type === 'image')) {
-        const resource = getImageResource(item as ImageItem, '200,');
-        base.setThumbnail(resource);
-    }
+export function addThumbnail(base: Base, item: RootItem | FileItem): void {
+    const resource = getImageResource(item, '200,');
+    base.setThumbnail(resource);
 }
 
 export async function addMetadata(base: Base, root: Item): Promise<void> {
@@ -116,8 +115,8 @@ export async function addMetadata(base: Base, root: Item): Promise<void> {
         base.setSeeAlso(md.seeAlso);
 }
 
-export function getType(item: FileItem): string {
-    switch (item.type) {
+export function getType(type: string): string {
+    switch (type) {
         case 'image':
             return 'Image';
         case 'audio':
@@ -144,11 +143,11 @@ async function setBaseDefaults(base: Base, item: Item): Promise<void> {
     }
 }
 
-function getImageResource(item: ImageItem, size = 'full'): Resource {
-    const width = (size === 'full') ? item.width : null;
-    const height = (size === 'full') ? item.height : null;
+function getImageResource(item: RootItem | FileItem, size = 'max'): Resource {
+    const width = (size === 'full' || size === 'max') ? item.width : null;
+    const height = (size === 'full' || size === 'max') ? item.height : null;
 
-    const resource = new Resource(imageResourceUri(item.id, {size}), 'Image', 'image/jpeg', width, height);
+    const resource = new Resource(imageResourceUri(item.id, undefined, {size}), 'Image', 'image/jpeg', width, height);
     const service = new Service(imageUri(item.id), Service.IMAGE_SERVICE_2, 'http://iiif.io/api/image/2/level2.json');
 
     resource.setService(service);
@@ -156,12 +155,12 @@ function getImageResource(item: ImageItem, size = 'full'): Resource {
     return resource;
 }
 
-function getLogo(size = 'full'): Resource {
+function getLogo(size = 'max'): Resource {
     let [width, height] = config.logoDimensions as [number | null, number | null];
-    width = (size === 'full') ? width : null;
-    height = (size === 'full') ? height : null;
+    width = (size === 'full' || size === 'max') ? width : null;
+    height = (size === 'full' || size === 'max') ? height : null;
 
-    const resource = new Resource(imageResourceUri('logo', {size, format: 'png'}),
+    const resource = new Resource(imageResourceUri('logo', undefined, {size, format: 'png'}),
         'Image', 'image/png', width, height);
     const service = new Service(imageUri('logo'), Service.IMAGE_SERVICE_2, 'http://iiif.io/api/image/2/level2.json');
 
@@ -181,16 +180,18 @@ function addDefaults(manifest: Manifest): void {
 }
 
 function addDerivatives(annotation: Annotation, item: Item): void {
-    if (item.type === 'audio') {
-        const waveFormFile = getDerivativePath(item, 'waveform', 'dat');
-
-        if (existsSync(waveFormFile)) {
-            annotation.setSeeAlso({
-                id: derivativeUri(item.id, 'waveform'),
-                type: 'Dataset',
-                format: 'application/octet-stream',
-                profile: 'http://waveform.prototyping.bbc.co.uk'
-            });
-        }
-    }
+    Object.values(derivatives)
+        .filter(info => info.from === item.type && (info.to !== 'image' || info.imageTier))
+        .filter(info => info.type === 'waveform') // TODO: Only waveforms for now
+        .forEach(info => {
+            const path = getFullDerivativePath(item, info);
+            if (existsSync(path)) {
+                annotation.setSeeAlso({
+                    id: derivativeUri(item.id, 'waveform'),
+                    type: getType(info.to),
+                    format: info.contentType,
+                    profile: info.profile
+                });
+            }
+        });
 }

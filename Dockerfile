@@ -17,6 +17,9 @@ RUN tsc
 # Create the actual image
 FROM node:12.18.2-alpine
 
+# Install tooling
+RUN apk add --no-cache ghostscript ffmpeg
+
 # Copy audiowaveform
 COPY --from=knawhuc/audiowaveform:latest /usr/local/bin/audiowaveform /usr/local/bin/
 

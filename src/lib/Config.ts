@@ -15,15 +15,20 @@ export interface Config {
     metadataOaiUrl?: string;
     metadataSrwUrl?: string;
     logoRelativePath?: string;
+    audioRelativePath?: string;
     elasticSearchUser?: string;
     elasticSearchPassword?: string;
     ipAddressHeader?: string;
     imageServerUrl: string;
     imageServerName: 'loris' | 'sharp';
     logoDimensions?: [number, number];
+    audioDimensions?: [number, number];
     pdfPagesThreshold?: number;
     pdfSessionSeconds?: number;
     pdfImageSize: string;
+    videoMosaicWidth: number,
+    videoTilesRows: number,
+    videoTilesColumns: number,
     imageTierSeparator: string;
     cacheDisabled: boolean;
     maxTasksPerWorker: number;
@@ -57,6 +62,7 @@ const config: Config = {
     metadataOaiUrl: process.env.IIIF_SERVER_METADATA_OAI_URL,
     metadataSrwUrl: process.env.IIIF_SERVER_METADATA_SRW_URL,
     logoRelativePath: process.env.IIIF_SERVER_LOGO_REL_PATH,
+    audioRelativePath: process.env.IIIF_SERVER_AUDIO_REL_PATH,
     elasticSearchUser: process.env.IIIF_SERVER_ELASTICSEARCH_USER,
     elasticSearchPassword: process.env.IIIF_SERVER_ELASTICSEARCH_PASSWORD,
     ipAddressHeader: process.env.IIIF_SERVER_IP_ADDRESS_HEADER,
@@ -82,6 +88,14 @@ const config: Config = {
         return [parseInt(dimensions[0]), parseInt(dimensions[1])] as [number, number];
     })(),
 
+    audioDimensions: (_ => {
+        if (!process.env.IIIF_SERVER_AUDIO_DIM || (process.env.IIIF_SERVER_AUDIO_DIM === 'null'))
+            return undefined;
+
+        const dimensions = process.env.IIIF_SERVER_AUDIO_DIM.split(':');
+        return [parseInt(dimensions[0]), parseInt(dimensions[1])] as [number, number];
+    })(),
+
     pdfPagesThreshold: (_ => {
         if (!process.env.IIIF_SERVER_PDF_PAGES_THRESHOLD || (process.env.IIIF_SERVER_PDF_PAGES_THRESHOLD === 'null'))
             return undefined;
@@ -98,6 +112,24 @@ const config: Config = {
 
     pdfImageSize: (_ => {
         return process.env.IIIF_SERVER_PDF_IMAGE_SIZE || 'max';
+    })(),
+
+    videoMosaicWidth: (_ => {
+        const width = process.env.IIIF_SERVER_VIDEO_MOSAIC_WIDTH
+            ? parseInt(process.env.IIIF_SERVER_VIDEO_MOSAIC_WIDTH) : 0;
+        return width > 0 ? width : 500;
+    })(),
+
+    videoTilesRows: (_ => {
+        const rows = process.env.IIIF_SERVER_VIDEO_TILES_ROWS
+            ? parseInt(process.env.IIIF_SERVER_VIDEO_TILES_ROWS) : 0;
+        return rows > 0 ? rows : 6;
+    })(),
+
+    videoTilesColumns: (_ => {
+        const columns = process.env.IIIF_SERVER_VIDEO_TILES_COLUMNS
+            ? parseInt(process.env.IIIF_SERVER_VIDEO_TILES_COLUMNS) : 0;
+        return columns > 0 ? columns : 5;
     })(),
 
     imageTierSeparator: (_ => {
