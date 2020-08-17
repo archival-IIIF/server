@@ -2,12 +2,12 @@ import {expect} from 'chai';
 import * as nock from 'nock';
 import {Buffer} from 'buffer';
 
+import {setConfig} from '../../src/lib/Config';
 import {createItem} from '../../src/lib/Item';
 import {ImageItem} from '../../src/lib/ItemInterfaces';
 
-import {getInfo, getImage} from '../../src/image/imageServer';
-import Image, {AccessTier} from '../../src/builder/elem/v2/Image';
-import {setConfig} from '../../src/lib/Config';
+import {getImage} from '../../src/image/imageServer';
+import {AccessTier} from '../../src/builder/elem/v2/Image';
 
 describe('imageServer', () => {
     const item = createItem({
@@ -30,67 +30,6 @@ describe('imageServer', () => {
     const tier: AccessTier = {name: 'tierName', maxSize: 150};
 
     setConfig('collectionsRelativePath', 'collections');
-
-    describe('#getInfo()', () => {
-        const imageInfoKeys = ['@context', '@id', 'profile', 'protocol', 'width', 'height', 'sizes'];
-
-        it('should generate an IIIF image info record for an image item', async () => {
-            const imageInfo = await getInfo(item);
-
-            expect(imageInfo).to.be.an.instanceOf(Image);
-            expect(imageInfo).to.have.all.keys(imageInfoKeys);
-
-            expect(imageInfo).to.have.nested.include({'profile[0]': 'http://iiif.io/api/image/2/level2.json'});
-            expect(imageInfo).to.have.nested.property('profile[1].formats');
-            expect(imageInfo).to.have.nested.property('profile[1].qualities');
-            expect(imageInfo).to.have.nested.property('profile[1].supports');
-
-            expect(imageInfo).to.have.deep.property('@context', 'http://iiif.io/api/image/2/context.json');
-            expect(imageInfo).to.have.deep.property('@id', 'http://localhost:3000/iiif/image/12345');
-            expect(imageInfo).to.have.deep.property('protocol', 'http://iiif.io/api/image');
-            expect(imageInfo).to.have.deep.property('width', 500);
-            expect(imageInfo).to.have.deep.property('height', 200);
-            expect(imageInfo).to.have.deep.property('sizes', []);
-        });
-
-        it('should generate an IIIF image info record for an image item with tier', async () => {
-            const imageInfo = await getInfo(item, tier);
-
-            expect(imageInfo).to.be.an.instanceOf(Image);
-            expect(imageInfo).to.have.all.keys(imageInfoKeys);
-
-            expect(imageInfo).to.have.nested.include({'profile[0]': 'http://iiif.io/api/image/2/level2.json'});
-            expect(imageInfo).to.have.nested.property('profile[1].formats');
-            expect(imageInfo).to.have.nested.property('profile[1].qualities');
-            expect(imageInfo).to.have.nested.property('profile[1].supports');
-
-            expect(imageInfo).to.have.deep.property('@context', 'http://iiif.io/api/image/2/context.json');
-            expect(imageInfo).to.have.deep.property('@id', 'http://localhost:3000/iiif/image/12345_tierName');
-            expect(imageInfo).to.have.deep.property('protocol', 'http://iiif.io/api/image');
-            expect(imageInfo).to.have.deep.property('width', 150);
-            expect(imageInfo).to.have.deep.property('height', 60);
-            expect(imageInfo).to.have.deep.property('sizes', []);
-        });
-
-        it('should generate an IIIF image info record for an image item with tier and original id', async () => {
-            const imageInfo = await getInfo(item, tier, 'abc');
-
-            expect(imageInfo).to.be.an.instanceOf(Image);
-            expect(imageInfo).to.have.all.keys(imageInfoKeys);
-
-            expect(imageInfo).to.have.nested.include({'profile[0]': 'http://iiif.io/api/image/2/level2.json'});
-            expect(imageInfo).to.have.nested.property('profile[1].formats');
-            expect(imageInfo).to.have.nested.property('profile[1].qualities');
-            expect(imageInfo).to.have.nested.property('profile[1].supports');
-
-            expect(imageInfo).to.have.deep.property('@context', 'http://iiif.io/api/image/2/context.json');
-            expect(imageInfo).to.have.deep.property('@id', 'http://localhost:3000/iiif/image/abc_tierName');
-            expect(imageInfo).to.have.deep.property('protocol', 'http://iiif.io/api/image');
-            expect(imageInfo).to.have.deep.property('width', 150);
-            expect(imageInfo).to.have.deep.property('height', 60);
-            expect(imageInfo).to.have.deep.property('sizes', []);
-        });
-    });
 
     describe('#getImage()', () => {
         const image = Buffer.from('image');

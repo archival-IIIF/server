@@ -2,7 +2,7 @@ import {Context} from 'koa';
 import * as Router from '@koa/router';
 
 import parseSize from './sizeParser';
-import {getInfo, getLogoInfo, getImage, getLogo} from './imageServer';
+import {getImage, getLogo, getProfile} from './imageServer';
 
 import logger from '../lib/Logger';
 import config from '../lib/Config';
@@ -13,6 +13,7 @@ import {ImageItem} from '../lib/ItemInterfaces';
 import {Access, AccessState, hasAccess} from '../lib/Security';
 
 import Image from '../builder/elem/v2/Image';
+import {getImageInfo, getLogoInfo} from '../builder/PresentationBuilder';
 
 const prefix = '/iiif/image';
 export const router = new Router({prefix});
@@ -29,7 +30,7 @@ router.get('/logo/info.json', async ctx => {
         throw new HttpError(404, 'No logo');
 
     setContentType(ctx);
-    ctx.body = await getLogoInfo();
+    ctx.body = await getLogoInfo(getProfile());
 
     logger.info('Sending image info of the logo');
 });
@@ -47,7 +48,7 @@ router.get('/:id/info.json', async ctx => {
     if (access.state === AccessState.CLOSED) {
         setContentType(ctx);
         ctx.status = 401;
-        ctx.body = await getInfo(item as ImageItem, access.tier, id);
+        ctx.body = await getImageInfo(item as ImageItem, getProfile(), access);
     }
 
     if (access.state === AccessState.OPEN && shouldRedirect(access, tier))
@@ -57,7 +58,7 @@ router.get('/:id/info.json', async ctx => {
     else {
         setContentType(ctx);
         ctx.body = await cache('image', id, ctx.params.id,
-            async () => await getInfo(item as ImageItem, access.tier, id));
+            async () => await getImageInfo(item as ImageItem, getProfile(), access));
 
         logger.info(`Sending image info with id ${id} and tier ${tier}`);
     }

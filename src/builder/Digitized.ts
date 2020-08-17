@@ -1,15 +1,13 @@
-import config from '../lib/Config';
 import {getChildItems} from '../lib/Item';
 import {Item, RootItem, FileItem} from '../lib/ItemInterfaces';
 import {Access, AccessState, getAuthTexts} from '../lib/Security';
 
+import {authUri} from './UriHelper';
 import {createMinimalManifest, createManifest, createCanvas, addThumbnail, addMetadata} from './PresentationUtils';
 
 import Base from './elem/v3/Base';
 import Manifest from './elem/v3/Manifest';
 import AuthService from './elem/v3/AuthService';
-
-const prefixAuthUrl = `${config.baseUrl}/iiif/auth`;
 
 export async function getManifest(parentItem: RootItem, access: Access): Promise<Manifest> {
     const manifest = await createManifest(parentItem);
@@ -50,7 +48,7 @@ function addBehavior(base: Base, item: Item, hasMultipleItems = true): void {
 
 async function setAuthenticationServices(item: Item, base: Base): Promise<void> {
     const authTexts = await getAuthTexts(item);
-    const service = AuthService.getAuthenticationService(prefixAuthUrl, authTexts, 'external');
+    const service = AuthService.getAuthenticationService(authUri, authTexts, 'external');
     if (service)
         base.setService(service);
 }

@@ -1,12 +1,14 @@
 import * as Metadata from './Metadata';
 import * as Digitized from './Digitized';
 import * as DigitalBorn from './DigitalBorn';
+import * as ImageFunctions from './Image';
 
 import {Access} from '../lib/Security';
-import {FileItem, FolderItem, Item, MetadataItem, RootItem} from '../lib/ItemInterfaces';
+import {FileItem, FolderItem, ImageItem, Item, MetadataItem, RootItem} from '../lib/ItemInterfaces';
 
 import Collection from './elem/v3/Collection';
 import Manifest from './elem/v3/Manifest';
+import Image, {ImageProfile} from './elem/v2/Image';
 
 export interface PresentationBuilder {
     isCollection: (item: Item | null) => boolean;
@@ -14,6 +16,8 @@ export interface PresentationBuilder {
     getCollection: (item: Item, access: Access) => Promise<Collection | null>;
     getManifest: (item: Item, access: Access) => Promise<Manifest | null>;
     getReference: (item: Item) => Promise<Collection | Manifest | null>;
+    getImageInfo: (item: ImageItem, profile: ImageProfile, access: Access) => Promise<Image>;
+    getLogoInfo: (profile: ImageProfile) => Promise<Image>;
 }
 
 export const isCollection = (item: Item | null): boolean =>
@@ -59,4 +63,20 @@ export async function getReference(item: Item): Promise<Collection | Manifest | 
     return null;
 }
 
-const builder: PresentationBuilder = {isCollection, isManifest, getCollection, getManifest, getReference};
+export async function getImageInfo(item: ImageItem, profile: ImageProfile, access: Access) {
+    return ImageFunctions.getInfo(item, profile, access.tier);
+}
+
+export async function getLogoInfo(profile: ImageProfile) {
+    return ImageFunctions.getLogoInfo(profile);
+}
+
+const builder: PresentationBuilder = {
+    isCollection,
+    isManifest,
+    getCollection,
+    getManifest,
+    getReference,
+    getImageInfo,
+    getLogoInfo
+};

@@ -1,7 +1,6 @@
 import * as path from 'path';
 import * as moment from 'moment';
 
-import config from '../lib/Config';
 import getPronomInfo from '../lib/Pronom';
 import {getChildItems} from '../lib/Item';
 import {iconsByExtension} from '../lib/FileIcon';
@@ -9,7 +8,6 @@ import {Item, FolderItem, FileItem, ImageItem} from '../lib/ItemInterfaces';
 import {Access, AccessState, getEnabledAuthServices, requiresAuthentication, getAuthTexts} from '../lib/Security';
 
 import {
-    prefixFileUrl,
     createMinimalCollection,
     createMinimalManifest,
     createCollection,
@@ -20,6 +18,7 @@ import {
     getType
 } from './PresentationUtils';
 import {PresentationBuilder} from './PresentationBuilder';
+import {accessUri, authUri, iconUri, originalUri} from './UriHelper';
 
 import Base, {Ref} from './elem/v3/Base';
 import Manifest from './elem/v3/Manifest';
@@ -29,9 +28,6 @@ import AuthService from './elem/v3/AuthService';
 
 const defaultFileIcon = 'blank';
 const defaultFolderIcon = 'folder';
-
-const prefixAuthUrl = `${config.baseUrl}/iiif/auth`;
-const prefixIconUrl = `${config.baseUrl}/file-icon`;
 
 export async function getCollection(item: FolderItem, access: Access, builder: PresentationBuilder): Promise<Collection> {
     const label = ((access.state !== AccessState.CLOSED) || (item.collection_id === item.id))
@@ -69,7 +65,7 @@ export async function getManifest(item: FileItem, access: Access): Promise<Manif
 
         if (item.access.uri && accessPronomData)
             canvas.setRendering({
-                id: `${prefixFileUrl}/${item.id}/access`,
+                id: accessUri(item.id),
                 label: 'Access copy',
                 format: accessPronomData.mime,
                 type: getType(item)
@@ -77,7 +73,7 @@ export async function getManifest(item: FileItem, access: Access): Promise<Manif
 
         if (item.original.uri && originalPronomData)
             canvas.setRendering({
-                id: `${prefixFileUrl}/${item.id}/original`,
+                id: originalUri(item.id),
                 label: 'Original copy',
                 format: originalPronomData.mime,
                 type: getType(item)
@@ -108,7 +104,7 @@ async function setAuthenticationServices(item: Item, base: Base): Promise<void> 
     if (await requiresAuthentication(item)) {
         const authTexts = await getAuthTexts(item);
         getEnabledAuthServices().forEach(type => {
-            const service = AuthService.getAuthenticationService(prefixAuthUrl, authTexts, type);
+            const service = AuthService.getAuthenticationService(authUri, authTexts, type);
             if (service)
                 base.setService(service);
         });
@@ -167,5 +163,5 @@ function getFileTypeThumbnail(pronom: string | null, fileExtension: string | nul
         }
     }
 
-    return new Resource(`${prefixIconUrl}/${icon}.svg`, 'Image', 'image/svg+xml');
+    return new Resource(iconUri(icon), 'Image', 'image/svg+xml');
 }
