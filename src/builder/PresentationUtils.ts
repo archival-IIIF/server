@@ -1,22 +1,22 @@
 import {existsSync} from 'fs';
 
-import {IIIFMetadata} from '../../service/util/types';
+import {IIIFMetadata} from '../service/util/types';
 
-import config from '../../lib/Config';
-import {getDerivativePath, getItem} from '../../lib/Item';
-import {runTaskWithResponse} from '../../lib/Task';
-import {IIIFMetadataParams} from '../../lib/Service';
-import getPronomInfo, {PronomInfo} from '../../lib/Pronom';
-import {Item, FileItem, ImageItem, RootItem} from '../../lib/ItemInterfaces';
+import config from '../lib/Config';
+import {getDerivativePath, getItem} from '../lib/Item';
+import {runTaskWithResponse} from '../lib/Task';
+import {IIIFMetadataParams} from '../lib/Service';
+import getPronomInfo, {PronomInfo} from '../lib/Pronom';
+import {Item, FileItem, ImageItem, RootItem} from '../lib/ItemInterfaces';
 
-import Base from '../elem/v3/Base';
-import Manifest from '../elem/v3/Manifest';
-import Collection from '../elem/v3/Collection';
-import Canvas from '../elem/v3/Canvas';
-import Resource from '../elem/v3/Resource';
-import Service from '../elem/v3/Service';
-import Annotation from '../elem/v3/Annotation';
-import AnnotationPage from '../elem/v3/AnnotationPage';
+import Base from './elem/v3/Base';
+import Manifest from './elem/v3/Manifest';
+import Collection from './elem/v3/Collection';
+import Canvas from './elem/v3/Canvas';
+import Resource from './elem/v3/Resource';
+import Service from './elem/v3/Service';
+import Annotation from './elem/v3/Annotation';
+import AnnotationPage from './elem/v3/AnnotationPage';
 
 export const prefixPresentationUrl = `${config.baseUrl}/iiif/presentation`;
 export const prefixImageUrl = `${config.baseUrl}/iiif/image`;

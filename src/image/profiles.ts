@@ -1,4 +1,4 @@
-import {ImageProfile} from '../presentation/elem/v2/Image';
+import {ImageProfile} from '../builder/elem/v2/Image';
 
 export const sharpProfile: ImageProfile = {
     formats: [

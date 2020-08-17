@@ -6,7 +6,7 @@ import {createItem, getAllRootItems} from '../lib/Item';
 import {MetadataItem} from '../lib/ItemInterfaces';
 
 import {setContent} from './util';
-import {getCollectionWithChildren} from './builder/PresentationBuilder';
+import {getCollectionWithChildren} from '../builder/PresentationBuilder';
 
 const router = new Router({prefix: '/collection'});
 

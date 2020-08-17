@@ -1,12 +1,12 @@
 import * as path from 'path';
 import * as moment from 'moment';
 
-import config from '../../lib/Config';
-import getPronomInfo from '../../lib/Pronom';
-import {getChildItems} from '../../lib/Item';
-import {iconsByExtension} from '../../lib/FileIcon';
-import {Item, FolderItem, FileItem, ImageItem} from '../../lib/ItemInterfaces';
-import {Access, AccessState, getEnabledAuthServices, requiresAuthentication, getAuthTexts} from '../../lib/Security';
+import config from '../lib/Config';
+import getPronomInfo from '../lib/Pronom';
+import {getChildItems} from '../lib/Item';
+import {iconsByExtension} from '../lib/FileIcon';
+import {Item, FolderItem, FileItem, ImageItem} from '../lib/ItemInterfaces';
+import {Access, AccessState, getEnabledAuthServices, requiresAuthentication, getAuthTexts} from '../lib/Security';
 
 import {
     prefixFileUrl,
@@ -21,11 +21,11 @@ import {
 } from './PresentationUtils';
 import {PresentationBuilder} from './PresentationBuilder';
 
-import Base, {Ref} from '../elem/v3/Base';
-import Manifest from '../elem/v3/Manifest';
-import Collection from '../elem/v3/Collection';
-import Resource from '../elem/v3/Resource';
-import AuthService from '../elem/v3/AuthService';
+import Base, {Ref} from './elem/v3/Base';
+import Manifest from './elem/v3/Manifest';
+import Collection from './elem/v3/Collection';
+import Resource from './elem/v3/Resource';
+import AuthService from './elem/v3/AuthService';
 
 const defaultFileIcon = 'blank';
 const defaultFolderIcon = 'folder';

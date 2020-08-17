@@ -1,13 +1,13 @@
-import config from '../../lib/Config';
-import {getChildItems} from '../../lib/Item';
-import {Item, RootItem, FileItem} from '../../lib/ItemInterfaces';
-import {Access, AccessState, getAuthTexts} from '../../lib/Security';
+import config from '../lib/Config';
+import {getChildItems} from '../lib/Item';
+import {Item, RootItem, FileItem} from '../lib/ItemInterfaces';
+import {Access, AccessState, getAuthTexts} from '../lib/Security';
 
 import {createMinimalManifest, createManifest, createCanvas, addThumbnail, addMetadata} from './PresentationUtils';
 
-import Base from '../elem/v3/Base';
-import Manifest from '../elem/v3/Manifest';
-import AuthService from '../elem/v3/AuthService';
+import Base from './elem/v3/Base';
+import Manifest from './elem/v3/Manifest';
+import AuthService from './elem/v3/AuthService';
 
 const prefixAuthUrl = `${config.baseUrl}/iiif/auth`;
 

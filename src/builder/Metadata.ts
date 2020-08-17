@@ -1,8 +1,8 @@
-import {getChildItems} from '../../lib/Item';
-import {Item, MetadataItem} from '../../lib/ItemInterfaces';
+import {getChildItems} from '../lib/Item';
+import {Item, MetadataItem} from '../lib/ItemInterfaces';
 
-import {Ref} from '../elem/v3/Base';
-import Collection from '../elem/v3/Collection';
+import {Ref} from './elem/v3/Base';
+import Collection from './elem/v3/Collection';
 
 import {PresentationBuilder} from './PresentationBuilder';
 import {createMinimalCollection, createCollection, addMetadata} from './PresentationUtils';

@@ -13,7 +13,7 @@ import getEsClient, {SearchResponse} from './ElasticSearch';
 import {AuthTextsByType} from '../service/util/types';
 import {AccessParams, AuthTextsParams} from './Service';
 
-import {AccessTier} from '../presentation/elem/v2/Image';
+import {AccessTier} from '../builder/elem/v2/Image';
 
 export type Access =
     { state: AccessState.OPEN | AccessState.CLOSED, tier?: undefined } |

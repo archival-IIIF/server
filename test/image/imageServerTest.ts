@@ -6,7 +6,7 @@ import {createItem} from '../../src/lib/Item';
 import {ImageItem} from '../../src/lib/ItemInterfaces';
 
 import {getInfo, getImage} from '../../src/image/imageServer';
-import Image, {AccessTier} from '../../src/presentation/elem/v2/Image';
+import Image, {AccessTier} from '../../src/builder/elem/v2/Image';
 import {setConfig} from '../../src/lib/Config';
 
 describe('imageServer', () => {

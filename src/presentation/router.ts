@@ -6,7 +6,7 @@ import {getItem} from '../lib/Item';
 import HttpError from '../lib/HttpError';
 import {AccessState, hasAccess} from '../lib/Security';
 
-import {getCollection, getManifest, isCollection, isManifest} from './builder/PresentationBuilder';
+import {getCollection, getManifest, isCollection, isManifest} from '../builder/PresentationBuilder';
 
 import {setContent} from './util';
 import routerTop from './router-top';

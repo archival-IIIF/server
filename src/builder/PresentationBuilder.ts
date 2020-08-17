@@ -2,11 +2,11 @@ import * as Metadata from './Metadata';
 import * as Digitized from './Digitized';
 import * as DigitalBorn from './DigitalBorn';
 
-import {Access} from '../../lib/Security';
-import {FileItem, FolderItem, Item, MetadataItem, RootItem} from '../../lib/ItemInterfaces';
+import {Access} from '../lib/Security';
+import {FileItem, FolderItem, Item, MetadataItem, RootItem} from '../lib/ItemInterfaces';
 
-import Collection from '../elem/v3/Collection';
-import Manifest from '../elem/v3/Manifest';
+import Collection from './elem/v3/Collection';
+import Manifest from './elem/v3/Manifest';
 
 export interface PresentationBuilder {
     isCollection: (item: Item | null) => boolean;

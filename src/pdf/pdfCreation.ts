@@ -4,7 +4,7 @@ import config from '../lib/Config';
 import {ImageItem, RootItem} from '../lib/ItemInterfaces';
 
 import {getImage} from '../image/imageServer';
-import {AccessTier} from '../presentation/elem/v2/Image';
+import {AccessTier} from '../builder/elem/v2/Image';
 
 export default async function createPDF(rootItem: RootItem, items: ImageItem[], tier?: AccessTier): Promise<Buffer> {
     const document = await PDFDocument.create();

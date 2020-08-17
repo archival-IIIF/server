@@ -7,8 +7,8 @@ import {ImageItem} from '../lib/ItemInterfaces';
 import {getRelativePath} from '../lib/Item';
 import {getEnabledAuthServices, requiresAuthentication, getAuthTexts} from '../lib/Security';
 
-import AuthService from '../presentation/elem/v2/AuthService';
-import Image, {ImageProfile, AccessTier} from '../presentation/elem/v2/Image';
+import AuthService from '../builder/elem/v2/AuthService';
+import Image, {ImageProfile, AccessTier} from '../builder/elem/v2/Image';
 
 export interface Size {
     width: number;

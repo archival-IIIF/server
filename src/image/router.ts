@@ -12,7 +12,7 @@ import {determineItem} from '../lib/Item';
 import {ImageItem} from '../lib/ItemInterfaces';
 import {Access, AccessState, hasAccess} from '../lib/Security';
 
-import Image from '../presentation/elem/v2/Image';
+import Image from '../builder/elem/v2/Image';
 
 const prefix = '/iiif/image';
 export const router = new Router({prefix});
