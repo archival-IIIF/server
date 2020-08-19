@@ -279,8 +279,8 @@ Use the provided Docker Compose or install manually.
     * [Node.js 12.x LTS](https://nodejs.org/en)
     * [yarn](https://yarnpkg.com) or [npm](https://www.npmjs.com)
     * [ElasticSearch 7.x.x](https://www.elastic.co/webinars/getting-started-elasticsearch)
+    * IIIF image server (e.g. [Loris](https://github.com/loris-imageserver/loris))
     * (Optional) [Redis 5.x](https://redis.io) (Required for caching, workers and/or IIIF authentication)
-    * (Optional) IIIF image server (e.g. [Loris](https://github.com/loris-imageserver/loris))
     * (Optional) [pm2](https://github.com/Unitech/pm2) (Required for managing the processes)
 1. Install optional dependencies for derivative creation
     * [audiowaveform](https://github.com/bbc/audiowaveform) (Required by the `waveform` service)
@@ -289,9 +289,10 @@ Use the provided Docker Compose or install manually.
     * Set up the environment variables for production
     * With PM2, [set up a config.yml file](https://pm2.io/doc/en/runtime/guide/ecosystem-file/) 
     with the environment variables
-1. `yarn install` or `npm install` (Use the `--production` flag for production with an external IIIF image server)
+1. Run `yarn install` or `npm install`
+1. Run `tsc` to transpile the application
 1. Start the application:
-    * Run `yarn run start` or `npm run start`
+    * Run `node src/app.js`
     * With PM2: `pm2 start config.yml`
 
 ## Configuration
@@ -355,6 +356,8 @@ dynamic PDF creation per IP address (Requires Redis)
 provide a comma separated white list of ip addresses (Requires Redis)
 - `IIIF_SERVER_LOGIN_DISABLED`: Turn login based authentication on/off (Requires Redis)
 - `IIIF_SERVER_ELASTICSEARCH_URL`: URL of the ElasticSearch indexer
+- `IIIF_SERVER_ELASTICSEARCH_USER`: Username of the ElasticSearch indexer if authentication is enabled
+- `IIIF_SERVER_ELASTICSEARCH_PASSWORD`: Password of the ElasticSearch indexer if authentication is enabled
 - `IIIF_SERVER_REDIS_DISABLED`: Turn Redis on/off
 - `IIIF_SERVER_REDIS_HOST`: Host of the Redis server (Requires Redis)
 - `IIIF_SERVER_REDIS_PORT`: Port of the Redis server (Requires Redis)
