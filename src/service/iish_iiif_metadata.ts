@@ -73,7 +73,8 @@ function getSeeAlso(item: Item): IIIFMetadataSeeAlso {
     const seeAlso = [];
 
     if (config.metadataOaiUrl && item.metadata_id) {
-        const metadataPrefix = (item.metadata_id.includes('ARCH') || item.metadata_id.includes('COLL'))
+        // TODO: Temporary Z168896, Z209183 records for testing with serials
+        const metadataPrefix = (item.metadata_id.includes('ARCH') || item.metadata_id.includes('COLL') || item.metadata_id.includes("Z168896") || item.metadata_id.includes("Z209183"))
             ? 'ead' : 'marcxml';
         seeAlso.push({
             id: `${config.metadataOaiUrl}?verb=GetRecord&identifier=${item.metadata_id}&metadataPrefix=${metadataPrefix}`,

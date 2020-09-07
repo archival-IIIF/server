@@ -32,7 +32,8 @@ export default async function processMetadata({oaiIdentifier, collectionId}: Met
 }
 
 export async function getOAIIdentifier(collectionId: string, uri: string): Promise<string | null> {
-    if (collectionId.includes('ARCH') || collectionId.includes('COLL')) {
+    // TODO: Temporary Z168896, Z209183 records for testing with serials
+    if (collectionId.includes('ARCH') || collectionId.includes('COLL') || collectionId.includes("Z168896") || collectionId.includes("Z209183")) {
         const rootId = EAD.getRootId(collectionId);
         return `oai:socialhistoryservices.org:10622/${rootId}`;
     }
@@ -54,7 +55,8 @@ export async function getOAIIdentifier(collectionId: string, uri: string): Promi
 }
 
 async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string): Promise<void> {
-    const metadataPrefix = oaiIdentifier.includes('ARCH') || oaiIdentifier.includes('COLL') ? 'ead' : 'marcxml';
+    // TODO: Temporary Z168896, Z209183 records for testing with serials
+    const metadataPrefix = oaiIdentifier.includes('ARCH') || oaiIdentifier.includes('COLL') || oaiIdentifier.includes("Z168896") || oaiIdentifier.includes("Z209183") ? 'ead' : 'marcxml';
     const xml = await got.default(config.metadataOaiUrl as string, {
         https: {rejectUnauthorized: false}, resolveBodyOnly: true, searchParams: {
             verb: 'GetRecord',
