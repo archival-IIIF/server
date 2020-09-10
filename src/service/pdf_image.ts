@@ -10,7 +10,7 @@ export default async function processPDFItems({collectionId}: DerivativeParams):
         for (const item of items) {
             await createDerivativeWithCommand(item, derivatives['pdf-image'],
                 (input, output) =>
-                    `gs -sDEVICE=jpeg -dJPEGQ=97 -r200 -sOutputFile=${output} ${input}`);
+                    `gs -dBATCH -dNOPAUSE -sDEVICE=jpeg -dJPEGQ=97 -r200 -sOutputFile=${output} ${input}`);
         }
     }
     catch (e) {
