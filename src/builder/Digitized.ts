@@ -11,7 +11,7 @@ import AuthService from './elem/v3/AuthService';
 
 export async function getManifest(parentItem: RootItem, access: Access): Promise<Manifest> {
     const manifest = await createManifest(parentItem);
-    const items = await getChildItems(parentItem.id, true) as FileItem[];
+    const items = await getChildItems(parentItem) as FileItem[];
 
     addBehavior(manifest, parentItem, items.length > 1);
     addThumbnail(manifest, parentItem);

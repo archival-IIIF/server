@@ -9,7 +9,7 @@ import {createMinimalCollection, createCollection, addMetadata} from './Presenta
 
 export async function getCollection(item: MetadataItem, builder: PresentationBuilder): Promise<Collection> {
     const collection = await createCollection(item);
-    const children = await getChildItems(item.id, true);
+    const children = await getChildItems(item);
 
     await addMetadata(collection, item);
     collection.setBehavior('multi-part');

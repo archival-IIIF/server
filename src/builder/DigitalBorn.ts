@@ -37,7 +37,7 @@ export async function getCollection(item: FolderItem, access: Access, builder: P
     await addMetadataDB(collection, item);
 
     if (access.state !== AccessState.CLOSED) {
-        const children = await getChildItems(item.id);
+        const children = await getChildItems(item);
         collection.setItems(await Promise.all(children.map(async child =>
             await builder.getReference(child) as Ref)));
     }

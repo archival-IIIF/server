@@ -5,7 +5,7 @@ import config from '../lib/Config';
 import {Item} from '../lib/ItemInterfaces';
 import {DerivativeType} from '../lib/Derivative';
 import {getFullDerivativePath} from '../lib/Item';
-import {getAuthTexts, getEnabledAuthServices, requiresAuthentication} from '../lib/Security';
+import {AccessState, getAuthTexts, getDefaultAccess, getEnabledAuthServices} from '../lib/Security';
 
 import AuthService from './elem/v2/AuthService';
 import Image, {AccessTier, ImageProfile} from './elem/v2/Image';
@@ -25,11 +25,15 @@ export async function getInfo(item: Item, derivative: DerivativeType | null,
         height = size?.height as number;
     }
 
+    const access = await getDefaultAccess(item);
+    if (access.tier)
+        profile = {...profile, maxWidth: access.tier.maxSize};
+
     const imageInfo = new Image(imageUri(item.id), width, height);
     imageInfo.setContext('http://iiif.io/api/image/2/context.json');
     imageInfo.setProfile(profile);
 
-    if (await requiresAuthentication(item)) {
+    if (access.state !== AccessState.OPEN) {
         const authTexts = await getAuthTexts(item);
         getEnabledAuthServices().forEach(type => {
             const service = AuthService.getAuthenticationService(authUri, authTexts, type);

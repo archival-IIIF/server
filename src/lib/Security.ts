@@ -96,13 +96,16 @@ export function getIpAddress(ctx: Context): string {
     return ctx.ip;
 }
 
-export async function requiresAuthentication(item: Item): Promise<boolean> {
-    if (isAuthenticationEnabled()) {
-        const access = await runTaskWithResponse<AccessParams, Access>('access', {item});
-        return access.state !== AccessState.OPEN;
-    }
+export async function getDefaultAccess(item: Item): Promise<Access> {
+    if (isAuthenticationEnabled())
+        return runTaskWithResponse<AccessParams, Access>('access', {item});
 
-    return false;
+    return {state: AccessState.OPEN};
+}
+
+export async function requiresAuthentication(item: Item): Promise<boolean> {
+    const access = await getDefaultAccess(item);
+    return access.state !== AccessState.OPEN;
 }
 
 export async function getAuthTexts(item: Item): Promise<AuthTextsByType> {

@@ -1,4 +1,5 @@
 import * as path from 'path';
+import logger from './Logger';
 import config from './Config';
 import {DerivativeType} from './Derivative';
 import {Item, MinimalItem} from './ItemInterfaces';
@@ -88,6 +89,7 @@ export async function deleteItems(collectionId: string): Promise<void> {
 
 export async function getItem(id: string): Promise<Item | null> {
     try {
+        logger.debug(`Obtain item from ElasticSearch with id ${id}`);
         const response = await getClient().get({index: 'items', id: id});
         return response.body._source;
     }
@@ -99,7 +101,7 @@ export async function getItem(id: string): Promise<Item | null> {
 export async function determineItem(id: string): Promise<Item | null> {
     const item = await getItem(id);
     if (item && item.type === 'root') {
-        const children = await getChildItems(item.id);
+        const children = await getChildItems(item);
 
         const page = item.formats.includes('archive') ? 2 : 1;
         const firstChild = children.find(child => child.order === page);
@@ -109,20 +111,38 @@ export async function determineItem(id: string): Promise<Item | null> {
     return item;
 }
 
-export async function getChildItems(id: string, sortByOrder = false): Promise<Item[]> {
-    const items = await getItems(`parent_id:"${id}"`);
-    if (sortByOrder)
-        items.sort((cA, cB) => (cA.order !== null && cB.order !== null && cA.order < cB.order) ? -1 : 1);
-    return items;
+export async function getChildItems(item: Item): Promise<Item[]> {
+    if (item._childItems === undefined) {
+        const items = await getItems(`parent_id:"${item.id}"`);
+        items.sort((cA, cB) =>
+            (cA.order !== null && cB.order !== null && cA.order < cB.order) ? -1 : 1)
+            .forEach(childItem => {
+                childItem._parentItem = item;
+                if (item.id === item.collection_id && item.id === childItem.collection_id)
+                    childItem._rootItem = item;
+            });
+        item._childItems = items;
+    }
+
+    return item._childItems;
 }
 
 export async function getChildItemsByType(id: string, type: string): Promise<Item[]> {
     return getItems(`parent_id:"${id}" AND type:"${type}"`);
 }
 
-export async function getRootItemByCollectionId(id: string): Promise<Item | null> {
-    const items = await getItems(`id:"${id}" AND collection_id:"${id}"`);
-    return (items.length > 0) ? items[0] : null;
+export async function getRootItemByCollectionId(item: Item): Promise<Item | null> {
+    if (item.id === item.collection_id)
+        return item;
+
+    if (item._rootItem === undefined) {
+        const rootItem = await getItem(item.collection_id);
+        item._rootItem = rootItem?.id === rootItem?.collection_id ? rootItem : null;
+        if (rootItem?.id === item.parent_id)
+            item._parentItem = rootItem;
+    }
+
+    return item._rootItem;
 }
 
 export async function getCollectionsByMetadataId(id: string): Promise<string[]> {
@@ -143,6 +163,7 @@ export async function getAllRootItems(): Promise<Item[]> {
 }
 
 async function getItems(q: string): Promise<Item[]> {
+    logger.debug(`Obtain items from ElasticSearch with query "${q}"`);
     return search<Item>('items', q, 'label:asc');
 }
 

@@ -6,9 +6,9 @@ export default async function hasAccess({item, ip, identities = []}: AccessParam
     if (item.collection_id === null || item.type === 'metadata')
         return {state: AccessState.OPEN};
 
-    const parent = await getRootItemByCollectionId(item.collection_id);
-    const type = (parent && parent.iish && parent.iish.type) ? parent.iish.type : null;
-    const accessCode = (parent && parent.iish && parent.iish.access) ? parent.iish.access : 'closed';
+    const rootItem = await getRootItemByCollectionId(item);
+    const type = rootItem?.iish?.type;
+    const accessCode = rootItem?.iish?.access || 'closed';
 
     if (accessCode === 'open')
         return {state: AccessState.OPEN};
@@ -34,7 +34,7 @@ export default async function hasAccess({item, ip, identities = []}: AccessParam
         return {state: AccessState.TIERED, tier: {name: accessCode, maxSize: 450}};
     }
 
-    if ((type === 'marcxml') && ((ip && isIpInRange(ip)) || await hasToken(item, identities)))
+    if (type === 'marcxml' && ((ip && isIpInRange(ip)) || await hasToken(item, identities)))
         return {state: AccessState.OPEN};
 
     return {state: AccessState.CLOSED};

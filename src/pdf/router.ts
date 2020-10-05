@@ -33,7 +33,7 @@ router.get('/:id', async ctx => {
         .map(page => parseInt(page))
         .filter(page => !isNaN(page));
 
-    const children = (await getChildItems(item.id))
+    const children = (await getChildItems(item))
         .filter(item => item.type === 'image')
         .filter(item => item.order && (!ctx.query.pages || pages.includes(item.order))) as ImageItem[];
 
