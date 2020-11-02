@@ -66,15 +66,15 @@ describe('Security', () => {
         redisMulti = {
             set: sinon.stub().returns(redisMulti),
             expire: sinon.stub().returns(redisMulti),
-            del: sinon.stub().returns(redisMulti)
+            del: sinon.stub().returns(redisMulti),
+            exec: sinon.fake()
         };
 
         redis = {
             set: sinon.stub().resolves('OK'),
             del: sinon.stub().resolves(1),
             get: redisGetStub,
-            multi: () => redisMulti,
-            execMulti: sinon.fake(),
+            multi: () => redisMulti
         };
 
         setConfig('accessToken', adminAccessToken);
@@ -270,7 +270,7 @@ describe('Security', () => {
     describe('#setAccessTokenForAccessId()', () => {
         it('should end no updates for already coupled access token with access id', async () => {
             await setAccessTokenForAccessId(accessId);
-            expect(redis.execMulti).to.have.not.been.called;
+            expect(redisMulti.exec).to.have.not.been.called;
         });
 
         it('should create an access token and send an update for a new access id without access token', async () => {
@@ -279,7 +279,7 @@ describe('Security', () => {
             const expectedAccessIdInfo = JSON.stringify({identities: [identity], token: newAccessToken});
 
             expect(newAccessToken).to.be.a('string');
-            expect(redis.execMulti).to.have.been.called;
+            expect(redisMulti.exec).to.have.been.called;
             expect(redisMulti.set).to.have.been.calledWithExactly(`access-token:${newAccessToken}`, newAccessId);
             expect(redisMulti.expire).to.have.been.calledWithExactly(`access-token:${newAccessToken}`, config.accessTtl);
             expect(redisMulti.set).to.have.been.calledWithExactly(`access-id:${newAccessId}`, expectedAccessIdInfo);

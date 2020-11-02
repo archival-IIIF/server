@@ -34,11 +34,11 @@ export default async function registerToken(token: string | null, collection: st
         to: to ? to.toDate() : null
     };
 
-    let multi = client.multi().set(`token:${token}`, JSON.stringify(tokenInfo));
+    let multi: any = client.multi().set(`token:${token}`, JSON.stringify(tokenInfo));
     if (to)
         multi = multi.expireat(`token:${token}`, to.unix());
 
-    await client.execMulti(multi);
+    await multi.exec();
 
     return tokenInfo;
 }

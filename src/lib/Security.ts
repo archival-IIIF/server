@@ -177,13 +177,12 @@ export async function setAccessTokenForAccessId(accessId: string): Promise<strin
 
         if (!accessIdInfo.token) {
             const client = getClient();
-            await client.execMulti(
-                client.multi()
-                    .set(`access-token:${token}`, accessId)
-                    .expire(`access-token:${token}`, config.accessTtl)
-                    .set(`access-id:${accessId}`, JSON.stringify({identities, token}))
-                    .expire(`access-id:${accessId}`, config.accessTtl)
-            );
+            await client.multi()
+                .set(`access-token:${token}`, accessId)
+                .expire(`access-token:${token}`, config.accessTtl)
+                .set(`access-id:${accessId}`, JSON.stringify({identities, token}))
+                .expire(`access-id:${accessId}`, config.accessTtl)
+                .exec();
         }
 
         return token;
@@ -218,11 +217,11 @@ export async function removeAccessIdFromRequest(ctx: Context): Promise<void> {
         if (accessIdInfo) {
             const client = getClient();
 
-            let multi = client.multi().del(`access-id:${accessId}`);
+            let multi: any = client.multi().del(`access-id:${accessId}`);
             if (accessIdInfo.token)
                 multi = multi.del(`access-token:${accessIdInfo.token}`);
 
-            await client.execMulti(multi);
+            await multi.exec();
         }
     }
 }

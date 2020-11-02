@@ -14,7 +14,6 @@ describe('Worker', () => {
     beforeEach(() => {
         redis = {
             multi: () => redisMulti,
-            execMulti: sinon.fake(),
             setex: sinon.stub(),
             lrem: sinon.spy(),
             brpoplpush: sinon.stub().resolves(undefined),
@@ -23,7 +22,8 @@ describe('Worker', () => {
         redisMulti = {
             lrem: () => redisMulti,
             del: () => redisMulti,
-            publish: sinon.stub().returns(redisMulti)
+            publish: sinon.stub().returns(redisMulti),
+            exec: sinon.fake(),
         };
     });
 
