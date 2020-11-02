@@ -236,7 +236,7 @@ const config: Config = {
     })(),
 
     redisPersistent: (_ => {
-        const redisDisabled = process.env.IIIF_SERVER_REDIS_DISABLED;
+        const redisDisabled = process.env.IIIF_SERVER_REDIS_PERSIST_DISABLED;
         if (redisDisabled && (redisDisabled.toLowerCase() === 'true' || redisDisabled === '1'))
             return null;
 
