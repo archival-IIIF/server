@@ -1,9 +1,9 @@
 import {Context} from 'koa';
-import * as Router from '@koa/router';
+import Router from '@koa/router';
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as mime from 'mime-types';
+import mime from 'mime-types';
 import {promisify} from 'util';
 
 import config from '../lib/Config';

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import {promisify} from 'util';
 import {join, extname} from 'path';
-import * as iconv from 'iconv-lite';
+import {decode} from 'iconv-lite';
 
 import config from '../lib/Config';
 import {TextParams} from '../lib/Service';
@@ -68,5 +68,5 @@ async function getAltoText(uri: string): Promise<string> {
 
 async function getPlainText(uri: string, encoding: string | null): Promise<string> {
     const textBuffer = await readFileAsync(uri);
-    return iconv.decode(textBuffer, encoding || 'utf8');
+    return decode(textBuffer, encoding || 'utf8');
 }

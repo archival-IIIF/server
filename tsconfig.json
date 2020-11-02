@@ -1,12 +1,15 @@
 {
   "compilerOptions": {
     "strict": true,
-    "target": "ES2019",
+    "target": "es2020",
     "lib": [
       "dom",
       "es2020"
     ],
     "module": "commonjs",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "sourceMap": true
   },
   "exclude": [

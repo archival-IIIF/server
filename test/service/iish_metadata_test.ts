@@ -3,7 +3,7 @@ import {readFile} from 'fs';
 import {promisify} from 'util';
 
 import {parseXml} from 'libxmljs2';
-import * as nock from 'nock';
+import nock from 'nock';
 import {expect} from 'chai';
 
 import {

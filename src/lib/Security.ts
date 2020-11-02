@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import moment from 'moment';
 import {inRange} from 'range_check';
 import {v4 as uuid} from 'uuid';
 import {Context} from 'koa';

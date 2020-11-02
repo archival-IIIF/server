@@ -1,5 +1,5 @@
-import * as got from 'got';
-import * as moment from 'moment';
+import got from 'got';
+import moment from 'moment';
 import {parseXml, Element} from 'libxmljs2';
 
 import config from '../lib/Config';
@@ -32,7 +32,7 @@ export async function getOAIIdentifiersOfUpdated(fromDate: string, uri: string):
 
     let resumptionToken = null;
     while (resumptionToken !== false) {
-        const response = await got.default(uri, {
+        const response = await got(uri, {
             https: {rejectUnauthorized: false}, resolveBodyOnly: true, searchParams: {
                 verb: 'ListIdentifiers',
                 metadataPrefix: 'marcxml',

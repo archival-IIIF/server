@@ -22,18 +22,18 @@ servicesRunning.forEach(function initService(service) {
 });
 
 async function startWeb() {
-    const Koa = await import('koa');
-    const json = await import('koa-json');
-    const bodyParser = await import('koa-bodyparser');
-    const compress = await import('koa-compress');
+    const {default: Koa} = await import('koa');
+    const {default: json} = await import('koa-json');
+    const {default: bodyParser} = await import('koa-bodyparser');
+    const {default: compress} = await import('koa-compress');
 
-    const iiifImageRouter = await import('./image/router');
-    const iiifPresentationRouter = await import('./presentation/router');
-    const iiifAuthRouter = await import('./authentication/router');
-    const fileRouter = await import('./file/router');
-    const pdfRouter = await import('./pdf/router');
-    const adminRouter = await import('./admin/router');
-    const staticRouter = await import('./static/router');
+    const {default: iiifImageRouter} = await import('./image/router');
+    const {default: iiifPresentationRouter} = await import('./presentation/router');
+    const {default: iiifAuthRouter} = await import('./authentication/router');
+    const {default: fileRouter} = await import('./file/router');
+    const {default: pdfRouter} = await import('./pdf/router');
+    const {default: adminRouter} = await import('./admin/router');
+    const {default: staticRouter} = await import('./static/router');
 
     const app = new Koa();
 
@@ -66,7 +66,7 @@ async function startWeb() {
     });
 
     if (config.env !== 'production') {
-        const morgan = await import('koa-morgan');
+        const {default: morgan} = await import('koa-morgan');
         // @ts-ignore
         app.use(morgan('short', {'stream': logger.stream}));
     }
@@ -75,14 +75,14 @@ async function startWeb() {
     app.use(json({pretty: false, param: 'pretty'}));
     app.use(bodyParser());
 
-    app.use(iiifImageRouter.default.routes());
-    app.use(iiifPresentationRouter.default.routes());
-    app.use(iiifAuthRouter.default.routes());
+    app.use(iiifImageRouter.routes());
+    app.use(iiifPresentationRouter.routes());
+    app.use(iiifAuthRouter.routes());
 
-    app.use(fileRouter.default.routes());
-    app.use(pdfRouter.default.routes());
-    app.use(adminRouter.default.routes());
-    app.use(staticRouter.default.routes());
+    app.use(fileRouter.routes());
+    app.use(pdfRouter.routes());
+    app.use(adminRouter.routes());
+    app.use(staticRouter.routes());
 
     app.proxy = true;
     app.keys = [config.secret];
@@ -98,8 +98,8 @@ function startStandalone(service: StandaloneService) {
 }
 
 async function startWorker(service: ArgService) {
-    const onTask = await import('./lib/Worker');
-    onTask.default(service.type, service.getService());
+    const {default: onTask} = await import('./lib/Worker');
+    onTask(service.type, service.getService());
     logger.info(`Worker initialized for ${service.name}`);
 }
 

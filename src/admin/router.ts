@@ -1,5 +1,5 @@
 import {existsSync} from 'fs';
-import * as Router from '@koa/router';
+import Router from '@koa/router';
 
 import HttpError from '../lib/HttpError';
 import {runTask} from '../lib/Task';

@@ -1,5 +1,5 @@
 import {promisify} from 'util';
-import {IHandyRedis} from 'handy-redis';
+import {WrappedNodeRedisClient} from 'handy-redis';
 
 import config from './Config';
 import logger from './Logger';
@@ -60,7 +60,7 @@ export default async function onTask<A, R>(type: string, process: (args: A) => P
     waitForTask(type, process, tasksInProgress, client, blockingClient);
 }
 
-async function waitForReady(client: IHandyRedis): Promise<void> {
+async function waitForReady(client: WrappedNodeRedisClient): Promise<void> {
     try {
         await client.ping();
         await getEsClient().ping();
@@ -73,7 +73,7 @@ async function waitForReady(client: IHandyRedis): Promise<void> {
     }
 }
 
-export async function moveExpiredTasksToQueue<A>(type: string, client: IHandyRedis): Promise<void> {
+export async function moveExpiredTasksToQueue<A>(type: string, client: WrappedNodeRedisClient): Promise<void> {
     try {
         const nameQueue = 'tasks:' + type;
         const nameProgressList = 'tasks:' + type + ':progress';
@@ -86,7 +86,7 @@ export async function moveExpiredTasksToQueue<A>(type: string, client: IHandyRed
             return hasNotExpired ? null : msg;
         }));
 
-        const filteredExpiredTasks = expiredTasks.filter(task => task !== null);
+        const filteredExpiredTasks = expiredTasks.filter(task => task !== null) as string[];
         if (filteredExpiredTasks.length > 0)
             await client.rpush(nameQueue, ...filteredExpiredTasks);
     }
@@ -96,10 +96,11 @@ export async function moveExpiredTasksToQueue<A>(type: string, client: IHandyRed
 }
 
 export async function gracefulShutdown<A>(type: string, tasksInProgress: string[],
-                                          client: IHandyRedis, blockingClient: IHandyRedis): Promise<void> {
+                                          client: WrappedNodeRedisClient,
+                                          blockingClient: WrappedNodeRedisClient): Promise<void> {
     try {
         shutdown = true;
-        blockingClient.redis.end(true);
+        blockingClient.nodeRedis.end(true);
 
         if (tasksInProgress.length > 0) {
             logger.debug('Tasks found!');
@@ -107,14 +108,14 @@ export async function gracefulShutdown<A>(type: string, tasksInProgress: string[
             const nameQueue = 'tasks:' + type;
             const nameProgressList = 'tasks:' + type + ':progress';
 
-            let multi = client.multi().rpush(nameQueue, ...tasksInProgress);
+            let multi: any = client.multi().rpush(nameQueue, ...tasksInProgress);
             tasksInProgress.forEach(task => multi = multi.lrem(nameProgressList, 1, task));
             tasksInProgress.forEach(task => {
                 const taskParsed = JSON.parse(task) as RedisMessage<A>;
                 multi = multi.del(nameQueue + ':' + taskParsed.identifier);
             });
 
-            await client.execMulti(multi);
+            await multi.exec();
         }
     }
     catch (err) {
@@ -123,7 +124,8 @@ export async function gracefulShutdown<A>(type: string, tasksInProgress: string[
 }
 
 export async function waitForTask<A, R>(type: string, process: (args: A) => Promise<R>, tasksInProgress: string[],
-                                        client: IHandyRedis, blockingClient: IHandyRedis): Promise<void> {
+                                        client: WrappedNodeRedisClient,
+                                        blockingClient: WrappedNodeRedisClient): Promise<void> {
     try {
         while (tasksInProgress.length >= config.maxTasksPerWorker) {
             logger.debug('Too many tasks running; waiting to continue...');
@@ -136,7 +138,7 @@ export async function waitForTask<A, R>(type: string, process: (args: A) => Prom
         const nameProgressList = 'tasks:' + type + ':progress';
 
         const msg = await blockingClient.brpoplpush(nameQueue, nameProgressList, 0);
-        if (msg !== undefined) {
+        if (msg) {
             tasksInProgress.push(msg);
             waitForTask(type, process, tasksInProgress, client, blockingClient);
 
@@ -155,7 +157,8 @@ export async function waitForTask<A, R>(type: string, process: (args: A) => Prom
 }
 
 export async function handleMessage<A, R>(type: string, task: RedisMessage<A>, msg: string,
-                                          process: (args: A) => Promise<R>, client: IHandyRedis): Promise<void> {
+                                          process: (args: A) => Promise<R>,
+                                          client: WrappedNodeRedisClient): Promise<void> {
     try {
         logger.debug(`Received a new task with type '${type}' and identifier '${task.identifier}' and data ${JSON.stringify(task.data)}`);
 
@@ -167,12 +170,12 @@ export async function handleMessage<A, R>(type: string, task: RedisMessage<A>, m
 
         const result = await process(task.data);
 
-        await client.execMulti(
-            client.multi()
-                .del(nameExpiration)
-                .lrem(nameProgressList, 1, msg)
-                .publish(nameQueue, JSON.stringify({identifier: task.identifier, data: result}))
-        );
+        await client
+            .multi()
+            .del(nameExpiration)
+            .lrem(nameProgressList, 1, msg)
+            .publish(nameQueue, JSON.stringify({identifier: task.identifier, data: result}))
+            .exec();
 
         logger.debug(`Finished task with type '${type}' and identifier '${task.identifier}' and data ${JSON.stringify(task.data)}`);
     }

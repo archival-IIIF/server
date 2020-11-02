@@ -1,5 +1,5 @@
 import {v4 as uuid} from 'uuid';
-import * as moment from 'moment';
+import moment from 'moment';
 
 import HttpError from '../lib/HttpError';
 import getClient from '../lib/ElasticSearch';

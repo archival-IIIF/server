@@ -1,8 +1,8 @@
 import * as path from 'path';
 import {createReadStream} from 'fs';
 
-import * as Router from '@koa/router';
-import * as send from 'koa-send';
+import Router from '@koa/router';
+import send from 'koa-send';
 
 import config from '../lib/Config';
 import HttpError from '../lib/HttpError';

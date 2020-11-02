@@ -1,4 +1,4 @@
-import * as got from 'got';
+import got from 'got';
 
 import {sharpProfile, lorisProfile} from './profiles';
 
@@ -66,7 +66,7 @@ async function serveImage(relativePath: string, max: number | null,
 
     const encodedPath = encodeURIComponent(relativePath);
     const url = `${config.imageServerUrl}/${encodedPath}/${region}/${size}/${rotation}/${quality}.${format}`;
-    const response = await got.default(url, {
+    const response = await got(url, {
         responseType: 'buffer',
         throwHttpErrors: false,
         searchParams: max ? {max} : {},

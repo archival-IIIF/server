@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import {promisify} from 'util';
-import * as moment from 'moment';
+import moment from 'moment';
 import {parseXml, Attribute, Document, Element} from 'libxmljs2';
 
 import config from '../lib/Config';

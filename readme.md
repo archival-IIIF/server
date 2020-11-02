@@ -276,7 +276,7 @@ Use the provided Docker Compose or install manually.
     * Use our [image server](https://github.com/archival-IIIF/image).
     * Or set up any IIIF image compliant server.
 1. Install
-    * [Node.js 12.x LTS](https://nodejs.org/en)
+    * [Node.js 14.x LTS](https://nodejs.org/en)
     * [yarn](https://yarnpkg.com) or [npm](https://www.npmjs.com)
     * [ElasticSearch 7.x.x](https://www.elastic.co/webinars/getting-started-elasticsearch)
     * IIIF image server (e.g. [Loris](https://github.com/loris-imageserver/loris))

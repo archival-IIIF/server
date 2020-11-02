@@ -1,7 +1,7 @@
 import {existsSync} from 'fs';
 
 import {Context} from 'koa';
-import * as Router from '@koa/router';
+import Router from '@koa/router';
 
 import parseSize from './sizeParser';
 import {getImage, getLogo, getAudio, getProfile} from './imageServer';

@@ -2,8 +2,8 @@ import {existsSync} from 'fs';
 import {dirname, basename, resolve} from 'path';
 
 import {move} from 'fs-extra';
-import * as moment from 'moment';
-import * as chokidar from 'chokidar';
+import moment from 'moment';
+import chokidar from 'chokidar';
 
 import config from '../lib/Config';
 import logger from '../lib/Logger';
