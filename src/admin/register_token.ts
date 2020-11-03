@@ -27,16 +27,22 @@ export default async function registerToken(token: string | null, collection: st
     if (from && to && !from.isBefore(to))
         throw new HttpError(400, 'Please provide a valid date range!');
 
-    const tokenInfo: Token = {
-        token,
-        collection_id: collection,
-        from: from ? from.toDate() : null,
-        to: to ? to.toDate() : null
-    };
+    const tokenInfoResult = await client.get(`token:${token}`);
+    const tokenInfo: Token = tokenInfoResult
+        ? JSON.parse(tokenInfoResult)
+        : {
+            token,
+            collection_ids: [],
+            from: from ? from.toDate() : null,
+            to: to ? to.toDate() : null
+        };
+
+    if (!tokenInfo.collection_ids.includes(collection))
+        tokenInfo.collection_ids.push(collection);
 
     let multi: any = client.multi().set(`token:${token}`, JSON.stringify(tokenInfo));
-    if (to)
-        multi = multi.expireat(`token:${token}`, to.unix());
+    if (tokenInfo.to)
+        multi = multi.expireat(`token:${token}`, moment(tokenInfo.to).unix());
 
     await multi.exec();
 
