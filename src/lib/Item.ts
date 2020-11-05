@@ -153,7 +153,7 @@ export async function getCollectionsByMetadataId(id: string): Promise<string[]> 
 export async function getCollectionIdsIndexed(ids: string | string[]): Promise<string[]> {
     const query = Array.isArray(ids)
         ? ids.map(id => `collection_id:"${id}"`).join(' OR ')
-        : `collection_id:"${ids}*"`;
+        : `type:root AND collection_id:"${ids}*"`;
     const items = await getItems(query);
     return Array.from(new Set(<string[]>items.map(item => item.collection_id)));
 }

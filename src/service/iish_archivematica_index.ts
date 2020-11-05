@@ -5,6 +5,7 @@ import moment from 'moment';
 import {parseXml, Attribute, Document, Element} from 'libxmljs2';
 
 import config from '../lib/Config';
+import logger from '../lib/Logger';
 import {runTask} from '../lib/Task';
 import {evictCache} from '../lib/Cache';
 import {createItem, indexItems, deleteItems} from '../lib/Item';
@@ -13,7 +14,6 @@ import {MinimalItem, FileItem, FolderItem, Item} from '../lib/ItemInterfaces';
 
 import {TextItem} from './util/types';
 import {getTypeForPronom, pronomByExtension} from './util/archivematica_pronom_data';
-import logger from '../lib/Logger';
 
 type WalkTreeParams = {
     id: string;

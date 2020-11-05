@@ -2,6 +2,7 @@ import got from 'got';
 import {parseXml, Document, Element} from 'libxmljs2';
 
 import config from '../lib/Config';
+import logger from '../lib/Logger';
 import {MetadataParams} from '../lib/Service';
 import {MinimalItem} from '../lib/ItemInterfaces';
 import {updateItems, getCollectionsByMetadataId, getCollectionIdsIndexed} from '../lib/Item';
@@ -55,8 +56,10 @@ export async function getOAIIdentifier(collectionId: string, uri: string): Promi
 }
 
 async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string): Promise<void> {
+    logger.debug(`Start metadata update using OAI identifier ${oaiIdentifier}`);
+
     // TODO: Temporary Z168896, Z209183 records for testing with serials
-    const metadataPrefix = oaiIdentifier.includes('ARCH') || oaiIdentifier.includes('COLL') || oaiIdentifier.includes("Z168896") || oaiIdentifier.includes("Z209183") ? 'ead' : 'marcxml';
+    const metadataPrefix = oaiIdentifier.includes('ARCH') || oaiIdentifier.includes('COLL') || oaiIdentifier.includes('Z168896') || oaiIdentifier.includes('Z209183') ? 'ead' : 'marcxml';
     const xml = await got(config.metadataOaiUrl as string, {
         https: {rejectUnauthorized: false}, resolveBodyOnly: true, searchParams: {
             verb: 'GetRecord',
@@ -83,6 +86,8 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
         }
     }
 
+    logger.debug(`Updating metadata for collections: ${Array.from(collections).join(' ')}`);
+
     collections.forEach(collectionId => {
         const metadataItems = (metadataPrefix === 'ead')
             ? updateEAD(xmlParsed, oaiIdentifier, collectionId)
@@ -91,6 +96,8 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
     });
 
     await updateItems(allMetadata);
+
+    logger.debug(`Updated metadata using OAI identifier ${oaiIdentifier}`);
 }
 
 export function updateEAD(xml: Document, oaiIdentifier: string, collectionId: string): MinimalItem[] {
