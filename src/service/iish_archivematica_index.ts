@@ -247,11 +247,9 @@ function readFile(rootId: string, label: string, mets: Document, objects: string
     if (!id)
         throw new Error(`No identifier found for object with file id ${fileId}`);
 
-    const objCharacteristicsAndExt = getObjCharacteristicsAndExt(premisObj, premisNS);
-    if (!objCharacteristicsAndExt)
+    const [objCharacteristics, objCharacteristicsExt] = getObjCharacteristicsAndExt(premisObj, premisNS);
+    if (!objCharacteristics)
         throw new Error(`No object characteristics found for object with file id ${fileId}`);
-
-    const [objCharacteristics, objCharacteristicsExt] = objCharacteristicsAndExt;
 
     const sizeElem = objCharacteristics.get<Element>(`./${premisNS}:size`, ns);
     const size = sizeElem ? parseInt(sizeElem.text()) : null;
@@ -265,11 +263,14 @@ function readFile(rootId: string, label: string, mets: Document, objects: string
     const name = path.basename(originalName);
     const type = getTypeForPronom(pronomKey);
 
+    if (!objCharacteristicsExt && (type === 'image' || type === 'video' || type === 'audio'))
+        throw new Error(`No object characteristics extension found for object with file id ${fileId}`);
+
     const resolution = (type === 'image' || type === 'video')
-        ? determineResolution(objCharacteristicsExt)
+        ? determineResolution(objCharacteristicsExt as Element)
         : {width: null, height: null};
-    const dpi = (type === 'image') ? determineDpi(objCharacteristicsExt) : null;
-    const duration = (type === 'video' || type === 'audio') ? determineDuration(objCharacteristicsExt) : null;
+    const dpi = (type === 'image') ? determineDpi(objCharacteristicsExt as Element) : null;
+    const duration = (type === 'video' || type === 'audio') ? determineDuration(objCharacteristicsExt as Element) : null;
 
     const file = objects.find(f => f.startsWith(internalId));
     if (!file)
@@ -332,12 +333,11 @@ function readText(rootId: string, label: string, mets: Document, objects: string
     if (!id)
         throw new Error(`No identifier found for object with file id ${fileId}`);
 
-    const objCharacteristicsAndExt = getObjCharacteristicsAndExt(premisObj, premisNS);
-    if (!objCharacteristicsAndExt)
-        throw new Error(`No object characteristics found for object with file id ${fileId}`);
+    const [objCharacteristics, objCharacteristicsExt] = getObjCharacteristicsAndExt(premisObj, premisNS);
+    if (!objCharacteristics && !objCharacteristicsExt)
+        throw new Error(`No object characteristics and extensions found for object with file id ${fileId}`);
 
-    const [objCharacteristics, objCharacteristicsExt] = objCharacteristicsAndExt;
-    const encoding = determineEncoding(objCharacteristicsExt);
+    const encoding = determineEncoding(objCharacteristicsExt as Element);
 
     const fptrs = structureIISH.find<Element>(`./mets:div[@TYPE="page"]/mets:fptr[@FILEID="${fileId}"]/../mets:fptr`, ns);
     const fptr = fptrs.find(fptrElem => {
@@ -411,12 +411,10 @@ export function getIdentifier(premisObj: Element, premisNS: premis = 'premis'): 
     return null;
 }
 
-export function getObjCharacteristicsAndExt(premisObj: Element, premisNS: premis = 'premis'): [Element, Element] | null {
+export function getObjCharacteristicsAndExt(premisObj: Element, premisNS: premis = 'premis'): [Element | null, Element | null] {
     const objCharacteristics = premisObj.get<Element>(`./${premisNS}:objectCharacteristics`, ns);
     const objCharacteristicsExt = objCharacteristics
         ? objCharacteristics.get<Element>(`./${premisNS}:objectCharacteristicsExtension`, ns) : null;
-    if (!objCharacteristics || !objCharacteristicsExt)
-        return null;
 
     return [objCharacteristics, objCharacteristicsExt];
 }
