@@ -93,15 +93,30 @@ export const allServices: Service[] = [{
     cron: '58 11 * * *',
     getService: () => require('../service/iish_metadata_update').default
 }, {
+    name: 'default-access',
+    type: 'access',
+    runAs: 'lib',
+    getService: () => require('../service/default_access').default
+}, {
     name: 'iish-access',
     type: 'access',
     runAs: 'lib',
     getService: () => require('../service/iish_access').default
 }, {
+    name: 'default-auth-texts',
+    type: 'auth-texts',
+    runAs: 'lib',
+    getService: () => require('../service/default_auth_texts').default
+}, {
     name: 'iish-auth-texts',
     type: 'auth-texts',
     runAs: 'lib',
     getService: () => require('../service/iish_auth_texts').default
+}, {
+    name: 'default-iiif-metadata',
+    type: 'iiif-metadata',
+    runAs: 'lib',
+    getService: () => require('../service/default_iiif_metadata').default
 }, {
     name: 'iish-iiif-metadata',
     type: 'iiif-metadata',
