@@ -15,7 +15,7 @@
     "got": "11.8.0",
     "file-icon-vectors": "1.0.0",
     "iiif-explorer": "1.0.8",
-    "redis": "3.0.2",
+    "redis": "3.1.1",
     "handy-redis": "2.0.2",
     "uuid": "8.3.1",
     "moment": "2.29.1",
