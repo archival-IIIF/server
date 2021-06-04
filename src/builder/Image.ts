@@ -36,8 +36,9 @@ export async function getInfo(item: Item, derivative: DerivativeType | null,
     if (access.state !== AccessState.OPEN) {
         const authTexts = await getAuthTexts(item);
         getEnabledAuthServices().forEach(type => {
-            // TODO: For now only login for 'COLL00179'
-            if (type !== 'login' || item.collection_id.startsWith('COLL00179')) {
+            // TODO: For now only login for 'ARCH00293' and 'ARCH00393'
+            if (type !== 'login' ||
+                item.collection_id.startsWith('ARCH00293') || item.collection_id.startsWith('ARCH00393')) {
                 const service = AuthService.getAuthenticationService(authUri, authTexts, type);
                 if (service !== null)
                     imageInfo.setService(service);

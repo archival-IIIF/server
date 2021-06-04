@@ -206,8 +206,9 @@ async function setAuthServices(base: Resource | Service, item: RootItem | FileIt
     if (await requiresAuthentication(item)) {
         const authTexts = await getAuthTexts(item);
         getEnabledAuthServices().forEach(type => {
-            // TODO: For now only login for 'COLL00179'
-            if (type !== 'login' || item.collection_id.startsWith('COLL00179')) {
+            // TODO: For now only login for 'ARCH00293' and 'ARCH00393'
+            if (type !== 'login' ||
+                item.collection_id.startsWith('ARCH00293') || item.collection_id.startsWith('ARCH00393')) {
                 const service = AuthService.getAuthenticationService(authUri, authTexts, type);
                 if (service)
                     base.setService(service);
