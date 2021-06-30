@@ -10,7 +10,7 @@ import {
     getOAIIdentifier,
     updateEAD,
     updateMarc
-} from '../../src/service/iish_metadata';
+} from '../../src/service/iish/metadata';
 
 const readFileAsync = promisify(readFile);
 

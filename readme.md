@@ -63,6 +63,7 @@ Current implementations:
 an OAI endpoint to be indexed in [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch). 
 Current implementations:
     - `iish-metadata`: Looks for and indexes metadata from the OAI service of the IISH.
+    - `niod-metadata`: Looks for and indexes metadata from NIOD.
  - **Waveform derivative worker**: Gets a job with a collection id and then builds waveform representations of all 
 audio files of the collection with the given collection id. Current implementations:
     - `waveform`: Default implementation.
@@ -95,11 +96,15 @@ The libraries are lightweight services with specific implementation details that
 `web` service on the same running instance. At the moment, the Archival IIIF server identifies 
 three different libraries:
 - **Access**: Determines whether a user has (limited) access to a specific item. Current implementations:
+    - `default-access`: All granted; default implementation
     - `iish-access`: IISH specific implementation.
+    - `niod-access`: NIOD specific implementation.
 - **IIIF metadata**: Provides implementation specific IIIF metadata. Current implementations:
+    - `default-iiif-metadata`: Default (no IIIF metadata) implementation.
     - `iish-iiif-metadata`: IISH specific implementation.
 - **Authentication texts**: Provides implementation specific texts to help the user with authenticating. 
 Current implementations:
+    - `default-auth-texts`: Default implementation.
     - `iish-auth-texts`: IISH specific implementation.
 
 ## Web API
@@ -223,9 +228,9 @@ Can only be used by an administrator with a valid access token.
 
 **Method**: `POST`
 
-**Parameters**: `id`
+**Parameters**: `oai_identifier`, `collection_id`
 
-Creates a job for the metadata worker to force-update the metadata for the given OAI identifier. 
+Creates a job for the metadata worker to force-update the metadata for the given OAI identifier and/or collection id. 
 Can only be used by an administrator with a valid access token.
 
 ---

@@ -1,7 +1,7 @@
-import config from '../lib/Config';
-import {Item} from '../lib/ItemInterfaces';
-import {IIIFMetadataParams} from '../lib/Service';
-import {IIIFMetadata, IIIFMetadataHomepage, IIIFMetadataPairs, IIIFMetadataSeeAlso} from './util/types';
+import config from '../../lib/Config';
+import {Item} from '../../lib/ItemInterfaces';
+import {IIIFMetadataParams} from '../../lib/Service';
+import {IIIFMetadata, IIIFMetadataHomepage, IIIFMetadataPairs, IIIFMetadataSeeAlso} from '../util/types';
 
 export default async function getIIIFMetadata({item}: IIIFMetadataParams): Promise<IIIFMetadata> {
     return {

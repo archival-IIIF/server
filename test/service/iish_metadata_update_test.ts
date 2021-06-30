@@ -1,7 +1,7 @@
 import nock from 'nock';
 import {expect} from 'chai';
 
-import {getOAIIdentifiersOfUpdated} from '../../src/service/iish_metadata_update';
+import {getOAIIdentifiersOfUpdated} from '../../src/service/iish/metadata_update';
 
 describe('iish_metadata_update', () => {
     describe('#getOAIIdentifiersOfUpdated()', () => {

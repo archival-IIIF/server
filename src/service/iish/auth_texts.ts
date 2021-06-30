@@ -1,7 +1,7 @@
-import {AuthTextsParams} from '../lib/Service';
-import {getRootItemByCollectionId} from '../lib/Item';
+import {AuthTextsParams} from '../../lib/Service';
+import {getRootItemByCollectionId} from '../../lib/Item';
 
-import {AuthTextsByType} from './util/types';
+import {AuthTextsByType} from '../util/types';
 
 const logout = {
     label: 'Logout'

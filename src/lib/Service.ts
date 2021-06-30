@@ -55,7 +55,7 @@ export const allServices: Service[] = [{
     name: 'iish-archivematica-index',
     type: 'index',
     runAs: 'worker',
-    getService: () => require('../service/iish_archivematica_index').default
+    getService: () => require('../service/iish/archivematica_index').default
 }, {
     name: 'text-index',
     type: 'text',
@@ -65,7 +65,12 @@ export const allServices: Service[] = [{
     name: 'iish-metadata',
     type: 'metadata',
     runAs: 'worker',
-    getService: () => require('../service/iish_metadata').default
+    getService: () => require('../service/iish/metadata').default
+}, {
+    name: 'niod-metadata',
+    type: 'metadata',
+    runAs: 'worker',
+    getService: () => require('../service/niod/metadata').default
 }, {
     name: 'process-update',
     type: 'process-update',
@@ -91,37 +96,42 @@ export const allServices: Service[] = [{
     type: 'metadata-update',
     runAs: 'cron',
     cron: '58 11 * * *',
-    getService: () => require('../service/iish_metadata_update').default
+    getService: () => require('../service/iish/metadata_update').default
 }, {
     name: 'default-access',
     type: 'access',
     runAs: 'lib',
-    getService: () => require('../service/default_access').default
+    getService: () => require('../service/access').default
 }, {
     name: 'iish-access',
     type: 'access',
     runAs: 'lib',
-    getService: () => require('../service/iish_access').default
+    getService: () => require('../service/iish/access').default
+}, {
+    name: 'niod-access',
+    type: 'access',
+    runAs: 'lib',
+    getService: () => require('../service/niod/access').default
 }, {
     name: 'default-auth-texts',
     type: 'auth-texts',
     runAs: 'lib',
-    getService: () => require('../service/default_auth_texts').default
+    getService: () => require('../service/auth_texts').default
 }, {
     name: 'iish-auth-texts',
     type: 'auth-texts',
     runAs: 'lib',
-    getService: () => require('../service/iish_auth_texts').default
+    getService: () => require('../service/iish/auth_texts').default
 }, {
     name: 'default-iiif-metadata',
     type: 'iiif-metadata',
     runAs: 'lib',
-    getService: () => require('../service/default_iiif_metadata').default
+    getService: () => require('../service/iiif_metadata').default
 }, {
     name: 'iish-iiif-metadata',
     type: 'iiif-metadata',
     runAs: 'lib',
-    getService: () => require('../service/iish_iiif_metadata').default
+    getService: () => require('../service/iish/iiif_metadata').default
 }];
 
 export let servicesRunning: Service[] = config.services.map(name => {

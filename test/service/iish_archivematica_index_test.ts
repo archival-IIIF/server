@@ -11,7 +11,7 @@ import {
     determineDpi,
     determineDuration,
     determineEncoding
-} from '../../src/service/iish_archivematica_index';
+} from '../../src/service/iish/archivematica_index';
 
 const rej = (err: Error) => err;
 

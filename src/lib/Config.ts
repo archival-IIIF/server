@@ -14,6 +14,7 @@ export interface Config {
     hotFolderPattern?: string;
     metadataOaiUrl?: string;
     metadataSrwUrl?: string;
+    metadataPath?: string;
     logoRelativePath?: string;
     audioRelativePath?: string;
     elasticSearchUser?: string;
@@ -65,6 +66,7 @@ const config: Config = {
     hotFolderPattern: process.env.IIIF_SERVER_HOT_FOLDER_PATTERN,
     metadataOaiUrl: process.env.IIIF_SERVER_METADATA_OAI_URL,
     metadataSrwUrl: process.env.IIIF_SERVER_METADATA_SRW_URL,
+    metadataPath: process.env.IIIF_SERVER_METADATA_PATH,
     logoRelativePath: process.env.IIIF_SERVER_LOGO_REL_PATH,
     audioRelativePath: process.env.IIIF_SERVER_AUDIO_REL_PATH,
     elasticSearchUser: process.env.IIIF_SERVER_ELASTICSEARCH_USER,
