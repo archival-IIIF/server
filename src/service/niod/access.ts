@@ -11,7 +11,7 @@ export default async function hasAccess({item, ip, identities = []}: AccessParam
     const rootItem = await getRootItemByCollectionId(item);
     const accessDate = rootItem?.niod?.accessDate;
 
-    if (accessDate === null)
+    if (!accessDate)
         return {state: AccessState.OPEN};
 
     if (moment().isAfter(moment(accessDate)))
