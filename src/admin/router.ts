@@ -48,16 +48,17 @@ router.post('/index', async ctx => {
 });
 
 router.post('/update_metadata', async ctx => {
-    if (!ctx.request.body.oai_identifier && !ctx.request.body.collection_id)
+    if (!ctx.request.body.oai_identifier && !ctx.request.body.root_id && !ctx.request.body.collection_id)
         throw new HttpError(400,
-            'Please provide an OAI identifier or a collection id of the record to update');
+            'Please provide an OAI identifier or a root/collection id of the record(s) to update');
 
     runTask<MetadataParams>('metadata', {
         oaiIdentifier: ctx.request.body.oai_identifier,
+        rootId: ctx.request.body.root_id,
         collectionId: ctx.request.body.collection_id
     });
 
-    ctx.body = 'OAI identifier and/or collection id is sent to the queue for metadata update';
+    ctx.body = 'OAI identifier and/or root/collection id is sent to the queue for metadata update';
 });
 
 router.post('/register_token', async ctx => {

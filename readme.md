@@ -217,7 +217,7 @@ Generates a PDF version of a collection with the given id.
 
 **Method**: `POST`
 
-**Parameters**: `access_token`, `path`
+**Parameters**: `path`
 
 Creates a job for the index worker to index the collection on the given path. 
 Can only be used by an administrator with a valid access token.
@@ -228,9 +228,10 @@ Can only be used by an administrator with a valid access token.
 
 **Method**: `POST`
 
-**Parameters**: `oai_identifier`, `collection_id`
+**Parameters**: `oai_identifier`, `root_id`, `collection_id`
 
-Creates a job for the metadata worker to force-update the metadata for the given OAI identifier and/or collection id. 
+Creates a job for the metadata worker to force-update the metadata for the given OAI identifier 
+and/or root/collection id. 
 Can only be used by an administrator with a valid access token.
 
 ---
@@ -248,7 +249,7 @@ Can only be used by an administrator with a valid access token.
 
 **Method**: `POST`
 
-**Parameters**: `access_token`, `token`, `collection`, `from`, `to`
+**Parameters**: `token`, `collection`, `from`, `to`
 
 Registers a token which may give access to a specific collection for a specific period of time.
 Can only be used by an administrator with a valid access token.

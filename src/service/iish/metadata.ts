@@ -14,11 +14,14 @@ const ns = {
     'marc': 'http://www.loc.gov/MARC21/slim'
 };
 
-export default async function processMetadata({oaiIdentifier, collectionId}: MetadataParams): Promise<void> {
+export default async function processMetadata({oaiIdentifier, rootId, collectionId}: MetadataParams): Promise<void> {
     if (!config.metadataOaiUrl || !config.metadataSrwUrl)
         throw new Error('Cannot process metadata, as there is no OAI or SRW URL configured!');
 
     try {
+        if (!oaiIdentifier && rootId)
+            oaiIdentifier = `oai:socialhistoryservices.org:10622/${rootId}`;
+
         if (!oaiIdentifier && collectionId)
             oaiIdentifier = await getOAIIdentifier(collectionId, config.metadataSrwUrl);
 

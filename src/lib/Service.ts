@@ -30,7 +30,7 @@ export interface CronService extends StandaloneService {
 
 export type IndexParams = { collectionPath: string };
 export type TextParams = { collectionId: string, items: TextItem[] };
-export type MetadataParams = { oaiIdentifier?: string | null, collectionId?: string };
+export type MetadataParams = { oaiIdentifier?: string | null, rootId?: string, collectionId?: string };
 export type DerivativeParams = { collectionId: string };
 export type AccessParams = { item: Item, ip?: string, identities?: string[] };
 export type AuthTextsParams = { item: Item };
