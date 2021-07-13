@@ -15,7 +15,7 @@ export default async function processMetadata({oaiIdentifier, rootId, collection
     if (!config.metadataPath)
         throw new Error('Cannot process metadata, as there is no metadata path configured!');
 
-    if (!rootId || !collectionId)
+    if (!rootId && !collectionId)
         throw new Error('Cannot process metadata, as there is no root id or collection id provided!');
 
     try {
