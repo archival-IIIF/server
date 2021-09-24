@@ -9,6 +9,7 @@ import {IndexParams, MetadataParams} from '../lib/Service';
 
 import registerToken from './register_token';
 import indexCollection from './api_index';
+import {Item} from '../lib/ItemInterfaces';
 
 const router = new Router({prefix: '/admin'});
 
@@ -31,39 +32,40 @@ router.get('/headers', async ctx => {
 });
 
 router.post('/index_api', async ctx => {
-    await indexCollection(ctx.request.body);
+    await indexCollection(ctx.request.body as object);
     ctx.body = 'Successfully indexed the collection!';
 });
 
 router.post('/index', async ctx => {
-    if (!ctx.request.body.path)
+    const body = ctx.request.body as Record<'path', string | undefined>;
+    if (!body.path)
         throw new HttpError(400, 'Please provide a path');
 
-    const path = ctx.request.body.path;
-    if (!existsSync(path))
-        throw new HttpError(400, `The provided path "${path}" does not seem to exist`);
+    if (!existsSync(body.path))
+        throw new HttpError(400, `The provided path "${body.path}" does not seem to exist`);
 
-    runTask<IndexParams>('index', {collectionPath: path});
+    runTask<IndexParams>('index', {collectionPath: body.path});
     ctx.body = 'Collection is sent to the queue for indexing';
 });
 
 router.post('/update_metadata', async ctx => {
-    if (!ctx.request.body.oai_identifier && !ctx.request.body.root_id && !ctx.request.body.collection_id)
+    const body = ctx.request.body as Record<'oai_identifier' | 'root_id' | 'collection_id', string | undefined>;
+    if (!body.oai_identifier && !body.root_id && !body.collection_id)
         throw new HttpError(400,
             'Please provide an OAI identifier or a root/collection id of the record(s) to update');
 
     runTask<MetadataParams>('metadata', {
-        oaiIdentifier: ctx.request.body.oai_identifier,
-        rootId: ctx.request.body.root_id,
-        collectionId: ctx.request.body.collection_id
+        oaiIdentifier: body.oai_identifier,
+        rootId: body.root_id,
+        collectionId: body.collection_id
     });
 
     ctx.body = 'OAI identifier and/or root/collection id is sent to the queue for metadata update';
 });
 
 router.post('/register_token', async ctx => {
-    ctx.body = await registerToken(
-        ctx.request.body.token, ctx.request.body.collection, ctx.request.body.from, ctx.request.body.to);
+    const body = ctx.request.body as Record<'token' | 'collection' | 'from' | 'to', string | undefined>;
+    ctx.body = await registerToken(body.token, body.collection, body.from, body.to);
 });
 
 export default router;

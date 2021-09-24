@@ -1,10 +1,10 @@
 import {existsSync} from 'fs';
 
-import {Context} from 'koa';
 import Router from '@koa/router';
+import {Context, ParameterizedContext} from 'koa';
 
 import parseSize from './sizeParser';
-import {getImage, getLogo, getAudio, getProfile} from './imageServer';
+import {getImage, getLogo, getAudio, getProfile, ImageOptions} from './imageServer';
 
 import logger from '../lib/Logger';
 import config from '../lib/Config';
@@ -17,6 +17,8 @@ import {determineItem, getFullDerivativePath} from '../lib/Item';
 
 import Image from '../builder/elem/v2/Image';
 import {getImageInfo, getLogoInfo, getAudioInfo} from '../builder/PresentationBuilder';
+
+type ImageContext = ParameterizedContext<ImageOptions>;
 
 const prefix = '/iiif/image';
 export const router = new Router({prefix});
@@ -81,7 +83,7 @@ router.get('/:id/info.json', async ctx => {
     logger.info(`Sending image info with id ${id} and tier ${tier}`);
 });
 
-router.get('/:name(logo|audio)/:region/:size/:rotation/:quality.:format', async ctx => {
+router.get('/:name(logo|audio)/:region/:size/:rotation/:quality.:format', async (ctx: ImageContext) => {
     logger.info(`Received a request for the ${ctx.params.name}`);
 
     if (ctx.params.name === 'logo' && !config.logoRelativePath)
@@ -102,7 +104,7 @@ router.get('/:name(logo|audio)/:region/:size/:rotation/:quality.:format', async 
     logger.info(`Sending the ${ctx.params.name}`);
 });
 
-router.get('/:id/:region/:size/:rotation/:quality.:format', async ctx => {
+router.get('/:id/:region/:size/:rotation/:quality.:format', async (ctx: ImageContext) => {
     const [id, tier] = ctx.params.id.split(config.imageTierSeparator);
 
     logger.info(`Received a request for an image with id ${id} on tier ${tier}`);

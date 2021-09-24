@@ -4,7 +4,8 @@ import {promisify} from 'util';
 import {parseXml, Element, Attribute} from 'libxmljs2';
 
 import config from '../lib/Config';
-import getClient, {search} from './ElasticSearch';
+import getClient from './ElasticSearch';
+import logger from './Logger';
 
 export interface Text {
     id: string;
@@ -74,7 +75,15 @@ export async function getTextsForCollectionId(collectionId: string, type?: strin
 }
 
 async function getTexts(q: string): Promise<Text[]> {
-    return search<Text>('texts', q);
+    logger.debug(`Obtain texts from ElasticSearch with query "${q}"`);
+
+    const texts = [];
+    const scrollTexts = getClient().helpers.scrollDocuments<Text>({index: 'texts', q});
+
+    for await (const text of scrollTexts)
+        texts.push(text);
+
+    return texts;
 }
 
 export async function readAlto(uri: string): Promise<OcrWord[]> {

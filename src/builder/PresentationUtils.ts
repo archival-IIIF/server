@@ -95,7 +95,9 @@ export async function addMetadata(base: Base, root: Item): Promise<void> {
             acc[author.type] ? acc[author.type].push(author.name) : acc[author.type] = [author.name];
             return acc;
         }, {});
-        Object.keys(authors).forEach(type => base.setMetadata(type, authors[type]));
+
+        for (const type of Object.keys(authors))
+            base.setMetadata(type, authors[type]);
     }
 
     if (root.dates.length > 0)
@@ -107,14 +109,16 @@ export async function addMetadata(base: Base, root: Item): Promise<void> {
     if (root.description)
         base.setMetadata('Description', root.description);
 
-    root.metadata.forEach(md => base.setMetadata(md.label, md.value));
+    for (const md of root.metadata)
+        base.setMetadata(md.label, md.value);
 
     const md = await runTaskWithResponse<IIIFMetadataParams, IIIFMetadata>('iiif-metadata', {item: root});
     if (md.homepage && md.homepage.length > 0)
         base.setHomepage(md.homepage);
 
     if (md.metadata && md.metadata.length > 0)
-        md.metadata.forEach(metadata => base.setMetadata(metadata.label, metadata.value));
+        for (const metadata of md.metadata)
+            base.setMetadata(metadata.label, metadata.value);
 
     if (md.seeAlso && md.seeAlso.length > 0)
         base.setSeeAlso(md.seeAlso);
@@ -186,26 +190,27 @@ function addDefaults(manifest: Manifest): void {
 }
 
 function addDerivatives(annotation: Annotation, item: Item): void {
-    Object.values(derivatives)
+    const filteredTypes = Object.values(derivatives)
         .filter(info => info.from === item.type && (info.to !== 'image' || info.imageTier))
-        .filter(info => info.type === 'waveform') // TODO: Only waveforms for now
-        .forEach(info => {
-            const path = getFullDerivativePath(item, info);
-            if (existsSync(path)) {
-                annotation.setSeeAlso({
-                    id: derivativeUri(item.id, 'waveform'),
-                    type: getType(info.to),
-                    format: info.contentType,
-                    profile: info.profile
-                });
-            }
-        });
+        .filter(info => info.type === 'waveform'); // TODO: Only waveforms for now
+
+    for (const info of filteredTypes) {
+        const path = getFullDerivativePath(item, info);
+        if (existsSync(path)) {
+            annotation.setSeeAlso({
+                id: derivativeUri(item.id, 'waveform'),
+                type: getType(info.to),
+                format: info.contentType,
+                profile: info.profile
+            });
+        }
+    }
 }
 
 async function setAuthServices(base: Resource | Service, item: RootItem | FileItem): Promise<void> {
     if (await requiresAuthentication(item)) {
         const authTexts = await getAuthTexts(item);
-        getEnabledAuthServices().forEach(type => {
+        for (const type of getEnabledAuthServices()) {
             // TODO: For now only login for 'ARCH00293' and 'ARCH00393'
             if (type !== 'login' ||
                 item.collection_id.startsWith('ARCH00293') || item.collection_id.startsWith('ARCH00393')) {
@@ -213,6 +218,6 @@ async function setAuthServices(base: Resource | Service, item: RootItem | FileIt
                 if (service)
                     base.setService(service);
             }
-        });
+        }
     }
 }

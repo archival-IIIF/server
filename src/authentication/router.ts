@@ -11,6 +11,8 @@ import {
     setAccessTokenForAccessId
 } from '../lib/Security';
 
+type TokenBody = Record<'token', string | undefined>;
+
 type Message = { messageId?: string };
 type AccessTokenMessage = Message & { accessToken: string, expiresIn: number };
 type ErrorMessage = Message & { error: string, description: string };
@@ -24,13 +26,14 @@ router.get('/login', ctx => {
 });
 
 router.post('/login', async ctx => {
-    const token = ctx.request.body.token;
-
-    const tokens = await checkTokenDb([token]);
-    if (tokens.length > 0) {
-        let accessId = await getAccessIdFromRequest(ctx, false);
-        accessId = await setAccessIdForIdentity(token, accessId);
-        ctx.cookies.set('access', accessId, {signed: true, overwrite: true});
+    const token = (ctx.request.body as TokenBody).token;
+    if (token) {
+        const tokens = await checkTokenDb([token]);
+        if (tokens.length > 0) {
+            let accessId = await getAccessIdFromRequest(ctx, false);
+            accessId = await setAccessIdForIdentity(token, accessId);
+            ctx.cookies.set('access', accessId, {signed: true, overwrite: true});
+        }
     }
 
     ctx.type = 'text/html';
@@ -46,7 +49,7 @@ router.get('/token', async ctx => {
         : {error: 'missingCredentials', description: 'No access cookie found!'};
 
     if (ctx.query.messageId && ctx.query.origin) {
-        message.messageId = ctx.query.messageId;
+        message.messageId = Array.isArray(ctx.query.messageId) ? ctx.query.messageId[0] : ctx.query.messageId;
 
         ctx.body = `<html>
             <body>

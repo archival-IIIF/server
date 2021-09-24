@@ -5,8 +5,9 @@ import {Token} from '../lib/Security';
 import HttpError from '../lib/HttpError';
 import {getPersistentClient} from '../lib/Redis';
 
-export default async function registerToken(token: string | null, collection: string | null,
-                                            from: moment.Moment | null, to: moment.Moment | null): Promise<Token> {
+export default async function registerToken(token: string | undefined, collection: string | undefined,
+                                            from: moment.Moment | string | undefined,
+                                            to: moment.Moment | string | undefined): Promise<Token> {
     const client = getPersistentClient();
     if (!client)
         throw new HttpError(400, 'There is no persistent Redis server configured for auth!');
@@ -15,8 +16,8 @@ export default async function registerToken(token: string | null, collection: st
         throw new HttpError(400, 'Please provide a collection!');
 
     token = token || uuid();
-    from = from ? moment(from) : null;
-    to = to ? moment(to) : null;
+    from = from ? moment(from) : undefined;
+    to = to ? moment(to) : undefined;
 
     if (from && !from.isValid())
         throw new HttpError(400, 'Please provide a valid from date!');

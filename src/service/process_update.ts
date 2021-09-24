@@ -1,11 +1,11 @@
 import {runTask} from '../lib/Task';
 import {Item} from '../lib/ItemInterfaces';
-import {search} from '../lib/ElasticSearch';
+import getClient from '../lib/ElasticSearch';
 import {ProcessUpdateParams, MetadataParams, DerivativeParams} from '../lib/Service';
 
 export default async function processUpdate({type, query}: ProcessUpdateParams): Promise<void> {
-    const items: Item[] = await search<Item>('items', query);
-    for (const item of items) {
+    const scrollItems = getClient().helpers.scrollDocuments<Item>({index: 'items', q: query})
+    for await (const item of scrollItems) {
         switch (type) {
             case 'metadata':
                 runTask<MetadataParams>('metadata', {collectionId: item.collection_id});

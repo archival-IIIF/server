@@ -27,14 +27,14 @@ export default function watchDirectoryForChanges(): void {
 
         if (hotFolderPattern.exec(file)) {
             const directory = dirname(path);
-            if (!collectionsWatching.hasOwnProperty(directory)) {
+            if (!(directory in collectionsWatching)) {
                 collectionsWatching[directory] = new Date();
                 logger.info(`Found a new collection in the hot folder ${directory}`);
             }
         }
         else {
             while (path !== config.hotFolderPath) {
-                if (collectionsWatching.hasOwnProperty(path) && collectionsWatching[path]) {
+                if (path in collectionsWatching && collectionsWatching[path]) {
                     collectionsWatching[path] = new Date();
                     break;
                 }
@@ -46,13 +46,13 @@ export default function watchDirectoryForChanges(): void {
     setInterval(() => {
         const maxAgeLastChange = moment().subtract(10, 'minutes');
 
-        Object.keys(collectionsWatching).forEach(path => {
+        for (const path of Object.keys(collectionsWatching)) {
             if (collectionsWatching[path]) {
                 const lastChange = moment(collectionsWatching[path] as Date);
                 if (lastChange.isBefore(maxAgeLastChange))
                     startIndexForNewCollection(path);
             }
-        });
+        }
     }, 30000);
 }
 

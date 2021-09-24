@@ -28,7 +28,7 @@ export default async function processMetadata({oaiIdentifier, rootId, collection
         if (oaiIdentifier)
             await updateWithIdentifier(oaiIdentifier, collectionId);
     }
-    catch (e) {
+    catch (e: any) {
         const err = new Error(`Failed to process the metadata for ${collectionId}: ${e.message}`);
         err.stack = e.stack;
         throw err;
@@ -37,7 +37,7 @@ export default async function processMetadata({oaiIdentifier, rootId, collection
 
 export async function getOAIIdentifier(collectionId: string, uri: string): Promise<string | null> {
     // TODO: Temporary Z168896, Z209183 records for testing with serials
-    if (collectionId.includes('ARCH') || collectionId.includes('COLL') || collectionId.includes("Z168896") || collectionId.includes("Z209183")) {
+    if (collectionId.includes('ARCH') || collectionId.includes('COLL') || collectionId.includes('Z168896') || collectionId.includes('Z209183')) {
         const rootId = EAD.getRootId(collectionId);
         return `oai:socialhistoryservices.org:10622/${rootId}`;
     }
@@ -78,25 +78,29 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
     if (collectionId)
         collections.add(collectionId);
     else {
-        (await getCollectionsByMetadataId(oaiIdentifier)).forEach(colId => collections.add(colId));
+        for (const colId of await getCollectionsByMetadataId(oaiIdentifier))
+            collections.add(colId);
+
         if (metadataPrefix === 'marcxml') {
             const collectionIds = MarcXML.getCollectionIds(xmlParsed);
-            (await getCollectionIdsIndexed(collectionIds)).forEach(colId => collections.add(colId));
+            for (const colId of await getCollectionIdsIndexed(collectionIds))
+                collections.add(colId);
         }
         else {
             const collectionId = oaiIdentifier.replace('oai:socialhistoryservices.org:10622/', '');
-            (await getCollectionIdsIndexed(EAD.getRootId(collectionId))).forEach(colId => collections.add(colId));
+            for (const colId of await getCollectionIdsIndexed(EAD.getRootId(collectionId)))
+                collections.add(colId);
         }
     }
 
     logger.debug(`Updating metadata for collections: ${Array.from(collections).join(' ')}`);
 
-    collections.forEach(collectionId => {
+    for (const collectionId of collections) {
         const metadataItems = (metadataPrefix === 'ead')
             ? updateEAD(xmlParsed, oaiIdentifier, collectionId)
             : updateMarc(xmlParsed, oaiIdentifier, collectionId);
         allMetadata.push(...metadataItems);
-    });
+    }
 
     await updateItems(allMetadata);
 

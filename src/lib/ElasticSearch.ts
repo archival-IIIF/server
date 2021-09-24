@@ -1,6 +1,6 @@
 import config from './Config';
 import logger from './Logger';
-import {Client, ApiResponse} from '@elastic/elasticsearch';
+import {Client} from '@elastic/elasticsearch';
 
 let testClient: Client | null = null;
 const client = (config.elasticSearchUser && config.elasticSearchPassword)
@@ -23,53 +23,6 @@ export function setElasticSearchClient(client: Client): void {
     if (config.env === 'test')
         testClient = client;
 }
-
-export async function search<T>(index: string, q: string, sort?: string): Promise<T[]> {
-    const results: T[] = [];
-
-    try {
-        const response: SearchResponse<T> = await getClient().search({
-            index,
-            sort,
-            size: 1000,
-            scroll: '10s',
-            q
-        });
-
-        let {_scroll_id, hits} = response.body;
-        while (hits && hits.hits.length) {
-            results.push(...hits.hits.map(hit => hit._source));
-
-            if (_scroll_id) {
-                const scrollResults: SearchResponse<T> = await getClient().scroll({
-                    scroll_id: _scroll_id,
-                    scroll: '10s'
-                });
-
-                _scroll_id = scrollResults.body._scroll_id;
-                hits = scrollResults.body.hits;
-            }
-            else {
-                hits.hits = [];
-            }
-        }
-
-        return results;
-    }
-    catch (err) {
-        return results;
-    }
-}
-
-export type SearchResponse<T> = ApiResponse<{
-    _scroll_id: string;
-    hits: {
-        total: number;
-        hits: {
-            _source: T;
-        }[];
-    };
-}>;
 
 (async function setMapping() {
     if (config.env === 'test')

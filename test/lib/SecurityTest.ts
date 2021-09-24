@@ -32,7 +32,7 @@ describe('Security', () => {
         request: {body: {}},
         headers: {},
         cookies: {get: (name: string) => accessId}
-    };
+    } as Context;
 
     const openItem = createItem({id: 'open', collection_id: 'test', label: 'Open item'});
     const tieredItem = createItem({id: 'tiered', collection_id: 'test', label: 'Tiered item'});
@@ -168,7 +168,7 @@ describe('Security', () => {
 
         it('should return true if the request query contains a valid access token', () => {
             const ctx = {...defaultCtx, query: {access_token: adminAccessToken}};
-            const hasAccess = hasAdminAccess(ctx as Context);
+            const hasAccess = hasAdminAccess(ctx);
             expect(hasAccess).to.be.true;
         });
 

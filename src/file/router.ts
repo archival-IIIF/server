@@ -29,7 +29,7 @@ router.use(async (ctx, next) => {
     if (bytes !== 'bytes' || !ranges || ranges.includes(','))
         throw new HttpError(416, 'Range Not Satisfiable');
 
-    let [start, end] = ranges.split('-');
+    let [start, end]: (string | number)[] = ranges.split('-');
     start = Number(start);
     end = (end !== '') ? Number(end) : Infinity;
 
@@ -72,10 +72,10 @@ router.get('/:id/:type(original|access)?', async ctx => {
     if (ctx.params.type && !['original', 'access'].includes(ctx.params.type))
         throw new HttpError(400, 'You can only request an original or an access copy!');
 
-    if (ctx.params.type && !hasType(item, ctx.params.type))
+    if (ctx.params.type && !hasType(item, ctx.params.type as 'original' | 'access'))
         throw new HttpError(400, `There is no ${ctx.params.type} copy for file with id ${ctx.params.id}`);
 
-    const type = ctx.params.type || getAvailableType(item);
+    const type = (ctx.params.type || getAvailableType(item)) as 'original' | 'access';
     const fullPath = getFullPath(item, type);
     if (!fullPath)
         throw new HttpError(404, `No file found for id ${ctx.params.id} and type ${type}`);
@@ -102,7 +102,7 @@ router.get('/:id/:type(original|access)?', async ctx => {
 router.get('/:id/:derivative', async ctx => {
     logger.info(`Received a request for a file derivative with id ${ctx.params.id} of type ${ctx.params.derivative}`);
 
-    if (!derivatives.hasOwnProperty(ctx.params.derivative))
+    if (!(ctx.params.derivative in derivatives))
         throw new HttpError(404, `No derivative of type ${ctx.params.derivative}`);
 
     const info = derivatives[ctx.params.derivative];

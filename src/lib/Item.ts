@@ -3,7 +3,7 @@ import logger from './Logger';
 import config from './Config';
 import {DerivativeType} from './Derivative';
 import {Item, MinimalItem} from './ItemInterfaces';
-import getClient, {search} from './ElasticSearch';
+import getClient from './ElasticSearch';
 
 export function createItem(obj: MinimalItem): Item {
     return {
@@ -115,12 +115,14 @@ export async function getChildItems(item: Item): Promise<Item[]> {
     if (item._childItems === undefined) {
         const items = await getItems(`parent_id:"${item.id}"`);
         items.sort((cA, cB) =>
-            (cA.order !== null && cB.order !== null && cA.order < cB.order) ? -1 : 1)
-            .forEach(childItem => {
-                childItem._parentItem = item;
-                if (item.id === item.collection_id && item.id === childItem.collection_id)
-                    childItem._rootItem = item;
-            });
+            (cA.order !== null && cB.order !== null && cA.order < cB.order) ? -1 : 1);
+
+        for (const childItem of items) {
+            childItem._parentItem = item;
+            if (item.id === item.collection_id && item.id === childItem.collection_id)
+                childItem._rootItem = item;
+        }
+
         item._childItems = items;
     }
 
@@ -164,7 +166,14 @@ export async function getAllRootItems(): Promise<Item[]> {
 
 async function getItems(q: string): Promise<Item[]> {
     logger.debug(`Obtain items from ElasticSearch with query "${q}"`);
-    return search<Item>('items', q, 'label:asc');
+
+    const items = [];
+    const scrollItems = getClient().helpers.scrollDocuments<Item>({index: 'items', sort: 'label:asc', q});
+
+    for await (const item of scrollItems)
+        items.push(item);
+
+    return items;
 }
 
 export function getFullPath(item: Item, type: 'access' | 'original' | null = null): string {

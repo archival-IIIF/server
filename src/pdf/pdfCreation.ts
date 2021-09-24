@@ -14,8 +14,11 @@ export default async function createPDF(rootItem: RootItem, items: ImageItem[], 
     config.attribution && document.setProducer(config.attribution);
     config.attribution && document.setCreator(config.attribution);
 
-    const pages = await Promise.all(items.map(item => createPdfPage(document, item, tier)));
-    pages.forEach(page => page && document.addPage(page));
+    for (const item of items) {
+        const page = await createPdfPage(document, item, tier);
+        if (page)
+            document.addPage(page);
+    }
 
     const docBytes = await document.save();
 

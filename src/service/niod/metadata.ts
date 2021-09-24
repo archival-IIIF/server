@@ -24,7 +24,7 @@ export default async function processMetadata({oaiIdentifier, rootId, collection
         else if (collectionId)
             await updateWithRootId(NIOD.getRootId(collectionId));
     }
-    catch (e) {
+    catch (e: any) {
         const err = new Error(`Failed to process the metadata for ${collectionId}: ${e.message}`);
         err.stack = e.stack;
         throw err;

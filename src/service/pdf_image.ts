@@ -13,7 +13,7 @@ export default async function processPDFItems({collectionId}: DerivativeParams):
                     `gs -dBATCH -dNOPAUSE -sDEVICE=jpeg -dJPEGQ=97 -r200 -sOutputFile=${output} ${input}`);
         }
     }
-    catch (e) {
+    catch (e: any) {
         const err = new Error(`Failed to process the pdf items for ${collectionId}: ${e.message}`);
         err.stack = e.stack;
         throw err;

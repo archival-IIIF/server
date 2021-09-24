@@ -35,7 +35,7 @@ export async function getInfo(item: Item, derivative: DerivativeType | null,
 
     if (access.state !== AccessState.OPEN) {
         const authTexts = await getAuthTexts(item);
-        getEnabledAuthServices().forEach(type => {
+        for (const type of getEnabledAuthServices()) {
             // TODO: For now only login for 'ARCH00293' and 'ARCH00393'
             if (type !== 'login' ||
                 item.collection_id.startsWith('ARCH00293') || item.collection_id.startsWith('ARCH00393')) {
@@ -43,7 +43,7 @@ export async function getInfo(item: Item, derivative: DerivativeType | null,
                 if (service !== null)
                     imageInfo.setService(service);
             }
-        });
+        }
     }
 
     if (derivative?.imageTier)

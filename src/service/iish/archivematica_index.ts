@@ -68,7 +68,7 @@ export default async function processDip({collectionPath}: IndexParams): Promise
         runTask<DerivativeParams>('pdf-image', {collectionId: rootItem.id});
         runTask<DerivativeParams>('video-image', {collectionId: rootItem.id});
     }
-    catch (e) {
+    catch (e: any) {
         const err = new Error(`Failed to index the collection ${collectionPath}: ${e.message}`);
         err.stack = e.stack;
         throw err;
@@ -148,8 +148,7 @@ function walkTree({id, mets, objects, relativeRootPath, curNode, curNodePhysical
     let items: Item[] = [];
     let texts: TextItem[] = [];
 
-    const nodes = curNode.find<Element>('./mets:div', ns);
-    nodes.forEach(node => {
+    for (const node of curNode.find<Element>('./mets:div', ns)) {
         const labelAttr = node.attr('LABEL');
         const label = labelAttr ? labelAttr.value() : null;
         if (!label)
@@ -188,7 +187,7 @@ function walkTree({id, mets, objects, relativeRootPath, curNode, curNodePhysical
             if (textInfo)
                 texts.push(textInfo);
         }
-    });
+    }
 
     return [items, texts];
 }
@@ -305,7 +304,7 @@ function readFile(rootId: string, label: string, mets: Document, objects: string
         },
         'access': {
             'uri': !isOriginal ? path.join(relativeRootPath, file) : null,
-            'puid': (!isOriginal && pronomByExtension.hasOwnProperty(extension))
+            'puid': (!isOriginal && extension in pronomByExtension)
                 ? pronomByExtension[extension] : null
         }
     } as FileItem);
@@ -513,12 +512,12 @@ export function determineDuration(objCharacteristicsExt: Element): number | null
     }
 
     let duration: number | null = null;
-    objCharacteristicsExt.find<Element>('./ffprobe/streams/stream', ns).forEach(stream => {
+    for (const stream of objCharacteristicsExt.find<Element>('./ffprobe/streams/stream', ns)) {
         const durationAttr = stream.attr('duration');
         const curDuration = durationAttr ? Number.parseFloat(durationAttr.value()) : null;
         if (curDuration && (duration === null || curDuration > duration))
             duration = curDuration;
-    });
+    }
     if (duration) return duration;
 
     return null;

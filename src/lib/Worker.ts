@@ -109,11 +109,13 @@ export async function gracefulShutdown<A>(type: string, tasksInProgress: string[
             const nameProgressList = 'tasks:' + type + ':progress';
 
             let multi: any = client.multi().rpush(nameQueue, ...tasksInProgress);
-            tasksInProgress.forEach(task => multi = multi.lrem(nameProgressList, 1, task));
-            tasksInProgress.forEach(task => {
+
+            for (const task of tasksInProgress) {
+                multi = multi.lrem(nameProgressList, 1, task);
+
                 const taskParsed = JSON.parse(task) as RedisMessage<A>;
                 multi = multi.del(nameQueue + ':' + taskParsed.identifier);
-            });
+            }
 
             await multi.exec();
         }

@@ -26,12 +26,12 @@ describe('Pronom', () => {
             }
         };
 
-        Object.keys(pronomInfoObjects).forEach(puid => {
+        for (const puid of Object.keys(pronomInfoObjects)) {
             it(`should return the correct info for ${puid}`, () => {
                 const pronomInfo = getPronomInfo(puid);
                 expect(pronomInfo).to.deep.equal(pronomInfoObjects[puid]);
             });
-        });
+        }
 
         it('should return false for invalid puids', () => {
             expect(getPronomInfo('')).to.equal(null);

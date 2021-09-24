@@ -17,7 +17,7 @@ export default async function processVideoItems({collectionId}: DerivativeParams
             await createMosaic(item as VideoItem);
         }
     }
-    catch (e) {
+    catch (e: any) {
         const err = new Error(`Failed to process the pdf items for ${collectionId}: ${e.message}`);
         err.stack = e.stack;
         throw err;

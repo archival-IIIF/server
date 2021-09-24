@@ -15,6 +15,8 @@ import {AccessParams, AuthTextsParams} from './Service';
 
 import {AccessTier} from '../builder/elem/v2/Image';
 
+type AccessTokenBody = Record<'access_token', string | undefined>;
+
 export type Access =
     { state: AccessState.OPEN | AccessState.CLOSED, tier?: undefined } |
     { state: AccessState.TIERED, tier: AccessTier };
@@ -77,14 +79,19 @@ export async function hasAccess(ctx: Context, item: Item, acceptToken = false): 
 }
 
 export function hasAdminAccess(ctx: Context): boolean {
-    if (ctx.request.body.access_token && (ctx.request.body.access_token.toLowerCase() === config.accessToken))
+    if ((ctx.request.body as AccessTokenBody).access_token?.toLowerCase() === config.accessToken)
         return true;
 
-    if (ctx.query.access_token && (ctx.query.access_token.toLowerCase() === config.accessToken))
-        return true;
+    if (ctx.query.access_token) {
+        if (Array.isArray(ctx.query.access_token)) {
+            if (ctx.query.access_token.length > 0 && ctx.query.access_token[0].toLowerCase() === config.accessToken)
+                return true;
+        }
+        else if (ctx.query.access_token.toLowerCase() === config.accessToken)
+            return true;
+    }
 
-    return (ctx.headers.hasOwnProperty('authorization')
-        && (ctx.headers.authorization.replace('Bearer', '').trim().toLowerCase() === config.accessToken));
+    return ctx.headers.authorization?.replace('Bearer', '').trim().toLowerCase() === config.accessToken;
 }
 
 export function getIpAddress(ctx: Context): string {
@@ -196,7 +203,7 @@ async function getAccessIdForAccessToken(accessToken: string): Promise<string | 
 }
 
 export async function getAccessIdFromRequest(ctx: Context, acceptToken = false): Promise<string | null> {
-    if (acceptToken && ctx.headers.hasOwnProperty('authorization')) {
+    if (acceptToken && 'authorization' in ctx.headers && ctx.headers.authorization) {
         logger.debug('Found token in header for current request');
 
         const accessToken = ctx.headers.authorization.replace('Bearer', '').trim();

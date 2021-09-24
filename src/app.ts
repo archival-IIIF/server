@@ -1,6 +1,7 @@
 import config from './lib/Config';
 import logger from './lib/Logger';
 import {servicesRunning, ArgService, StandaloneService, CronService} from './lib/Service';
+import HttpError from './lib/HttpError';
 
 servicesRunning.forEach(function initService(service) {
     switch (service.runAs) {
@@ -51,7 +52,7 @@ async function startWeb() {
         try {
             await next();
         }
-        catch (err) {
+        catch (err: any) {
             ctx.status = err.status || 500;
             ctx.body = (err.status && err.status < 500) ? err.message : 'Internal Server Error';
 

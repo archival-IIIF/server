@@ -3,11 +3,11 @@ import {evictCache} from '../lib/Cache';
 import {Item} from '../lib/ItemInterfaces';
 import {createItem, indexItems, deleteItems} from '../lib/Item';
 
-export default async function indexCollection(collection: { id: string; name: string, items: Item[] }): Promise<void> {
-    if (!collection.hasOwnProperty('id'))
+export default async function indexCollection(collection: { id?: string; name?: string, items?: Item[] }): Promise<void> {
+    if (!('id' in collection) || !collection.id)
         throw new HttpError(400, 'ID missing');
 
-    if (!collection.hasOwnProperty('items'))
+    if (!('items' in collection) || !collection.items)
         throw new HttpError(400, 'Items missing');
 
     await deleteItems(collection.id);
@@ -18,7 +18,7 @@ export default async function indexCollection(collection: { id: string; name: st
         'id': collection.id,
         'collection_id': collection.id,
         'type': 'folder',
-        'label': collection.name,
+        'label': collection.name || collection.id,
     })];
     items.concat(...collection.items.map(item => createItem(item)));
 

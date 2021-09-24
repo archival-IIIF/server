@@ -103,11 +103,11 @@ export async function getReference(item: Item): Promise<Collection | Manifest> {
 async function setAuthenticationServices(item: Item, base: Base): Promise<void> {
     if (await requiresAuthentication(item)) {
         const authTexts = await getAuthTexts(item);
-        getEnabledAuthServices().forEach(type => {
+        for (const type of getEnabledAuthServices()) {
             const service = AuthService.getAuthenticationService(authUri, authTexts, type);
             if (service)
                 base.setService(service);
-        });
+        }
     }
 }
 

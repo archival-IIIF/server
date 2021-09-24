@@ -16,7 +16,7 @@ const ns = {'p': 'http://www.nationalarchives.gov.uk/pronom/SignatureFile'};
 const druid = parseXml(fs.readFileSync(path.join(__dirname, 'DROID_SignatureFile.xml'), 'utf8'));
 
 export default function getPronomInfo(puid: string): PronomInfo | null {
-    if (cache.hasOwnProperty(puid) && cache[puid] !== null)
+    if (puid in cache && cache[puid] !== null)
         return cache[puid];
 
     logger.debug(`Searching for PRONOM information by PUID ${puid}`);
@@ -43,11 +43,11 @@ export default function getPronomInfo(puid: string): PronomInfo | null {
         const mimes = mimeType ? mimeType.value().split(',') : [];
 
         let mime: string | null = null;
-        mimes.forEach(curMime => {
+        for (let curMime of mimes) {
             curMime = curMime.trim();
             if (!mime || (curMime.indexOf('application') !== 0))
                 mime = curMime;
-        });
+        }
 
         if (mime === null)
             mime = 'application/octet-stream';

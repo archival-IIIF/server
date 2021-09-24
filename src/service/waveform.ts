@@ -12,7 +12,7 @@ export default async function processAudioItems({collectionId}: DerivativeParams
                 (input, output) => `audiowaveform -i ${input} -o ${output} -z 256 -b 8`);
         }
     }
-    catch (e) {
+    catch (e: any) {
         const err = new Error(`Failed to process the audio items for ${collectionId}: ${e.message}`);
         err.stack = e.stack;
         throw err;
