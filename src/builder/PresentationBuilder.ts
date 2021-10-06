@@ -4,12 +4,12 @@ import * as DigitalBorn from './DigitalBorn';
 import * as ImageFunctions from './Image';
 
 import {Access} from '../lib/Security';
-import {FileItem, FolderItem, ImageItem, Item, MetadataItem, RootItem} from '../lib/ItemInterfaces';
-
-import Collection from './elem/v3/Collection';
-import Manifest from './elem/v3/Manifest';
-import Image, {ImageProfile} from './elem/v2/Image';
 import {DerivativeType} from '../lib/Derivative';
+import {FileItem, FolderItem, Item, MetadataItem, RootItem} from '../lib/ItemInterfaces';
+
+import Manifest from '@archival-iiif/presentation-builder/dist/v3/Manifest';
+import Collection from '@archival-iiif/presentation-builder/dist/v3/Collection';
+import Image, {ImageProfile} from '@archival-iiif/presentation-builder/dist/v2/Image';
 
 export interface PresentationBuilder {
     isCollection: (item: Item | null) => boolean;

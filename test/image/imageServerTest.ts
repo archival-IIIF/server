@@ -7,7 +7,7 @@ import {createItem} from '../../src/lib/Item';
 import {ImageItem} from '../../src/lib/ItemInterfaces';
 
 import {getImage} from '../../src/image/imageServer';
-import {AccessTier} from '../../src/builder/elem/v2/Image';
+import {AccessTier} from '@archival-iiif/presentation-builder/dist/v2/Image';
 
 describe('imageServer', () => {
     const item = createItem({

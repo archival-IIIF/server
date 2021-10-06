@@ -1,8 +1,10 @@
 import Router from '@koa/router';
+import {DefaultState} from 'koa';
 
 import logger from '../lib/Logger';
 import config from '../lib/Config';
 import HttpError from '../lib/HttpError';
+import {ExtendedContext} from '../lib/Koa';
 import {getVolatileClient} from '../lib/Redis';
 import {ImageItem, RootItem} from '../lib/ItemInterfaces';
 import {getChildItems, getItem} from '../lib/Item';
@@ -10,7 +12,7 @@ import {AccessState, hasAccess, getIpAddress, hasAdminAccess} from '../lib/Secur
 
 import createPDF from './pdfCreation';
 
-const router = new Router({prefix: '/pdf'});
+export const router = new Router<DefaultState, ExtendedContext>({prefix: '/pdf'});
 
 router.get('/:id', async ctx => {
     logger.info(`Received a request for a pdf with id ${ctx.params.id}`);
@@ -64,4 +66,3 @@ router.get('/:id', async ctx => {
     logger.info(`Sending a pdf with id ${ctx.params.id}`);
 });
 
-export default router;

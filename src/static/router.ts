@@ -3,12 +3,14 @@ import {createReadStream} from 'fs';
 
 import Router from '@koa/router';
 import send from 'koa-send';
+import {DefaultState} from 'koa';
 
 import config from '../lib/Config';
 import HttpError from '../lib/HttpError';
+import {ExtendedContext} from '../lib/Koa';
 import {fileIconsPath} from '../lib/FileIcon';
 
-const router = new Router();
+export const router = new Router<DefaultState, ExtendedContext>();
 
 router.use(async (ctx, next) => {
     try {
@@ -63,5 +65,3 @@ if (config.universalViewerPath) {
         await send(ctx, ctx.params.path, {root: config.universalViewerPath});
     });
 }
-
-export default router;

@@ -20,11 +20,11 @@ import {
 import {PresentationBuilder} from './PresentationBuilder';
 import {accessUri, authUri, iconUri, originalUri} from './UriHelper';
 
-import Base, {Ref} from './elem/v3/Base';
-import Manifest from './elem/v3/Manifest';
-import Collection from './elem/v3/Collection';
-import Resource from './elem/v3/Resource';
-import AuthService from './elem/v3/AuthService';
+import Base from '@archival-iiif/presentation-builder/dist/v3/Base';
+import Manifest from '@archival-iiif/presentation-builder/dist/v3/Manifest';
+import Resource from '@archival-iiif/presentation-builder/dist/v3/Resource';
+import Collection from '@archival-iiif/presentation-builder/dist/v3/Collection';
+import AuthService from '@archival-iiif/presentation-builder/dist/v3/AuthService';
 
 const defaultFileIcon = 'blank';
 const defaultFolderIcon = 'folder';
@@ -39,7 +39,7 @@ export async function getCollection(item: FolderItem, access: Access, builder: P
     if (access.state !== AccessState.CLOSED) {
         const children = await getChildItems(item);
         collection.setItems(await Promise.all(children.map(async child =>
-            await builder.getReference(child) as Ref)));
+            await builder.getReference(child) as Collection | Manifest)));
     }
     else {
         await setAuthenticationServices(item, collection);

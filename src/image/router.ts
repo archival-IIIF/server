@@ -1,7 +1,7 @@
 import {existsSync} from 'fs';
 
 import Router from '@koa/router';
-import {Context, ParameterizedContext} from 'koa';
+import {Context, DefaultState, ParameterizedContext} from 'koa';
 
 import parseSize from './sizeParser';
 import {getImage, getLogo, getAudio, getProfile, ImageOptions} from './imageServer';
@@ -10,18 +10,19 @@ import logger from '../lib/Logger';
 import config from '../lib/Config';
 import {cache} from '../lib/Cache';
 import HttpError from '../lib/HttpError';
+import {ExtendedContext} from '../lib/Koa';
 import {ImageItem, Item} from '../lib/ItemInterfaces';
 import derivatives, {DerivativeType} from '../lib/Derivative';
 import {Access, AccessState, hasAccess} from '../lib/Security';
 import {determineItem, getFullDerivativePath} from '../lib/Item';
 
-import Image from '../builder/elem/v2/Image';
+import Image from '@archival-iiif/presentation-builder/dist/v2/Image';
 import {getImageInfo, getLogoInfo, getAudioInfo} from '../builder/PresentationBuilder';
 
-type ImageContext = ParameterizedContext<ImageOptions>;
+type ImageContext = ParameterizedContext<DefaultState, ExtendedContext & ImageOptions>;
 
 const prefix = '/iiif/image';
-export const router = new Router({prefix});
+export const router = new Router<DefaultState, ExtendedContext>({prefix});
 
 router.get('/:id', ctx => {
     ctx.status = 303;
@@ -195,5 +196,3 @@ function setContentType(ctx: Context): void {
             ctx.set('Content-Type', 'application/ld+json;profile="http://iiif.io/api/image/2/context.json"');
     }
 }
-
-export default router;

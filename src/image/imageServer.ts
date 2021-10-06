@@ -7,7 +7,7 @@ import {Item} from '../lib/ItemInterfaces';
 import {DerivativeType} from '../lib/Derivative';
 import {getRelativePath, getRelativeDerivativePath} from '../lib/Item';
 
-import {ImageProfile} from '../builder/elem/v2/Image';
+import {ImageProfile} from '@archival-iiif/presentation-builder/dist/v2/Image';
 
 export interface Size {
     width: number;

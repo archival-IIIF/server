@@ -3,8 +3,7 @@ import {Item, RootItem, FileItem} from '../lib/ItemInterfaces';
 
 import {createMinimalManifest, createManifest, createCanvas, addThumbnail, addMetadata} from './PresentationUtils';
 
-import Base from './elem/v3/Base';
-import Manifest from './elem/v3/Manifest';
+import Manifest from '@archival-iiif/presentation-builder/dist/v3/Manifest';
 
 export async function getManifest(parentItem: RootItem): Promise<Manifest> {
     const manifest = await createManifest(parentItem);
@@ -30,11 +29,11 @@ export async function getReference(item: RootItem): Promise<Manifest> {
     return createMinimalManifest(item);
 }
 
-function addBehavior(base: Base, item: Item, hasMultipleItems = true): void {
-    base.setViewingDirection('left-to-right');
+function addBehavior(manifest: Manifest, item: Item, hasMultipleItems = true): void {
+    manifest.setViewingDirection('left-to-right');
 
     if (hasMultipleItems && item.formats.includes('book'))
-        base.setBehavior('paged');
+        manifest.setBehavior('paged');
     else
-        base.setBehavior('individuals');
+        manifest.setBehavior('individuals');
 }

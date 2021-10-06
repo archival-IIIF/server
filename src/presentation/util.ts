@@ -1,7 +1,7 @@
 import {Context} from 'koa';
 
-import Manifest from '../builder/elem/v3/Manifest';
-import Collection from '../builder/elem/v3/Collection';
+import Manifest from '@archival-iiif/presentation-builder/dist/v3/Manifest';
+import Collection from '@archival-iiif/presentation-builder/dist/v3/Collection';
 
 export function setContent(ctx: Context, jsonDoc: Manifest | Collection | null): void {
     if (jsonDoc === null)

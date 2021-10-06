@@ -43,7 +43,7 @@ export async function workerStatus(): Promise<{ [type: string]: WorkerStatus }> 
     }, {});
 }
 
-export default async function onTask<A, R>(type: string, process: (args: A) => Promise<R>): Promise<void> {
+export async function onTask<A, R>(type: string, process: (args: A) => Promise<R>): Promise<void> {
     const client = getPersistentClient();
     const blockingClient = createNewPersistentClient();
     const tasksInProgress: string[] = [];

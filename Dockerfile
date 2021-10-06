@@ -1,4 +1,4 @@
-FROM node:14.15.0-alpine AS builder
+FROM node:14-alpine AS builder
 
 # Install global NPM tooling
 RUN npm install typescript -g
@@ -15,7 +15,7 @@ RUN npm install --production
 RUN tsc
 
 # Create the actual image
-FROM node:14.15.0-alpine
+FROM node:14-alpine
 
 # Install tooling
 RUN apk add --no-cache ghostscript ffmpeg

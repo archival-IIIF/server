@@ -1,7 +1,10 @@
+import {DefaultState} from 'koa';
+
 import config from './lib/Config';
 import logger from './lib/Logger';
+
+import {extendContext, ExtendedContext} from './lib/Koa';
 import {servicesRunning, ArgService, StandaloneService, CronService} from './lib/Service';
-import HttpError from './lib/HttpError';
 
 servicesRunning.forEach(function initService(service) {
     switch (service.runAs) {
@@ -28,15 +31,15 @@ async function startWeb() {
     const {default: bodyParser} = await import('koa-bodyparser');
     const {default: compress} = await import('koa-compress');
 
-    const {default: iiifImageRouter} = await import('./image/router');
-    const {default: iiifPresentationRouter} = await import('./presentation/router');
-    const {default: iiifAuthRouter} = await import('./authentication/router');
-    const {default: fileRouter} = await import('./file/router');
-    const {default: pdfRouter} = await import('./pdf/router');
-    const {default: adminRouter} = await import('./admin/router');
-    const {default: staticRouter} = await import('./static/router');
+    const {router: iiifImageRouter} = await import('./image/router');
+    const {router: iiifPresentationRouter} = await import('./presentation/router');
+    const {router: iiifAuthRouter} = await import('./authentication/router');
+    const {router: fileRouter} = await import('./file/router');
+    const {router: pdfRouter} = await import('./pdf/router');
+    const {router: adminRouter} = await import('./admin/router');
+    const {router: staticRouter} = await import('./static/router');
 
-    const app = new Koa();
+    const app = new Koa<DefaultState, ExtendedContext>();
 
     app.use(async (ctx, next) => {
         ctx.set('Access-Control-Allow-Origin', '*');
@@ -46,6 +49,11 @@ async function startWeb() {
             ctx.status = 204;
         else
             await next();
+    });
+
+    app.use(async (ctx, next) => {
+        extendContext(ctx);
+        await next();
     });
 
     app.use(async (ctx, next) => {
@@ -99,7 +107,7 @@ function startStandalone(service: StandaloneService) {
 }
 
 async function startWorker(service: ArgService) {
-    const {default: onTask} = await import('./lib/Worker');
+    const {onTask} = await import('./lib/Worker');
     onTask(service.type, service.getService());
     logger.info(`Worker initialized for ${service.name}`);
 }

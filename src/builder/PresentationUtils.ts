@@ -11,15 +11,15 @@ import {getFullDerivativePath, getItem} from '../lib/Item';
 import {Item, FileItem, ImageItem, RootItem} from '../lib/ItemInterfaces';
 import {getAuthTexts, getEnabledAuthServices, requiresAuthentication} from '../lib/Security';
 
-import Base from './elem/v3/Base';
-import Manifest from './elem/v3/Manifest';
-import Collection from './elem/v3/Collection';
-import Canvas from './elem/v3/Canvas';
-import Resource from './elem/v3/Resource';
-import Service from './elem/v3/Service';
-import Annotation from './elem/v3/Annotation';
-import AnnotationPage from './elem/v3/AnnotationPage';
-import AuthService from './elem/v3/AuthService';
+import Base from '@archival-iiif/presentation-builder/dist/v3/Base';
+import Manifest from '@archival-iiif/presentation-builder/dist/v3/Manifest';
+import Collection from '@archival-iiif/presentation-builder/dist/v3/Collection';
+import AuthService from '@archival-iiif/presentation-builder/dist/v3/AuthService';
+import Canvas from '@archival-iiif/presentation-builder/dist/v3/Canvas';
+import Resource from '@archival-iiif/presentation-builder/dist/v3/Resource';
+import Service from '@archival-iiif/presentation-builder/dist/v3/Service';
+import Annotation from '@archival-iiif/presentation-builder/dist/v3/Annotation';
+import AnnotationPage from '@archival-iiif/presentation-builder/dist/v3/AnnotationPage';
 
 import {
     annoPageUri,
@@ -78,7 +78,8 @@ export async function getResource(item: FileItem, setAuth: boolean = false): Pro
     const originalPronomData = item.original.puid ? getPronomInfo(item.original.puid) : null;
     const defaultMime = accessPronomData ? accessPronomData.mime : (originalPronomData as PronomInfo).mime;
 
-    const resource = new Resource(fileUri(item.id), getType(item.type), defaultMime, item.width, item.height, item.duration);
+    const resource = Resource.createResource(fileUri(item.id), getType(item.type), defaultMime,
+        item.width, item.height, item.duration);
     setAuth && await setAuthServices(resource, item);
 
     return resource;
@@ -156,7 +157,9 @@ async function getImageResource(item: RootItem | FileItem, size = 'max', setAuth
     const width = (size === 'full' || size === 'max') ? item.width : null;
     const height = (size === 'full' || size === 'max') ? item.height : null;
 
-    const resource = new Resource(imageResourceUri(item.id, undefined, {size}), 'Image', 'image/jpeg', width, height);
+    const resource = Resource.createResource(
+        imageResourceUri(item.id, undefined, {size}),
+        'Image', 'image/jpeg', width, height);
     const service = new Service(imageUri(item.id), Service.IMAGE_SERVICE_2, 'http://iiif.io/api/image/2/level2.json');
 
     resource.setService(service);
@@ -170,7 +173,8 @@ function getLogo(size = 'max'): Resource {
     width = (size === 'full' || size === 'max') ? width : null;
     height = (size === 'full' || size === 'max') ? height : null;
 
-    const resource = new Resource(imageResourceUri('logo', undefined, {size, format: 'png'}),
+    const resource = Resource.createResource(
+        imageResourceUri('logo', undefined, {size, format: 'png'}),
         'Image', 'image/png', width, height);
     const service = new Service(imageUri('logo'), Service.IMAGE_SERVICE_2, 'http://iiif.io/api/image/2/level2.json');
 
@@ -179,14 +183,14 @@ function getLogo(size = 'max'): Resource {
     return resource;
 }
 
-function addDefaults(manifest: Manifest): void {
-    manifest.setContext();
+function addDefaults(base: Base): void {
+    base.setContext();
 
     if (config.logoRelativePath)
-        manifest.setLogo(getLogo());
+        base.setLogo(getLogo());
 
     if (config.attribution)
-        manifest.setAttribution(config.attribution);
+        base.setAttribution(config.attribution);
 }
 
 function addDerivatives(annotation: Annotation, item: Item): void {

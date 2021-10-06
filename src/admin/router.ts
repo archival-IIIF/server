@@ -1,17 +1,18 @@
 import {existsSync} from 'fs';
+import {DefaultState} from 'koa';
 import Router from '@koa/router';
 
 import HttpError from '../lib/HttpError';
 import {runTask} from '../lib/Task';
 import {workerStatus} from '../lib/Worker';
+import {ExtendedContext} from '../lib/Koa';
 import {hasAdminAccess, getIpAddress} from '../lib/Security';
 import {IndexParams, MetadataParams} from '../lib/Service';
 
 import registerToken from './register_token';
 import indexCollection from './api_index';
-import {Item} from '../lib/ItemInterfaces';
 
-const router = new Router({prefix: '/admin'});
+export const router = new Router<DefaultState, ExtendedContext>({prefix: '/admin'});
 
 router.use(async (ctx, next) => {
     if (!hasAdminAccess(ctx))
@@ -67,5 +68,3 @@ router.post('/register_token', async ctx => {
     const body = ctx.request.body as Record<'token' | 'collection' | 'from' | 'to', string | undefined>;
     ctx.body = await registerToken(body.token, body.collection, body.from, body.to);
 });
-
-export default router;

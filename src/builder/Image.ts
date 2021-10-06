@@ -7,8 +7,8 @@ import {DerivativeType} from '../lib/Derivative';
 import {getFullDerivativePath} from '../lib/Item';
 import {AccessState, getAuthTexts, getDefaultAccess, getEnabledAuthServices} from '../lib/Security';
 
-import AuthService from './elem/v2/AuthService';
-import Image, {AccessTier, ImageProfile} from './elem/v2/Image';
+import AuthService from '@archival-iiif/presentation-builder/dist/v2/AuthService';
+import Image, {AccessTier, ImageProfile} from '@archival-iiif/presentation-builder/dist/v2/Image';
 
 import {authUri, imageUri} from './UriHelper';
 
@@ -31,7 +31,7 @@ export async function getInfo(item: Item, derivative: DerivativeType | null,
 
     const imageInfo = new Image(imageUri(item.id), width, height);
     imageInfo.setContext('http://iiif.io/api/image/2/context.json');
-    imageInfo.setProfile(profile);
+    imageInfo.setImageProfile(profile);
 
     if (access.state !== AccessState.OPEN) {
         const authTexts = await getAuthTexts(item);
@@ -59,7 +59,7 @@ export async function getLogoInfo(profile: ImageProfile): Promise<Image> {
 
     const imageInfo = new Image(imageUri('logo'), width, height);
     imageInfo.setContext('http://iiif.io/api/image/2/context.json');
-    imageInfo.setProfile(profile);
+    imageInfo.setImageProfile(profile);
 
     return imageInfo;
 }
@@ -69,7 +69,7 @@ export async function getAudioInfo(profile: ImageProfile): Promise<Image> {
 
     const imageInfo = new Image(imageUri('audio'), width, height);
     imageInfo.setContext('http://iiif.io/api/image/2/context.json');
-    imageInfo.setProfile(profile);
+    imageInfo.setImageProfile(profile);
 
     return imageInfo;
 }

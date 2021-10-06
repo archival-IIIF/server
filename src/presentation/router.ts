@@ -1,9 +1,11 @@
 import Router from '@koa/router';
+import {DefaultState} from 'koa';
 
 import logger from '../lib/Logger';
 import {cache} from '../lib/Cache';
 import {getItem} from '../lib/Item';
 import HttpError from '../lib/HttpError';
+import {ExtendedContext} from '../lib/Koa';
 import {AccessState, hasAccess} from '../lib/Security';
 
 import {getCollection, getManifest, isCollection, isManifest} from '../builder/PresentationBuilder';
@@ -11,7 +13,7 @@ import {getCollection, getManifest, isCollection, isManifest} from '../builder/P
 import {setContent} from './util';
 import routerTop from './router-top';
 
-const router = new Router({prefix: '/iiif/presentation'});
+export const router = new Router<DefaultState, ExtendedContext>({prefix: '/iiif/presentation'});
 
 router.use(routerTop.routes());
 
@@ -53,5 +55,3 @@ router.get('/:id/manifest', async ctx => {
 
     logger.info(`Sending a IIIF manifest with id ${ctx.params.id}`);
 });
-
-export default router;

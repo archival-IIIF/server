@@ -1,5 +1,5 @@
-import {Context} from 'koa';
 import Router from '@koa/router';
+import {Context, DefaultState} from 'koa';
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -11,12 +11,13 @@ import logger from '../lib/Logger';
 import HttpError from '../lib/HttpError';
 import getPronomInfo from '../lib/Pronom';
 import derivatives from '../lib/Derivative';
+import {ExtendedContext} from '../lib/Koa';
 import {AccessState, hasAccess, hasAdminAccess} from '../lib/Security';
 import {determineItem, getFullPath, getPronom, getAvailableType, hasType, getFullDerivativePath} from '../lib/Item';
 
 const statAsync = promisify(fs.stat);
 
-const router = new Router({prefix: '/file'});
+export const router = new Router<DefaultState, ExtendedContext>({prefix: '/file'});
 
 router.use(async (ctx, next) => {
     ctx.set('Accept-Ranges', 'bytes');
@@ -143,5 +144,3 @@ function setBody(ctx: Context, stat: fs.Stats, fullPath: string) {
     }
     ctx.body = fs.createReadStream(fullPath, options);
 }
-
-export default router;

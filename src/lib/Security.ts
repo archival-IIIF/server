@@ -3,17 +3,17 @@ import {Context} from 'koa';
 import {v4 as uuid} from 'uuid';
 import {inRange} from 'range_check';
 import {WrappedNodeRedisClient} from 'handy-redis';
+import {AccessTier} from '@archival-iiif/presentation-builder/dist/v2/Image';
 
 import config from './Config';
 import logger from './Logger';
 import {Item} from './ItemInterfaces';
+import {ExtendedContext} from './Koa';
 import {runTaskWithResponse} from './Task';
 import {getPersistentClient} from './Redis';
-
-import {AuthTextsByType} from '../service/util/types';
 import {AccessParams, AuthTextsParams} from './Service';
 
-import {AccessTier} from '../builder/elem/v2/Image';
+import {AuthTextsByType} from '../service/util/types';
 
 type AccessTokenBody = Record<'access_token', string | undefined>;
 
@@ -49,7 +49,7 @@ export function getEnabledAuthServices(): ('login' | 'external')[] {
     return enabledAuthServices;
 }
 
-export async function hasAccess(ctx: Context, item: Item, acceptToken = false): Promise<Access> {
+export async function hasAccess(ctx: ExtendedContext, item: Item, acceptToken = false): Promise<Access> {
     if (hasAdminAccess(ctx))
         return {state: AccessState.OPEN};
 
@@ -78,18 +78,13 @@ export async function hasAccess(ctx: Context, item: Item, acceptToken = false): 
     return access;
 }
 
-export function hasAdminAccess(ctx: Context): boolean {
+export function hasAdminAccess(ctx: ExtendedContext): boolean {
     if ((ctx.request.body as AccessTokenBody).access_token?.toLowerCase() === config.accessToken)
         return true;
 
-    if (ctx.query.access_token) {
-        if (Array.isArray(ctx.query.access_token)) {
-            if (ctx.query.access_token.length > 0 && ctx.query.access_token[0].toLowerCase() === config.accessToken)
-                return true;
-        }
-        else if (ctx.query.access_token.toLowerCase() === config.accessToken)
-            return true;
-    }
+    const accessToken = ctx.queryFirst('access_token');
+    if (accessToken && accessToken.toLowerCase() === config.accessToken)
+        return true;
 
     return ctx.headers.authorization?.replace('Bearer', '').trim().toLowerCase() === config.accessToken;
 }

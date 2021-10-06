@@ -1,8 +1,10 @@
-import {createReadStream} from 'fs';
 import * as path from 'path';
+import {DefaultState} from 'koa';
+import {createReadStream} from 'fs';
 import Router from '@koa/router';
 
 import config from '../lib/Config';
+import {ExtendedContext} from '../lib/Koa';
 import {
     checkTokenDb,
     getAccessIdFromRequest,
@@ -18,7 +20,7 @@ type AccessTokenMessage = Message & { accessToken: string, expiresIn: number };
 type ErrorMessage = Message & { error: string, description: string };
 
 const prefix = '/iiif/auth';
-const router = new Router({prefix});
+export const router = new Router<DefaultState, ExtendedContext>({prefix});
 
 router.get('/login', ctx => {
     ctx.type = 'text/html';
@@ -48,13 +50,15 @@ router.get('/token', async ctx => {
         ? {accessToken: token, expiresIn: config.accessTtl}
         : {error: 'missingCredentials', description: 'No access cookie found!'};
 
-    if (ctx.query.messageId && ctx.query.origin) {
-        message.messageId = Array.isArray(ctx.query.messageId) ? ctx.query.messageId[0] : ctx.query.messageId;
+    const messageId = ctx.queryFirst('messageId');
+    const origin = ctx.queryFirst('origin');
+    if (messageId && origin) {
+        message.messageId = messageId;
 
         ctx.body = `<html>
             <body>
             <script>    
-                window.parent.postMessage(${JSON.stringify(message)}, "${ctx.query.origin}");    
+                window.parent.postMessage(${JSON.stringify(message)}, "${origin}");    
             </script>
             </body>
             </html>`;
@@ -69,5 +73,3 @@ router.get('/logout', async ctx => {
     ctx.type = 'text/html';
     ctx.body = createReadStream(path.join(__dirname, 'logout.html'));
 });
-
-export default router;

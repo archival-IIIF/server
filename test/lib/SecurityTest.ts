@@ -13,6 +13,7 @@ import {
     Access, AccessState, getEnabledAuthServices, hasAccess, hasAdminAccess, requiresAuthentication, isIpInRange,
     setAccessIdForIdentity, setAccessTokenForAccessId, getAccessIdFromRequest, removeAccessIdFromRequest
 } from '../../src/lib/Security';
+import {extendContext, ExtendedContext} from '../../src/lib/Koa';
 
 chai.use(sinonChai);
 const expect = chai.expect;
@@ -32,7 +33,8 @@ describe('Security', () => {
         request: {body: {}},
         headers: {},
         cookies: {get: (name: string) => accessId}
-    } as Context;
+    } as ExtendedContext;
+    extendContext(defaultCtx);
 
     const openItem = createItem({id: 'open', collection_id: 'test', label: 'Open item'});
     const tieredItem = createItem({id: 'tiered', collection_id: 'test', label: 'Tiered item'});
@@ -130,25 +132,25 @@ describe('Security', () => {
     describe('#hasAccess()', () => {
         it('should always return open access if the request includes admin rights', async () => {
             const ctx = {...defaultCtx, request: {body: {access_token: adminAccessToken}}};
-            const access = await hasAccess(ctx as Context, closedItem);
+            const access = await hasAccess(ctx as ExtendedContext, closedItem);
             expect(access).to.deep.equal({state: AccessState.OPEN});
         });
 
         it('should return access from service if authentication is enabled for open item', async () => {
             setConfig('loginDisabled', false);
-            const access = await hasAccess(defaultCtx as Context, openItem);
+            const access = await hasAccess(defaultCtx as ExtendedContext, openItem);
             expect(access).to.deep.equal({state: AccessState.OPEN});
         });
 
         it('should return restricted access from service if authentication is enabled for tiered item', async () => {
             setConfig('loginDisabled', false);
-            const access = await hasAccess(defaultCtx as Context, tieredItem);
+            const access = await hasAccess(defaultCtx as ExtendedContext, tieredItem);
             expect(access).to.deep.equal({state: AccessState.TIERED, tier: {name: 'tiered', maxSize: 500}});
         });
 
         it('should return closed access from service if authentication is enabled for closed item', async () => {
             setConfig('loginDisabled', false);
-            const access = await hasAccess(defaultCtx as Context, closedItem);
+            const access = await hasAccess(defaultCtx as ExtendedContext, closedItem);
             expect(access).to.deep.equal({state: AccessState.CLOSED});
         });
     });
@@ -156,13 +158,13 @@ describe('Security', () => {
     describe('#hasAdminAccess()', () => {
         it('should return true if the request body contains a valid access token', () => {
             const ctx = {...defaultCtx, request: {body: {access_token: adminAccessToken}}};
-            const hasAccess = hasAdminAccess(ctx as Context);
+            const hasAccess = hasAdminAccess(ctx as ExtendedContext);
             expect(hasAccess).to.be.true;
         });
 
         it('should return false if the request body does not contain a valid access token', () => {
             const ctx = {...defaultCtx, request: {body: {access_token: 'not-valid'}}};
-            const hasAccess = hasAdminAccess(ctx as Context);
+            const hasAccess = hasAdminAccess(ctx as ExtendedContext);
             expect(hasAccess).to.be.false;
         });
 
@@ -174,24 +176,24 @@ describe('Security', () => {
 
         it('should return false if the request query does not contain a valid access token', () => {
             const ctx = {...defaultCtx, query: {access_token: 'not-valid'}};
-            const hasAccess = hasAdminAccess(ctx as Context);
+            const hasAccess = hasAdminAccess(ctx as ExtendedContext);
             expect(hasAccess).to.be.false;
         });
 
         it('should return true if the request header contains a valid access token', () => {
             const ctx = {...defaultCtx, headers: {authorization: `Bearer ${adminAccessToken}`}};
-            const hasAccess = hasAdminAccess(ctx as Context);
+            const hasAccess = hasAdminAccess(ctx as ExtendedContext);
             expect(hasAccess).to.be.true;
         });
 
         it('should return false if the request header does not contain a valid access token', () => {
             const ctx = {...defaultCtx, headers: {authorization: 'Bearer not-valid'}};
-            const hasAccess = hasAdminAccess(ctx as Context);
+            const hasAccess = hasAdminAccess(ctx as ExtendedContext);
             expect(hasAccess).to.be.false;
         });
 
         it('should return false if the request does not contain an access token', () => {
-            const hasAccess = hasAdminAccess(defaultCtx as Context);
+            const hasAccess = hasAdminAccess(defaultCtx as ExtendedContext);
             expect(hasAccess).to.be.false;
         });
     });
@@ -295,7 +297,7 @@ describe('Security', () => {
                 headers: {}
             };
 
-            const accessIdFromRequest = await getAccessIdFromRequest(ctx as Context);
+            const accessIdFromRequest = await getAccessIdFromRequest(ctx as ExtendedContext);
             expect(accessIdFromRequest).to.be.null;
         });
 
@@ -306,7 +308,7 @@ describe('Security', () => {
                 headers: {}
             };
 
-            const accessIdFromRequest = await getAccessIdFromRequest(ctx as Context);
+            const accessIdFromRequest = await getAccessIdFromRequest(ctx as ExtendedContext);
             expect(accessIdFromRequest).to.equal(accessId);
         });
 
@@ -317,7 +319,7 @@ describe('Security', () => {
                 headers: {authorization: `Bearer access-token-from-header`}
             };
 
-            const accessIdFromRequest = await getAccessIdFromRequest(ctx as Context);
+            const accessIdFromRequest = await getAccessIdFromRequest(ctx as ExtendedContext);
             expect(accessIdFromRequest).to.be.null;
         });
 
@@ -328,7 +330,7 @@ describe('Security', () => {
                 headers: {authorization: `Bearer ${accessToken}`}
             };
 
-            const accessIdFromRequest = await getAccessIdFromRequest(ctx as Context, true);
+            const accessIdFromRequest = await getAccessIdFromRequest(ctx as ExtendedContext, true);
             expect(accessIdFromRequest).to.equal(accessId);
         });
     });
@@ -341,7 +343,7 @@ describe('Security', () => {
                 headers: {}
             };
 
-            await removeAccessIdFromRequest(ctx as Context);
+            await removeAccessIdFromRequest(ctx as ExtendedContext);
             expect(redis.del).to.have.not.been.called;
         });
 
@@ -352,7 +354,7 @@ describe('Security', () => {
                 headers: {}
             };
 
-            await removeAccessIdFromRequest(ctx as Context);
+            await removeAccessIdFromRequest(ctx as ExtendedContext);
 
             expect(redisMulti.del).to.have.been.calledWithExactly(`access-id:${accessId}`);
             expect(redisMulti.del).to.have.been.calledWithExactly(`access-token:${accessToken}`);

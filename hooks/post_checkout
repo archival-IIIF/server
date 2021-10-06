@@ -1,3 +1,0 @@
-#!/bin/bash
-# Make sure that Docker Hub also updates the submodules before the build starts
-git submodule update --init
