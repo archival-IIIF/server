@@ -2,15 +2,13 @@ import sinon from 'sinon';
 import chai from 'chai';
 import sinonChai from 'sinon-chai';
 
-import {Context} from 'koa';
-
 import {createItem} from '../../src/lib/Item';
 import {setRedisClient} from '../../src/lib/Redis';
 import config, {setConfig} from '../../src/lib/Config';
 import {AccessParams, setServicesRunning} from '../../src/lib/Service';
 
 import {
-    Access, AccessState, getEnabledAuthServices, hasAccess, hasAdminAccess, requiresAuthentication, isIpInRange,
+    Access, AccessState, hasAccess, hasAdminAccess, requiresAuthentication, isIpInRange,
     setAccessIdForIdentity, setAccessTokenForAccessId, getAccessIdFromRequest, removeAccessIdFromRequest
 } from '../../src/lib/Security';
 import {extendContext, ExtendedContext} from '../../src/lib/Koa';
@@ -93,40 +91,8 @@ describe('Security', () => {
         sinon.restore();
 
         setConfig('loginDisabled', true);
+        setConfig('externalDisabled', true);
         setConfig('internalIpAddresses', []);
-    });
-
-    describe('#getEnabledAuthServices()', () => {
-        it('should return no enabled services if all is disabled', () => {
-            const enabledAuthServices = getEnabledAuthServices();
-            expect(enabledAuthServices).to.be.empty;
-        });
-
-        it('should return the login service if login is enabled', () => {
-            setConfig('loginDisabled', false);
-            const enabledAuthServices = getEnabledAuthServices();
-
-            expect(enabledAuthServices).to.include('login');
-            expect(enabledAuthServices).to.have.length(1);
-        });
-
-        it('should return the external service if ip checking is enabled', () => {
-            setConfig('internalIpAddresses', ['127.0.0.1']);
-            const enabledAuthServices = getEnabledAuthServices();
-
-            expect(enabledAuthServices).to.include('external');
-            expect(enabledAuthServices).to.have.length(1);
-        });
-
-        it('should return the login and the external service if login and ip checking is enabled', () => {
-            setConfig('loginDisabled', false);
-            setConfig('internalIpAddresses', ['127.0.0.1']);
-            const enabledAuthServices = getEnabledAuthServices();
-
-            expect(enabledAuthServices).to.include('login');
-            expect(enabledAuthServices).to.include('external');
-            expect(enabledAuthServices).to.have.length(2);
-        });
     });
 
     describe('#hasAccess()', () => {

@@ -5,9 +5,8 @@ export interface ExtendedContext extends Context {
 }
 
 export function extendContext(ctx: Context): void {
-    const q = ctx.query;
-    ctx.queryFirst = (param: string): string | undefined => {
-        const content = q[param];
+    ctx.queryFirst = function (param: string): string | undefined {
+        const content = this.query[param];
         return Array.isArray(content) ? content[0] : content;
     };
 }

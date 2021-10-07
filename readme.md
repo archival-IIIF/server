@@ -360,6 +360,7 @@ dynamic PDF creation per IP address (Requires Redis volatile server)
 - `IIIF_SERVER_INTERNAL_IP_ADDRESSES`: If access may be granted based on IP address, 
 provide a comma separated white list of ip addresses (Requires Redis persistent server)
 - `IIIF_SERVER_LOGIN_DISABLED`: Turn login based authentication on/off (Requires Redis persistent server)
+- `IIIF_SERVER_EXTERNAL_DISABLED`: Turn external based authentication on/off (Requires Redis persistent server)
 - `IIIF_SERVER_ELASTICSEARCH_URL`: URL of the ElasticSearch indexer
 - `IIIF_SERVER_ELASTICSEARCH_USER`: Username of the ElasticSearch indexer if authentication is enabled
 - `IIIF_SERVER_ELASTICSEARCH_PASSWORD`: Password of the ElasticSearch indexer if authentication is enabled

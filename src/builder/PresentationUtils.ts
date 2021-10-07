@@ -8,8 +8,8 @@ import {runTaskWithResponse} from '../lib/Task';
 import {IIIFMetadataParams} from '../lib/Service';
 import getPronomInfo, {PronomInfo} from '../lib/Pronom';
 import {getFullDerivativePath, getItem} from '../lib/Item';
-import {Item, FileItem, ImageItem, RootItem} from '../lib/ItemInterfaces';
-import {getAuthTexts, getEnabledAuthServices, requiresAuthentication} from '../lib/Security';
+import {Item, FileItem, ImageItem, RootItem, FolderItem} from '../lib/ItemInterfaces';
+import {getAuthTexts, requiresAuthentication} from '../lib/Security';
 
 import Base from '@archival-iiif/presentation-builder/dist/v3/Base';
 import Manifest from '@archival-iiif/presentation-builder/dist/v3/Manifest';
@@ -140,6 +140,17 @@ export function getType(type: string): string {
     }
 }
 
+export async function setAuthServices(base: Base | Service, item: RootItem | FileItem | FolderItem): Promise<void> {
+    if (await requiresAuthentication(item)) {
+        const authTexts = await getAuthTexts(item);
+        for (const type of ['login', 'external'] as ('login' | 'external')[]) {
+            const service = AuthService.getAuthenticationService(authUri, authTexts, type);
+            if (service)
+                base.setService(service);
+        }
+    }
+}
+
 async function setBaseDefaults(base: Base, item: Item): Promise<void> {
     addDefaults(base);
 
@@ -207,21 +218,6 @@ function addDerivatives(annotation: Annotation, item: Item): void {
                 format: info.contentType,
                 profile: info.profile
             });
-        }
-    }
-}
-
-async function setAuthServices(base: Resource | Service, item: RootItem | FileItem): Promise<void> {
-    if (await requiresAuthentication(item)) {
-        const authTexts = await getAuthTexts(item);
-        for (const type of getEnabledAuthServices()) {
-            // TODO: For now only login for 'ARCH00293' and 'ARCH00393'
-            if (type !== 'login' ||
-                item.collection_id.startsWith('ARCH00293') || item.collection_id.startsWith('ARCH00393')) {
-                const service = AuthService.getAuthenticationService(authUri, authTexts, type);
-                if (service)
-                    base.setService(service);
-            }
         }
     }
 }

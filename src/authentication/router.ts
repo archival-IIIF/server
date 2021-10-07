@@ -29,17 +29,19 @@ router.get('/login', ctx => {
 
 router.post('/login', async ctx => {
     const token = (ctx.request.body as TokenBody).token;
-    if (token) {
-        const tokens = await checkTokenDb([token]);
-        if (tokens.length > 0) {
-            let accessId = await getAccessIdFromRequest(ctx, false);
-            accessId = await setAccessIdForIdentity(token, accessId);
-            ctx.cookies.set('access', accessId, {signed: true, overwrite: true});
-        }
-    }
+    if (token)
+        await setCookieForToken(ctx, token);
 
     ctx.type = 'text/html';
     ctx.body = createReadStream(path.join(__dirname, 'close-window.html'));
+});
+
+router.get('/cookie', async ctx => {
+    const token = ctx.queryFirst('token');
+    if (token)
+        await setCookieForToken(ctx, token);
+
+    ctx.redirect(ctx.queryFirst('redirect') || '/');
 });
 
 router.get('/token', async ctx => {
@@ -73,3 +75,12 @@ router.get('/logout', async ctx => {
     ctx.type = 'text/html';
     ctx.body = createReadStream(path.join(__dirname, 'logout.html'));
 });
+
+async function setCookieForToken(ctx: ExtendedContext, token: string): Promise<void> {
+    const tokens = await checkTokenDb([token]);
+    if (tokens.length > 0) {
+        let accessId = await getAccessIdFromRequest(ctx, false);
+        accessId = await setAccessIdForIdentity(token, accessId);
+        ctx.cookies.set('access', accessId, {signed: true, overwrite: true});
+    }
+}

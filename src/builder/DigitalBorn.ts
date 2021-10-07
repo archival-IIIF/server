@@ -4,8 +4,8 @@ import moment from 'moment';
 import getPronomInfo from '../lib/Pronom';
 import {getChildItems} from '../lib/Item';
 import {iconsByExtension} from '../lib/FileIcon';
+import {Access, AccessState} from '../lib/Security';
 import {Item, FolderItem, FileItem, ImageItem} from '../lib/ItemInterfaces';
-import {Access, AccessState, getEnabledAuthServices, requiresAuthentication, getAuthTexts} from '../lib/Security';
 
 import {
     createMinimalCollection,
@@ -15,16 +15,15 @@ import {
     createCanvas,
     addMetadata,
     addThumbnail,
-    getType
+    getType, setAuthServices
 } from './PresentationUtils';
 import {PresentationBuilder} from './PresentationBuilder';
-import {accessUri, authUri, iconUri, originalUri} from './UriHelper';
+import {accessUri, iconUri, originalUri} from './UriHelper';
 
 import Base from '@archival-iiif/presentation-builder/dist/v3/Base';
 import Manifest from '@archival-iiif/presentation-builder/dist/v3/Manifest';
 import Resource from '@archival-iiif/presentation-builder/dist/v3/Resource';
 import Collection from '@archival-iiif/presentation-builder/dist/v3/Collection';
-import AuthService from '@archival-iiif/presentation-builder/dist/v3/AuthService';
 
 const defaultFileIcon = 'blank';
 const defaultFolderIcon = 'folder';
@@ -42,7 +41,7 @@ export async function getCollection(item: FolderItem, access: Access, builder: P
             await builder.getReference(child) as Collection | Manifest)));
     }
     else {
-        await setAuthenticationServices(item, collection);
+        await setAuthServices(collection, item);
     }
 
     return collection;
@@ -80,7 +79,7 @@ export async function getManifest(item: FileItem, access: Access): Promise<Manif
             });
     }
     else {
-        await setAuthenticationServices(item, manifest);
+        await setAuthServices(manifest, item);
     }
 
     return manifest;
@@ -98,17 +97,6 @@ export async function getReference(item: Item): Promise<Collection | Manifest> {
     await setThumbnail(manifest, item);
 
     return manifest;
-}
-
-async function setAuthenticationServices(item: Item, base: Base): Promise<void> {
-    if (await requiresAuthentication(item)) {
-        const authTexts = await getAuthTexts(item);
-        for (const type of getEnabledAuthServices()) {
-            const service = AuthService.getAuthenticationService(authUri, authTexts, type);
-            if (service)
-                base.setService(service);
-        }
-    }
 }
 
 async function addMetadataDB(base: Base, root: Item): Promise<void> {

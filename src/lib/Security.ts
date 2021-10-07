@@ -28,25 +28,15 @@ export interface Token {
     to: Date | null;
 }
 
-const isLoginEnabled = () => !config.loginDisabled;
-const isExternalEnabled = () => config.internalIpAddresses.length > 0;
-const isAuthenticationEnabled = () => isLoginEnabled() || isExternalEnabled();
+export const isLoginEnabled = () => !config.loginDisabled;
+export const isExternalEnabled = () => !config.externalDisabled;
+export const isIpAccessEnabled = () => config.internalIpAddresses.length > 0;
+export const isAuthenticationEnabled = () => isLoginEnabled() || isExternalEnabled() || isIpAccessEnabled();
 
 export enum AccessState {
     OPEN = 'open',
     CLOSED = 'closed',
     TIERED = 'tiered'
-}
-
-export function getEnabledAuthServices(): ('login' | 'external')[] {
-    const enabledAuthServices: ('login' | 'external')[] = [];
-
-    if (isLoginEnabled())
-        enabledAuthServices.push('login');
-    if (isExternalEnabled())
-        enabledAuthServices.push('external');
-
-    return enabledAuthServices;
 }
 
 export async function hasAccess(ctx: ExtendedContext, item: Item, acceptToken = false): Promise<Access> {
@@ -114,17 +104,20 @@ export async function requiresAuthentication(item: Item): Promise<boolean> {
 }
 
 export async function getAuthTexts(item: Item): Promise<AuthTextsByType> {
-    return await runTaskWithResponse<AuthTextsParams, AuthTextsByType>('auth-texts', {item});
+    return runTaskWithResponse<AuthTextsParams, AuthTextsByType>('auth-texts', {item});
 }
 
 export function isIpInRange(ip: string): boolean {
-    return isExternalEnabled() ? inRange(ip, config.internalIpAddresses) : true;
+    return isIpAccessEnabled() ? inRange(ip, config.internalIpAddresses) : true;
 }
 
 export async function hasToken(item: Item, identities: string[]): Promise<boolean> {
-    const tokensInfo = await checkTokenDb(identities);
-    const tokenInfo = tokensInfo.find(tokenInfo => tokenInfo.collection_ids.includes(item.collection_id));
-    return tokenInfo !== undefined;
+    if (isLoginEnabled() || isExternalEnabled()) {
+        const tokensInfo = await checkTokenDb(identities);
+        const tokenInfo = tokensInfo.find(tokenInfo => tokenInfo.collection_ids.includes(item.collection_id));
+        return tokenInfo !== undefined;
+    }
+    return false;
 }
 
 export async function checkTokenDb(tokens: string[]): Promise<Token[]> {

@@ -1,5 +1,11 @@
 import {AuthTextsParams} from '../../lib/Service';
 import {getRootItemByCollectionId} from '../../lib/Item';
+import {
+    isAuthenticationEnabled,
+    isExternalEnabled,
+    isIpAccessEnabled,
+    isLoginEnabled
+} from '../../lib/Security';
 
 import {AuthTextsByType} from '../util/types';
 
@@ -19,16 +25,25 @@ const login = {
 const external = {
     label: 'Access',
     header: 'Access',
-    failureHeader: 'Authentication failed',
-    failureDescription: 'This collection can only be requested in the reading room of the IISH.',
+    failureHeader: 'Access restricted',
+    failureDescription: 'Unfortunately access to this record is restricted.',
 };
 
 export default async function getAuthTexts({item}: AuthTextsParams): Promise<AuthTextsByType> {
-    const rootItem = await getRootItemByCollectionId(item);
-    const metadataType = rootItem?.iish?.type;
+    let authTexts = {};
+    if (isAuthenticationEnabled()) {
+        if (item.collection_id === null || item.type === 'metadata')
+            return authTexts;
 
-    if (metadataType === 'marcxml')
-        return {logout, external, login};
+        const rootItem = await getRootItemByCollectionId(item);
+        const metadataType = rootItem?.iish?.type;
 
-    return {logout, login};
+        if (isLoginEnabled())
+            authTexts = {...authTexts, logout, login};
+
+        if ((isExternalEnabled() || isIpAccessEnabled()) && (metadataType === 'marcxml'))
+            authTexts = {...authTexts, external};
+    }
+
+    return authTexts;
 }

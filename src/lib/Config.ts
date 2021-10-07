@@ -43,6 +43,7 @@ export interface Config {
     derivativeRelativePath: string;
     internalIpAddresses: string[];
     loginDisabled: boolean;
+    externalDisabled: boolean;
     accessTtl: number;
     elasticSearchUrl: string;
     redisVolatile: null | {
@@ -211,6 +212,12 @@ const config: Config = {
     loginDisabled: (_ => {
         const loginDisabled = process.env.IIIF_SERVER_LOGIN_DISABLED;
         return ((loginDisabled !== undefined) && (loginDisabled.toLowerCase() === 'true' || loginDisabled === '1'));
+    })(),
+
+    externalDisabled: (_ => {
+        const externalDisabled = process.env.IIIF_SERVER_EXTERNAL_DISABLED;
+        return ((externalDisabled !== undefined) &&
+            (externalDisabled.toLowerCase() === 'true' || externalDisabled === '1'));
     })(),
 
     accessTtl: (_ => {

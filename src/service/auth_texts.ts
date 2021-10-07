@@ -1,5 +1,6 @@
 import {AuthTextsParams} from '../lib/Service';
 import {AuthTextsByType} from './util/types';
+import {isAuthenticationEnabled, isExternalEnabled, isIpAccessEnabled, isLoginEnabled} from '../lib/Security';
 
 const logout = {
     label: 'Logout'
@@ -17,10 +18,19 @@ const login = {
 const external = {
     label: 'Access',
     header: 'Access',
-    failureHeader: 'Authentication failed',
-    failureDescription: 'This item can only be requested in certain locations.',
+    failureHeader: 'Access restricted',
+    failureDescription: 'Unfortunately access to this record is restricted.',
 };
 
 export default async function getAuthTexts({item}: AuthTextsParams): Promise<AuthTextsByType> {
-    return {logout, external, login};
+    let authTexts = {};
+    if (isAuthenticationEnabled()) {
+        if (isLoginEnabled())
+            authTexts = {...authTexts, logout, login};
+
+        if (isExternalEnabled() || isIpAccessEnabled())
+            authTexts = {...authTexts, external};
+    }
+
+    return authTexts;
 }
