@@ -1,12 +1,12 @@
 import {FileItem, Item} from '../lib/ItemInterfaces';
 import {getFullPath, OcrWord, readAlto, Text} from '../lib/Text';
 
-import Canvas from './elem/v2/Canvas';
-import Annotation from './elem/v2/Annotation';
-import AnnotationList from './elem/v2/AnnotationList';
-import TextResource from './elem/v2/TextResource';
-import SearchHit from './elem/v2/SearchHit';
-import TermList from './elem/v2/TermList';
+import Canvas from '@archival-iiif/presentation-builder/dist/v2/Canvas';
+import Annotation from '@archival-iiif/presentation-builder/dist/v2/Annotation';
+import AnnotationList from '@archival-iiif/presentation-builder/dist/v2/AnnotationList';
+import TextResource from '@archival-iiif/presentation-builder/dist/v2/TextResource';
+import SearchHit from '@archival-iiif/presentation-builder/dist/v2/SearchHit';
+import TermList from '@archival-iiif/presentation-builder/dist/v2/TermList';
 
 import {SearchResult, SearchResultMatch} from '../search/search';
 import {canvasUri, searchAnnoUri, searchUri, autocompleteUri} from './UriHelper';

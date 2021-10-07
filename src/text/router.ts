@@ -1,14 +1,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import Router from '@koa/router';
+import {DefaultState} from 'koa';
 
 import {getText} from '../lib/Text';
 import logger from '../lib/Logger';
 import HttpError from '../lib/HttpError';
+import {ExtendedContext} from '../lib/Koa';
 
 const htmlTemplate = fs.readFileSync(path.join(__dirname, 'text.html'), 'utf8');
 
-const router = new Router({prefix: '/text'});
+export const router = new Router<DefaultState, ExtendedContext>({prefix: '/text'});
 
 router.get('/:id', async ctx => {
     logger.info(`Received a request for text with id ${ctx.params.id}`);
@@ -43,5 +45,3 @@ router.get('/:id/txt', async ctx => {
 
     logger.info(`Sending a plain text version for text with id ${ctx.params.id}`);
 });
-
-export default router;

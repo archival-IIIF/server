@@ -1,28 +1,23 @@
+import Manifest from '@archival-iiif/presentation-builder/dist/v3/Manifest';
+import Collection from '@archival-iiif/presentation-builder/dist/v3/Collection';
+import AnnotationPage from '@archival-iiif/presentation-builder/dist/v3/AnnotationPage';
+
+import TermList from '@archival-iiif/presentation-builder/dist/v2/TermList';
+import Image, {ImageProfile} from '@archival-iiif/presentation-builder/dist/v2/Image';
+import AnnotationList from '@archival-iiif/presentation-builder/dist/v2/AnnotationList';
+
+import {Text} from '../lib/Text';
+import {Access} from '../lib/Security';
+import {DerivativeType} from '../lib/Derivative';
+import {FileItem, FolderItem, Item, MetadataItem, RootItem} from '../lib/ItemInterfaces';
+
 import * as Search from './Search';
 import * as Metadata from './Metadata';
 import * as Digitized from './Digitized';
 import * as DigitalBorn from './DigitalBorn';
 import * as ImageFunctions from './Image';
 
-import {Text} from '../lib/Text';
-import {Access} from '../lib/Security';
-import {FileItem, FolderItem, Item, MetadataItem, RootItem} from '../lib/ItemInterfaces';
-
-import Image, {ImageProfile} from './elem/v2/Image';
-import AnnotationList from './elem/v2/AnnotationList';
-
-import Manifest from './elem/v3/Manifest';
-import Collection from './elem/v3/Collection';
-import AnnotationPage from './elem/v3/AnnotationPage';
-
 import {SearchResult} from '../search/search';
-import TermList from './elem/v2/TermList';
-import {DerivativeType} from '../lib/Derivative';
-import {FileItem, FolderItem, Item, MetadataItem, RootItem} from '../lib/ItemInterfaces';
-
-import Manifest from '@archival-iiif/presentation-builder/dist/v3/Manifest';
-import Collection from '@archival-iiif/presentation-builder/dist/v3/Collection';
-import Image, {ImageProfile} from '@archival-iiif/presentation-builder/dist/v2/Image';
 
 export interface PresentationBuilder {
     isCollection: (item: Item | null) => boolean;

@@ -1,7 +1,7 @@
 import {getChildItems} from '../lib/Item';
 import {getAuthTexts} from '../lib/Security';
 import {Item, RootItem, FileItem} from '../lib/ItemInterfaces';
-import {getTextsForCollectionId, getFullPath, readAlto, Text} from '../lib/Text';
+import {getTextsForCollectionId, getFullPath, readAlto, Text, withTexts} from '../lib/Text';
 
 import {
     createMinimalManifest,
@@ -12,16 +12,15 @@ import {
     createAnnotationPage,
 } from './PresentationUtils';
 
+import Base from '@archival-iiif/presentation-builder/dist/v3/Base';
+import Canvas from '@archival-iiif/presentation-builder/dist/v3/Canvas';
+import Service from '@archival-iiif/presentation-builder/dist/v3/Service';
 import Manifest from '@archival-iiif/presentation-builder/dist/v3/Manifest';
-import Base from './elem/v3/Base';
-import Canvas from './elem/v3/Canvas';
-import Service from './elem/v3/Service';
-import Manifest from './elem/v3/Manifest';
-import Annotation from './elem/v3/Annotation';
-import AuthService from './elem/v3/AuthService';
-import TextResource from './elem/v3/TextResource';
-import AnnotationPage from './elem/v3/AnnotationPage';
-import AnnotationCollection from './elem/v3/AnnotationCollection';
+import Resource from '@archival-iiif/presentation-builder/dist/v3/Resource';
+import Annotation from '@archival-iiif/presentation-builder/dist/v3/Annotation';
+import AuthService from '@archival-iiif/presentation-builder/dist/v3/AuthService';
+import AnnotationPage from '@archival-iiif/presentation-builder/dist/v3/AnnotationPage';
+import AnnotationCollection from '@archival-iiif/presentation-builder/dist/v3/AnnotationCollection';
 
 import {
     annoCollUri,
@@ -35,11 +34,12 @@ import {
     textPlainUri
 } from './UriHelper';
 
+
 export async function getManifest(parentItem: RootItem): Promise<Manifest> {
     const manifest = await createManifest(parentItem);
 
     const items = await getChildItems(parentItem) as FileItem[];
-    const texts = await getTextsForCollectionId(parentItem.id);
+    const texts = await withTexts(getTextsForCollectionId(parentItem.id));
 
     addBehavior(manifest, parentItem, items.length > 1);
     await addThumbnail(manifest, parentItem);
@@ -72,7 +72,7 @@ export async function getAnnotationPage(item: RootItem, text: Text): Promise<Ann
     const annoPage = createAnnotationPage(item, text);
 
     const items = await getChildItems(item) as FileItem[];
-    const texts = await getTextsForCollectionId(item.id, text.type, text.language);
+    const texts = await withTexts(getTextsForCollectionId(item.id, text.type, text.language));
 
     const childItem = items.find(item => item.id === text.item_id) as FileItem;
     const canvas = await createCanvas(childItem, item);
@@ -108,7 +108,7 @@ export async function getAnnotationPage(item: RootItem, text: Text): Promise<Ann
 
     switch (text.source) {
         case 'plain':
-            const resource = new TextResource(text.text, text.language);
+            const resource = Resource.createTextResource(text.text, text.language);
             const annotation = new Annotation(annoUri(item.id, childItem.id), resource, 'supplementing');
 
             annotation.setTextGranularity('page');
@@ -121,7 +121,7 @@ export async function getAnnotationPage(item: RootItem, text: Text): Promise<Ann
 
             const words = await readAlto(getFullPath(text));
             words.forEach((word, idx) => {
-                const resource = new TextResource(word.word, text.language);
+                const resource = Resource.createTextResource(word.word, text.language);
                 const annotation = new Annotation(annoUri(item.id, childItem.id, idx + 1), resource, 'supplementing');
 
                 annotation.setTextGranularity('word');
