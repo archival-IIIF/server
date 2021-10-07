@@ -2,7 +2,7 @@ import Router from '@koa/router';
 
 import logger from '../lib/Logger';
 import config from '../lib/Config';
-import {createItem, getAllRootItems} from '../lib/Item';
+import {createItem, getAllRootItems, withItems} from '../lib/Item';
 import {MetadataItem} from '../lib/ItemInterfaces';
 
 import {setContent} from './util';
@@ -41,8 +41,7 @@ router.get('/all', async ctx => {
         label: 'All'
     }) as MetadataItem;
 
-    const children = await getAllRootItems();
-
+    const children = await withItems(getAllRootItems());
     setContent(ctx, await getCollectionWithChildren(allCollection, children));
 
     logger.info('Sending all IIIF collections');

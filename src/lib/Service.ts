@@ -28,6 +28,7 @@ export interface CronService extends StandaloneService {
     cron: string;
 }
 
+export type EmptyParams = {};
 export type IndexParams = { collectionPath: string };
 export type TextParams = { collectionId: string, items: TextItem[] };
 export type MetadataParams = { oaiIdentifier?: string | null, rootId?: string, collectionId?: string };
@@ -76,6 +77,11 @@ export const allServices: Service[] = [{
     type: 'process-update',
     runAs: 'worker',
     getService: () => require('../service/process_update').default
+}, {
+    name: 'all-metadata-update',
+    type: 'all-metadata-update',
+    runAs: 'worker',
+    getService: () => require('../service/all_metadata_update').default
 }, {
     name: 'waveform',
     type: 'waveform',

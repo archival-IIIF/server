@@ -119,6 +119,7 @@ export function updateEAD(xml: Document, oaiIdentifier: string, collectionId: st
         const id = (md.unitId === rootId) ? rootId : `${rootId}.${md.unitId}`;
         const item: MinimalItem = {
             id: id,
+            top_parent_id: rootId,
             collection_id: id,
             metadata_id: oaiIdentifier,
             formats: md.formats,
@@ -149,7 +150,7 @@ export function updateEAD(xml: Document, oaiIdentifier: string, collectionId: st
                 type: 'ead',
                 access,
                 metadataHdl: '10622/' + collectionId
-            }
+            };
         }
 
         if (md.eadTitle)

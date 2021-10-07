@@ -61,7 +61,7 @@ export async function deleteTexts(collectionId: string): Promise<void> {
     });
 }
 
-export async function getTextsForCollectionId(collectionId: string, type?: string, source?: string): Promise<Text[]> {
+export function getTextsForCollectionId(collectionId: string, type?: string, source?: string): AsyncIterable<Text> {
     if (type && source)
         return getTexts(`collection_id:"${collectionId}" AND type:"${type}" AND source:"${source}"`);
 
@@ -74,16 +74,9 @@ export async function getTextsForCollectionId(collectionId: string, type?: strin
     return getTexts(`collection_id:"${collectionId}`);
 }
 
-async function getTexts(q: string): Promise<Text[]> {
+function getTexts(q: string): AsyncIterable<Text> {
     logger.debug(`Obtain texts from ElasticSearch with query "${q}"`);
-
-    const texts = [];
-    const scrollTexts = getClient().helpers.scrollDocuments<Text>({index: 'texts', q});
-
-    for await (const text of scrollTexts)
-        texts.push(text);
-
-    return texts;
+    return getClient().helpers.scrollDocuments<Text>({index: 'texts', q});
 }
 
 export async function readAlto(uri: string): Promise<OcrWord[]> {
@@ -102,4 +95,12 @@ export async function readAlto(uri: string): Promise<OcrWord[]> {
 
 export function getFullPath(item: Text): string {
     return path.join(config.dataRootPath, config.collectionsRelativePath, item.uri);
+}
+
+// TODO: Replace with Array.fromAsync when available
+export async function withTexts(asyncTexts: AsyncIterable<Text>): Promise<Text[]> {
+    const texts = [];
+    for await (const text of asyncTexts)
+        texts.push(text);
+    return texts;
 }

@@ -252,6 +252,15 @@ id. Can only be used by an administrator with a valid access token.
 
 ---
 
+**URL**: `/admin/all_metadata_update`
+
+**Method**: `POST`
+
+Create jobs for the metadata worker to force-update all the metadata. Can only be used by an administrator with a valid
+access token.
+
+---
+
 **URL**: `/admin/index_api`
 
 **Method**: `POST`

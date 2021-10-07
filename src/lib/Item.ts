@@ -8,6 +8,7 @@ import getClient from './ElasticSearch';
 export function createItem(obj: MinimalItem): Item {
     return {
         parent_id: null,
+        top_parent_id: null,
         metadata_id: null,
         type: 'metadata',
         formats: [],
@@ -113,7 +114,7 @@ export async function determineItem(id: string): Promise<Item | null> {
 
 export async function getChildItems(item: Item): Promise<Item[]> {
     if (item._childItems === undefined) {
-        const items = await getItems(`parent_id:"${item.id}"`);
+        const items = await withItems(getItems(`parent_id:"${item.id}"`));
         items.sort((cA, cB) =>
             (cA.order !== null && cB.order !== null && cA.order < cB.order) ? -1 : 1);
 
@@ -130,7 +131,7 @@ export async function getChildItems(item: Item): Promise<Item[]> {
 }
 
 export async function getChildItemsByType(id: string, type: string): Promise<Item[]> {
-    return getItems(`parent_id:"${id}" AND type:"${type}"`);
+    return withItems(getItems(`parent_id:"${id}" AND type:"${type}"`));
 }
 
 export async function getRootItemByCollectionId(item: Item): Promise<Item | null> {
@@ -148,7 +149,7 @@ export async function getRootItemByCollectionId(item: Item): Promise<Item | null
 }
 
 export async function getCollectionsByMetadataId(id: string): Promise<string[]> {
-    const items = await getItems(`metadata_id:"${id}" AND _exists_:collection_id`);
+    const items = await withItems(getItems(`metadata_id:"${id}" AND _exists_:collection_id`));
     return Array.from(new Set(<string[]>items.map(item => item.collection_id)));
 }
 
@@ -156,24 +157,17 @@ export async function getCollectionIdsIndexed(ids: string | string[]): Promise<s
     const query = Array.isArray(ids)
         ? ids.map(id => `collection_id:"${id}"`).join(' OR ')
         : `type:root AND collection_id:${ids}*`;
-    const items = await getItems(query);
-    return Array.from(new Set(<string[]>items.map(item => item.collection_id)));
+    const items = await withItems(getItems(query));
+    return Array.from(new Set(items.map(item => item.collection_id) as string[]));
 }
 
-export async function getAllRootItems(): Promise<Item[]> {
+export function getAllRootItems(): AsyncIterable<Item> {
     return getItems('type:(root OR folder OR metadata) AND NOT _exists_:parent_id');
 }
 
-async function getItems(q: string): Promise<Item[]> {
+function getItems(q: string): AsyncIterable<Item> {
     logger.debug(`Obtain items from ElasticSearch with query "${q}"`);
-
-    const items = [];
-    const scrollItems = getClient().helpers.scrollDocuments<Item>({index: 'items', sort: 'label:asc', q});
-
-    for await (const item of scrollItems)
-        items.push(item);
-
-    return items;
+    return getClient().helpers.scrollDocuments<Item>({index: 'items', sort: 'label:asc', q});
 }
 
 export function getFullPath(item: Item, type: 'access' | 'original' | null = null): string {
@@ -218,4 +212,12 @@ export function hasType(item: Item, type: 'access' | 'original'): boolean {
         return !!item.access.uri;
 
     return !!item.original.uri;
+}
+
+// TODO: Replace with Array.fromAsync when available
+export async function withItems(asyncItems: AsyncIterable<Item>): Promise<Item[]> {
+    const items = [];
+    for await (const item of asyncItems)
+        items.push(item);
+    return items;
 }

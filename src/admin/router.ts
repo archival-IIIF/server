@@ -7,7 +7,7 @@ import {runTask} from '../lib/Task';
 import {workerStatus} from '../lib/Worker';
 import {ExtendedContext} from '../lib/Koa';
 import {hasAdminAccess, getIpAddress} from '../lib/Security';
-import {IndexParams, MetadataParams} from '../lib/Service';
+import {EmptyParams, IndexParams, MetadataParams} from '../lib/Service';
 
 import registerToken from './register_token';
 import indexCollection from './api_index';
@@ -62,6 +62,11 @@ router.post('/update_metadata', async ctx => {
     });
 
     ctx.body = 'OAI identifier and/or root/collection id is sent to the queue for metadata update';
+});
+
+router.post('/all_metadata_update', async ctx => {
+    runTask<EmptyParams>('all-metadata-update', {});
+    ctx.body = 'All metadata update triggered';
 });
 
 router.post('/register_token', async ctx => {
