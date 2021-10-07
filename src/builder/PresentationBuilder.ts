@@ -31,37 +31,37 @@ export const isManifest = (item: Item | null): boolean =>
 
 export async function getCollection(item: Item, access: Access): Promise<Collection | null> {
     if (item && (item.type === 'metadata'))
-        return await Metadata.getCollection(item as MetadataItem, builder);
+        return Metadata.getCollection(item as MetadataItem, builder);
 
     if (item && (item.type === 'folder'))
-        return await DigitalBorn.getCollection(item as FolderItem, access, builder);
+        return DigitalBorn.getCollection(item as FolderItem, access, builder);
 
     return null;
 }
 
 export async function getCollectionWithChildren(item: MetadataItem, children: Item[]): Promise<Collection | null> {
-    return await Metadata.getCollectionWithChildren(item, children, builder);
+    return Metadata.getCollectionWithChildren(item, children, builder);
 }
 
 export async function getManifest(item: Item, access: Access): Promise<Manifest | null> {
     if (item && (item.type === 'root'))
-        return await Digitized.getManifest(item as RootItem);
+        return Digitized.getManifest(item as RootItem);
 
     if (item && (item.type !== 'metadata' && item.type !== 'folder' && !item.order))
-        return await DigitalBorn.getManifest(item as FileItem, access);
+        return DigitalBorn.getManifest(item as FileItem, access);
 
     return null;
 }
 
 export async function getReference(item: Item): Promise<Collection | Manifest | null> {
     if (item && (item.type === 'metadata'))
-        return await Metadata.getReference(item as MetadataItem);
+        return Metadata.getReference(item as MetadataItem);
 
     if (item && (item.type === 'root'))
-        return await Digitized.getReference(item as RootItem);
+        return Digitized.getReference(item as RootItem);
 
     if (item && ((item.type === 'folder') || !item.order))
-        return await DigitalBorn.getReference(item as FileItem);
+        return DigitalBorn.getReference(item as FileItem);
 
     return null;
 }

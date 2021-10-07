@@ -4,21 +4,24 @@ import {promisify} from 'util';
 import {parseXml, Element, Attribute} from 'libxmljs2';
 
 import config from '../lib/Config';
-import getClient from './ElasticSearch';
+
 import logger from './Logger';
+import {cache} from './Cache';
+import getClient from './ElasticSearch';
 
 export interface Text {
     id: string;
     item_id: string;
     collection_id: string;
-    type: string;
+    type: 'transcription' | 'translation';
     language: string | null;
     uri: string;
-    source: string;
+    source: 'plain' | 'alto';
     text: string;
 }
 
 export interface OcrWord {
+    idx: number;
     x: number;
     y: number;
     width: number;
@@ -61,17 +64,25 @@ export async function deleteTexts(collectionId: string): Promise<void> {
     });
 }
 
-export function getTextsForCollectionId(collectionId: string, type?: string, source?: string): AsyncIterable<Text> {
-    if (type && source)
-        return getTexts(`collection_id:"${collectionId}" AND type:"${type}" AND source:"${source}"`);
+export async function getText(id: string): Promise<Text | null> {
+    try {
+        const response = await getClient().get({index: 'texts', id: id});
+        return response.body._source;
+    }
+    catch (err) {
+        return null;
+    }
+}
 
-    if (type)
-        return getTexts(`collection_id:"${collectionId}" AND type:"${type}"`);
+export function getTextsForCollectionId(collectionId: string, type?: string,
+                                        language?: string | null): AsyncIterable<Text> {
+    if (!type && !language)
+        return getTexts(`collection_id:"${collectionId}"`);
 
-    if (source)
-        return getTexts(`collection_id:"${collectionId}" AND source:"${source}"`);
+    if (type && language)
+        return getTexts(`collection_id:"${collectionId}" AND type:"${type}" AND language:"${language}"`);
 
-    return getTexts(`collection_id:"${collectionId}`);
+    return getTexts(`collection_id:"${collectionId}" AND type:"${type}" AND NOT _exists_:language`);
 }
 
 function getTexts(q: string): AsyncIterable<Text> {
@@ -80,16 +91,17 @@ function getTexts(q: string): AsyncIterable<Text> {
 }
 
 export async function readAlto(uri: string): Promise<OcrWord[]> {
-    const altoXml = await readFileAsync(uri, 'utf8');
-    const alto = parseXml(altoXml);
-    return alto.find<Element>('//alto:String', ns).map(stringElem => {
-        return {
+    return cache('alto', 'alto', uri, async () => {
+        const altoXml = await readFileAsync(uri, 'utf8');
+        const alto = parseXml(altoXml);
+        return alto.find<Element>('//alto:String', ns).map((stringElem, idx) => ({
+            idx,
             x: parseInt((stringElem.attr('VPOS') as Attribute).value()),
             y: parseInt((stringElem.attr('HPOS') as Attribute).value()),
             width: parseInt((stringElem.attr('WIDTH') as Attribute).value()),
             height: parseInt((stringElem.attr('HEIGHT') as Attribute).value()),
             word: (stringElem.attr('CONTENT') as Attribute).value()
-        };
+        }));
     });
 }
 

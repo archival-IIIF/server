@@ -148,6 +148,33 @@ export function setElasticSearchClient(client: Client): void {
             await client.indices.create({
                 index: 'texts',
                 body: {
+                    settings: {
+                        analysis: {
+                            filter: {
+                                autocomplete_filter: {
+                                    type: 'edge_ngram',
+                                    min_gram: 1,
+                                    max_gram: 8
+                                },
+                                truncate_filter: {
+                                    type: 'truncate',
+                                    length: 8
+                                }
+                            },
+                            analyzer: {
+                                autocomplete: {
+                                    type: 'custom',
+                                    tokenizer: 'standard',
+                                    filter: ['lowercase', 'autocomplete_filter']
+                                },
+                                autocomplete_search: {
+                                    type: 'custom',
+                                    tokenizer: 'standard',
+                                    filter: ['lowercase', 'truncate_filter']
+                                },
+                            }
+                        }
+                    },
                     mappings: {
                         properties: {
                             id: {
@@ -172,7 +199,14 @@ export function setElasticSearchClient(client: Client): void {
                                 type: 'keyword'
                             },
                             text: {
-                                type: 'text'
+                                type: 'text',
+                                fields: {
+                                    autocomplete: {
+                                        type: 'text',
+                                        analyzer: 'autocomplete',
+                                        search_analyzer: 'autocomplete_search'
+                                    }
+                                }
                             }
                         }
                     }
@@ -181,33 +215,6 @@ export function setElasticSearchClient(client: Client): void {
             });
 
             logger.info('Created the index \'texts\' with a mapping');
-        }
-
-        const tokensExists = await client.indices.exists({index: 'tokens'});
-        if (!tokensExists.body) {
-            await client.indices.create({
-                index: 'tokens',
-                body: {
-                    mappings: {
-                        properties: {
-                            token: {
-                                type: 'keyword'
-                            },
-                            collection_id: {
-                                type: 'keyword'
-                            },
-                            from: {
-                                type: 'date'
-                            },
-                            to: {
-                                type: 'date'
-                            }
-                        }
-                    }
-                }
-            });
-
-            logger.info('Created the index \'tokens\' with a mapping');
         }
     }
     catch (e) {
