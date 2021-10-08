@@ -12,7 +12,7 @@ import {AccessState, hasAccess} from '../lib/Security';
 import {getAnnotationPage, getCollection, getManifest, isCollection, isManifest} from '../builder/PresentationBuilder';
 
 import {setContent} from './util';
-import routerTop from './router-top';
+import {router as routerTop} from './router-top';
 
 export const router = new Router<DefaultState, ExtendedContext>({prefix: '/iiif/presentation'});
 

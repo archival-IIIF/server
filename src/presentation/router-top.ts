@@ -1,14 +1,16 @@
+import {DefaultState} from 'koa';
 import Router from '@koa/router';
 
 import logger from '../lib/Logger';
 import config from '../lib/Config';
-import {createItem, getAllRootItems, withItems} from '../lib/Item';
+import {ExtendedContext} from '../lib/Koa';
 import {MetadataItem} from '../lib/ItemInterfaces';
+import {createItem, getAllRootItems, withItems} from '../lib/Item';
 
 import {setContent} from './util';
 import {getCollectionWithChildren} from '../builder/PresentationBuilder';
 
-const router = new Router({prefix: '/collection'});
+export const router = new Router<DefaultState, ExtendedContext>({prefix: '/collection'});
 
 router.get('/top', async ctx => {
     logger.info('Received a request for a top IIIF collection');
@@ -46,5 +48,3 @@ router.get('/all', async ctx => {
 
     logger.info('Sending all IIIF collections');
 });
-
-export default router;
