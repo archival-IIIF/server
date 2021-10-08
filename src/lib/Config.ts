@@ -7,9 +7,6 @@ export interface Config {
     env?: string;
     appInstance?: string;
     attribution?: string;
-    universalViewerPath?: string;
-    archivalViewerPath?: string;
-    universalViewerConfigPath?: string;
     hotFolderPath?: string;
     hotFolderPattern?: string;
     metadataOaiUrl?: string;
@@ -61,9 +58,6 @@ const config: Config = {
     env: process.env.NODE_ENV,
     appInstance: process.env.NODE_APP_INSTANCE,
     attribution: process.env.IIIF_SERVER_ATTRIBUTION,
-    universalViewerPath: process.env.IIIF_SERVER_UNIVERSAL_VIEWER_PATH,
-    archivalViewerPath: process.env.IIIF_SERVER_ARCHIVAL_VIEWER_PATH,
-    universalViewerConfigPath: process.env.IIIF_SERVER_UNIVERSAL_VIEWER_CONFIG_PATH,
     hotFolderPath: process.env.IIIF_SERVER_HOT_FOLDER_PATH,
     hotFolderPattern: process.env.IIIF_SERVER_HOT_FOLDER_PATTERN,
     metadataOaiUrl: process.env.IIIF_SERVER_METADATA_OAI_URL,

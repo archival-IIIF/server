@@ -350,9 +350,6 @@ The environment variables used to configure the application:
         - `iish-iiif-metadata`: Loads a **library** that provides IIIF metadata of items from IISH collections
 - `IIIF_SERVER_SECRET`: Signed cookie key
 - `IIIF_SERVER_ACCESS_TOKEN`: Access token for administrator access
-- `IIIF_SERVER_ARCHIVAL_VIEWER_PATH`: Path to the Archival Viewer
-- `IIIF_SERVER_UNIVERSAL_VIEWER_PATH`: Path to the Universal Viewer
-- `IIIF_SERVER_UNIVERSAL_VIEWER_CONFIG_PATH`: Path to the configuration file of the Universal Viewer
 - `IIIF_SERVER_IMAGE_SERVER_URL`: URL of the external IIIF image server (such as Loris)
 - `IIIF_SERVER_IMAGE_SERVER_NAME`: Name of the image server (either 'loris' or 'sharp')
 - `IIIF_SERVER_METADATA_OAI_URL`: URL of the OAI metadata provider
