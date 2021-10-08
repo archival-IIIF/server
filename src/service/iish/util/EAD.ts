@@ -16,6 +16,8 @@ export interface EADMetadata {
 
 const ns = {'ead': 'urn:isbn:1-931666-22-9'};
 
+export const EAD_OAI_PREFIX = 'oai:socialhistoryservices.org:10622/';
+
 export function getRootId(collectionId: string): string {
     return collectionId.split('.')[0];
 }

@@ -13,6 +13,8 @@ export interface MARCXMLMetadata {
 
 const ns = {'marc': 'http://www.loc.gov/MARC21/slim'};
 
+export const MARC_OAI_PREFIX = 'oai:socialhistoryservices.org:';
+
 export function getMetadata(collectionId: string, marc: Document): MARCXMLMetadata[] {
     const metadata: MARCXMLMetadata = {title: 'No title'};
 
@@ -47,51 +49,61 @@ export function getCollectionIds(marc: Document): string[] {
         .map(elem => elem.text().trim());
 }
 
-function extractFormat(marc: Element, metadata: MARCXMLMetadata): void {
-    const marcLeader = marc.get<Element>('//marc:leader', ns) as Element;
-    const format = marcLeader.text().trim().substring(6, 8);
+export function getId(marc: Document): string | undefined {
+    return marc.get<Element>('//marc:controlfield[@tag="001"]', ns)?.text();
+}
 
-    switch (format) {
+export function getFormat(marcLeader: string): string | null {
+    switch (marcLeader.trim().substring(6, 8)) {
         case 'ab':
-            metadata.format = 'article';
-            break;
+            return 'article';
         case 'aa':
         case 'ar':
         case 'as':
         case 'ps':
         case 'ac':
-            metadata.format = 'serial';
-            break;
+            return 'serial';
         case 'am':
         case 'pm':
-            metadata.format = 'book';
-            break;
+            return 'book';
         case 'im':
         case 'pi':
         case 'ic':
         case 'jm':
         case 'jc':
-            metadata.format = 'sound';
-            break;
+            return 'sound';
         case 'av':
         case 'rm':
         case 'pv':
         case 'km':
         case 'kc':
         case 'rc':
-            metadata.format = 'visual';
-            break;
+            return 'visual';
         case 'gm':
         case 'gc':
-            metadata.format = 'moving visual';
-            break;
+            return 'moving visual';
         case 'bm':
         case 'do':
         case 'oc':
         case 'pc':
-            metadata.format = 'archive';
-            break;
+            return 'archive';
+        default:
+            return null;
     }
+}
+
+function extractId(marc: Element, metadata: MARCXMLMetadata): void {
+    const marcLeader = marc.get<Element>('//marc:leader', ns) as Element;
+    const format = getFormat(marcLeader.text());
+    if (format)
+        metadata.format = format;
+}
+
+function extractFormat(marc: Element, metadata: MARCXMLMetadata): void {
+    const marcLeader = marc.get<Element>('//marc:leader', ns) as Element;
+    const format = getFormat(marcLeader.text());
+    if (format)
+        metadata.format = format;
 }
 
 function extractTitle(marc: Element, metadata: MARCXMLMetadata): void {
@@ -135,7 +147,10 @@ function extractAuthors(marc: Element, metadata: MARCXMLMetadata): void {
         {tag: 710, role: 'Other organization'},
         {tag: 711, role: 'Other congress'}
     ].map(({tag, role}) => ({marcAuthors: marc.find<Element>(`//marc:datafield[@tag="${tag}"]`, ns), role}))
-        .reduce<{ marcAuthor: Element, role: string }[]>((acc, {marcAuthors, role}) => acc.concat(marcAuthors.map(i => ({
+        .reduce<{ marcAuthor: Element, role: string }[]>((acc, {
+            marcAuthors,
+            role
+        }) => acc.concat(marcAuthors.map(i => ({
             marcAuthor: i,
             role
         }))), [])

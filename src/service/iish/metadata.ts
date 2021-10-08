@@ -20,7 +20,7 @@ export default async function processMetadata({oaiIdentifier, rootId, collection
 
     try {
         if (!oaiIdentifier && rootId)
-            oaiIdentifier = `oai:socialhistoryservices.org:10622/${rootId}`;
+            oaiIdentifier = `${EAD.EAD_OAI_PREFIX}${rootId}`;
 
         if (!oaiIdentifier && collectionId)
             oaiIdentifier = await getOAIIdentifier(collectionId, config.metadataSrwUrl);
@@ -35,25 +35,39 @@ export default async function processMetadata({oaiIdentifier, rootId, collection
     }
 }
 
-export async function getOAIIdentifier(collectionId: string, uri: string): Promise<string | null> {
-    // TODO: Temporary Z168896, Z209183 records for testing with serials
-    if (collectionId.includes('ARCH') || collectionId.includes('COLL') || collectionId.includes('Z168896') || collectionId.includes('Z209183')) {
-        const rootId = EAD.getRootId(collectionId);
-        return `oai:socialhistoryservices.org:10622/${rootId}`;
-    }
+export async function getOAIIdentifier(collectionId: string, url: string): Promise<string | null> {
+    const rootId = EAD.getRootId(collectionId);
+    if (collectionId.includes('ARCH') || collectionId.includes('COLL'))
+        return `${EAD.EAD_OAI_PREFIX}${rootId}`;
 
-    const response = await got(uri, {
+    const marcSearchResult = await got(url, {
         https: {rejectUnauthorized: false}, resolveBodyOnly: true, searchParams: {
             operation: 'searchRetrieve',
             query: `marc.852$p="${collectionId}"`
         }
     });
 
-    const srwResults = parseXml(response);
-    const marcId = srwResults.get<Element>('//marc:controlfield[@tag="001"]', ns);
-
+    const srwResults = parseXml(marcSearchResult);
+    const marcId = MarcXML.getId(srwResults);
     if (marcId)
-        return `oai:socialhistoryservices.org:${marcId.text()}`;
+        return `${MarcXML.MARC_OAI_PREFIX}${marcId}`;
+
+    if (rootId !== collectionId) {
+        const marcRootSearchResult = await got(url, {
+            https: {rejectUnauthorized: false}, resolveBodyOnly: true, searchParams: {
+                operation: 'searchRetrieve',
+                query: `marc.852$p="${rootId}"`
+            }
+        });
+
+        const srwResults = parseXml(marcRootSearchResult);
+        const marcLeader = srwResults.get<Element>('//marc:leader', ns);
+        if (marcLeader) {
+            const format = MarcXML.getFormat(marcLeader.text());
+            if (format === 'serial')
+                return `${EAD.EAD_OAI_PREFIX}${rootId}`;
+        }
+    }
 
     return null;
 }
@@ -61,8 +75,7 @@ export async function getOAIIdentifier(collectionId: string, uri: string): Promi
 async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string): Promise<void> {
     logger.debug(`Start metadata update using OAI identifier ${oaiIdentifier}`);
 
-    // TODO: Temporary Z168896, Z209183 records for testing with serials
-    const metadataPrefix = oaiIdentifier.includes('ARCH') || oaiIdentifier.includes('COLL') || oaiIdentifier.includes('Z168896') || oaiIdentifier.includes('Z209183') ? 'ead' : 'marcxml';
+    const metadataPrefix = oaiIdentifier.startsWith(EAD.EAD_OAI_PREFIX) ? 'ead' : 'marcxml';
     const xml = await got(config.metadataOaiUrl as string, {
         https: {rejectUnauthorized: false}, resolveBodyOnly: true, searchParams: {
             verb: 'GetRecord',
@@ -87,7 +100,7 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
                 collections.add(colId);
         }
         else {
-            const collectionId = oaiIdentifier.replace('oai:socialhistoryservices.org:10622/', '');
+            const collectionId = oaiIdentifier.replace(EAD.EAD_OAI_PREFIX, '');
             for (const colId of await getCollectionIdsIndexed(EAD.getRootId(collectionId)))
                 collections.add(colId);
         }
@@ -99,7 +112,29 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
         const metadataItems = (metadataPrefix === 'ead')
             ? updateEAD(xmlParsed, oaiIdentifier, collectionId)
             : updateMarc(xmlParsed, oaiIdentifier, collectionId);
-        allMetadata.push(...metadataItems);
+
+        for (const mdItem of metadataItems) {
+            if (!allMetadata.find(md => md.id === mdItem.id)) {
+                allMetadata.push(mdItem);
+
+                if (!mdItem.parent_id && !mdItem.iish) {
+                    const marcRootSearchResult = await got(config.metadataSrwUrl as string, {
+                        https: {rejectUnauthorized: false}, resolveBodyOnly: true, searchParams: {
+                            operation: 'searchRetrieve',
+                            query: `marc.852$p="${mdItem.id}"`
+                        }
+                    });
+
+                    const rootMarcXml = parseXml(marcRootSearchResult);
+                    const marcLeader = rootMarcXml.get<Element>('//marc:leader', ns);
+                    if (marcLeader) {
+                        const format = MarcXML.getFormat(marcLeader.text());
+                        if (format === 'serial')
+                            updateRootWithMarc(rootMarcXml, mdItem);
+                    }
+                }
+            }
+        }
     }
 
     await updateItems(allMetadata);
@@ -119,7 +154,6 @@ export function updateEAD(xml: Document, oaiIdentifier: string, collectionId: st
         const id = (md.unitId === rootId) ? rootId : `${rootId}.${md.unitId}`;
         const item: MinimalItem = {
             id: id,
-            top_parent_id: rootId,
             collection_id: id,
             metadata_id: oaiIdentifier,
             formats: md.formats,
@@ -127,8 +161,10 @@ export function updateEAD(xml: Document, oaiIdentifier: string, collectionId: st
             metadata: []
         };
 
-        if (prevUnitId)
+        if (prevUnitId) {
+            item.top_parent_id = rootId;
             item.parent_id = prevUnitId;
+        }
 
         if (md.order)
             item.order = md.order;
@@ -153,11 +189,13 @@ export function updateEAD(xml: Document, oaiIdentifier: string, collectionId: st
             };
         }
 
-        if (md.eadTitle)
-            item.metadata.push({label: 'Part of', value: md.eadTitle});
+        if (collectionId.includes('ARCH') || collectionId.includes('COLL')) {
+            if (md.eadTitle)
+                item.metadata.push({label: 'Part of', value: md.eadTitle});
 
-        if (md.unitIdIsInventoryNumber)
-            item.metadata.push({label: 'Inventory number', value: md.unitId});
+            if (md.unitIdIsInventoryNumber)
+                item.metadata.push({label: 'Inventory number', value: md.unitId});
+        }
 
         prevUnitId = item.id;
 
@@ -201,4 +239,36 @@ export function updateMarc(xml: Document, oaiIdentifier: string, collectionId: s
 
         return item;
     });
+}
+
+export function updateRootWithMarc(xml: Document, item: MinimalItem): void {
+    const access = MarcXML.getAccess(item.id, xml);
+    const metadata = MarcXML.getMetadata(item.id, xml);
+
+    for (const md of metadata) {
+        item.metadata_id = `${MarcXML.MARC_OAI_PREFIX}${MarcXML.getId(xml)}`;
+
+        item.formats = [md.format];
+        item.label = md.title;
+        item.iish = {
+            access,
+            type: 'marcxml',
+            metadataHdl: md.metadataHdl
+        };
+
+        if (md.description)
+            item.description = md.description;
+
+        if (md.authors)
+            item.authors = md.authors;
+
+        if (md.dates)
+            item.dates = md.dates;
+
+        if (md.physical)
+            item.physical = md.physical;
+
+        if (md.signature)
+            item.metadata.push({label: 'Call number', value: md.signature});
+    }
 }

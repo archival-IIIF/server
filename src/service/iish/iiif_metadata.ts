@@ -1,6 +1,9 @@
 import config from '../../lib/Config';
 import {Item} from '../../lib/ItemInterfaces';
 import {IIIFMetadataParams} from '../../lib/Service';
+
+import {EAD_OAI_PREFIX} from './util/EAD';
+import {MARC_OAI_PREFIX} from './util/MARCXML';
 import {IIIFMetadata, IIIFMetadataHomepage, IIIFMetadataPairs, IIIFMetadataSeeAlso} from '../util/types';
 
 export default async function getIIIFMetadata({item}: IIIFMetadataParams): Promise<IIIFMetadata> {
@@ -21,7 +24,7 @@ function getHomepage(item: Item): IIIFMetadataHomepage {
         });
 
     if (item.iish && item.iish.type === 'marcxml' && item.metadata_id) {
-        const id = item.metadata_id.replace('oai:socialhistoryservices.org:', '');
+        const id = item.metadata_id.replace(MARC_OAI_PREFIX, '');
         homepages.push({
             id: `https://iisg.amsterdam/id/item/${id}`,
             label: 'RDF'
@@ -29,7 +32,7 @@ function getHomepage(item: Item): IIIFMetadataHomepage {
     }
 
     if (item.iish && item.iish.type === 'ead' && item.metadata_id) {
-        const id = item.metadata_id.replace('oai:socialhistoryservices.org:10622/', '');
+        const id = item.metadata_id.replace(EAD_OAI_PREFIX, '');
         homepages.push({
             id: `https://iisg.amsterdam/id/collection/${id}`,
             label: 'RDF'
@@ -73,14 +76,11 @@ function getSeeAlso(item: Item): IIIFMetadataSeeAlso {
     const seeAlso = [];
 
     if (config.metadataOaiUrl && item.metadata_id) {
-        // TODO: Temporary Z168896, Z209183 records for testing with serials
-        const metadataPrefix = (item.metadata_id.includes('ARCH') || item.metadata_id.includes('COLL') || item.metadata_id.includes("Z168896") || item.metadata_id.includes("Z209183"))
-            ? 'ead' : 'marcxml';
         seeAlso.push({
-            id: `${config.metadataOaiUrl}?verb=GetRecord&identifier=${item.metadata_id}&metadataPrefix=${metadataPrefix}`,
+            id: `${config.metadataOaiUrl}?verb=GetRecord&identifier=${item.metadata_id}&metadataPrefix=${item.iish.type}`,
             format: 'text/xml',
-            profile: (metadataPrefix === 'ead') ? 'http://www.loc.gov/ead/ead.xsd' : 'http://www.loc.gov/MARC21/slim',
-            label: `${metadataPrefix.toUpperCase()} metadata describing this object`
+            profile: (item.iish.type === 'ead') ? 'http://www.loc.gov/ead/ead.xsd' : 'http://www.loc.gov/MARC21/slim',
+            label: `${item.iish.type.toUpperCase()} metadata describing this object`
         });
     }
 

@@ -362,9 +362,9 @@ function readText(rootId: string, label: string, mets: Document, objects: string
     if (!itemId)
         throw new Error(`Missing a file id for a file with id ${itemFileId}`);
 
-    let type = parent;
+    let type: 'transcription' | 'translation' = 'transcription';
     let language = null;
-    if (type.startsWith('translation_')) {
+    if (parent.startsWith('translation_')) {
         type = 'translation';
         language = type.split('_')[1];
     }
