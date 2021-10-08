@@ -114,27 +114,33 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
             : updateMarc(xmlParsed, oaiIdentifier, collectionId);
 
         for (const mdItem of metadataItems) {
-            if (!allMetadata.find(md => md.id === mdItem.id)) {
+            if (!allMetadata.find(md => md.id === mdItem.id))
                 allMetadata.push(mdItem);
+        }
+    }
 
-                if (!mdItem.parent_id && !mdItem.iish) {
-                    const marcRootSearchResult = await got(config.metadataSrwUrl as string, {
-                        https: {rejectUnauthorized: false}, resolveBodyOnly: true, searchParams: {
-                            operation: 'searchRetrieve',
-                            query: `marc.852$p="${mdItem.id}"`
-                        }
-                    });
+    const access: { [id: string]: string } = {};
+    for (const mdItem of allMetadata) {
+        if (!mdItem.parent_id && !mdItem.iish) {
+            const marcRootSearchResult = await got(config.metadataSrwUrl as string, {
+                https: {rejectUnauthorized: false}, resolveBodyOnly: true, searchParams: {
+                    operation: 'searchRetrieve',
+                    query: `marc.852$p="${mdItem.id}"`
+                }
+            });
 
-                    const rootMarcXml = parseXml(marcRootSearchResult);
-                    const marcLeader = rootMarcXml.get<Element>('//marc:leader', ns);
-                    if (marcLeader) {
-                        const format = MarcXML.getFormat(marcLeader.text());
-                        if (format === 'serial')
-                            updateRootWithMarc(rootMarcXml, mdItem);
-                    }
+            const rootMarcXml = parseXml(marcRootSearchResult);
+            const marcLeader = rootMarcXml.get<Element>('//marc:leader', ns);
+            if (marcLeader) {
+                const format = MarcXML.getFormat(marcLeader.text());
+                if (format === 'serial') {
+                    updateRootWithMarc(rootMarcXml, mdItem);
+                    access[mdItem.id] = mdItem.iish.access;
                 }
             }
         }
+        else if (mdItem.top_parent_id in access)
+            mdItem.iish.access = access[mdItem.top_parent_id];
     }
 
     await updateItems(allMetadata);
