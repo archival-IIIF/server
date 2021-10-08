@@ -20,12 +20,9 @@ router.get('/:id', async ctx => {
         throw new HttpError(404, `No text found with id ${ctx.params.id}`);
 
     const title = text.type === 'transcription' ? 'Transcription' : `Translation ${text.language}`;
-    const htmlText = text.text.replace(/(\r\n|\n\r|\r|\n)/g, '<br>');
 
     ctx.type = 'text/html';
-    ctx.body = htmlTemplate
-        .replace('{{title}}', title)
-        .replace('{{text}}', htmlText);
+    ctx.body = htmlTemplate.replace('{{title}}', title).replace('{{text}}', text.text);
 
     logger.info(`Sending a text with id ${ctx.params.id}`);
 });

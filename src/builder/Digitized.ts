@@ -34,7 +34,6 @@ import {
     textPlainUri
 } from './UriHelper';
 
-
 export async function getManifest(parentItem: RootItem): Promise<Manifest> {
     const manifest = await createManifest(parentItem);
 
@@ -58,8 +57,9 @@ export async function getManifest(parentItem: RootItem): Promise<Manifest> {
         return canvas;
     })));
 
-    if (texts.length > 0)
-        setSearchService(manifest, parentItem);
+    // TODO: Search service
+    // if (texts.length > 0)
+    //     setSearchService(manifest, parentItem);
 
     return manifest;
 }
@@ -84,10 +84,10 @@ export async function getAnnotationPage(item: RootItem, text: Text): Promise<Ann
 
     const prevItem = items.reverse().reduce<Text | undefined>((acc, item) =>
         acc || (item.order && childItem.order && item.order < childItem.order
-        && texts.find(text => item.id === text.item_id)) || undefined, undefined);
+            && texts.find(text => item.id === text.item_id)) || undefined, undefined);
     const nextItem = items.reduce<Text | undefined>((acc, item) =>
         acc || (item.order && childItem.order && item.order > childItem.order
-        && texts.find(text => item.id === text.item_id)) || undefined, undefined);
+            && texts.find(text => item.id === text.item_id)) || undefined, undefined);
 
     const annoCollection = new AnnotationCollection(annoCollUri(item.id, text.type, text.language));
 
@@ -103,8 +103,9 @@ export async function getAnnotationPage(item: RootItem, text: Text): Promise<Ann
         nextItem ? annoPageUri(item.id, nextItem.id) : undefined
     );
 
-    setSearchService(annoPage, text);
-    setSearchService(annoCollection, item, text.type, text.language);
+    // TODO: Search service
+    // setSearchService(annoPage, text);
+    // setSearchService(annoCollection, item, text.type, text.language);
 
     switch (text.source) {
         case 'plain':
@@ -168,13 +169,6 @@ function addText(canvas: Canvas, item: Item, text: Text): void {
     });
 
     canvas.setMetadata(label, `<a href="${textUri(text.id)}">Open in new window</a>`);
-}
-
-async function setAuthenticationServices(item: Item, base: Base): Promise<void> {
-    const authTexts = await getAuthTexts(item);
-    const service = AuthService.getAuthenticationService(authUri, authTexts, 'external');
-    if (service)
-        base.setService(service);
 }
 
 function setSearchService(base: Base, item: Item | Text, type?: string, language?: string | null): void {

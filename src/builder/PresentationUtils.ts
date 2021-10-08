@@ -2,15 +2,15 @@ import {existsSync} from 'fs';
 
 import {IIIFMetadata} from '../service/util/types';
 
-import config from '../lib/Config';
 import {Text} from '../lib/Text';
+import config from '../lib/Config';
 import derivatives from '../lib/Derivative';
 import {runTaskWithResponse} from '../lib/Task';
 import {IIIFMetadataParams} from '../lib/Service';
 import getPronomInfo, {PronomInfo} from '../lib/Pronom';
 import {getFullDerivativePath, getItem} from '../lib/Item';
-import {Item, FileItem, ImageItem, RootItem, FolderItem} from '../lib/ItemInterfaces';
 import {getAuthTexts, requiresAuthentication} from '../lib/Security';
+import {Item, FileItem, ImageItem, RootItem, FolderItem} from '../lib/ItemInterfaces';
 
 import Base from '@archival-iiif/presentation-builder/dist/v3/Base';
 import Manifest from '@archival-iiif/presentation-builder/dist/v3/Manifest';
@@ -24,7 +24,8 @@ import AnnotationPage from '@archival-iiif/presentation-builder/dist/v3/Annotati
 
 import {
     annoPageUri,
-    annoUri, authUri,
+    annoUri,
+    authUri,
     canvasUri,
     collectionUri,
     derivativeUri,
