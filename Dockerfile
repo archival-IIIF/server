@@ -21,7 +21,7 @@ FROM node:14-alpine
 RUN apk add --no-cache ghostscript ffmpeg
 
 # Copy audiowaveform
-COPY --from=knawhuc/audiowaveform:latest /usr/local/bin/audiowaveform /usr/local/bin/
+COPY --from=registry.diginfra.net/archival-iiif/audiowaveform:1.5.1 /usr/local/bin/audiowaveform /usr/local/bin/
 
 # Copy application build from builder
 COPY --from=builder /opt/iiif-server /opt/iiif-server

@@ -7,14 +7,17 @@ export default async function hasAccess({item, ip, identities = []}: AccessParam
         return {state: AccessState.OPEN};
 
     const rootItem = await getRootItemByCollectionId(item);
-    const type = rootItem?.iish?.type;
-    const accessCode = rootItem?.iish?.access || 'closed';
+    if (!rootItem)
+        return {state: AccessState.CLOSED};
+
+    const type = rootItem.iish.type;
+    const accessCode = rootItem.iish.access || 'closed';
 
     if (accessCode === 'open')
         return {state: AccessState.OPEN};
 
     if (accessCode === 'restricted' && type === 'ead') {
-        if (await hasToken(item, identities))
+        if (await hasToken(rootItem, identities))
             return {state: AccessState.OPEN};
 
         if ((rootItem?.id.startsWith('ARCH00293') || rootItem?.id.startsWith('ARCH00393'))
@@ -25,20 +28,20 @@ export default async function hasAccess({item, ip, identities = []}: AccessParam
     }
 
     if (accessCode === 'restricted' && type === 'marcxml') {
-        if (item.type !== 'image' || (ip && isIpInRange(ip)) || await hasToken(item, identities))
+        if (item.type !== 'image' || (ip && isIpInRange(ip)) || await hasToken(rootItem, identities))
             return {state: AccessState.OPEN};
 
         return {state: AccessState.TIERED, tier: {name: accessCode, maxSize: 1500}};
     }
 
     if (accessCode === 'minimal' || accessCode === 'pictoright') {
-        if (item.type !== 'image' || (ip && isIpInRange(ip)) || await hasToken(item, identities))
+        if (item.type !== 'image' || (ip && isIpInRange(ip)) || await hasToken(rootItem, identities))
             return {state: AccessState.OPEN};
 
         return {state: AccessState.TIERED, tier: {name: accessCode, maxSize: 450}};
     }
 
-    if (type === 'marcxml' && ((ip && isIpInRange(ip)) || await hasToken(item, identities)))
+    if (type === 'marcxml' && ((ip && isIpInRange(ip)) || await hasToken(rootItem, identities)))
         return {state: AccessState.OPEN};
 
     return {state: AccessState.CLOSED};
