@@ -1,7 +1,7 @@
-FROM node:14-alpine AS builder
+FROM node:16-alpine AS builder
 
 # Install global NPM tooling
-RUN npm install typescript -g
+RUN npm install typescript@4.5.5 -g
 
 # Copy the application
 RUN mkdir -p /opt/iiif-server
@@ -15,13 +15,13 @@ RUN npm install --production
 RUN tsc
 
 # Create the actual image
-FROM node:14-alpine
+FROM node:16-alpine
 
 # Install tooling
 RUN apk add --no-cache ghostscript ffmpeg
 
 # Copy audiowaveform
-COPY --from=registry.diginfra.net/archival-iiif/audiowaveform:1.5.1 /usr/local/bin/audiowaveform /usr/local/bin/
+COPY --from=realies/audiowaveform /usr/local/bin/audiowaveform /usr/local/bin/
 
 # Copy application build from builder
 COPY --from=builder /opt/iiif-server /opt/iiif-server
