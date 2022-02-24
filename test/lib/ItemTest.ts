@@ -60,6 +60,7 @@ describe('Item', () => {
             const after = {
                 id: '12345',
                 parent_id: null,
+                top_parent_id: null,
                 collection_id: '67890',
                 metadata_id: null,
                 type: 'pdf',

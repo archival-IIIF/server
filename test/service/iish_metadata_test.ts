@@ -119,6 +119,7 @@ describe('iish_metadata', () => {
                         'value': 'Collection title'
                     }],
                     'parent_id': 'ARCH12345',
+                    'top_parent_id': 'ARCH12345',
                     'order': 2
                 },
                 {
@@ -143,6 +144,7 @@ describe('iish_metadata', () => {
                         'type': 'ead'
                     },
                     'parent_id': 'ARCH12345.dda3da21e3f74df90a6160aebac41f6b',
+                    'top_parent_id': 'ARCH12345',
                     'dates': [
                         '2019'
                     ],

@@ -139,7 +139,7 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
                 }
             }
         }
-        else if (mdItem.top_parent_id in access)
+        else if (mdItem.iish && mdItem.top_parent_id in access)
             mdItem.iish.access = access[mdItem.top_parent_id];
     }
 
