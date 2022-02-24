@@ -75,7 +75,7 @@ function getMetadata(item: Item): IIIFMetadataPairs {
 function getSeeAlso(item: Item): IIIFMetadataSeeAlso {
     const seeAlso = [];
 
-    if (config.metadataOaiUrl && item.metadata_id) {
+    if (config.metadataOaiUrl && item.metadata_id && item.iish?.type) {
         seeAlso.push({
             id: `${config.metadataOaiUrl}?verb=GetRecord&identifier=${item.metadata_id}&metadataPrefix=${item.iish.type}`,
             format: 'text/xml',
