@@ -31,10 +31,10 @@ export function setElasticSearchClient(client: Client): void {
     try {
         await client.ping();
 
-        const itemsExists = await client.indices.exists({index: 'items'});
+        const itemsExists = await client.indices.exists({index: config.elasticSearchIndexItems});
         if (!itemsExists.body) {
             await client.indices.create({
-                index: 'items',
+                index: config.elasticSearchIndexItems,
                 body: {
                     mappings: {
                         properties: {
@@ -140,13 +140,13 @@ export function setElasticSearchClient(client: Client): void {
                 }
             });
 
-            logger.info('Created the index \'items\' with a mapping');
+            logger.info('Created the index '.concat(config.elasticSearchIndexItems, ' with a mapping'));
         }
 
-        const textsExists = await client.indices.exists({index: 'texts'});
+        const textsExists = await client.indices.exists({index: config.elasticSearchIndexTexts});
         if (!textsExists.body) {
             await client.indices.create({
-                index: 'texts',
+                index: config.elasticSearchIndexTexts,
                 body: {
                     settings: {
                         analysis: {
@@ -213,7 +213,7 @@ export function setElasticSearchClient(client: Client): void {
                 }
             });
 
-            logger.info('Created the index \'texts\' with a mapping');
+            logger.info('Created the index '.concat(config.elasticSearchIndexTexts, ' with a mapping'));
         }
     }
     catch (e) {

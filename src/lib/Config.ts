@@ -16,6 +16,8 @@ export interface Config {
     audioRelativePath?: string;
     elasticSearchUser?: string;
     elasticSearchPassword?: string;
+    elasticSearchIndexItems: string;
+    elasticSearchIndexTexts: string;
     ipAddressHeader?: string;
     imageServerUrl: string;
     imageServerName: 'loris' | 'sharp';
@@ -230,6 +232,18 @@ const config: Config = {
         if (!process.env.IIIF_SERVER_ELASTICSEARCH_URL || (process.env.IIIF_SERVER_ELASTICSEARCH_URL === 'null'))
             throw new Error('The ElasticSearch URL is not defined');
         return process.env.IIIF_SERVER_ELASTICSEARCH_URL;
+    })(),
+
+    elasticSearchIndexItems: (_ => {
+        return (!process.env.IIIF_SERVER_ELASTICSEARCH_INDEX_PREFIX || (process.env.IIIF_SERVER_ELASTICSEARCH_INDEX_PREFIX === 'null'))
+            ? 'Items'
+            : process.env.IIIF_SERVER_ELASTICSEARCH_INDEX_PREFIX.concat('_', 'Items');
+    })(),
+
+    elasticSearchIndexTexts: (_ => {
+        return (!process.env.IIIF_SERVER_ELASTICSEARCH_INDEX_PREFIX || (process.env.IIIF_SERVER_ELASTICSEARCH_INDEX_PREFIX === 'null'))
+            ? 'Texts'
+            : process.env.IIIF_SERVER_ELASTICSEARCH_INDEX_PREFIX.concat('_', 'Texts');
     })(),
 
     redisVolatile: (_ => {

@@ -8,7 +8,7 @@ index the DIPs created by [Archivematica](https://www.archivematica.org) and to 
 
 1. [Components](#components)
 1. [Services](#services)
-    1. [Default services](#default-services)
+    1. [Default services](#default-service)
     1. [Workers](#workers)
     1. [Cron jobs](#cron-jobs)
     1. [Standalones](#standalones)
@@ -385,6 +385,7 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_ELASTICSEARCH_URL`: URL of the ElasticSearch indexer
 - `IIIF_SERVER_ELASTICSEARCH_USER`: Username of the ElasticSearch indexer if authentication is enabled
 - `IIIF_SERVER_ELASTICSEARCH_PASSWORD`: Password of the ElasticSearch indexer if authentication is enabled
+- `IIIF_SERVER_ELASTICSEARCH_INDEX_PREFIX`: The text placed in front of the indices 'items' and 'texts'. 
 - `IIIF_SERVER_REDIS_VOLATILE_DISABLED`: Turn Redis volatile server on/off (Sets up caching)
 - `IIIF_SERVER_REDIS_VOLATILE_HOST`: Host of the Redis caching server
 - `IIIF_SERVER_REDIS_VOLATILE_PORT`: Port of the Redis caching server

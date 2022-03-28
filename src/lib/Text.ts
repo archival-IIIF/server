@@ -41,7 +41,7 @@ export async function indexTexts(textItems: Text[]): Promise<void> {
             const body = textItems
                 .splice(0, 100)
                 .map(item => [
-                    {index: {_index: 'texts', _id: item.id}},
+                    {index: {_index: config.elasticSearchIndexTexts, _id: item.id}},
                     item
                 ]);
 
@@ -58,7 +58,7 @@ export async function indexTexts(textItems: Text[]): Promise<void> {
 
 export async function deleteTexts(collectionId: string): Promise<void> {
     await getClient().deleteByQuery({
-        index: 'texts',
+        index: config.elasticSearchIndexTexts,
         q: `collection_id:${collectionId}`,
         body: {}
     });
@@ -66,7 +66,7 @@ export async function deleteTexts(collectionId: string): Promise<void> {
 
 export async function getText(id: string): Promise<Text | null> {
     try {
-        const response = await getClient().get({index: 'texts', id: id});
+        const response = await getClient().get({index: config.elasticSearchIndexTexts, id: id});
         return response.body._source;
     }
     catch (err) {
@@ -87,7 +87,7 @@ export function getTextsForCollectionId(collectionId: string, type?: string,
 
 function getTexts(q: string): AsyncIterable<Text> {
     logger.debug(`Obtain texts from ElasticSearch with query "${q}"`);
-    return getClient().helpers.scrollDocuments<Text>({index: 'texts', q});
+    return getClient().helpers.scrollDocuments<Text>({index: config.elasticSearchIndexTexts, q});
 }
 
 export async function readAlto(uri: string): Promise<OcrWord[]> {
