@@ -1,12 +1,10 @@
 import {AuthTextsParams} from '../../lib/Service';
-import {getRootItemByCollectionId} from '../../lib/Item';
 import {
     isAuthenticationEnabled,
     isExternalEnabled,
     isIpAccessEnabled,
     isLoginEnabled
 } from '../../lib/Security';
-
 import {AuthTextsByType} from '../util/types';
 
 const logout = {
@@ -35,13 +33,10 @@ export default async function getAuthTexts({item}: AuthTextsParams): Promise<Aut
         if (item.collection_id === null || item.type === 'metadata')
             return authTexts;
 
-        const rootItem = await getRootItemByCollectionId(item);
-        const metadataType = rootItem?.iish?.type;
-
         if (isLoginEnabled())
             authTexts = {...authTexts, logout, login};
 
-        if ((isExternalEnabled() || isIpAccessEnabled()) && (metadataType === 'marcxml'))
+        if (isExternalEnabled() || isIpAccessEnabled())
             authTexts = {...authTexts, external};
     }
 
