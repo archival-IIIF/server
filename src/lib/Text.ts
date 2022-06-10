@@ -94,7 +94,7 @@ export async function readAlto(uri: string): Promise<OcrWord[]> {
     return cache('alto', 'alto', uri, async () => {
         const altoXml = await readFileAsync(uri, 'utf8');
         const alto = parseXml(altoXml);
-        return alto.find<Element>('//alto:String', ns).map((stringElem, idx) => ({
+        return alto.find<Element>('//alto:String | //String', ns).map((stringElem, idx) => ({
             idx,
             x: parseInt((stringElem.attr('HPOS') as Attribute).value()),
             y: parseInt((stringElem.attr('VPOS') as Attribute).value()),
