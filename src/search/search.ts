@@ -73,7 +73,7 @@ async function search(query: string, filters: { [field: string]: string | undefi
     query = isPhraseMatch ? query.substring(1, query.length - 1) : query;
 
     const response: ApiResponse<SearchResponse> = await getClient().search({
-        index: 'texts',
+        index: config.elasticSearchIndexTexts,
         size: config.maxSearchResults,
         body: {
             query: {
@@ -112,7 +112,7 @@ async function autocomplete(query: string, filters: { [field: string]: string | 
     query = query.trim();
 
     const response: ApiResponse<AutocompleteResponse> = await getClient().search({
-        index: 'texts',
+        index: config.elasticSearchIndexTexts,
         body: {
             _source: false,
             query: {

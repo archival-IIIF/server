@@ -42,7 +42,7 @@ export async function indexItems(items: Item[]): Promise<void> {
             const body = items
                 .splice(0, 100)
                 .map(item => [
-                    {index: {_index: 'items', _id: item.id}},
+                    {index: {_index: config.elasticSearchIndexItems, _id: item.id}},
                     item
                 ]);
 
@@ -66,7 +66,7 @@ export async function updateItems(items: MinimalItem[]): Promise<void> {
             const body = uniqueItems
                 .splice(0, 100)
                 .map(item => [
-                    {update: {_index: 'items', _id: item.id}},
+                    {update: {_index: config.elasticSearchIndexItems, _id: item.id}},
                     {doc: item, upsert: createItem(item)}
                 ]);
 
@@ -82,7 +82,7 @@ export async function updateItems(items: MinimalItem[]): Promise<void> {
 
 export async function deleteItems(collectionId: string): Promise<void> {
     await getClient().deleteByQuery({
-        index: 'items',
+        index: config.elasticSearchIndexItems,
         q: `collection_id:"${collectionId}"`,
         body: {}
     });
@@ -91,7 +91,7 @@ export async function deleteItems(collectionId: string): Promise<void> {
 export async function getItem(id: string): Promise<Item | null> {
     try {
         logger.debug(`Obtain item from ElasticSearch with id ${id}`);
-        const response = await getClient().get({index: 'items', id: id});
+        const response = await getClient().get({index: config.elasticSearchIndexItems, id: id});
         return response.body._source;
     }
     catch (err) {
@@ -167,7 +167,7 @@ export function getAllRootItems(): AsyncIterable<Item> {
 
 function getItems(q: string): AsyncIterable<Item> {
     logger.debug(`Obtain items from ElasticSearch with query "${q}"`);
-    return getClient().helpers.scrollDocuments<Item>({index: 'items', sort: 'label:asc', q});
+    return getClient().helpers.scrollDocuments<Item>({index: config.elasticSearchIndexItems, sort: 'label:asc', q});
 }
 
 export function getFullPath(item: Item, type: 'access' | 'original' | null = null): string {

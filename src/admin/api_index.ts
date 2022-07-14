@@ -2,12 +2,13 @@ import HttpError from '../lib/HttpError';
 import {evictCache} from '../lib/Cache';
 import {Item} from '../lib/ItemInterfaces';
 import {createItem, indexItems, deleteItems} from '../lib/Item';
+import config from "../lib/Config";
 
 export default async function indexCollection(collection: { id?: string; name?: string, items?: Item[] }): Promise<void> {
     if (!('id' in collection) || !collection.id)
         throw new HttpError(400, 'ID missing');
 
-    if (!('items' in collection) || !collection.items)
+    if (!(config.elasticSearchIndexItems in collection) || !collection.items)
         throw new HttpError(400, 'Items missing');
 
     await deleteItems(collection.id);
