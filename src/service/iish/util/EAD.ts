@@ -47,7 +47,7 @@ export function getMetadata(collectionId: string, ead: Document): EADMetadata[] 
 export function getAccess(collectionId: string, ead: Document): string {
     let restriction: string | null = null;
     const accessRestrict = ead
-        .get<Element>('//ead:ead/ead:archdesc/ead:descgrp[@type="access_and_use"]/ead:accessrestrict', ns);
+        .get<Element>('//ead:ead/ead:archdesc/ead:descgrp[@type="access_and_use"]/ead:accessrestrict|//ead:ead/ead:archdesc/ead:accessrestrict', ns);
     if (accessRestrict) {
         const accessValue = accessRestrict.get<Element>('./ead:p', ns);
         if (accessValue)
@@ -114,7 +114,7 @@ function extractMetadataFromLevel(level: Element | null, parentMetadata: EADMeta
 
 function extractFormats(ead: Element, metadata: EADMetadata, parentMetadata: EADMetadata | null): void {
     const formatElems = ead.find<Element>('./ead:descgrp[@type="content_and_structure"]/' +
-        'ead:controlaccess/ead:controlaccess/ead:genreform', ns);
+        'ead:controlaccess/ead:controlaccess/ead:genreform|ead:controlaccess/ead:genreform', ns);
 
     const formats = formatElems.map(formatElem => {
         const format = formatElem.text().toLowerCase();
@@ -168,7 +168,7 @@ function extractOrder(ead: Element, metadata: EADMetadata): void {
 }
 
 function extractContent(ead: Element, metadata: EADMetadata): void {
-    const content = ead.find<Element>('./ead:descgrp[@type="content_and_structure"]/ead:scopecontent/ead:p', ns);
+    const content = ead.find<Element>('./ead:descgrp[@type="content_and_structure"]/ead:scopecontent/ead:p|./ead:scopecontent/ead:p', ns);
 
     if (content.length > 0)
         metadata.content = content
