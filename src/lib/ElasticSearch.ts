@@ -140,7 +140,7 @@ export function setElasticSearchClient(client: Client): void {
                 }
             });
 
-            logger.info('Created the index '.concat(config.elasticSearchIndexItems, ' with a mapping'));
+            logger.info(`Created the index ${config.elasticSearchIndexItems} with a mapping`);
         }
 
         const textsExists = await client.indices.exists({index: config.elasticSearchIndexTexts});
@@ -213,7 +213,7 @@ export function setElasticSearchClient(client: Client): void {
                 }
             });
 
-            logger.info('Created the index '.concat(config.elasticSearchIndexTexts, ' with a mapping'));
+            logger.info(`Created the index ${config.elasticSearchIndexTexts} with a mapping`);
         }
     }
     catch (e) {

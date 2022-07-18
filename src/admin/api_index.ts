@@ -8,7 +8,7 @@ export default async function indexCollection(collection: { id?: string; name?: 
     if (!('id' in collection) || !collection.id)
         throw new HttpError(400, 'ID missing');
 
-    if (!(config.elasticSearchIndexItems in collection) || !collection.items)
+    if (!('items' in collection) || !collection.items)
         throw new HttpError(400, 'Items missing');
 
     await deleteItems(collection.id);
