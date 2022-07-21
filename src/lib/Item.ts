@@ -167,7 +167,12 @@ export function getAllRootItems(): AsyncIterable<Item> {
 
 function getItems(q: string): AsyncIterable<Item> {
     logger.debug(`Obtain items from ElasticSearch with query "${q}"`);
-    return getClient().helpers.scrollDocuments<Item>({index: config.elasticSearchIndexItems, sort: 'label:asc', q});
+    return getClient().helpers.scrollDocuments<Item>({
+        index: config.elasticSearchIndexItems,
+        size: 10_000,
+        sort: 'label:asc',
+        q
+    });
 }
 
 export function getFullPath(item: Item, type: 'access' | 'original' | null = null): string {

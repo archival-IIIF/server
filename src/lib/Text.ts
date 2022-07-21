@@ -87,7 +87,11 @@ export function getTextsForCollectionId(collectionId: string, type?: string,
 
 function getTexts(q: string): AsyncIterable<Text> {
     logger.debug(`Obtain texts from ElasticSearch with query "${q}"`);
-    return getClient().helpers.scrollDocuments<Text>({index: config.elasticSearchIndexTexts, q});
+    return getClient().helpers.scrollDocuments<Text>({
+        index: config.elasticSearchIndexTexts,
+        size: 10_000,
+        q
+    });
 }
 
 export async function readAlto(uri: string): Promise<OcrWord[]> {
