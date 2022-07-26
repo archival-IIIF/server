@@ -1,6 +1,7 @@
 import {PDFDocument, PDFPage} from 'pdf-lib';
 
 import config from '../lib/Config';
+import logger from '../lib/Logger';
 import {ImageItem, RootItem} from '../lib/ItemInterfaces';
 
 import {getImage} from '../image/imageServer';
@@ -15,6 +16,8 @@ export default async function createPDF(rootItem: RootItem, items: ImageItem[], 
     config.attribution && document.setCreator(config.attribution);
 
     for (const item of items) {
+        logger.debug(`Create a PDF page for collection ${item.collection_id} with order ${item.order}; item id ${item.id}`);
+
         const page = await createPdfPage(document, item, tier);
         if (page)
             document.addPage(page);

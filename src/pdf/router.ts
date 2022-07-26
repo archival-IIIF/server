@@ -57,6 +57,8 @@ router.get('/:id', async ctx => {
         }
     }
 
+    logger.info(`Start producing a pdf with id ${ctx.params.id}`);
+
     const pdf = await createPDF(item as RootItem, children, access.tier);
 
     ctx.set('Content-Type', 'application/pdf');
