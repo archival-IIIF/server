@@ -20,7 +20,8 @@ export default async function hasAccess({item, ip, identities = []}: AccessParam
         if (await hasToken(rootItem, identities))
             return {state: AccessState.OPEN};
 
-        if ((rootItem?.id.startsWith('ARCH00293') || rootItem?.id.startsWith('ARCH00393'))
+        if ((rootItem?.id.startsWith('ARCH00293') || rootItem?.id.startsWith('ARCH00393')
+                || rootItem?.id.startsWith('COLL00146'))
             && ip && isIpInRange(ip))
             return {state: AccessState.OPEN};
 
