@@ -1,11 +1,11 @@
-import logger from './Logger';
-import {getVolatileClient} from './Redis';
+import logger from './Logger.js';
+import {getVolatileClient} from './Redis.js';
 
-export async function cache<T>(type: string, group: string, id: string,
-                               content: () => Promise<T>, secondsToExpire = 86400): Promise<T> {
+export async function cache<T>(type: string, group: string, id: string, content: () => Promise<T>,
+                               secondsToExpire = 86400): Promise<T> {
     const client = getVolatileClient();
     if (!client)
-        return await content();
+        return content();
 
     const key = `${type}:${group}:${id}`;
     const cachedValue = await client.get(key);
@@ -17,10 +17,12 @@ export async function cache<T>(type: string, group: string, id: string,
     const toBeCached = await content();
     if (toBeCached) {
         logger.debug(`Caching content for type ${type} in group ${group} with id ${id}`);
-        await client.set(key, JSON.stringify(toBeCached), ['EX', secondsToExpire]);
 
         const groupKey = `${type}:${group}`;
-        await client.sadd(groupKey, key);
+        await client.multi()
+            .set(key, JSON.stringify(toBeCached), {EX: secondsToExpire})
+            .sAdd(groupKey, key)
+            .exec();
     }
 
     return toBeCached;
@@ -34,6 +36,6 @@ export async function evictCache(type: string, group: string): Promise<void> {
     logger.debug(`Evicting cache for type ${type} and group ${group}`);
 
     const groupKey = `${type}:${group}`;
-    const keysToRemove = await client.smembers(groupKey);
-    await client.del(groupKey, ...keysToRemove);
+    const keysToRemove = await client.sMembers(groupKey);
+    await client.del([groupKey].concat(keysToRemove));
 }

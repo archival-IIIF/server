@@ -1,10 +1,10 @@
-import config from '../../lib/Config';
-import {Item} from '../../lib/ItemInterfaces';
-import {IIIFMetadataParams} from '../../lib/Service';
+import config from '../../lib/Config.js';
+import {Item} from '../../lib/ItemInterfaces.js';
+import {IIIFMetadataParams} from '../../lib/Service.js';
 
-import {EAD_OAI_PREFIX} from './util/EAD';
-import {MARC_OAI_PREFIX} from './util/MARCXML';
-import {IIIFMetadata, IIIFMetadataHomepage, IIIFMetadataPairs, IIIFMetadataSeeAlso} from '../util/types';
+import {EAD_OAI_PREFIX} from './util/EAD.js';
+import {MARC_OAI_PREFIX} from './util/MARCXML.js';
+import {IIIFMetadata, IIIFMetadataHomepage, IIIFMetadataPairs, IIIFMetadataSeeAlso} from '../util/types.js';
 
 export default async function getIIIFMetadata({item}: IIIFMetadataParams): Promise<IIIFMetadata> {
     return {

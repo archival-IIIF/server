@@ -1,13 +1,13 @@
 import {expect} from 'chai';
 import nock from 'nock';
 import {Buffer} from 'buffer';
+import {AccessTier} from '@archival-iiif/presentation-builder/v2';
 
-import {setConfig} from '../../src/lib/Config';
-import {createItem} from '../../src/lib/Item';
-import {ImageItem} from '../../src/lib/ItemInterfaces';
+import {setConfig} from '../../src/lib/Config.js';
+import {createItem} from '../../src/lib/Item.js';
+import {ImageItem} from '../../src/lib/ItemInterfaces.js';
 
-import {getImage} from '../../src/image/imageServer';
-import {AccessTier} from '@archival-iiif/presentation-builder/dist/v2/Image';
+import {getImage} from '../../src/image/imageServer.js';
 
 describe('imageServer', () => {
     const item = createItem({

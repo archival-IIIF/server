@@ -1,14 +1,14 @@
 import {DefaultState} from 'koa';
 import Router from '@koa/router';
 
-import HttpError from '../lib/HttpError';
-import {Item} from '../lib/ItemInterfaces';
-import {ExtendedContext} from '../lib/Koa';
-import {getChildItems, getItem} from '../lib/Item';
-import {Text, getText, getTextsForCollectionId, withTexts} from '../lib/Text';
+import HttpError from '../lib/HttpError.js';
+import {Item} from '../lib/ItemInterfaces.js';
+import {ExtendedContext} from '../lib/Koa.js';
+import {getChildItems, getItem} from '../lib/Item.js';
+import {Text, getText, getTextsForCollectionId, withTexts} from '../lib/Text.js';
 
-import {getSearch, getAutocomplete} from '../builder/PresentationBuilder';
-import {searchInCollection, searchInText, autoCompleteForCollection, autocompleteForText} from './search';
+import {getSearch, getAutocomplete} from '../builder/PresentationBuilder.js';
+import {searchInCollection, searchInText, autoCompleteForCollection, autocompleteForText} from './search.js';
 
 export const router = new Router<DefaultState, ExtendedContext>({prefix: '/iiif/search'});
 

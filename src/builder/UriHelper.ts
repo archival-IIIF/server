@@ -1,4 +1,4 @@
-import config from '../lib/Config';
+import config from '../lib/Config.js';
 
 const prefixPresentationUrl = `${config.baseUrl}/iiif/presentation`;
 const prefixImageUrl = `${config.baseUrl}/iiif/image`;

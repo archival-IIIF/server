@@ -3,11 +3,11 @@ import * as path from 'path';
 import {promisify} from 'util';
 import {parseXml, Element, Attribute} from 'libxmljs2';
 
-import config from '../lib/Config';
+import config from '../lib/Config.js';
 
-import logger from './Logger';
-import {cache} from './Cache';
-import getClient from './ElasticSearch';
+import logger from './Logger.js';
+import {cache} from './Cache.js';
+import getClient from './ElasticSearch.js';
 
 export interface Text {
     id: string;
@@ -47,7 +47,7 @@ export async function indexTexts(textItems: Text[]): Promise<void> {
 
             await getClient().bulk({
                 refresh: 'wait_for',
-                body: [].concat(...body as [])
+                operations: [].concat(...body as [])
             });
         }
     }
@@ -60,14 +60,13 @@ export async function deleteTexts(collectionId: string): Promise<void> {
     await getClient().deleteByQuery({
         index: config.elasticSearchIndexTexts,
         q: `collection_id:${collectionId}`,
-        body: {}
     });
 }
 
 export async function getText(id: string): Promise<Text | null> {
     try {
-        const response = await getClient().get({index: config.elasticSearchIndexTexts, id: id});
-        return response.body._source;
+        const response = await getClient().get<Text>({index: config.elasticSearchIndexTexts, id: id});
+        return response._source || null;
     }
     catch (err) {
         return null;

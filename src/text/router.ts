@@ -1,14 +1,13 @@
 import * as fs from 'fs';
-import * as path from 'path';
 import Router from '@koa/router';
 import {DefaultState} from 'koa';
 
-import {getText} from '../lib/Text';
-import logger from '../lib/Logger';
-import HttpError from '../lib/HttpError';
-import {ExtendedContext} from '../lib/Koa';
+import {getText} from '../lib/Text.js';
+import logger from '../lib/Logger.js';
+import HttpError from '../lib/HttpError.js';
+import {ExtendedContext} from '../lib/Koa.js';
 
-const htmlTemplate = fs.readFileSync(path.join(__dirname, 'text.html'), 'utf8');
+const htmlTemplate = fs.readFileSync('src/text/text.html', 'utf8');
 
 export const router = new Router<DefaultState, ExtendedContext>({prefix: '/text'});
 

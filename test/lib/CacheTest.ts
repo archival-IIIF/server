@@ -2,36 +2,41 @@ import sinon from 'sinon';
 import chai from 'chai';
 import sinonChai from 'sinon-chai';
 
-import {setConfig} from '../../src/lib/Config';
-import {setRedisClient} from '../../src/lib/Redis';
-import {cache, evictCache} from '../../src/lib/Cache';
+import {setRedisClient} from '../../src/lib/Redis.js';
+import {cache, evictCache} from '../../src/lib/Cache.js';
 
 chai.use(sinonChai);
 const expect = chai.expect;
 
 describe('Cache', () => {
     let redis: any;
-    let contentFunc: sinon.SinonStub;
+    let redisMulti: any;
+    let contentFunc: any;
 
     const cacheable = {thisIs: 'to be cached'};
 
     beforeEach(() => {
         redis = {
-            sadd: sinon.spy(),
             del: sinon.spy(),
-
             get: sinon.stub().resolves(null as any),
-            set: sinon.stub().resolves('OK'),
-            smembers: sinon.stub().resolves([])
+            sMembers: sinon.stub().resolves([]),
+            multi: () => redisMulti
         };
 
-        contentFunc = sinon.stub().resolves(cacheable);
+        redisMulti = {
+            sAdd: sinon.stub().returns(redisMulti),
+            set: sinon.stub().returns(redisMulti),
+            exec: sinon.fake()
+        };
+
+        contentFunc = sinon.spy(() => cacheable);
 
         setRedisClient(redis);
     });
 
     afterEach(() => {
         sinon.restore();
+        setRedisClient(null);
     });
 
     describe('#cache()', () => {
@@ -42,8 +47,8 @@ describe('Cache', () => {
             expect(contentCached).to.be.deep.equal(cacheable);
 
             expect(redis.get).to.have.been.calledWith('type:group:id');
-            expect(redis.set).to.have.been.calledWith('type:group:id', JSON.stringify(cacheable), sinon.match.any);
-            expect(redis.sadd).to.have.been.calledWith('type:group', 'type:group:id');
+            expect(redisMulti.set).to.have.been.calledWith('type:group:id', JSON.stringify(cacheable), sinon.match.any);
+            expect(redisMulti.sAdd).to.have.been.calledWith('type:group', 'type:group:id');
         });
 
         it('should obtain cached data', async () => {
@@ -55,19 +60,19 @@ describe('Cache', () => {
             expect(contentCached).to.be.deep.equal(cacheable);
 
             expect(redis.get).to.be.calledWith('type:group:id');
-            expect(redis.set).to.have.not.been.called;
-            expect(redis.sadd).to.have.not.been.called;
+            expect(redisMulti.set).to.have.not.been.called;
+            expect(redisMulti.sAdd).to.have.not.been.called;
         });
     });
 
     describe('#evictCache()', () => {
         it('should evict the cache', async () => {
-            redis.smembers.resolves(['key1', 'key2', 'key3']);
+            redis.sMembers.resolves(['key1', 'key2', 'key3']);
 
             await evictCache('type', 'group');
 
-            expect(redis.smembers).to.have.been.calledWith('type:group');
-            expect(redis.del).to.have.been.calledWith('type:group', 'key1', 'key2', 'key3');
+            expect(redis.sMembers).to.have.been.calledWith('type:group');
+            expect(redis.del).to.have.been.calledWith(['type:group', 'key1', 'key2', 'key3']);
         });
     });
 });

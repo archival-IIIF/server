@@ -1,18 +1,18 @@
 import Router from '@koa/router';
 import {DefaultState} from 'koa';
 
-import logger from '../lib/Logger';
-import {cache} from '../lib/Cache';
-import {getItem} from '../lib/Item';
-import {getText} from '../lib/Text';
-import HttpError from '../lib/HttpError';
-import {ExtendedContext} from '../lib/Koa';
-import {AccessState, hasAccess} from '../lib/Security';
+import logger from '../lib/Logger.js';
+import {cache} from '../lib/Cache.js';
+import {getItem} from '../lib/Item.js';
+import {getText} from '../lib/Text.js';
+import HttpError from '../lib/HttpError.js';
+import {ExtendedContext} from '../lib/Koa.js';
+import {AccessState, hasAccess} from '../lib/Security.js';
 
-import {getAnnotationPage, getCollection, getManifest, isCollection, isManifest} from '../builder/PresentationBuilder';
+import {getAnnotationPage, getCollection, getManifest, isCollection, isManifest} from '../builder/PresentationBuilder.js';
 
-import {setContent} from './util';
-import {router as routerTop} from './router-top';
+import {setContent} from './util.js';
+import {router as routerTop} from './router-top.js';
 
 export const router = new Router<DefaultState, ExtendedContext>({prefix: '/iiif/presentation'});
 
@@ -34,7 +34,8 @@ router.get('/collection/:id', async ctx => {
 
     setContent(
         ctx,
-        await cache('collection', item.collection_id, item.id, async () => await getCollection(item, access))
+        await cache('collection', item.collection_id, item.id,
+            async () => getCollection(item, access))
     );
 
     logger.info(`Sending a IIIF collection with id ${ctx.params.id}`);
@@ -51,7 +52,8 @@ router.get('/:id/manifest', async ctx => {
 
     setContent(
         ctx,
-        await cache('manifest', item.collection_id, item.id, async () => await getManifest(item, access))
+        await cache('manifest', item.collection_id, item.id,
+            async () => getManifest(item, access))
     );
 
     logger.info(`Sending a IIIF manifest with id ${ctx.params.id}`);
@@ -70,7 +72,8 @@ router.get('/:id/annopage/:annoPageId', async ctx => {
 
     setContent(
         ctx,
-        await cache('annopage', item.collection_id, item.id, async () => await getAnnotationPage(item, text))
+        await cache('annopage', item.collection_id, item.id,
+            async () => getAnnotationPage(item, text))
     );
 
     logger.info(`Sending a IIIF annotation page with id ${ctx.params.id} and annotation page id ${ctx.params.annoPageId}`);

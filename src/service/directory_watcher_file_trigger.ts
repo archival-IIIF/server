@@ -4,10 +4,10 @@ import {dirname, basename, resolve} from 'path';
 import {move} from 'fs-extra';
 import chokidar from 'chokidar';
 
-import config from '../lib/Config';
-import logger from '../lib/Logger';
-import {runTask} from '../lib/Task';
-import {IndexParams} from '../lib/Service';
+import config from '../lib/Config.js';
+import logger from '../lib/Logger.js';
+import {runTask} from '../lib/Task.js';
+import {IndexParams} from '../lib/Service.js';
 
 export default function watchDirectoryForFileTrigger(): void {
     if (!config.hotFolderPath || !existsSync(config.hotFolderPath))

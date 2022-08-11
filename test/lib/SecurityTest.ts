@@ -2,16 +2,16 @@ import sinon from 'sinon';
 import chai from 'chai';
 import sinonChai from 'sinon-chai';
 
-import {createItem} from '../../src/lib/Item';
-import {setRedisClient} from '../../src/lib/Redis';
-import config, {setConfig} from '../../src/lib/Config';
-import {AccessParams, setServicesRunning} from '../../src/lib/Service';
+import {createItem} from '../../src/lib/Item.js';
+import {setRedisClient} from '../../src/lib/Redis.js';
+import config, {setConfig} from '../../src/lib/Config.js';
+import {AccessParams, setServicesRunning} from '../../src/lib/Service.js';
 
 import {
     Access, AccessState, hasAccess, hasAdminAccess, requiresAuthentication, isIpInRange,
     setAccessIdForIdentity, setAccessTokenForAccessId, getAccessIdFromRequest, removeAccessIdFromRequest
-} from '../../src/lib/Security';
-import {extendContext, ExtendedContext} from '../../src/lib/Koa';
+} from '../../src/lib/Security.js';
+import {extendContext, ExtendedContext} from '../../src/lib/Koa.js';
 
 chai.use(sinonChai);
 const expect = chai.expect;
@@ -93,6 +93,8 @@ describe('Security', () => {
         setConfig('loginDisabled', true);
         setConfig('externalDisabled', true);
         setConfig('internalIpAddresses', []);
+
+        setRedisClient(null);
     });
 
     describe('#hasAccess()', () => {
@@ -219,7 +221,7 @@ describe('Security', () => {
             expect(redis.set).to.have.been.calledWithExactly(
                 `access-id:${accessId}`,
                 JSON.stringify({identities: [identity, 'new-identity'], token: accessToken}),
-                ['EX', config.accessTtl]
+                {'EX': config.accessTtl}
             );
         });
 
@@ -230,13 +232,13 @@ describe('Security', () => {
             expect(redis.set).to.have.been.calledWithExactly(
                 `access-id:${newAccessId}`,
                 JSON.stringify({identities: [identity], token: null}),
-                ['EX', config.accessTtl]
+                {'EX': config.accessTtl}
             );
         });
     });
 
     describe('#setAccessTokenForAccessId()', () => {
-        it('should end no updates for already coupled access token with access id', async () => {
+        it('should send no updates for already coupled access token with access id', async () => {
             await setAccessTokenForAccessId(accessId);
             expect(redisMulti.exec).to.have.not.been.called;
         });
@@ -322,8 +324,9 @@ describe('Security', () => {
 
             await removeAccessIdFromRequest(ctx as ExtendedContext);
 
-            expect(redisMulti.del).to.have.been.calledWithExactly(`access-id:${accessId}`);
-            expect(redisMulti.del).to.have.been.calledWithExactly(`access-token:${accessToken}`);
+            expect(redisMulti.del).to.have.been.calledTwice;
+            expect(redisMulti.del.getCall(0)).to.have.been.calledWithExactly(`access-id:${accessId}`);
+            expect(redisMulti.del.getCall(1)).to.have.been.calledWithExactly(`access-token:${accessToken}`);
         });
     });
 });

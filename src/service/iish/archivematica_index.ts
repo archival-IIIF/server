@@ -4,16 +4,16 @@ import {promisify} from 'util';
 import moment from 'moment';
 import {parseXml, Attribute, Document, Element} from 'libxmljs2';
 
-import config from '../../lib/Config';
-import logger from '../../lib/Logger';
-import {runTask} from '../../lib/Task';
-import {evictCache} from '../../lib/Cache';
-import {createItem, indexItems, deleteItems} from '../../lib/Item';
-import {IndexParams, MetadataParams, TextParams, DerivativeParams} from '../../lib/Service';
-import {MinimalItem, FileItem, FolderItem, Item} from '../../lib/ItemInterfaces';
+import config from '../../lib/Config.js';
+import logger from '../../lib/Logger.js';
+import {runTask} from '../../lib/Task.js';
+import {evictCache} from '../../lib/Cache.js';
+import {createItem, indexItems, deleteItems} from '../../lib/Item.js';
+import {IndexParams, MetadataParams, TextParams, DerivativeParams} from '../../lib/Service.js';
+import {MinimalItem, FileItem, FolderItem, Item} from '../../lib/ItemInterfaces.js';
 
-import {TextItem} from '../util/types';
-import {getTypeForPronom, pronomByExtension} from '../util/archivematica_pronom_data';
+import {TextItem} from '../util/types.js';
+import {getTypeForPronom, pronomByExtension} from '../util/archivematica_pronom_data.js';
 
 type WalkTreeParams = {
     id: string;

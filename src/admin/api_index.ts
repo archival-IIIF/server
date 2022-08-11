@@ -1,8 +1,7 @@
-import HttpError from '../lib/HttpError';
-import {evictCache} from '../lib/Cache';
-import {Item} from '../lib/ItemInterfaces';
-import {createItem, indexItems, deleteItems} from '../lib/Item';
-import config from "../lib/Config";
+import HttpError from '../lib/HttpError.js';
+import {evictCache} from '../lib/Cache.js';
+import {Item} from '../lib/ItemInterfaces.js';
+import {createItem, indexItems, deleteItems} from '../lib/Item.js';
 
 export default async function indexCollection(collection: { id?: string; name?: string, items?: Item[] }): Promise<void> {
     if (!('id' in collection) || !collection.id)

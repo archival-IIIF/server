@@ -1,5 +1,5 @@
 import {createLogger, transports, format} from 'winston';
-import config from './Config';
+import config from './Config.js';
 
 const stackTraceFormat = format(info => {
     if (info.err)

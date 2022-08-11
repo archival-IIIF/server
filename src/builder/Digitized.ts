@@ -1,7 +1,11 @@
-import {getChildItems} from '../lib/Item';
-import {getAuthTexts} from '../lib/Security';
-import {Item, RootItem, FileItem} from '../lib/ItemInterfaces';
-import {getTextsForCollectionId, getFullPath, readAlto, Text, withTexts} from '../lib/Text';
+import {getChildItems} from '../lib/Item.js';
+import {Item, RootItem, FileItem} from '../lib/ItemInterfaces.js';
+import {getTextsForCollectionId, getFullPath, readAlto, Text, withTexts} from '../lib/Text.js';
+
+import {
+    Base, Canvas, Service, Manifest, Resource,
+    Annotation, AnnotationPage, AnnotationCollection
+} from '@archival-iiif/presentation-builder/v3';
 
 import {
     createMinimalManifest,
@@ -10,29 +14,18 @@ import {
     addThumbnail,
     addMetadata,
     createAnnotationPage,
-} from './PresentationUtils';
-
-import Base from '@archival-iiif/presentation-builder/dist/v3/Base';
-import Canvas from '@archival-iiif/presentation-builder/dist/v3/Canvas';
-import Service from '@archival-iiif/presentation-builder/dist/v3/Service';
-import Manifest from '@archival-iiif/presentation-builder/dist/v3/Manifest';
-import Resource from '@archival-iiif/presentation-builder/dist/v3/Resource';
-import Annotation from '@archival-iiif/presentation-builder/dist/v3/Annotation';
-import AuthService from '@archival-iiif/presentation-builder/dist/v3/AuthService';
-import AnnotationPage from '@archival-iiif/presentation-builder/dist/v3/AnnotationPage';
-import AnnotationCollection from '@archival-iiif/presentation-builder/dist/v3/AnnotationCollection';
+} from './PresentationUtils.js';
 
 import {
     annoCollUri,
     annoPageUri,
     annoUri,
-    authUri,
     fileUri,
     searchUri,
     autocompleteUri,
     textUri,
     textPlainUri
-} from './UriHelper';
+} from './UriHelper.js';
 
 export async function getManifest(parentItem: RootItem): Promise<Manifest> {
     const manifest = await createManifest(parentItem);

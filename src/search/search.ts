@@ -1,33 +1,10 @@
-import {ApiResponse} from '@elastic/elasticsearch';
-
-import config from '../lib/Config';
-import getClient from '../lib/ElasticSearch';
-import {Text} from '../lib/Text';
+import config from '../lib/Config.js';
+import getClient from '../lib/ElasticSearch.js';
+import {Text} from '../lib/Text.js';
+import {SearchResponse} from '@elastic/elasticsearch/lib/api/types.js';
 
 const PRE_TAG = '{{{';
 const POST_TAG = '}}}';
-
-interface SearchResponse {
-    hits: {
-        total: number,
-        hits: {
-            _source: Text,
-            highlight: {
-                text: string[]
-            }
-        }[]
-    }
-}
-
-interface AutocompleteResponse {
-    hits: {
-        hits: {
-            highlight: {
-                'text.autocomplete': string[]
-            }
-        }[]
-    }
-}
 
 export interface SearchResult {
     text: Text,
@@ -72,86 +49,86 @@ async function search(query: string, filters: { [field: string]: string | undefi
     const isPhraseMatch = query.startsWith('"') && query.endsWith('"');
     query = isPhraseMatch ? query.substring(1, query.length - 1) : query;
 
-    const response: ApiResponse<SearchResponse> = await getClient().search({
+    const response: SearchResponse<Text> = await getClient().search({
         index: config.elasticSearchIndexTexts,
         size: config.maxSearchResults,
-        body: {
-            query: {
-                bool: {
-                    must: {
-                        [isPhraseMatch ? 'match_phrase' : 'match']: {
-                            text: {
-                                query,
-                                fuzziness: !isPhraseMatch ? 'AUTO' : undefined
-                            }
+        query: {
+            bool: {
+                must: {
+                    [isPhraseMatch ? 'match_phrase' : 'match']: {
+                        text: {
+                            query,
+                            fuzziness: !isPhraseMatch ? 'AUTO' : undefined
                         }
-                    },
-                    filter: {
-                        term: filters
                     }
+                },
+                should: undefined,
+                filter: {
+                    term: filters
                 }
-            },
-            highlight: {
-                type: 'plain',
-                pre_tags: [PRE_TAG],
-                post_tags: [POST_TAG],
-                fields: {
-                    text: {}
-                }
+            }
+        },
+        highlight: {
+            type: 'plain',
+            pre_tags: [PRE_TAG],
+            post_tags: [POST_TAG],
+            fields: {
+                text: {}
             }
         }
     });
 
-    return response.body.hits.hits.map(hit => ({
-        text: hit._source,
-        matches: hit.highlight.text.flatMap(hl => mapMatches(hl))
+    return response.hits.hits.map(hit => ({
+        text: hit._source as Text,
+        matches: hit.highlight ? hit.highlight.text.flatMap(hl => mapMatches(hl)) : []
     }));
 }
 
 async function autocomplete(query: string, filters: { [field: string]: string | undefined }): Promise<string[][]> {
     query = query.trim();
 
-    const response: ApiResponse<AutocompleteResponse> = await getClient().search({
+    const response: SearchResponse = await getClient().search({
         index: config.elasticSearchIndexTexts,
-        body: {
-            _source: false,
-            query: {
-                bool: {
-                    must: {
-                        match_phrase: {
-                            'text.autocomplete': {
-                                query
-                            }
+        _source: false,
+        query: {
+            bool: {
+                must: {
+                    match_phrase: {
+                        'text.autocomplete': {
+                            query
                         }
-                    },
-                    filter: {
-                        term: filters
                     }
+                },
+                should: undefined,
+                filter: {
+                    term: filters
                 }
-            },
-            highlight: {
-                pre_tags: [PRE_TAG],
-                post_tags: [POST_TAG],
-                fields: {
-                    'text.autocomplete': {}
-                }
+            }
+        },
+        highlight: {
+            pre_tags: [PRE_TAG],
+            post_tags: [POST_TAG],
+            fields: {
+                'text.autocomplete': {}
             }
         }
     });
 
-    if (response.body.hits.hits.length === 0)
+    if (response.hits.hits.length === 0)
         return [];
 
     const firstQueryWord = query.split(' ')[0].toLowerCase();
 
-    return response.body.hits.hits.reduce<string[][]>((acc, hit) => {
-        for (const hl of hit.highlight['text.autocomplete']) {
-            for (const match of mapMatches(hl)) {
-                const word = match.match;
-                if (word.toLowerCase().startsWith(firstQueryWord))
-                    acc.push([word]);
-                else
-                    acc[acc.length - 1].push(word);
+    return response.hits.hits.reduce<string[][]>((acc, hit) => {
+        if (hit.highlight) {
+            for (const hl of hit.highlight['text.autocomplete']) {
+                for (const match of mapMatches(hl)) {
+                    const word = match.match;
+                    if (word.toLowerCase().startsWith(firstQueryWord))
+                        acc.push([word]);
+                    else
+                        acc[acc.length - 1].push(word);
+                }
             }
         }
         return acc;

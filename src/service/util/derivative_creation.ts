@@ -4,10 +4,10 @@ import {writeFile} from 'fs';
 import {ensureDir} from 'fs-extra';
 import {exec} from 'child_process';
 
-import logger from '../../lib/Logger';
-import {Item} from '../../lib/ItemInterfaces';
-import {DerivativeType} from '../../lib/Derivative';
-import {getFullPath, getFullDerivativePath} from '../../lib/Item';
+import logger from '../../lib/Logger.js';
+import {Item} from '../../lib/ItemInterfaces.js';
+import {DerivativeType} from '../../lib/Derivative.js';
+import {getFullPath, getFullDerivativePath} from '../../lib/Item.js';
 
 const execAsync = promisify(exec);
 const writeFileAsync = promisify(writeFile);

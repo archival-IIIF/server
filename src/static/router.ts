@@ -1,12 +1,10 @@
-import * as path from 'path';
-
 import Router from '@koa/router';
 import send from 'koa-send';
 import {DefaultState} from 'koa';
 
-import HttpError from '../lib/HttpError';
-import {ExtendedContext} from '../lib/Koa';
-import {fileIconsPath} from '../lib/FileIcon';
+import HttpError from '../lib/HttpError.js';
+import {ExtendedContext} from '../lib/Koa.js';
+import {fileIconsPath} from '../lib/FileIcon.js';
 
 export const router = new Router<DefaultState, ExtendedContext>();
 
@@ -24,8 +22,7 @@ router.get('/', async ctx => {
 });
 
 router.get('/iiif-explorer:path(.*)?', async ctx => {
-    const root = path.join(__dirname, '../../node_modules/iiif-explorer/dist/iiif-explorer/');
-    await send(ctx, ctx.params.path, {root});
+    await send(ctx, ctx.params.path, {root: './node_modules/iiif-explorer/dist/iiif-explorer/'});
 });
 
 router.get('/file-icon:path(.*)', async ctx => {

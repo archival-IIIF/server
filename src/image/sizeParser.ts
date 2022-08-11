@@ -1,4 +1,4 @@
-import {Size} from './imageServer';
+import {Size} from './imageServer.js';
 
 const SIZE_TO_WIDTH = /^([0-9]+),$/;
 const SIZE_TO_HEIGHT = /^,([0-9]+)$/;

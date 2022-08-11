@@ -1,5 +1,5 @@
-import config from './Config';
-import logger from './Logger';
+import config from './Config.js';
+import logger from './Logger.js';
 import {Client} from '@elastic/elasticsearch';
 
 let testClient: Client | null = null;
@@ -7,7 +7,7 @@ const client = (config.elasticSearchUser && config.elasticSearchPassword)
     ? new Client({
         node: config.elasticSearchUrl,
         auth: {username: config.elasticSearchUser, password: config.elasticSearchPassword},
-        ssl: {rejectUnauthorized: false}
+        tls: {rejectUnauthorized: false}
     })
     : new Client({node: config.elasticSearchUrl});
 
@@ -32,7 +32,7 @@ export function setElasticSearchClient(client: Client): void {
         await client.ping();
 
         const itemsExists = await client.indices.exists({index: config.elasticSearchIndexItems});
-        if (!itemsExists.body) {
+        if (!itemsExists) {
             await client.indices.create({
                 index: config.elasticSearchIndexItems,
                 body: {
@@ -144,7 +144,7 @@ export function setElasticSearchClient(client: Client): void {
         }
 
         const textsExists = await client.indices.exists({index: config.elasticSearchIndexTexts});
-        if (!textsExists.body) {
+        if (!textsExists) {
             await client.indices.create({
                 index: config.elasticSearchIndexTexts,
                 body: {

@@ -1,17 +1,16 @@
-import * as path from 'path';
 import {DefaultState} from 'koa';
 import {createReadStream} from 'fs';
 import Router from '@koa/router';
 
-import config from '../lib/Config';
-import {ExtendedContext} from '../lib/Koa';
+import config from '../lib/Config.js';
+import {ExtendedContext} from '../lib/Koa.js';
 import {
     checkTokenDb,
     getAccessIdFromRequest,
     removeAccessIdFromRequest,
     setAccessIdForIdentity,
     setAccessTokenForAccessId
-} from '../lib/Security';
+} from '../lib/Security.js';
 
 type TokenBody = Record<'token', string | undefined>;
 
@@ -24,7 +23,7 @@ export const router = new Router<DefaultState, ExtendedContext>({prefix});
 
 router.get('/login', ctx => {
     ctx.type = 'text/html';
-    ctx.body = createReadStream(path.join(__dirname, 'token-login.html'));
+    ctx.body = createReadStream('./src/authentication/token-login.html');
 });
 
 router.post('/login', async ctx => {
@@ -33,7 +32,7 @@ router.post('/login', async ctx => {
         await setCookieForToken(ctx, token);
 
     ctx.type = 'text/html';
-    ctx.body = createReadStream(path.join(__dirname, 'close-window.html'));
+    ctx.body = createReadStream('./src/authentication/close-window.html');
 });
 
 router.get('/cookie', async ctx => {
@@ -73,7 +72,7 @@ router.get('/logout', async ctx => {
     await removeAccessIdFromRequest(ctx);
 
     ctx.type = 'text/html';
-    ctx.body = createReadStream(path.join(__dirname, 'logout.html'));
+    ctx.body = createReadStream('./src/authentication/logout.html');
 });
 
 async function setCookieForToken(ctx: ExtendedContext, token: string): Promise<void> {

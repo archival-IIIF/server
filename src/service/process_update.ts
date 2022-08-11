@@ -1,8 +1,8 @@
-import {runTask} from '../lib/Task';
-import {Item} from '../lib/ItemInterfaces';
-import getClient from '../lib/ElasticSearch';
-import {ProcessUpdateParams, MetadataParams, DerivativeParams} from '../lib/Service';
-import config from "../lib/Config";
+import config from '../lib/Config.js';
+import {runTask} from '../lib/Task.js';
+import {Item} from '../lib/ItemInterfaces.js';
+import getClient from '../lib/ElasticSearch.js';
+import {ProcessUpdateParams, MetadataParams, DerivativeParams} from '../lib/Service.js';
 
 export default async function processUpdate({type, query}: ProcessUpdateParams): Promise<void> {
     const scrollItems = getClient().helpers.scrollDocuments<Item>({index: config.elasticSearchIndexItems, q: query});

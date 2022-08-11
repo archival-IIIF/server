@@ -2,7 +2,7 @@ import sinon from 'sinon';
 import chai from 'chai';
 import sinonChai from 'sinon-chai';
 
-import {waitForTask, handleMessage} from '../../src/lib/Worker';
+import {waitForTask, handleMessage} from '../../src/lib/Worker.js';
 
 chai.use(sinonChai);
 const expect = chai.expect;
@@ -14,13 +14,13 @@ describe('Worker', () => {
     beforeEach(() => {
         redis = {
             multi: () => redisMulti,
-            setex: sinon.stub(),
-            lrem: sinon.spy(),
-            brpoplpush: sinon.stub().resolves(undefined),
+            setEx: sinon.stub(),
+            lRem: sinon.spy(),
+            brPopLPush: sinon.stub().resolves(undefined),
         };
 
         redisMulti = {
-            lrem: () => redisMulti,
+            lRem: () => redisMulti,
             del: () => redisMulti,
             publish: sinon.stub().returns(redisMulti),
             exec: sinon.fake(),
@@ -35,8 +35,8 @@ describe('Worker', () => {
         it('should monitor a queue', () => {
             waitForTask('test', async () => null, [], redis, redis);
 
-            expect(redis.brpoplpush).to.be.calledOnce;
-            expect(redis.brpoplpush).to.be.calledWithExactly('tasks:test', 'tasks:test:progress', 0);
+            expect(redis.brPopLPush).to.be.calledOnce;
+            expect(redis.brPopLPush).to.be.calledWithExactly('tasks:test', 'tasks:test:progress', 0);
         });
     });
 

@@ -3,13 +3,13 @@ import readline from 'readline';
 import {join} from 'path';
 import {createReadStream, existsSync} from 'fs';
 
-import config from '../../lib/Config';
-import logger from '../../lib/Logger';
-import {MetadataParams} from '../../lib/Service';
-import {MinimalItem} from '../../lib/ItemInterfaces';
-import {getCollectionIdsIndexed, updateItems} from '../../lib/Item';
+import config from '../../lib/Config.js';
+import logger from '../../lib/Logger.js';
+import {MetadataParams} from '../../lib/Service.js';
+import {MinimalItem} from '../../lib/ItemInterfaces.js';
+import {getCollectionIdsIndexed, updateItems} from '../../lib/Item.js';
 
-import * as NIOD from './util/NIOD';
+import * as NIOD from './util/NIOD.js';
 
 export default async function processMetadata({oaiIdentifier, rootId, collectionId}: MetadataParams): Promise<void> {
     if (!config.metadataPath)

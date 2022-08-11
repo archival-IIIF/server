@@ -1,14 +1,14 @@
 import {DefaultState} from 'koa';
 import Router from '@koa/router';
 
-import logger from '../lib/Logger';
-import config from '../lib/Config';
-import {ExtendedContext} from '../lib/Koa';
-import {MetadataItem} from '../lib/ItemInterfaces';
-import {createItem, getAllRootItems, withItems} from '../lib/Item';
+import logger from '../lib/Logger.js';
+import config from '../lib/Config.js';
+import {ExtendedContext} from '../lib/Koa.js';
+import {MetadataItem} from '../lib/ItemInterfaces.js';
+import {createItem, getAllRootItems, withItems} from '../lib/Item.js';
 
-import {setContent} from './util';
-import {getCollectionWithChildren} from '../builder/PresentationBuilder';
+import {setContent} from './util.js';
+import {getCollectionWithChildren} from '../builder/PresentationBuilder.js';
 
 export const router = new Router<DefaultState, ExtendedContext>({prefix: '/collection'});
 

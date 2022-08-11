@@ -1,8 +1,8 @@
 import moment from 'moment';
 
-import {AccessParams} from '../../lib/Service';
-import {AccessState, Access} from '../../lib/Security';
-import {getRootItemByCollectionId} from '../../lib/Item';
+import {AccessParams} from '../../lib/Service.js';
+import {AccessState, Access} from '../../lib/Security.js';
+import {getRootItemByCollectionId} from '../../lib/Item.js';
 
 export default async function hasAccess({item, ip, identities = []}: AccessParams): Promise<Access> {
     if (item.collection_id === null || item.type === 'metadata')

@@ -1,23 +1,18 @@
-import Manifest from '@archival-iiif/presentation-builder/dist/v3/Manifest';
-import Collection from '@archival-iiif/presentation-builder/dist/v3/Collection';
-import AnnotationPage from '@archival-iiif/presentation-builder/dist/v3/AnnotationPage';
+import {Manifest, Collection, AnnotationPage,} from '@archival-iiif/presentation-builder/v3';
+import {TermList, Image, ImageProfile, AnnotationList} from '@archival-iiif/presentation-builder/v2';
 
-import TermList from '@archival-iiif/presentation-builder/dist/v2/TermList';
-import Image, {ImageProfile} from '@archival-iiif/presentation-builder/dist/v2/Image';
-import AnnotationList from '@archival-iiif/presentation-builder/dist/v2/AnnotationList';
+import {Text} from '../lib/Text.js';
+import {Access} from '../lib/Security.js';
+import {DerivativeType} from '../lib/Derivative.js';
+import {FileItem, FolderItem, Item, MetadataItem, RootItem} from '../lib/ItemInterfaces.js';
 
-import {Text} from '../lib/Text';
-import {Access} from '../lib/Security';
-import {DerivativeType} from '../lib/Derivative';
-import {FileItem, FolderItem, Item, MetadataItem, RootItem} from '../lib/ItemInterfaces';
+import * as Search from './Search.js';
+import * as Metadata from './Metadata.js';
+import * as Digitized from './Digitized.js';
+import * as DigitalBorn from './DigitalBorn.js';
+import * as ImageFunctions from './Image.js';
 
-import * as Search from './Search';
-import * as Metadata from './Metadata';
-import * as Digitized from './Digitized';
-import * as DigitalBorn from './DigitalBorn';
-import * as ImageFunctions from './Image';
-
-import {SearchResult} from '../search/search';
+import {SearchResult} from '../search/search.js';
 
 export interface PresentationBuilder {
     isCollection: (item: Item | null) => boolean;

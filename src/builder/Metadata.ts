@@ -1,11 +1,10 @@
-import {getChildItems} from '../lib/Item';
-import {Item, MetadataItem} from '../lib/ItemInterfaces';
+import {Manifest, Collection} from '@archival-iiif/presentation-builder/v3';
 
-import Manifest from '@archival-iiif/presentation-builder/dist/v3/Manifest';
-import Collection from '@archival-iiif/presentation-builder/dist/v3/Collection';
+import {getChildItems} from '../lib/Item.js';
+import {Item, MetadataItem} from '../lib/ItemInterfaces.js';
 
-import {PresentationBuilder} from './PresentationBuilder';
-import {createMinimalCollection, createCollection, addMetadata} from './PresentationUtils';
+import {PresentationBuilder} from './PresentationBuilder.js';
+import {createMinimalCollection, createCollection, addMetadata} from './PresentationUtils.js';
 
 export async function getCollection(item: MetadataItem, builder: PresentationBuilder): Promise<Collection> {
     const collection = await createCollection(item);

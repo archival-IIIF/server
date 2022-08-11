@@ -6,15 +6,15 @@ import * as path from 'path';
 import mime from 'mime-types';
 import {promisify} from 'util';
 
-import config from '../lib/Config';
-import logger from '../lib/Logger';
-import HttpError from '../lib/HttpError';
-import getPronomInfo from '../lib/Pronom';
-import derivatives from '../lib/Derivative';
-import {ExtendedContext} from '../lib/Koa';
-import {AccessState, hasAccess, hasAdminAccess} from '../lib/Security';
-import {determineItem, getFullPath, getPronom, getAvailableType, hasType, getFullDerivativePath} from '../lib/Item';
-import {getText, getFullPath as getFullTextPath} from '../lib/Text';
+import config from '../lib/Config.js';
+import logger from '../lib/Logger.js';
+import HttpError from '../lib/HttpError.js';
+import getPronomInfo from '../lib/Pronom.js';
+import derivatives from '../lib/Derivative.js';
+import {ExtendedContext} from '../lib/Koa.js';
+import {AccessState, hasAccess, hasAdminAccess} from '../lib/Security.js';
+import {determineItem, getFullPath, getPronom, getAvailableType, hasType, getFullDerivativePath} from '../lib/Item.js';
+import {getText, getFullPath as getFullTextPath} from '../lib/Text.js';
 
 const statAsync = promisify(fs.stat);
 

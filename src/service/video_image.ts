@@ -1,11 +1,11 @@
-import config from '../lib/Config';
-import derivatives from '../lib/Derivative';
-import {VideoItem} from '../lib/ItemInterfaces';
-import {DerivativeParams} from '../lib/Service';
-import {getChildItemsByType} from '../lib/Item';
+import config from '../lib/Config.js';
+import derivatives from '../lib/Derivative.js';
+import {VideoItem} from '../lib/ItemInterfaces.js';
+import {DerivativeParams} from '../lib/Service.js';
+import {getChildItemsByType} from '../lib/Item.js';
 
-import {createDerivativeWithCommand, createDerivativeWithBuffer} from './util/derivative_creation';
-import {imageResourceUri} from '../builder/UriHelper';
+import {createDerivativeWithCommand, createDerivativeWithBuffer} from './util/derivative_creation.js';
+import {imageResourceUri} from '../builder/UriHelper.js';
 
 const timestamp = (seconds: number) => new Date(seconds * 1000).toISOString().substring(11, 23);
 

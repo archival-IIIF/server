@@ -4,7 +4,7 @@ import {promisify} from 'util';
 
 const readdirAsync = promisify(fs.readdir);
 
-export const fileIconsPath = path.join(__dirname, '../../node_modules/file-icon-vectors/dist/icons/vivid');
+export const fileIconsPath = './node_modules/file-icon-vectors/dist/icons/vivid';
 
 export const iconsByExtension: string[] = [];
 readdirAsync(fileIconsPath).then(files => {

@@ -1,6 +1,6 @@
-import config from './Config';
-import {Item} from './ItemInterfaces';
-import {TextItem} from '../service/util/types';
+import config from './Config.js';
+import {Item} from './ItemInterfaces.js';
+import {TextItem} from '../service/util/types.js';
 
 export interface Service {
     name: string;
@@ -15,12 +15,12 @@ export interface WebService extends Service {
 
 export interface ArgService extends Service {
     runAs: 'worker' | 'lib';
-    getService: () => <P, R>(params: P) => Promise<R>;
+    getService: () => Promise<<P, R>(params: P) => Promise<R>>;
 }
 
 export interface StandaloneService extends Service {
     runAs: 'standalone' | 'cron';
-    getService: () => <R>() => Promise<R>;
+    getService: () => Promise<<R>() => Promise<R>>;
 }
 
 export interface CronService extends StandaloneService {
@@ -46,98 +46,98 @@ export const allServices: Service[] = [{
     name: 'directory-watcher-changes',
     type: 'watcher',
     runAs: 'standalone',
-    getService: () => require('../service/directory_watcher_changes').default
+    getService: async () => (await import('../service/directory_watcher_changes.js')).default
 }, {
     name: 'directory-watcher-file-trigger',
     type: 'watcher',
     runAs: 'standalone',
-    getService: () => require('../service/directory_watcher_file_trigger').default
+    getService: async () => (await import('../service/directory_watcher_file_trigger.js')).default
 }, {
     name: 'iish-archivematica-index',
     type: 'index',
     runAs: 'worker',
-    getService: () => require('../service/iish/archivematica_index').default
+    getService: async () => (await import('../service/iish/archivematica_index.js')).default
 }, {
     name: 'text-index',
     type: 'text',
     runAs: 'worker',
-    getService: () => require('../service/text_index').default
+    getService: async () => (await import('../service/text_index.js')).default
 }, {
     name: 'iish-metadata',
     type: 'metadata',
     runAs: 'worker',
-    getService: () => require('../service/iish/metadata').default
+    getService: async () => (await import('../service/iish/metadata.js')).default
 }, {
     name: 'niod-metadata',
     type: 'metadata',
     runAs: 'worker',
-    getService: () => require('../service/niod/metadata').default
+    getService: async () => (await import('../service/niod/metadata.js')).default
 }, {
     name: 'process-update',
     type: 'process-update',
     runAs: 'worker',
-    getService: () => require('../service/process_update').default
+    getService: async () => (await import('../service/process_update.js')).default
 }, {
     name: 'all-metadata-update',
     type: 'all-metadata-update',
     runAs: 'worker',
-    getService: () => require('../service/all_metadata_update').default
+    getService: async () => (await import('../service/all_metadata_update.js')).default
 }, {
     name: 'waveform',
     type: 'waveform',
     runAs: 'worker',
-    getService: () => require('../service/waveform').default
+    getService: async () => (await import('../service/waveform.js')).default
 }, {
     name: 'pdf-image',
     type: 'pdf-image',
     runAs: 'worker',
-    getService: () => require('../service/pdf_image').default
+    getService: async () => (await import('../service/pdf_image.js')).default
 }, {
     name: 'video-image',
     type: 'video-image',
     runAs: 'worker',
-    getService: () => require('../service/video_image').default
+    getService: async () => (await import('../service/video_image.js')).default
 }, {
     name: 'iish-metadata-update',
     type: 'metadata-update',
     runAs: 'cron',
     cron: '58 11 * * *',
-    getService: () => require('../service/iish/metadata_update').default
+    getService: async () => (await import('../service/iish/metadata_update.js')).default
 }, {
     name: 'default-access',
     type: 'access',
     runAs: 'lib',
-    getService: () => require('../service/access').default
+    getService: async () => (await import('../service/access.js')).default
 }, {
     name: 'iish-access',
     type: 'access',
     runAs: 'lib',
-    getService: () => require('../service/iish/access').default
+    getService: async () => (await import('../service/iish/access.js')).default
 }, {
     name: 'niod-access',
     type: 'access',
     runAs: 'lib',
-    getService: () => require('../service/niod/access').default
+    getService: async () => (await import('../service/niod/access.js')).default
 }, {
     name: 'default-auth-texts',
     type: 'auth-texts',
     runAs: 'lib',
-    getService: () => require('../service/auth_texts').default
+    getService: async () => (await import('../service/auth_texts.js')).default
 }, {
     name: 'iish-auth-texts',
     type: 'auth-texts',
     runAs: 'lib',
-    getService: () => require('../service/iish/auth_texts').default
+    getService: async () => (await import('../service/iish/auth_texts.js')).default
 }, {
     name: 'default-iiif-metadata',
     type: 'iiif-metadata',
     runAs: 'lib',
-    getService: () => require('../service/iiif_metadata').default
+    getService: async () => (await import('../service/iiif_metadata.js')).default
 }, {
     name: 'iish-iiif-metadata',
     type: 'iiif-metadata',
     runAs: 'lib',
-    getService: () => require('../service/iish/iiif_metadata').default
+    getService: async () => (await import('../service/iish/iiif_metadata.js')).default
 }];
 
 export let servicesRunning: Service[] = config.services.map(name => {

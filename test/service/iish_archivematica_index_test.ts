@@ -3,7 +3,7 @@ import {expect} from 'chai';
 
 import {parseXml, Element} from 'libxmljs2';
 
-import {createItem} from '../../src/lib/Item';
+import {createItem} from '../../src/lib/Item.js';
 import {
     processCollection,
     getIdentifier,
@@ -11,8 +11,9 @@ import {
     determineDpi,
     determineDuration,
     determineEncoding
-} from '../../src/service/iish/archivematica_index';
+} from '../../src/service/iish/archivematica_index.js';
 
+const testRootDirectory = './test/service';
 const rej = (err: Error) => err;
 
 describe('iish_archivematica_index', () => {
@@ -24,7 +25,7 @@ describe('iish_archivematica_index', () => {
 
         describe('having collections with invalid METS files', () => {
             it('should fail for missing a physical structmap', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/invalid-mets-no-structmap');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-structmap');
                 const result = await processCollection(path).then(null, rej);
 
                 expect(result).to.be.an('error');
@@ -32,7 +33,7 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should fail for missing a root item', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/invalid-mets-no-root-item');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-root-item');
                 const result = await processCollection(path).then(null, rej);
 
                 expect(result).to.be.an('error');
@@ -40,7 +41,7 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should fail for missing the label of an item in the structmap', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/invalid-mets-no-label');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-label');
                 const result = await processCollection(path).then(null, rej);
 
                 expect(result).to.be.an('error');
@@ -48,7 +49,7 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should fail for missing a premis object for a folder', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/invalid-mets-no-premis-object-folder');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-premis-object-folder');
                 const result = await processCollection(path).then(null, rej);
 
                 expect(result).to.be.an('error');
@@ -56,7 +57,7 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should fail for missing the original name of a folder', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/invalid-mets-no-name-folder');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-name-folder');
                 const result = await processCollection(path).then(null, rej);
 
                 expect(result).to.be.an('error');
@@ -64,7 +65,7 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should fail for missing the identifier of a folder', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/invalid-mets-no-id-folder');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-id-folder');
                 const result = await processCollection(path).then(null, rej);
 
                 expect(result).to.be.an('error');
@@ -72,7 +73,7 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should fail for missing a fptr of a file', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/invalid-mets-no-fptr-file');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-fptr-file');
                 const result = await processCollection(path).then(null, rej);
 
                 expect(result).to.be.an('error');
@@ -80,7 +81,7 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should fail for missing the original name of a file', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/invalid-mets-no-name-file');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-name-file');
                 const result = await processCollection(path).then(null, rej);
 
                 expect(result).to.be.an('error');
@@ -88,7 +89,7 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should fail for missing the identifier of a file', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/invalid-mets-no-id-file');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-id-file');
                 const result = await processCollection(path).then(null, rej);
 
                 expect(result).to.be.an('error');
@@ -96,7 +97,7 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should fail for missing the object characteristics of a file', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/invalid-mets-no-obj-chars-file');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-obj-chars-file');
                 const result = await processCollection(path).then(null, rej);
 
                 expect(result).to.be.an('error');
@@ -104,7 +105,7 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should fail for missing the binary of a file', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/invalid-mets-no-objects-file');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-objects-file');
                 const result = await processCollection(path).then(null, rej);
 
                 expect(result).to.be.an('error');
@@ -112,7 +113,7 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should fail for missing a fptr of a file for a text layer', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/invalid-mets-no-fptr-text');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-fptr-text');
                 const result = await processCollection(path).then(null, rej);
 
                 expect(result).to.be.an('error');
@@ -122,7 +123,7 @@ describe('iish_archivematica_index', () => {
 
         describe('having collections resulting in valid items', () => {
             it('should return valid items for a digital born collection', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/digital-born');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/digital-born');
                 const {rootItem, childItems, textItems} = await processCollection(path);
 
                 expect(textItems).to.be.empty;
@@ -146,7 +147,7 @@ describe('iish_archivematica_index', () => {
                         'size': 5,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/d861c189-17b6-44f4-98c1-6183365ae7b2-_.________.txt'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/d861c189-17b6-44f4-98c1-6183365ae7b2-_.________.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': 'd861c189-17b6-44f4-98c1-6183365ae7b2',
@@ -159,7 +160,7 @@ describe('iish_archivematica_index', () => {
                         'size': 937592,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/cde36b27-4f35-4943-9b43-3690176f1573-s____________een_PDF.pdf'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/cde36b27-4f35-4943-9b43-3690176f1573-s____________een_PDF.pdf'),
                             'puid': 'fmt/18'
                         },
                         'id': 'cde36b27-4f35-4943-9b43-3690176f1573',
@@ -172,7 +173,7 @@ describe('iish_archivematica_index', () => {
                         'size': 6,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/b2eadb49-d49d-4840-8b58-4db5ae2cc1c0-filename_with_a___grave_accent.txt'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/b2eadb49-d49d-4840-8b58-4db5ae2cc1c0-filename_with_a___grave_accent.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': 'b2eadb49-d49d-4840-8b58-4db5ae2cc1c0',
@@ -185,7 +186,7 @@ describe('iish_archivematica_index', () => {
                         'size': 394892,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/99826f9b-3557-4af1-94cf-a33908970592-Is._a_()_DOCX_file.docx'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/99826f9b-3557-4af1-94cf-a33908970592-Is._a_()_DOCX_file.docx'),
                             'puid': 'fmt/412'
                         },
                         'id': '99826f9b-3557-4af1-94cf-a33908970592',
@@ -205,7 +206,7 @@ describe('iish_archivematica_index', () => {
                         'size': 12,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/5e87e233-0cbf-44e2-869b-81096ac45083-hello.txt'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/5e87e233-0cbf-44e2-869b-81096ac45083-hello.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': '5e87e233-0cbf-44e2-869b-81096ac45083',
@@ -225,7 +226,7 @@ describe('iish_archivematica_index', () => {
                         'size': 6,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/e0f7fd08-aede-446c-9018-380935607146-hello.txt'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/e0f7fd08-aede-446c-9018-380935607146-hello.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': 'e0f7fd08-aede-446c-9018-380935607146',
@@ -245,7 +246,7 @@ describe('iish_archivematica_index', () => {
                         'size': 31627,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/48655999-3cb5-491a-b7b7-71de271b2ced-coleccoes_digitais_afluencia.docx'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/48655999-3cb5-491a-b7b7-71de271b2ced-coleccoes_digitais_afluencia.docx'),
                             'puid': 'fmt/412'
                         },
                         'id': '48655999-3cb5-491a-b7b7-71de271b2ced',
@@ -258,7 +259,7 @@ describe('iish_archivematica_index', () => {
                         'size': 32368,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/0e3e7a54-42cb-4b95-b7c7-3103dd17e132-Pritok_tsifrovykh_kollektsii.docx'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/0e3e7a54-42cb-4b95-b7c7-3103dd17e132-Pritok_tsifrovykh_kollektsii.docx'),
                             'puid': 'fmt/412'
                         },
                         'id': '0e3e7a54-42cb-4b95-b7c7-3103dd17e132',
@@ -271,7 +272,7 @@ describe('iish_archivematica_index', () => {
                         'size': 33886,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/e2264454-c4b4-48b7-a1e6-10cbe4898883-antrbaah_ddijittaal_sNgrh.docx'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/e2264454-c4b4-48b7-a1e6-10cbe4898883-antrbaah_ddijittaal_sNgrh.docx'),
                             'puid': 'fmt/412'
                         },
                         'id': 'e2264454-c4b4-48b7-a1e6-10cbe4898883',
@@ -284,7 +285,7 @@ describe('iish_archivematica_index', () => {
                         'size': 30156,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/27e5fd23-ddb4-4152-ac10-311ce53a5d5f-Liu_Ru_Shu_Zi_Guan_Cang_.docx'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/27e5fd23-ddb4-4152-ac10-311ce53a5d5f-Liu_Ru_Shu_Zi_Guan_Cang_.docx'),
                             'puid': 'fmt/412'
                         },
                         'id': '27e5fd23-ddb4-4152-ac10-311ce53a5d5f',
@@ -297,7 +298,7 @@ describe('iish_archivematica_index', () => {
                         'size': 32764,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/cdabc053-5770-4fff-8fe7-a6db2b86bb0f-mjmw_h_hy_dyjytl_jryn.docx'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/cdabc053-5770-4fff-8fe7-a6db2b86bb0f-mjmw_h_hy_dyjytl_jryn.docx'),
                             'puid': 'fmt/412'
                         },
                         'id': 'cdabc053-5770-4fff-8fe7-a6db2b86bb0f',
@@ -331,7 +332,7 @@ describe('iish_archivematica_index', () => {
                         'size': 25,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/8f6d51c3-44f4-48f5-92ac-9b57a1eecd44-file_5.txt'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/8f6d51c3-44f4-48f5-92ac-9b57a1eecd44-file_5.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': '8f6d51c3-44f4-48f5-92ac-9b57a1eecd44',
@@ -351,7 +352,7 @@ describe('iish_archivematica_index', () => {
                         'size': 25,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/5a05c498-491b-4e7e-8c8f-082d2a048e30-file_3.txt'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/5a05c498-491b-4e7e-8c8f-082d2a048e30-file_3.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': '5a05c498-491b-4e7e-8c8f-082d2a048e30',
@@ -371,7 +372,7 @@ describe('iish_archivematica_index', () => {
                         'size': 25,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/d2992c1d-47cd-4ac2-91c4-4b923dfaa009-file_4.txt'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/d2992c1d-47cd-4ac2-91c4-4b923dfaa009-file_4.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': 'd2992c1d-47cd-4ac2-91c4-4b923dfaa009',
@@ -412,7 +413,7 @@ describe('iish_archivematica_index', () => {
                         'size': 25,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/76bf89e6-513c-4aee-ae0e-6a0f44642e49-long_filename_with_more_than_two_hundred_and_sixty_five_characters.txt'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/76bf89e6-513c-4aee-ae0e-6a0f44642e49-long_filename_with_more_than_two_hundred_and_sixty_five_characters.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': '76bf89e6-513c-4aee-ae0e-6a0f44642e49',
@@ -432,7 +433,7 @@ describe('iish_archivematica_index', () => {
                         'size': 25,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/e2ac85c1-a0e1-4654-bff2-c1ed42f173d8-file_2.txt'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/e2ac85c1-a0e1-4654-bff2-c1ed42f173d8-file_2.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': 'e2ac85c1-a0e1-4654-bff2-c1ed42f173d8',
@@ -455,7 +456,7 @@ describe('iish_archivematica_index', () => {
                         'height': 986,
                         'resolution': 300,
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/27d72523-a748-47d3-bb30-f351971d6d5b-9000004608.jpg'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/27d72523-a748-47d3-bb30-f351971d6d5b-9000004608.jpg'),
                             'puid': 'x-fmt/391'
                         },
                         'id': '27d72523-a748-47d3-bb30-f351971d6d5b',
@@ -468,7 +469,7 @@ describe('iish_archivematica_index', () => {
                         'size': 937592,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/4ab2e912-77dc-49d1-8640-8db5ad1b3faf-dpctw11-01.pdf'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/4ab2e912-77dc-49d1-8640-8db5ad1b3faf-dpctw11-01.pdf'),
                             'puid': 'fmt/18'
                         },
                         'id': '4ab2e912-77dc-49d1-8640-8db5ad1b3faf',
@@ -495,7 +496,7 @@ describe('iish_archivematica_index', () => {
                         'size': 3788,
                         'created_at': new Date('2016-06-12T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/cfb12b25-43e7-4544-b59e-56afce43b8bb-uitleg-archivematica.txt'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/cfb12b25-43e7-4544-b59e-56afce43b8bb-uitleg-archivematica.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': 'cfb12b25-43e7-4544-b59e-56afce43b8bb',
@@ -525,7 +526,7 @@ describe('iish_archivematica_index', () => {
                         'height': 576,
                         'duration': 29.376,
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/2826689d-bab9-49d9-9e96-cfe5a44a4937-F113.mp4'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/2826689d-bab9-49d9-9e96-cfe5a44a4937-F113.mp4'),
                             'puid': 'fmt/199'
                         },
                         'id': '2826689d-bab9-49d9-9e96-cfe5a44a4937',
@@ -545,7 +546,7 @@ describe('iish_archivematica_index', () => {
                             'puid': 'fmt/5'
                         },
                         'access': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/8f5bf966-4c42-4b1b-a3aa-04e2a8b2c971-F113.mp4'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/8f5bf966-4c42-4b1b-a3aa-04e2a8b2c971-F113.mp4'),
                             'puid': 'fmt/199'
                         },
                         'id': '8f5bf966-4c42-4b1b-a3aa-04e2a8b2c971',
@@ -566,7 +567,7 @@ describe('iish_archivematica_index', () => {
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'duration': 15.464,
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/1b42c5be-5a78-4e64-91e4-0548ccea0d70-Die_Internationale_as_mp3.mp3'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/1b42c5be-5a78-4e64-91e4-0548ccea0d70-Die_Internationale_as_mp3.mp3'),
                             'puid': 'fmt/134'
                         },
                         'id': '1b42c5be-5a78-4e64-91e4-0548ccea0d70',
@@ -584,7 +585,7 @@ describe('iish_archivematica_index', () => {
                             'puid': 'fmt/141'
                         },
                         'access': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/740158f5-601d-40ee-b4da-6f554a398858-Die_Internationale_as_wav.mp3'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/740158f5-601d-40ee-b4da-6f554a398858-Die_Internationale_as_wav.mp3'),
                             'puid': 'fmt/134'
                         },
                         'id': '740158f5-601d-40ee-b4da-6f554a398858',
@@ -611,7 +612,7 @@ describe('iish_archivematica_index', () => {
                         'size': 103936,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digital-born/objects/766bbce1-0bc1-4b08-86cc-3ddff91e8c66-Testfile_Archivematica_-_DE_BASIS_voor_vervaardiging_van_videomateriaal.doc'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/766bbce1-0bc1-4b08-86cc-3ddff91e8c66-Testfile_Archivematica_-_DE_BASIS_voor_vervaardiging_van_videomateriaal.doc'),
                             'puid': 'fmt/40'
                         },
                         'id': '766bbce1-0bc1-4b08-86cc-3ddff91e8c66',
@@ -622,7 +623,7 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should return valid items for a digitized single object collection', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/digitized-single-object');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/digitized-single-object');
                 const {rootItem, childItems, textItems} = await processCollection(path);
 
                 expect(textItems).to.be.empty;
@@ -643,7 +644,7 @@ describe('iish_archivematica_index', () => {
                         'height': 8221,
                         'resolution': 300,
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-single-object/objects/2a863aca-eff6-4bb7-812f-cb797e75f793-test_0001.tif'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-single-object/objects/2a863aca-eff6-4bb7-812f-cb797e75f793-test_0001.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': '2a863aca-eff6-4bb7-812f-cb797e75f793',
@@ -654,7 +655,7 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should return valid items for a digitized images collection', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/digitized-images');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images');
                 const {rootItem, childItems, textItems} = await processCollection(path);
 
                 expect(rootItem).to.deep.equal(createItem({
@@ -674,7 +675,7 @@ describe('iish_archivematica_index', () => {
                         'height': 2887,
                         'resolution': 304,
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-images/objects/b8b7aca7-0a0d-452e-a98d-94c8e7607aa5-test_01.tif'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/b8b7aca7-0a0d-452e-a98d-94c8e7607aa5-test_01.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': 'b8b7aca7-0a0d-452e-a98d-94c8e7607aa5',
@@ -691,7 +692,7 @@ describe('iish_archivematica_index', () => {
                         'height': 2875,
                         'resolution': 304,
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-images/objects/9a99eef6-3e69-4cdf-ae68-4f304194bb64-test_02.tif'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/9a99eef6-3e69-4cdf-ae68-4f304194bb64-test_02.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': '9a99eef6-3e69-4cdf-ae68-4f304194bb64',
@@ -708,7 +709,7 @@ describe('iish_archivematica_index', () => {
                         'height': 2871,
                         'resolution': 304,
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-images/objects/88348a48-c658-4150-a1bb-e4b05d6f1f2b-test_03.tif'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/88348a48-c658-4150-a1bb-e4b05d6f1f2b-test_03.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': '88348a48-c658-4150-a1bb-e4b05d6f1f2b',
@@ -725,7 +726,7 @@ describe('iish_archivematica_index', () => {
                         'height': 2883,
                         'resolution': 304,
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-images/objects/a236198f-1844-4771-baac-59712c767fbe-test_04.tif'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/a236198f-1844-4771-baac-59712c767fbe-test_04.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': 'a236198f-1844-4771-baac-59712c767fbe',
@@ -742,7 +743,7 @@ describe('iish_archivematica_index', () => {
                         'height': 2883,
                         'resolution': 304,
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-images/objects/62a1e40c-af27-472c-b870-818d6cb6464b-test_05.tif'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/62a1e40c-af27-472c-b870-818d6cb6464b-test_05.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': '62a1e40c-af27-472c-b870-818d6cb6464b',
@@ -759,7 +760,7 @@ describe('iish_archivematica_index', () => {
                         'height': 2877,
                         'resolution': 304,
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-images/objects/76cf7fac-c2f9-412c-b773-2872777646f6-test_06.tif'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/76cf7fac-c2f9-412c-b773-2872777646f6-test_06.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': '76cf7fac-c2f9-412c-b773-2872777646f6',
@@ -776,7 +777,7 @@ describe('iish_archivematica_index', () => {
                         'height': 2877,
                         'resolution': 304,
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-images/objects/62008a42-e2e7-4446-95f2-c5aa70ceacf7-test_07.tif'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/62008a42-e2e7-4446-95f2-c5aa70ceacf7-test_07.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': '62008a42-e2e7-4446-95f2-c5aa70ceacf7',
@@ -793,7 +794,7 @@ describe('iish_archivematica_index', () => {
                         'height': 2863,
                         'resolution': 304,
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-images/objects/96693817-a99b-4c78-833f-7c9ff4b7c089-test_08.tif'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/96693817-a99b-4c78-833f-7c9ff4b7c089-test_08.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': '96693817-a99b-4c78-833f-7c9ff4b7c089',
@@ -808,7 +809,7 @@ describe('iish_archivematica_index', () => {
                         'type': 'transcription',
                         'language': null,
                         'encoding': 'ISO-8859-1',
-                        'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-images/objects/cf34ab26-d4a2-4b73-99bf-9da8171084b0-test_01.txt')
+                        'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/cf34ab26-d4a2-4b73-99bf-9da8171084b0-test_01.txt')
                     },
                     {
                         'id': 'cf32e677-59d9-4245-ba1b-ba56572a16b9',
@@ -816,7 +817,7 @@ describe('iish_archivematica_index', () => {
                         'type': 'transcription',
                         'language': null,
                         'encoding': 'UTF-8',
-                        'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-images/objects/cf32e677-59d9-4245-ba1b-ba56572a16b9-test_03.txt')
+                        'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/cf32e677-59d9-4245-ba1b-ba56572a16b9-test_03.txt')
                     },
                     {
                         'id': '029f77b2-f464-4746-9312-bb58603c91e3',
@@ -824,7 +825,7 @@ describe('iish_archivematica_index', () => {
                         'type': 'transcription',
                         'language': null,
                         'encoding': 'UTF-8',
-                        'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-images/objects/029f77b2-f464-4746-9312-bb58603c91e3-test_04.txt')
+                        'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/029f77b2-f464-4746-9312-bb58603c91e3-test_04.txt')
                     },
                     {
                         'id': 'ddc232cf-9a29-45b1-89f0-da4b39ff73ee',
@@ -832,7 +833,7 @@ describe('iish_archivematica_index', () => {
                         'type': 'transcription',
                         'language': null,
                         'encoding': 'ISO-8859-1',
-                        'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-images/objects/ddc232cf-9a29-45b1-89f0-da4b39ff73ee-test_05.txt')
+                        'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/ddc232cf-9a29-45b1-89f0-da4b39ff73ee-test_05.txt')
                     },
                     {
                         'id': 'ebd8c23a-5e65-49ee-8b82-f6fa269d8ace',
@@ -840,7 +841,7 @@ describe('iish_archivematica_index', () => {
                         'type': 'transcription',
                         'language': null,
                         'encoding': 'UTF-8',
-                        'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-images/objects/ebd8c23a-5e65-49ee-8b82-f6fa269d8ace-test_06.txt')
+                        'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/ebd8c23a-5e65-49ee-8b82-f6fa269d8ace-test_06.txt')
                     },
                     {
                         'id': '833c9e39-399f-4b60-b1ec-7d407ced96e4',
@@ -848,13 +849,13 @@ describe('iish_archivematica_index', () => {
                         'type': 'transcription',
                         'language': null,
                         'encoding': 'UTF-8',
-                        'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-images/objects/833c9e39-399f-4b60-b1ec-7d407ced96e4-test_07.txt')
+                        'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/833c9e39-399f-4b60-b1ec-7d407ced96e4-test_07.txt')
                     }
                 ]);
             });
 
             it('should return valid items for a digitized audio collection', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/digitized-audio');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/digitized-audio');
                 const {rootItem, childItems, textItems} = await processCollection(path);
 
                 expect(textItems).to.be.empty;
@@ -877,7 +878,7 @@ describe('iish_archivematica_index', () => {
                             'puid': 'fmt/141'
                         },
                         'access': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-audio/objects/843d35b3-6ad8-4e33-9e3c-e5b25b13fde7-test_1.mp3'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-audio/objects/843d35b3-6ad8-4e33-9e3c-e5b25b13fde7-test_1.mp3'),
                             'puid': 'fmt/134'
                         },
                         'id': '843d35b3-6ad8-4e33-9e3c-e5b25b13fde7',
@@ -896,7 +897,7 @@ describe('iish_archivematica_index', () => {
                             'puid': 'fmt/141'
                         },
                         'access': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-audio/objects/171b4119-baed-4423-8e32-c1f37cc230c9-test_2.mp3'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-audio/objects/171b4119-baed-4423-8e32-c1f37cc230c9-test_2.mp3'),
                             'puid': 'fmt/134'
                         },
                         'id': '171b4119-baed-4423-8e32-c1f37cc230c9',
@@ -907,7 +908,7 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should return valid items for a digitized video collection', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/digitized-video');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/digitized-video');
                 const {rootItem, childItems, textItems} = await processCollection(path);
 
                 expect(textItems).to.be.empty;
@@ -932,7 +933,7 @@ describe('iish_archivematica_index', () => {
                             'puid': 'x-fmt/384'
                         },
                         'access': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/digitized-video/objects/f294d9ea-edfc-45b2-8a42-6d792d860955-test_001.mp4'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-video/objects/f294d9ea-edfc-45b2-8a42-6d792d860955-test_001.mp4'),
                             'puid': 'fmt/199'
                         },
                         'id': 'f294d9ea-edfc-45b2-8a42-6d792d860955',
@@ -943,7 +944,7 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should return valid items for a premis v3 METS file', async () => {
-                const path = join(__dirname, 'test-iish-archivematica-collections/premis-v3');
+                const path = join(testRootDirectory, 'test-iish-archivematica-collections/premis-v3');
                 const {rootItem, childItems, textItems} = await processCollection(path);
 
                 expect(textItems).to.be.empty;
@@ -964,7 +965,7 @@ describe('iish_archivematica_index', () => {
                         'height': 5584,
                         'resolution': 800,
                         'original': {
-                            'uri': join(__dirname, 'test-iish-archivematica-collections/premis-v3/objects/916cceb5-12c5-43c1-a98e-acf1647d1aca-test_0001.tif'),
+                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/premis-v3/objects/916cceb5-12c5-43c1-a98e-acf1647d1aca-test_0001.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': 'C969A354-284F-4ECB-BAA6-62C24DF72643',

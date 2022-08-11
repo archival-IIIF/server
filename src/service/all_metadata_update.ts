@@ -1,6 +1,6 @@
-import {runTask} from '../lib/Task';
-import {getAllRootItems} from '../lib/Item';
-import {EmptyParams, MetadataParams} from '../lib/Service';
+import {runTask} from '../lib/Task.js';
+import {getAllRootItems} from '../lib/Item.js';
+import {EmptyParams, MetadataParams} from '../lib/Service.js';
 
 export default async function allMetadataUpdate(noParams?: EmptyParams): Promise<void> {
     for await (const item of getAllRootItems())

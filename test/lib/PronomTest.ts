@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import getPronomInfo, {PronomInfo} from '../../src/lib/Pronom';
+import getPronomInfo, {PronomInfo} from '../../src/lib/Pronom.js';
 
 describe('Pronom', () => {
     describe('#getPronomInfo()', () => {

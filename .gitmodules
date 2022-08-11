@@ -1,3 +1,0 @@
-[submodule "src/builder/elem"]
-	path = src/builder/elem
-	url = https://github.com/archival-IIIF/presentation-builder.git

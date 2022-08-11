@@ -1,8 +1,5 @@
 import {Context} from 'koa';
-
-import Manifest from '@archival-iiif/presentation-builder/dist/v3/Manifest';
-import Collection from '@archival-iiif/presentation-builder/dist/v3/Collection';
-import AnnotationPage from '@archival-iiif/presentation-builder/dist/v3/AnnotationPage';
+import {Manifest, Collection, AnnotationPage} from '@archival-iiif/presentation-builder/v3';
 
 export function setContent(ctx: Context, jsonDoc: Manifest | Collection | AnnotationPage | null): void {
     if (jsonDoc === null)

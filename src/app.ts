@@ -1,10 +1,10 @@
 import {DefaultState} from 'koa';
 
-import config from './lib/Config';
-import logger from './lib/Logger';
+import config from './lib/Config.js';
+import logger from './lib/Logger.js';
 
-import {extendContext, ExtendedContext} from './lib/Koa';
-import {servicesRunning, ArgService, StandaloneService, CronService} from './lib/Service';
+import {extendContext, ExtendedContext} from './lib/Koa.js';
+import {servicesRunning, ArgService, StandaloneService, CronService} from './lib/Service.js';
 
 servicesRunning.forEach(function initService(service) {
     switch (service.runAs) {
@@ -31,15 +31,15 @@ async function startWeb() {
     const {default: bodyParser} = await import('koa-bodyparser');
     const {default: compress} = await import('koa-compress');
 
-    const {router: iiifImageRouter} = await import('./image/router');
-    const {router: iiifPresentationRouter} = await import('./presentation/router');
-    // TODO: const {router: iiifSearchRouter} = await import('./search/router');
-    const {router: iiifAuthRouter} = await import('./authentication/router');
-    const {router: fileRouter} = await import('./file/router');
-    const {router: pdfRouter} = await import('./pdf/router');
-    const {router: adminRouter} = await import('./admin/router');
-    const {router: textRouter} = await import('./text/router');
-    const {router: staticRouter} = await import('./static/router');
+    const {router: iiifImageRouter} = await import('./image/router.js');
+    const {router: iiifPresentationRouter} = await import('./presentation/router.js');
+    // TODO: const {router: iiifSearchRouter} = await import('./search/router.js');
+    const {router: iiifAuthRouter} = await import('./authentication/router.js');
+    const {router: fileRouter} = await import('./file/router.js');
+    const {router: pdfRouter} = await import('./pdf/router.js');
+    const {router: adminRouter} = await import('./admin/router.js');
+    const {router: textRouter} = await import('./text/router.js');
+    const {router: staticRouter} = await import('./static/router.js');
 
     const app = new Koa<DefaultState, ExtendedContext>();
 
@@ -102,22 +102,23 @@ async function startWeb() {
 
     app.listen(config.port);
 
-    logger.info('Started the web service');
+    logger.info(`Started the web service on ${config.baseUrl} 🚀`);
 }
 
-function startStandalone(service: StandaloneService) {
-    service.getService()();
+async function startStandalone(service: StandaloneService) {
+    const serviceFunc = await service.getService();
+    serviceFunc();
     logger.info(`Standalone initialized for ${service.name}`);
 }
 
 async function startWorker(service: ArgService) {
-    const {onTask} = await import('./lib/Worker');
-    onTask(service.type, service.getService());
+    const {onTask} = await import('./lib/Worker.js');
+    onTask(service.type, await service.getService());
     logger.info(`Worker initialized for ${service.name}`);
 }
 
 async function startCron(service: CronService) {
     const cron = await import('node-cron');
-    cron.schedule(service.cron, service.getService());
+    cron.schedule(service.cron, await service.getService());
     logger.info(`Cron ${service.cron} scheduled for ${service.name}`);
 }

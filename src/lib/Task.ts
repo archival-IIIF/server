@@ -1,7 +1,7 @@
 import {v1 as uuid} from 'uuid';
-import logger from './Logger';
-import {getPersistentClient, createNewPersistentClient} from './Redis';
-import {ArgService, servicesRunning} from './Service';
+import logger from './Logger.js';
+import {getPersistentClient, createNewPersistentClient} from './Redis.js';
+import {ArgService, servicesRunning} from './Service.js';
 
 export interface RedisMessage<T> {
     identifier: string;
@@ -15,11 +15,9 @@ const getServiceByType = (type: string): ArgService =>
 export function runTask<T>(type: string, task: T, identifier: string = uuid()): void {
     const service = getServiceByType(type);
     if (service && service.getService) {
-        const serviceFunc = service.getService();
-        serviceFunc(task).catch(err => {
-            logger.error(`Failure during task with type '${type}' and identifier '${identifier}'`, {err});
-        });
-
+        service.getService().then(serviceFunc =>
+            serviceFunc(task).catch(err =>
+                logger.error(`Failure during task with type '${type}' and identifier '${identifier}'`, {err})));
         return;
     }
 
@@ -28,39 +26,41 @@ export function runTask<T>(type: string, task: T, identifier: string = uuid()): 
         throw new Error('A persistent Redis server is required for sending tasks to workers!');
 
     logger.debug(`Sending a new task with type '${type}' and identifier '${identifier}'`);
-    client.rpush(getChannel(type), JSON.stringify({identifier: identifier, data: task}));
+    client.rPush(getChannel(type), JSON.stringify({identifier: identifier, data: task}));
 }
 
-export function runTaskWithResponse<T, R>(type: string, task: T, identifier: string = uuid()): Promise<R> {
+export async function runTaskWithResponse<T, R>(type: string, task: T, identifier: string = uuid()): Promise<R> {
     const service = getServiceByType(type);
-    if (service && service.getService)
-        return service.getService()<T, R>(task);
+    if (service && service.getService) {
+        const serviceFunc = await service.getService();
+        return serviceFunc(task);
+    }
 
     const client = getPersistentClient();
     if (!client)
         throw new Error('A persistent Redis server is required for sending tasks to workers!');
 
-    const timeout = 5000;
     const subscriber = createNewPersistentClient();
+    await subscriber.connect();
 
     return new Promise<R>((resolve, reject) => {
-        subscriber.redis.subscribe(getChannel(type));
-        subscriber.redis.on('message', (ch, message) => {
+        subscriber.subscribe(getChannel(type), (message, ch) => {
             const msg = JSON.parse(message) as RedisMessage<R>;
             if ((ch === getChannel(type)) && (msg.identifier === identifier)) {
                 clearTimeout(timer);
 
-                subscriber.redis.unsubscribe();
-                subscriber.redis.end(true);
+                subscriber.unsubscribe();
+                subscriber.disconnect();
 
                 logger.debug(`Task with type '${type}' and identifier '${identifier}' has finished`);
                 resolve(msg.data);
             }
         });
 
+        const timeout = 5000;
         const timer = setTimeout(() => {
-            subscriber.redis.unsubscribe();
-            subscriber.redis.end(true);
+            subscriber.unsubscribe();
+            subscriber.disconnect();
 
             reject(new Error(`Task of type ${type} with identifier ${identifier} timed out`));
         }, timeout);

@@ -1,4 +1,4 @@
-import {AuthTexts} from '@archival-iiif/presentation-builder/dist/v2/AuthService';
+import {AuthTexts} from '@archival-iiif/presentation-builder/v2';
 
 export type TextItem = {
     id: string,

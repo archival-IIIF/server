@@ -2,18 +2,18 @@ import moment from 'moment';
 import {Context} from 'koa';
 import {v4 as uuid} from 'uuid';
 import {inRange} from 'range_check';
-import {WrappedNodeRedisClient} from 'handy-redis';
-import {AccessTier} from '@archival-iiif/presentation-builder/dist/v2/Image';
+import {AccessTier} from '@archival-iiif/presentation-builder/v2';
 
-import config from './Config';
-import logger from './Logger';
-import {Item} from './ItemInterfaces';
-import {ExtendedContext} from './Koa';
-import {runTaskWithResponse} from './Task';
-import {getPersistentClient} from './Redis';
-import {AccessParams, AuthTextsParams} from './Service';
+import config from './Config.js';
+import logger from './Logger.js';
+import {Item} from './ItemInterfaces.js';
+import {ExtendedContext} from './Koa.js';
+import {runTaskWithResponse} from './Task.js';
+import {getPersistentClient} from './Redis.js';
+import {AccessParams, AuthTextsParams} from './Service.js';
 
-import {AuthTextsByType} from '../service/util/types';
+import {AuthTextsByType} from '../service/util/types.js';
+import {RedisClientType} from 'redis';
 
 type AccessTokenBody = Record<'access_token', string | undefined>;
 
@@ -123,7 +123,7 @@ export async function hasToken(item: Item, identities: string[]): Promise<boolea
 
 export async function checkTokenDb(tokens: string[]): Promise<Token[]> {
     try {
-        const tokensInfo = await getClient().mget(...tokens.map(token => `token:${token}`));
+        const tokensInfo = await getClient().mGet(tokens.map(token => `token:${token}`));
         return tokensInfo
             .map(tokensInfo => tokensInfo ? JSON.parse(tokensInfo) : null)
             .filter(tokenInfo => {
@@ -159,7 +159,7 @@ export async function setAccessIdForIdentity(identity: string, accessId: string 
     if (!identities.includes(identity)) {
         identities.push(identity);
         await getClient().set(
-            `access-id:${accessId}`, JSON.stringify({identities, token}), ['EX', config.accessTtl]);
+            `access-id:${accessId}`, JSON.stringify({identities, token}), {EX: config.accessTtl});
     }
 
     return accessId;
@@ -222,7 +222,7 @@ export async function removeAccessIdFromRequest(ctx: Context): Promise<void> {
     }
 }
 
-function getClient(): WrappedNodeRedisClient {
+function getClient(): RedisClientType {
     const client = getPersistentClient();
     if (!client)
         throw new Error('A persistent Redis server is required for authentication!');

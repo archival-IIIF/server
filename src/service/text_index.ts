@@ -1,13 +1,13 @@
 import * as fs from 'fs';
 import {promisify} from 'util';
 import {join, extname} from 'path';
-import {decode} from 'iconv-lite';
+import iconv from 'iconv-lite';
 
-import config from '../lib/Config';
-import {TextParams} from '../lib/Service';
-import {indexTexts, deleteTexts, readAlto} from '../lib/Text';
+import config from '../lib/Config.js';
+import {TextParams} from '../lib/Service.js';
+import {indexTexts, deleteTexts, readAlto} from '../lib/Text.js';
 
-import fixCommonUTF8Problems from './util/unicode_debug_mapping';
+import fixCommonUTF8Problems from './util/unicode_debug_mapping.js';
 
 const readFileAsync = promisify(fs.readFile);
 
@@ -70,7 +70,7 @@ async function getAltoText(uri: string): Promise<string> {
 
 async function getPlainText(uri: string, encoding: string | null): Promise<string> {
     const textBuffer = await readFileAsync(uri);
-    const encodedText = decode(textBuffer, encoding || 'utf8');
+    const encodedText = iconv.decode(textBuffer, encoding || 'utf8');
     const fixedText = encoding ? encodedText : fixCommonUTF8Problems(encodedText);
     return fixedText.normalize();
 }

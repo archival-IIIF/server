@@ -5,10 +5,10 @@ import {move} from 'fs-extra';
 import moment from 'moment';
 import chokidar from 'chokidar';
 
-import config from '../lib/Config';
-import logger from '../lib/Logger';
-import {runTask} from '../lib/Task';
-import {IndexParams} from '../lib/Service';
+import config from '../lib/Config.js';
+import logger from '../lib/Logger.js';
+import {runTask} from '../lib/Task.js';
+import {IndexParams} from '../lib/Service.js';
 
 const collectionsWatching: { [path: string]: Date | null } = {};
 

@@ -2,10 +2,10 @@ import got from 'got';
 import moment from 'moment';
 import {parseXml, Element} from 'libxmljs2';
 
-import config from '../../lib/Config';
-import logger from '../../lib/Logger';
-import {runTask} from '../../lib/Task';
-import {MetadataParams} from '../../lib/Service';
+import config from '../../lib/Config.js';
+import logger from '../../lib/Logger.js';
+import {runTask} from '../../lib/Task.js';
+import {MetadataParams} from '../../lib/Service.js';
 
 const ns = {
     'oai': 'http://www.openarchives.org/OAI/2.0/'

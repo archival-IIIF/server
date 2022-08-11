@@ -1,9 +1,9 @@
 import * as path from 'path';
-import logger from './Logger';
-import config from './Config';
-import {DerivativeType} from './Derivative';
-import {Item, MinimalItem} from './ItemInterfaces';
-import getClient from './ElasticSearch';
+import logger from './Logger.js';
+import config from './Config.js';
+import {DerivativeType} from './Derivative.js';
+import {Item, MinimalItem} from './ItemInterfaces.js';
+import getClient from './ElasticSearch.js';
 
 export function createItem(obj: MinimalItem): Item {
     return {
@@ -48,7 +48,7 @@ export async function indexItems(items: Item[]): Promise<void> {
 
             await getClient().bulk({
                 refresh: 'wait_for',
-                body: [].concat(...body as [])
+                operations: [].concat(...body as [])
             });
         }
     }
@@ -71,7 +71,7 @@ export async function updateItems(items: MinimalItem[]): Promise<void> {
                 ]);
 
             await getClient().bulk({
-                body: [].concat(...body as [])
+                operations: [].concat(...body as [])
             });
         }
     }
@@ -84,15 +84,14 @@ export async function deleteItems(collectionId: string): Promise<void> {
     await getClient().deleteByQuery({
         index: config.elasticSearchIndexItems,
         q: `collection_id:"${collectionId}"`,
-        body: {}
     });
 }
 
 export async function getItem(id: string): Promise<Item | null> {
     try {
         logger.debug(`Obtain item from ElasticSearch with id ${id}`);
-        const response = await getClient().get({index: config.elasticSearchIndexItems, id: id});
-        return response.body._source;
+        const response = await getClient().get<Item>({index: config.elasticSearchIndexItems, id: id});
+        return response._source || null;
     }
     catch (err) {
         return null;

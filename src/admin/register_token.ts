@@ -1,9 +1,9 @@
 import {v4 as uuid} from 'uuid';
 import moment from 'moment';
 
-import {Token} from '../lib/Security';
-import HttpError from '../lib/HttpError';
-import {getPersistentClient} from '../lib/Redis';
+import {Token} from '../lib/Security.js';
+import HttpError from '../lib/HttpError.js';
+import {getPersistentClient} from '../lib/Redis.js';
 
 export default async function registerToken(token: string | undefined, collection: string | undefined,
                                             from: moment.Moment | string | undefined,

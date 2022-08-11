@@ -1,7 +1,9 @@
-if (process.env.NODE_ENV === 'test')
-    require('dotenv').config({path: `${__dirname}/../../.test.env`});
+if (process.env.NODE_ENV === 'test') {
+    const dotenv = await import('dotenv');
+    dotenv.config({path: '.test.env'});
+}
 else if (process.env.NODE_ENV !== 'production')
-    require('dotenv').config();
+    await import('dotenv/config');
 
 export interface Config {
     env?: string;

@@ -1,16 +1,14 @@
 import {promisify} from 'util';
 import {imageSize} from 'image-size';
+import {AuthService, Image, AccessTier, ImageProfile} from '@archival-iiif/presentation-builder/v2';
 
-import config from '../lib/Config';
-import {Item} from '../lib/ItemInterfaces';
-import {DerivativeType} from '../lib/Derivative';
-import {getFullDerivativePath} from '../lib/Item';
-import {AccessState, getAuthTexts, getDefaultAccess} from '../lib/Security';
+import config from '../lib/Config.js';
+import {Item} from '../lib/ItemInterfaces.js';
+import {DerivativeType} from '../lib/Derivative.js';
+import {getFullDerivativePath} from '../lib/Item.js';
+import {AccessState, getAuthTexts, getDefaultAccess} from '../lib/Security.js';
 
-import AuthService from '@archival-iiif/presentation-builder/dist/v2/AuthService';
-import Image, {AccessTier, ImageProfile} from '@archival-iiif/presentation-builder/dist/v2/Image';
-
-import {authUri, imageUri} from './UriHelper';
+import {authUri, imageUri} from './UriHelper.js';
 
 const sizeOf = promisify(imageSize);
 

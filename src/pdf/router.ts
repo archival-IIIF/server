@@ -1,16 +1,16 @@
 import Router from '@koa/router';
 import {DefaultState} from 'koa';
 
-import logger from '../lib/Logger';
-import config from '../lib/Config';
-import HttpError from '../lib/HttpError';
-import {ExtendedContext} from '../lib/Koa';
-import {getVolatileClient} from '../lib/Redis';
-import {ImageItem, RootItem} from '../lib/ItemInterfaces';
-import {getChildItems, getItem} from '../lib/Item';
-import {AccessState, hasAccess, getIpAddress, hasAdminAccess} from '../lib/Security';
+import logger from '../lib/Logger.js';
+import config from '../lib/Config.js';
+import HttpError from '../lib/HttpError.js';
+import {ExtendedContext} from '../lib/Koa.js';
+import {getVolatileClient} from '../lib/Redis.js';
+import {ImageItem, RootItem} from '../lib/ItemInterfaces.js';
+import {getChildItems, getItem} from '../lib/Item.js';
+import {AccessState, hasAccess, getIpAddress, hasAdminAccess} from '../lib/Security.js';
 
-import createPDF from './pdfCreation';
+import createPDF from './pdfCreation.js';
 
 export const router = new Router<DefaultState, ExtendedContext>({prefix: '/pdf'});
 
@@ -48,7 +48,7 @@ router.get('/:id', async ctx => {
         const ip = getIpAddress(ctx);
 
         if (client) {
-            const result = await client.set(`pdf:${ip}`, ip, ['EX', config.pdfSessionSeconds], 'NX');
+            const result = await client.set(`pdf:${ip}`, ip, {EX: config.pdfSessionSeconds, NX: true});
             if (!result) {
                 const minutes = Math.ceil(config.pdfSessionSeconds / 60);
                 throw new HttpError(429,

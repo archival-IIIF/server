@@ -1,14 +1,14 @@
 import got from 'got';
 import {parseXml, Document, Element} from 'libxmljs2';
 
-import config from '../../lib/Config';
-import logger from '../../lib/Logger';
-import {MetadataParams} from '../../lib/Service';
-import {MinimalItem} from '../../lib/ItemInterfaces';
-import {updateItems, getCollectionsByMetadataId, getCollectionIdsIndexed} from '../../lib/Item';
+import config from '../../lib/Config.js';
+import logger from '../../lib/Logger.js';
+import {MetadataParams} from '../../lib/Service.js';
+import {MinimalItem} from '../../lib/ItemInterfaces.js';
+import {updateItems, getCollectionsByMetadataId, getCollectionIdsIndexed} from '../../lib/Item.js';
 
-import * as EAD from './util/EAD';
-import * as MarcXML from './util/MARCXML';
+import * as EAD from './util/EAD.js';
+import * as MarcXML from './util/MARCXML.js';
 
 const ns = {
     'marc': 'http://www.loc.gov/MARC21/slim'

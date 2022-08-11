@@ -1,11 +1,13 @@
 import * as path from 'path';
 import moment from 'moment';
 
-import getPronomInfo from '../lib/Pronom';
-import {getChildItems} from '../lib/Item';
-import {iconsByExtension} from '../lib/FileIcon';
-import {Access, AccessState} from '../lib/Security';
-import {Item, FolderItem, FileItem, ImageItem} from '../lib/ItemInterfaces';
+import {Base, Collection, Manifest, Resource} from '@archival-iiif/presentation-builder/v3';
+
+import getPronomInfo from '../lib/Pronom.js';
+import {getChildItems} from '../lib/Item.js';
+import {iconsByExtension} from '../lib/FileIcon.js';
+import {Access, AccessState} from '../lib/Security.js';
+import {Item, FolderItem, FileItem, ImageItem} from '../lib/ItemInterfaces.js';
 
 import {
     createMinimalCollection,
@@ -16,14 +18,9 @@ import {
     addMetadata,
     addThumbnail,
     getType, setAuthServices
-} from './PresentationUtils';
-import {PresentationBuilder} from './PresentationBuilder';
-import {accessUri, iconUri, originalUri} from './UriHelper';
-
-import Base from '@archival-iiif/presentation-builder/dist/v3/Base';
-import Manifest from '@archival-iiif/presentation-builder/dist/v3/Manifest';
-import Resource from '@archival-iiif/presentation-builder/dist/v3/Resource';
-import Collection from '@archival-iiif/presentation-builder/dist/v3/Collection';
+} from './PresentationUtils.js';
+import {PresentationBuilder} from './PresentationBuilder.js';
+import {accessUri, iconUri, originalUri} from './UriHelper.js';
 
 const defaultFileIcon = 'blank';
 const defaultFolderIcon = 'folder';

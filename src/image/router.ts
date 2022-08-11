@@ -1,23 +1,23 @@
 import {existsSync} from 'fs';
+import {Image} from '@archival-iiif/presentation-builder/v2';
 
 import Router from '@koa/router';
 import {Context, DefaultState, ParameterizedContext} from 'koa';
 
-import parseSize from './sizeParser';
-import {getImage, getLogo, getAudio, getProfile, ImageOptions} from './imageServer';
+import parseSize from './sizeParser.js';
+import {getImage, getLogo, getAudio, getProfile, ImageOptions} from './imageServer.js';
 
-import logger from '../lib/Logger';
-import config from '../lib/Config';
-import {cache} from '../lib/Cache';
-import HttpError from '../lib/HttpError';
-import {ExtendedContext} from '../lib/Koa';
-import {ImageItem, Item} from '../lib/ItemInterfaces';
-import derivatives, {DerivativeType} from '../lib/Derivative';
-import {Access, AccessState, hasAccess} from '../lib/Security';
-import {determineItem, getFullDerivativePath} from '../lib/Item';
+import logger from '../lib/Logger.js';
+import config from '../lib/Config.js';
+import {cache} from '../lib/Cache.js';
+import HttpError from '../lib/HttpError.js';
+import {ExtendedContext} from '../lib/Koa.js';
+import {ImageItem, Item} from '../lib/ItemInterfaces.js';
+import derivatives, {DerivativeType} from '../lib/Derivative.js';
+import {Access, AccessState, hasAccess} from '../lib/Security.js';
+import {determineItem, getFullDerivativePath} from '../lib/Item.js';
 
-import Image from '@archival-iiif/presentation-builder/dist/v2/Image';
-import {getImageInfo, getLogoInfo, getAudioInfo} from '../builder/PresentationBuilder';
+import {getImageInfo, getLogoInfo, getAudioInfo} from '../builder/PresentationBuilder.js';
 
 type ImageContext = ParameterizedContext<DefaultState, ExtendedContext & ImageOptions>;
 
@@ -79,7 +79,7 @@ router.get('/:id/info.json', async ctx => {
 
     setContentType(ctx);
     ctx.body = await cache('image', id, ctx.params.id,
-        async () => await getImageInfo(item as ImageItem, derivative, getProfile(), access));
+        async () => getImageInfo(item as ImageItem, derivative, getProfile(), access));
 
     logger.info(`Sending image info with id ${id} and tier ${tier}`);
 });

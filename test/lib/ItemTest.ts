@@ -2,13 +2,13 @@ import sinon from 'sinon';
 import chai from 'chai';
 import sinonChai from 'sinon-chai';
 
-import {setConfig} from '../../src/lib/Config';
-import {setElasticSearchClient} from '../../src/lib/ElasticSearch';
+import {setConfig} from '../../src/lib/Config.js';
+import {setElasticSearchClient} from '../../src/lib/ElasticSearch.js';
 
 import {
     createItem, getAvailableType, getFullPath, getPronom, getRelativePath, indexItems, updateItems
-} from '../../src/lib/Item';
-import {Item, MinimalItem} from '../../src/lib/ItemInterfaces';
+} from '../../src/lib/Item.js';
+import {Item, MinimalItem} from '../../src/lib/ItemInterfaces.js';
 
 chai.use(sinonChai);
 const expect = chai.expect;
@@ -108,7 +108,7 @@ describe('Item', () => {
 
             await indexItems(items);
 
-            expect(elasticSearch.bulk).to.have.been.calledWithExactly({refresh: 'wait_for', body: bulkBody});
+            expect(elasticSearch.bulk).to.have.been.calledWithExactly({refresh: 'wait_for', operations: bulkBody});
         });
 
         it('should send no bulk index action to ElasticSearch on empty input', async () => {
@@ -140,7 +140,7 @@ describe('Item', () => {
 
             await updateItems(items);
 
-            expect(elasticSearch.bulk).to.have.been.calledWithExactly({body: bulkBody});
+            expect(elasticSearch.bulk).to.have.been.calledWithExactly({operations: bulkBody});
         });
 
         it('should send no bulk update action to ElasticSearch on empty input', async () => {

@@ -1,6 +1,6 @@
-import {AuthTextsParams} from '../lib/Service';
-import {AuthTextsByType} from './util/types';
-import {isAuthenticationEnabled, isExternalEnabled, isIpAccessEnabled, isLoginEnabled} from '../lib/Security';
+import {AuthTextsParams} from '../lib/Service.js';
+import {AuthTextsByType} from './util/types.js';
+import {isAuthenticationEnabled, isExternalEnabled, isIpAccessEnabled, isLoginEnabled} from '../lib/Security.js';
 
 const logout = {
     label: 'Logout'

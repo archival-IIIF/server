@@ -1,7 +1,6 @@
 import * as fs from 'fs';
-import * as path from 'path';
 import {parseXml, Element} from 'libxmljs2';
-import logger from './Logger';
+import logger from './Logger.js';
 
 export interface PronomInfo {
     id: number;
@@ -13,7 +12,7 @@ export interface PronomInfo {
 
 const cache: { [puid: string]: PronomInfo | null } = {};
 const ns = {'p': 'http://www.nationalarchives.gov.uk/pronom/SignatureFile'};
-const druid = parseXml(fs.readFileSync(path.join(__dirname, 'DROID_SignatureFile.xml'), 'utf8'));
+const druid = parseXml(fs.readFileSync('src/lib/DROID_SignatureFile.xml', 'utf8'));
 
 export default function getPronomInfo(puid: string): PronomInfo | null {
     if (puid in cache && cache[puid] !== null)

@@ -1,26 +1,21 @@
 import {existsSync} from 'fs';
 
-import {IIIFMetadata} from '../service/util/types';
+import {IIIFMetadata} from '../service/util/types.js';
 
-import {Text} from '../lib/Text';
-import config from '../lib/Config';
-import derivatives from '../lib/Derivative';
-import {runTaskWithResponse} from '../lib/Task';
-import {IIIFMetadataParams} from '../lib/Service';
-import getPronomInfo, {PronomInfo} from '../lib/Pronom';
-import {getFullDerivativePath, getItem} from '../lib/Item';
-import {getAuthTexts, requiresAuthentication} from '../lib/Security';
-import {Item, FileItem, ImageItem, RootItem, FolderItem} from '../lib/ItemInterfaces';
+import {Text} from '../lib/Text.js';
+import config from '../lib/Config.js';
+import derivatives from '../lib/Derivative.js';
+import {runTaskWithResponse} from '../lib/Task.js';
+import {IIIFMetadataParams} from '../lib/Service.js';
+import getPronomInfo, {PronomInfo} from '../lib/Pronom.js';
+import {getFullDerivativePath, getItem} from '../lib/Item.js';
+import {getAuthTexts, requiresAuthentication} from '../lib/Security.js';
+import {Item, FileItem, ImageItem, RootItem, FolderItem} from '../lib/ItemInterfaces.js';
 
-import Base from '@archival-iiif/presentation-builder/dist/v3/Base';
-import Manifest from '@archival-iiif/presentation-builder/dist/v3/Manifest';
-import Collection from '@archival-iiif/presentation-builder/dist/v3/Collection';
-import AuthService from '@archival-iiif/presentation-builder/dist/v3/AuthService';
-import Canvas from '@archival-iiif/presentation-builder/dist/v3/Canvas';
-import Resource from '@archival-iiif/presentation-builder/dist/v3/Resource';
-import Service from '@archival-iiif/presentation-builder/dist/v3/Service';
-import Annotation from '@archival-iiif/presentation-builder/dist/v3/Annotation';
-import AnnotationPage from '@archival-iiif/presentation-builder/dist/v3/AnnotationPage';
+import {
+    Base, Manifest, Collection, AuthService,
+    Canvas, Resource, Service, Annotation, AnnotationPage
+} from '@archival-iiif/presentation-builder/v3';
 
 import {
     annoPageUri,
@@ -33,7 +28,7 @@ import {
     imageResourceUri,
     imageUri,
     manifestUri
-} from './UriHelper';
+} from './UriHelper.js';
 
 export function createMinimalCollection(item: Item, label?: string): Collection {
     return new Collection(collectionUri(item.id), label || item.label);

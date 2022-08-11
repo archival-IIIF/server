@@ -1,13 +1,12 @@
 import got from 'got';
+import {ImageProfile} from '@archival-iiif/presentation-builder/v2';
 
-import {sharpProfile, lorisProfile} from './profiles';
+import {sharpProfile, lorisProfile} from './profiles.js';
 
-import config from '../lib/Config';
-import {Item} from '../lib/ItemInterfaces';
-import {DerivativeType} from '../lib/Derivative';
-import {getRelativePath, getRelativeDerivativePath} from '../lib/Item';
-
-import {ImageProfile} from '@archival-iiif/presentation-builder/dist/v2/Image';
+import config from '../lib/Config.js';
+import {Item} from '../lib/ItemInterfaces.js';
+import {DerivativeType} from '../lib/Derivative.js';
+import {getRelativePath, getRelativeDerivativePath} from '../lib/Item.js';
 
 export interface Size {
     width: number;
