@@ -9,7 +9,7 @@ COPY . /opt/iiif-server
 WORKDIR /opt/iiif-server
 
 # Install the application
-RUN npm install --production
+RUN npm install --omit=dev
 
 # Transpile the application
 RUN tsc

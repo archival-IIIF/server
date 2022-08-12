@@ -1,10 +1,32 @@
 import config from '../lib/Config.js';
 import getClient from '../lib/ElasticSearch.js';
 import {Text} from '../lib/Text.js';
-import {SearchResponse} from '@elastic/elasticsearch/lib/api/types.js';
+import {ApiResponse} from '@elastic/elasticsearch/lib/Transport';
 
 const PRE_TAG = '{{{';
 const POST_TAG = '}}}';
+
+interface SearchResponse {
+    hits: {
+        total: number,
+        hits: {
+            _source: Text,
+            highlight: {
+                text: string[]
+            }
+        }[]
+    }
+}
+
+interface AutocompleteResponse {
+    hits: {
+        hits: {
+            highlight: {
+                'text.autocomplete': string[]
+            }
+        }[]
+    }
+}
 
 export interface SearchResult {
     text: Text,
@@ -49,36 +71,38 @@ async function search(query: string, filters: { [field: string]: string | undefi
     const isPhraseMatch = query.startsWith('"') && query.endsWith('"');
     query = isPhraseMatch ? query.substring(1, query.length - 1) : query;
 
-    const response: SearchResponse<Text> = await getClient().search({
+    const response: ApiResponse<SearchResponse> = await getClient().search({
         index: config.elasticSearchIndexTexts,
         size: config.maxSearchResults,
-        query: {
-            bool: {
-                must: {
-                    [isPhraseMatch ? 'match_phrase' : 'match']: {
-                        text: {
-                            query,
-                            fuzziness: !isPhraseMatch ? 'AUTO' : undefined
+        body: {
+            query: {
+                bool: {
+                    must: {
+                        [isPhraseMatch ? 'match_phrase' : 'match']: {
+                            text: {
+                                query,
+                                fuzziness: !isPhraseMatch ? 'AUTO' : undefined
+                            }
                         }
+                    },
+                    should: undefined,
+                    filter: {
+                        term: filters
                     }
-                },
-                should: undefined,
-                filter: {
-                    term: filters
                 }
-            }
-        },
-        highlight: {
-            type: 'plain',
-            pre_tags: [PRE_TAG],
-            post_tags: [POST_TAG],
-            fields: {
-                text: {}
+            },
+            highlight: {
+                type: 'plain',
+                pre_tags: [PRE_TAG],
+                post_tags: [POST_TAG],
+                fields: {
+                    text: {}
+                }
             }
         }
     });
 
-    return response.hits.hits.map(hit => ({
+    return response.body.hits.hits.map(hit => ({
         text: hit._source as Text,
         matches: hit.highlight ? hit.highlight.text.flatMap(hl => mapMatches(hl)) : []
     }));
@@ -87,39 +111,41 @@ async function search(query: string, filters: { [field: string]: string | undefi
 async function autocomplete(query: string, filters: { [field: string]: string | undefined }): Promise<string[][]> {
     query = query.trim();
 
-    const response: SearchResponse = await getClient().search({
+    const response: ApiResponse<AutocompleteResponse> = await getClient().search({
         index: config.elasticSearchIndexTexts,
-        _source: false,
-        query: {
-            bool: {
-                must: {
-                    match_phrase: {
-                        'text.autocomplete': {
-                            query
+        body: {
+            _source: false,
+            query: {
+                bool: {
+                    must: {
+                        match_phrase: {
+                            'text.autocomplete': {
+                                query
+                            }
                         }
+                    },
+                    should: undefined,
+                    filter: {
+                        term: filters
                     }
-                },
-                should: undefined,
-                filter: {
-                    term: filters
                 }
-            }
-        },
-        highlight: {
-            pre_tags: [PRE_TAG],
-            post_tags: [POST_TAG],
-            fields: {
-                'text.autocomplete': {}
+            },
+            highlight: {
+                pre_tags: [PRE_TAG],
+                post_tags: [POST_TAG],
+                fields: {
+                    'text.autocomplete': {}
+                }
             }
         }
     });
 
-    if (response.hits.hits.length === 0)
+    if (response.body.hits.hits.length === 0)
         return [];
 
     const firstQueryWord = query.split(' ')[0].toLowerCase();
 
-    return response.hits.hits.reduce<string[][]>((acc, hit) => {
+    return response.body.hits.hits.reduce<string[][]>((acc, hit) => {
         if (hit.highlight) {
             for (const hl of hit.highlight['text.autocomplete']) {
                 for (const match of mapMatches(hl)) {

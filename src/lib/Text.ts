@@ -47,7 +47,7 @@ export async function indexTexts(textItems: Text[]): Promise<void> {
 
             await getClient().bulk({
                 refresh: 'wait_for',
-                operations: [].concat(...body as [])
+                body: [].concat(...body as [])
             });
         }
     }
@@ -60,13 +60,14 @@ export async function deleteTexts(collectionId: string): Promise<void> {
     await getClient().deleteByQuery({
         index: config.elasticSearchIndexTexts,
         q: `collection_id:${collectionId}`,
+        body: {}
     });
 }
 
 export async function getText(id: string): Promise<Text | null> {
     try {
-        const response = await getClient().get<Text>({index: config.elasticSearchIndexTexts, id: id});
-        return response._source || null;
+        const response = await getClient().get<{ _source: Text }>({index: config.elasticSearchIndexTexts, id: id});
+        return response.body._source || null;
     }
     catch (err) {
         return null;

@@ -48,7 +48,7 @@ export async function indexItems(items: Item[]): Promise<void> {
 
             await getClient().bulk({
                 refresh: 'wait_for',
-                operations: [].concat(...body as [])
+                body: [].concat(...body as [])
             });
         }
     }
@@ -71,7 +71,7 @@ export async function updateItems(items: MinimalItem[]): Promise<void> {
                 ]);
 
             await getClient().bulk({
-                operations: [].concat(...body as [])
+                body: [].concat(...body as [])
             });
         }
     }
@@ -84,14 +84,15 @@ export async function deleteItems(collectionId: string): Promise<void> {
     await getClient().deleteByQuery({
         index: config.elasticSearchIndexItems,
         q: `collection_id:"${collectionId}"`,
+        body: {}
     });
 }
 
 export async function getItem(id: string): Promise<Item | null> {
     try {
         logger.debug(`Obtain item from ElasticSearch with id ${id}`);
-        const response = await getClient().get<Item>({index: config.elasticSearchIndexItems, id: id});
-        return response._source || null;
+        const response = await getClient().get<{ _source: Item }>({index: config.elasticSearchIndexItems, id: id});
+        return response.body._source || null;
     }
     catch (err) {
         return null;
