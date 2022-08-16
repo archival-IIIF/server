@@ -32,6 +32,7 @@ export type EmptyParams = {};
 export type IndexParams = { collectionPath: string };
 export type TextParams = { collectionId: string, items: TextItem[] };
 export type MetadataParams = { oaiIdentifier?: string | null, rootId?: string, collectionId?: string };
+export type ReindexParams = { collectionIds?: string[], query?: string };
 export type DerivativeParams = { collectionId: string };
 export type AccessParams = { item: Item, ip?: string, identities?: string[] };
 export type AuthTextsParams = { item: Item };
@@ -72,6 +73,11 @@ export const allServices: Service[] = [{
     type: 'metadata',
     runAs: 'worker',
     getService: async () => (await import('../service/niod/metadata.js')).default
+}, {
+    name: 'iish-archivematica-reindex',
+    type: 'reindex',
+    runAs: 'worker',
+    getService: async () => (await import('../service/iish/archivematica_reindex.js')).default
 }, {
     name: 'process-update',
     type: 'process-update',

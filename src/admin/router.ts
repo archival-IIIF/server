@@ -7,7 +7,7 @@ import {runTask} from '../lib/Task.js';
 import {workerStatus} from '../lib/Worker.js';
 import {ExtendedContext} from '../lib/Koa.js';
 import {hasAdminAccess, getIpAddress} from '../lib/Security.js';
-import {EmptyParams, IndexParams, MetadataParams} from '../lib/Service.js';
+import {EmptyParams, IndexParams, MetadataParams, ProcessUpdateParams, ReindexParams} from '../lib/Service.js';
 
 import registerToken from './register_token.js';
 import indexCollection from './api_index.js';
@@ -49,6 +49,20 @@ router.post('/index', async ctx => {
     ctx.body = 'Collection is sent to the queue for indexing';
 });
 
+router.post('/reindex', async ctx => {
+    const body = ctx.request.body as { collection_id?: string[]; query?: string };
+    if ((!body.collection_id || body.collection_id.length === 0) && !body.query)
+        throw new HttpError(400,
+            'Please provide the ids of the collections to reindex or the ElasticSearch query');
+
+    runTask<ReindexParams>('reindex', {
+        collectionIds: body.collection_id,
+        query: body.query
+    });
+
+    ctx.body = 'Reindex triggered';
+});
+
 router.post('/update_metadata', async ctx => {
     const body = ctx.request.body as Record<'oai_identifier' | 'root_id' | 'collection_id', string | undefined>;
     if (!body.oai_identifier && !body.root_id && !body.collection_id)
@@ -67,6 +81,20 @@ router.post('/update_metadata', async ctx => {
 router.post('/all_metadata_update', async ctx => {
     runTask<EmptyParams>('all-metadata-update', {});
     ctx.body = 'All metadata update triggered';
+});
+
+router.post('/process_update', async ctx => {
+    const body = ctx.request.body as Record<'type' | 'query', string | undefined>;
+    if (!body.type || !body.query)
+        throw new HttpError(400,
+            'Please provide the type of process to run and the ElasticSearch query for the items to update');
+
+    runTask<ProcessUpdateParams>('process-update', {
+        type: body.type,
+        query: body.query
+    });
+
+    ctx.body = 'Process update triggered';
 });
 
 router.post('/register_token', async ctx => {

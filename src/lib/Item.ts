@@ -165,12 +165,21 @@ export function getAllRootItems(): AsyncIterable<Item> {
     return getItems('type:(root OR folder OR metadata) AND NOT _exists_:parent_id');
 }
 
-function getItems(q: string): AsyncIterable<Item> {
+function getItems(q: string, sort=true): AsyncIterable<Item> {
     logger.debug(`Obtain items from ElasticSearch with query "${q}"`);
     return getClient().helpers.scrollDocuments<Item>({
         index: config.elasticSearchIndexItems,
         size: 10_000,
-        sort: 'label:asc',
+        sort: sort ? 'label:asc' : undefined,
+        q
+    });
+}
+
+export function getItemsSearch(q: string, size=10): Promise<Item[]> {
+    logger.debug(`Obtain items from ElasticSearch with query "${q}" and limit "${size}"`);
+    return getClient().helpers.search<Item>({
+        index: config.elasticSearchIndexItems,
+        size: size,
         q
     });
 }

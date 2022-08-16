@@ -7,22 +7,22 @@ The [IISH](https://iisg.amsterdam) (International Institute of Social History)  
 index the DIPs created by [Archivematica](https://www.archivematica.org) and to give access through IIIF.
 
 1. [Components](#components)
-1. [Services](#services)
+2. [Services](#services)
     1. [Default services](#default-service)
-    1. [Workers](#workers)
-    1. [Cron jobs](#cron-jobs)
-    1. [Standalones](#standalones)
-    1. [Libraries](#libraries)
-1. [Web API](#web-api)
+    2. [Workers](#workers)
+    3. [Cron jobs](#cron-jobs)
+    4. [Standalones](#standalones)
+    5. [Libraries](#libraries)
+3. [Web API](#web-api)
     1. [IIIF Image API](#iiif-image-api)
-    1. [IIIF Presentation API](#iiif-presentation-api)
-    1. [IIIF Authentication API](#iiif-authentication-api)
-    1. [File API](#file-api)
-    1. [Admin API](#admin-api)
-1. [Installation](#installation)
+    2. [IIIF Presentation API](#iiif-presentation-api)
+    3. [IIIF Authentication API](#iiif-authentication-api)
+    4. [File API](#file-api)
+    5. [Admin API](#admin-api)
+4. [Installation](#installation)
     1. [Docker Compose](#docker-compose)
-    1. [Manual installation](#manual-installation)
-1. [Configuration](#configuration)
+    2. [Manual installation](#manual-installation)
+5. [Configuration](#configuration)
 
 ## Components
 
@@ -50,8 +50,8 @@ The `web` service runs the IIIF web environment.
 The worker services wait for new jobs to appear in a queue in [Redis](https://redis.io). A distinction is made between
 index workers that indexes data in
 [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch) and derivative workers that create
-specific derivatives of collection items. At the moment, the Archival IIIF server identifies five different types of
-worker services:
+specific derivatives of collection items. At the moment, the Archival IIIF server identifies a number of different
+types of worker services:
 
 - **Index worker**: Gets a job with the path of a collection to be indexed in
   [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch). Current implementations:
@@ -60,11 +60,17 @@ worker services:
 - **Text index worker**: Gets a job with a collection id and a list of all transcriptions/transliterations to be indexed
   in [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch). Current implementations:
     - `text-index`: Indexes plain text files and ALTO files.
+- **Reindex worker**: Gets a list of collections ids to be reindexed or a query for
+  [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch). Current implementations:
+    - `iish-archivematica-reindex`: A specific IISH implementation of the reindex worker. Can start reindexing for
+      DIPs created by the Archivematica instance of the IISH.
 - **Metadata index worker**: Gets a job with a collection id and/or a OAI identifier and obtains the metadata from an
   OAI endpoint to be indexed in [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch). Current
   implementations:
     - `iish-metadata`: Looks for and indexes metadata from the OAI service of the IISH.
     - `niod-metadata`: Looks for and indexes metadata from NIOD.
+- **All metadata update worker**: Starts the metadata process again for all items. Current implementations:
+    - `all-metadata-update`: Default implementation.
 - **Waveform derivative worker**: Gets a job with a collection id and then builds waveform representations of all audio
   files of the collection with the given collection id. Current implementations:
     - `waveform`: Default implementation.
@@ -75,6 +81,9 @@ worker services:
   mosaic of stills with a WebVTT file from all video files of the collection with the given collection id. Current
   implementations:
     - `video-image`: Default implementation.
+- **Process update worker**: Gets the process type to start and a query for
+  [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch). Current implementations:
+    - `process-update`: Default implementation.
 
 ### Cron jobs
 
@@ -154,6 +163,15 @@ IIIF Presentation API. Returns the JSON-LD description for the collection with t
 
 IIIF Presentation API. Returns the JSON-LD description for the manifest with the given id.
 
+---
+
+**URL**: `/iiif/presentation/[id]/annopage/[annotation-page-id]`
+
+**Method**: `GET`
+
+IIIF Presentation API. Returns the JSON-LD description for the annotation page with the given annotation page id for a
+manifest with the given id.
+
 ### IIIF Authentication API
 
 _See also the [IIIF Authentication API](https://iiif.io/api/auth/1.0/)_
@@ -212,7 +230,7 @@ Provides access to the file with the given id. Explicit access to the original c
 
 ---
 
-**URL**: `/file/[id]/<derivative type>`
+**URL**: `/file/[id]/[derivative-type]`
 
 **Method**: `GET`
 
@@ -241,6 +259,25 @@ a valid access token.
 
 ---
 
+**URL**: `/admin/index_api`
+
+**Method**: `POST`
+
+Indexes the request body right away. Can only be used by an administrator with a valid access token.
+
+---
+
+**URL**: `/admin/reindex`
+
+**Method**: `POST`
+
+**Parameters**: `collection_id`, `query`
+
+Creates a job for the reindex worker to index for the given collection ids or using the given ElasticSearch query. Can
+only be used by an administrator with a valid access token.
+
+---
+
 **URL**: `/admin/update_metadata`
 
 **Method**: `POST`
@@ -261,11 +298,14 @@ access token.
 
 ---
 
-**URL**: `/admin/index_api`
+**URL**: `/admin/process_update`
 
 **Method**: `POST`
 
-Indexes the request body right away. Can only be used by an administrator with a valid access token.
+**Parameters**: `type`, `query`
+
+Creates a job for the process update worker to start a process of the given type using the given ElasticSearch query.
+Can only be used by an administrator with a valid access token.
 
 ---
 
@@ -287,14 +327,12 @@ Use the provided Docker Compose or install manually.
 1. Set up any IIIF image compliant server:
     * The Docker Compose comes with support for [Loris](https://github.com/loris-imageserver/loris).
     * Or use our [image server](https://github.com/archival-IIIF/image).
-1. See for example the provided `docker-compose.yml.example`:
+2. See for example the provided `docker-compose.yml.example`:
     * Note: Clone the `web` service definition to create multiple services and use the env variable
       `IIIF_SERVER_SERVICES` to define which services that container should run.
-1. Set up the configuration (See .env.example for the example configuration)
+3. Set up the configuration (See .env.example for the example configuration)
     * Set up the environment variables in the Docker Compose file
-1. Set up volumes for the following:
-    * `universal-viewer-conf`: The Universal Viewer configuration file
-    * `loris-conf`: The Loris configuration file (if Loris is used)
+4. Set up volumes for the following:
     * `data`: The volume which contains the collections to be indexed or files to be read, but also allows write access
       for derivative creation
     * `indexes`: The volume for ElasticSearch indexes to be stored
@@ -305,23 +343,25 @@ Use the provided Docker Compose or install manually.
 1. Set up any IIIF image compliant server:
     * Use our [image server](https://github.com/archival-IIIF/image).
     * Or set up any IIIF image compliant server.
-1. Install
-    * [Node.js 14.x LTS](https://nodejs.org/en)
+2. Install
+    * [Node.js 16.x LTS](https://nodejs.org/en)
     * [yarn](https://yarnpkg.com) or [npm](https://www.npmjs.com)
     * [ElasticSearch 7.x.x](https://www.elastic.co/webinars/getting-started-elasticsearch)
     * IIIF image server (e.g. [Loris](https://github.com/loris-imageserver/loris))
-    * (Optional) [Redis 5.x](https://redis.io) (Required for caching, workers and/or IIIF authentication)
+    * (Optional) [Redis 7.x](https://redis.io) (Required for caching, workers and/or IIIF authentication)
     * (Optional) [pm2](https://github.com/Unitech/pm2) (Required for managing the processes)
-1. Install optional dependencies for derivative creation
+3. Install optional dependencies for derivative creation
     * [audiowaveform](https://github.com/bbc/audiowaveform) (Required by the `waveform` service)
-1. Set up the configuration (See .env.example for the example configuration)
+    * [ghostscript](https://www.ghostscript.com) (Required by the `pdf-image` service)
+    * [ffmpeg](https://ffmpeg.org) (Required by the `video-image` service)
+4. Set up the configuration (See .env.example for the example configuration)
     * Copy .env.example to .env and set up the parameters for development
     * Set up the environment variables for production
     * With PM2, [set up a config.yml file](https://pm2.io/doc/en/runtime/guide/ecosystem-file/)
       with the environment variables
-1. Run `yarn install` or `npm install`
-1. Run `tsc` to transpile the application
-1. Start the application:
+5. Run `yarn install` or `npm install`
+6. Run `tsc` to transpile the application
+7. Start the application:
     * Run `node src/app.js`
     * With PM2: `pm2 start config.yml`
 
@@ -338,16 +378,27 @@ The environment variables used to configure the application:
         - `directory-watcher-file-trigger`: Runs a **standalone** script that watches a directory for new collections to
           index: when a collection includes a trigger file, the index is triggered
         - `text-index`: Runs a **worker** that indexes texts (transcriptions, translations, etc.)
+        - `process-update`: Runs a **worker** that triggers other workers to run for specific items
+        - `all-metadata-update`: Runs a **worker** that triggers a reindex of all metadata
+        - `default-access`: Loads a **library** that grants access to all items
+        - `default-auth-texts`: Loads a **library** that provides authentication empty assistance texts
+        - `default-iiif-metadata`: Loads a **library** that provides no extra IIIF metadata
     - Derivative services:
         - `waveform`: Runs a **worker** that creates waveforms from audio files
+        - `pdf-image`: Runs a **worker** that creates images from pdf files
+        - `video-image`: Runs a **worker** that creates images from video files
     - IISH specific services:
         - `iish-archivematica-index`: Runs a **worker** that indexes IISH DIPs from Archivematica
+        - `iish-archivematica-reindex`: Runs a **worker** that reindexes IISH DIPs from Archivematica
         - `iish-metadata`: Runs a **worker** that indexes IISH metadata (MARCXML / EAD)
         - `iish-metadata-update`: Runs a **cron job** that processes changes in the IISH metadata
         - `iish-access`: Loads a **library** that determines access to items for IISH collections
         - `iish-auth-texts`: Loads a **library** that provides authentication assistance texts of items from IISH
           collections
         - `iish-iiif-metadata`: Loads a **library** that provides IIIF metadata of items from IISH collections
+    - NIOD specific services:
+        - `niod-metadata`: Runs a **worker** that indexes NIOD metadata
+        - `niod-access`: Loads a **library** that determines access to items for NIOD collections
 - `IIIF_SERVER_SECRET`: Signed cookie key
 - `IIIF_SERVER_ACCESS_TOKEN`: Access token for administrator access
 - `IIIF_SERVER_IMAGE_SERVER_URL`: URL of the external IIIF image server (such as Loris)
@@ -366,6 +417,7 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_DERIVATIVE_REL_PATH`: The relative path of the (read-write) derivatives under the data storage root path
 - `IIIF_SERVER_LOGO_REL_PATH`: The relative path to the image with the logo to add to the IIIF manifests
 - `IIIF_SERVER_AUDIO_REL_PATH`: The relative path to the image with the audio icon to add to the IIIF manifests
+- `IIIF_SERVER_METADATA_PATH`: The path to the folder which contains all the metadata
 - `IIIF_SERVER_LOGO_DIM`: The dimensions of the logo, separated by a ':'
 - `IIIF_SERVER_AUDIO_DIM`: The dimensions of the audio icon, separated by a ':'
 - `IIIF_SERVER_PDF_PAGES_THRESHOLD`: If defined, limit dynamic PDF creation per IP address when over this configured
@@ -385,7 +437,7 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_ELASTICSEARCH_URL`: URL of the ElasticSearch indexer
 - `IIIF_SERVER_ELASTICSEARCH_USER`: Username of the ElasticSearch indexer if authentication is enabled
 - `IIIF_SERVER_ELASTICSEARCH_PASSWORD`: Password of the ElasticSearch indexer if authentication is enabled
-- `IIIF_SERVER_ELASTICSEARCH_INDEX_PREFIX`: The text placed in front of the indices 'items' and 'texts'. 
+- `IIIF_SERVER_ELASTICSEARCH_INDEX_PREFIX`: The prefix in front of the name of the indices 'items' and 'texts'
 - `IIIF_SERVER_REDIS_VOLATILE_DISABLED`: Turn Redis volatile server on/off (Sets up caching)
 - `IIIF_SERVER_REDIS_VOLATILE_HOST`: Host of the Redis caching server
 - `IIIF_SERVER_REDIS_VOLATILE_PORT`: Port of the Redis caching server
