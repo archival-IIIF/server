@@ -53,24 +53,27 @@ export async function getAnnotationList(searchResults: SearchResult[], query: st
 
                 const ocrWords = await findInAlto(searchResult.text, match);
                 for (const ocrWord of ocrWords) {
-                    const annotationId =
-                        searchAnnoUri(id, type, language, searchResult.text.id + '_' + ocrWord.idx) + uriQuery;
-                    const textResource = new TextResource(ocrWord.word);
+                    if (ocrWord.x && ocrWord.y && ocrWord.width && ocrWord.height) {
+                        const annotationId =
+                            searchAnnoUri(id, type, language, searchResult.text.id + '_' + ocrWord.idx)
+                            + uriQuery;
+                        const textResource = new TextResource(ocrWord.word);
 
-                    const annotation = new Annotation(annotationId, textResource);
-                    annotation.setCanvas(canvas, {
-                        x: ocrWord.x,
-                        y: ocrWord.y,
-                        w: ocrWord.width,
-                        h: ocrWord.height
-                    });
+                        const annotation = new Annotation(annotationId, textResource);
+                        annotation.setCanvas(canvas, {
+                            x: ocrWord.x,
+                            y: ocrWord.y,
+                            w: ocrWord.width,
+                            h: ocrWord.height
+                        });
 
-                    if (!uniqueResources.has(annotationId)) {
-                        uniqueResources.add(annotationId);
-                        resources.push(annotation);
+                        if (!uniqueResources.has(annotationId)) {
+                            uniqueResources.add(annotationId);
+                            resources.push(annotation);
+                        }
+
+                        searchHit.addAnnotation(annotation);
                     }
-
-                    searchHit.addAnnotation(annotation);
                 }
 
                 searchHit.setBeforeAndAfter(match.before, match.after);

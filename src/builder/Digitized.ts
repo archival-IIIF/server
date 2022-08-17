@@ -114,15 +114,18 @@ export async function getAnnotationPage(item: RootItem, text: Text): Promise<Ann
             const annotations: Annotation[] = [];
 
             const words = await readAlto(getFullPath(text));
-            words.forEach((word, idx) => {
-                const resource = Resource.createTextResource(word.word, text.language);
-                const annotation = new Annotation(annoUri(item.id, childItem.id, idx + 1), resource, 'supplementing');
+            for (const [idx, word] of words.entries()) {
+                if (word.x && word.y && word.width && word.height) {
+                    const resource = Resource.createTextResource(word.word, text.language);
+                    const annotation = new Annotation(
+                        annoUri(item.id, childItem.id, idx + 1), resource, 'supplementing');
 
-                annotation.setTextGranularity('word');
-                annotation.setCanvas(canvas, {x: word.x, y: word.y, w: word.width, h: word.height});
+                    annotation.setTextGranularity('word');
+                    annotation.setCanvas(canvas, {x: word.x, y: word.y, w: word.width, h: word.height});
 
-                annotations.push(annotation);
-            });
+                    annotations.push(annotation);
+                }
+            }
 
             annoPage.setItems(annotations);
             break;

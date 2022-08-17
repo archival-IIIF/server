@@ -22,10 +22,10 @@ export interface Text {
 
 export interface OcrWord {
     idx: number;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
+    x: number | null;
+    y: number | null;
+    width: number | null;
+    height: number | null;
     word: string;
 }
 
@@ -98,14 +98,25 @@ export async function readAlto(uri: string): Promise<OcrWord[]> {
     return cache('alto', 'alto', uri, async () => {
         const altoXml = await readFileAsync(uri, 'utf8');
         const alto = parseXml(altoXml);
-        return alto.find<Element>('//alto:String | //String', ns).map((stringElem, idx) => ({
-            idx,
-            x: parseInt((stringElem.attr('HPOS') as Attribute).value()),
-            y: parseInt((stringElem.attr('VPOS') as Attribute).value()),
-            width: parseInt((stringElem.attr('WIDTH') as Attribute).value()),
-            height: parseInt((stringElem.attr('HEIGHT') as Attribute).value()),
-            word: (stringElem.attr('CONTENT') as Attribute).value()
-        }));
+        return alto.find<Element>('//alto:String | //String', ns).map((stringElem, idx) => {
+            const word = stringElem.attr('CONTENT')?.value();
+            if (!word)
+                return null;
+
+            const x = stringElem.attr('HPOS')?.value();
+            const y = stringElem.attr('VPOS')?.value();
+            const width = stringElem.attr('WIDTH')?.value();
+            const height = stringElem.attr('HEIGHT')?.value();
+
+            return {
+                idx,
+                x: x && parseInt(x),
+                y: y && parseInt(y),
+                width: width && parseInt(width),
+                height: height && parseInt(height),
+                word
+            };
+        }).filter(ocrWord => ocrWord != null) as OcrWord[];
     });
 }
 
