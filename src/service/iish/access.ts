@@ -10,8 +10,11 @@ export default async function hasAccess({item, ip, identities = []}: AccessParam
     if (!rootItem)
         return {state: AccessState.CLOSED};
 
-    const type = rootItem.iish.type;
-    const accessCode = rootItem.iish.access || 'closed';
+    if (rootItem.type === 'folder')
+        return {state: AccessState.CLOSED};
+
+    const type = rootItem.iish?.type;
+    const accessCode = rootItem.iish?.access || 'closed';
 
     if (accessCode === 'open')
         return {state: AccessState.OPEN};
