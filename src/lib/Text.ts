@@ -8,6 +8,7 @@ import config from '../lib/Config.js';
 import logger from './Logger.js';
 import {cache} from './Cache.js';
 import getClient from './ElasticSearch.js';
+import {ResponseError} from "@elastic/elasticsearch/lib/errors";
 
 export interface Text {
     id: string;
@@ -67,10 +68,12 @@ export async function deleteTexts(collectionId: string): Promise<void> {
 export async function getText(id: string): Promise<Text | null> {
     try {
         const response = await getClient().get<{ _source: Text }>({index: config.elasticSearchIndexTexts, id: id});
-        return response.body._source || null;
+        return response.body._source;
     }
-    catch (err) {
-        return null;
+    catch (err: any) {
+        if (err instanceof ResponseError && err.statusCode === 404)
+            return null;
+        throw err;
     }
 }
 
@@ -86,12 +89,17 @@ export function getTextsForCollectionId(collectionId: string, type?: string,
 }
 
 function getTexts(q: string): AsyncIterable<Text> {
-    logger.debug(`Obtain texts from ElasticSearch with query "${q}"`);
-    return getClient().helpers.scrollDocuments<Text>({
-        index: config.elasticSearchIndexTexts,
-        size: 10_000,
-        q
-    });
+    try {
+        logger.debug(`Obtain texts from ElasticSearch with query "${q}"`);
+        return getClient().helpers.scrollDocuments<Text>({
+            index: config.elasticSearchIndexTexts,
+            size: 10_000,
+            q
+        });
+    }
+    catch (err: any) {
+        throw err;
+    }
 }
 
 export async function readAlto(uri: string): Promise<OcrWord[]> {

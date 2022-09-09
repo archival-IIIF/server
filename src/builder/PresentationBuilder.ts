@@ -1,4 +1,4 @@
-import {Manifest, Collection, AnnotationPage,} from '@archival-iiif/presentation-builder/v3';
+import {Manifest, Collection, AnnotationPage} from '@archival-iiif/presentation-builder/v3';
 import {TermList, Image, ImageProfile, AnnotationList} from '@archival-iiif/presentation-builder/v2';
 
 import {Text} from '../lib/Text.js';

@@ -4,6 +4,7 @@ import config from './Config.js';
 import {DerivativeType} from './Derivative.js';
 import {Item, MinimalItem} from './ItemInterfaces.js';
 import getClient from './ElasticSearch.js';
+import {ResponseError} from "@elastic/elasticsearch/lib/errors";
 
 export function createItem(obj: MinimalItem): Item {
     return {
@@ -92,10 +93,12 @@ export async function getItem(id: string): Promise<Item | null> {
     try {
         logger.debug(`Obtain item from ElasticSearch with id ${id}`);
         const response = await getClient().get<{ _source: Item }>({index: config.elasticSearchIndexItems, id: id});
-        return response.body._source || null;
+        return response.body._source;
     }
-    catch (err) {
-        return null;
+    catch (err: any) {
+        if (err instanceof ResponseError && err.statusCode === 404)
+            return null;
+        throw err;
     }
 }
 
@@ -165,23 +168,33 @@ export function getAllRootItems(): AsyncIterable<Item> {
     return getItems('type:(root OR folder OR metadata) AND NOT _exists_:parent_id');
 }
 
-function getItems(q: string, sort=true): AsyncIterable<Item> {
-    logger.debug(`Obtain items from ElasticSearch with query "${q}"`);
-    return getClient().helpers.scrollDocuments<Item>({
-        index: config.elasticSearchIndexItems,
-        size: 10_000,
-        sort: sort ? 'label:asc' : undefined,
-        q
-    });
+function getItems(q: string, sort = true): AsyncIterable<Item> {
+    try {
+        logger.debug(`Obtain items from ElasticSearch with query "${q}"`);
+        return getClient().helpers.scrollDocuments<Item>({
+            index: config.elasticSearchIndexItems,
+            size: 10_000,
+            sort: sort ? 'label:asc' : undefined,
+            q
+        });
+    }
+    catch (err: any) {
+        throw err;
+    }
 }
 
-export function getItemsSearch(q: string, size=10): Promise<Item[]> {
-    logger.debug(`Obtain items from ElasticSearch with query "${q}" and limit "${size}"`);
-    return getClient().helpers.search<Item>({
-        index: config.elasticSearchIndexItems,
-        size: size,
-        q
-    });
+export function getItemsSearch(q: string, size = 10): Promise<Item[]> {
+    try {
+        logger.debug(`Obtain items from ElasticSearch with query "${q}" and limit "${size}"`);
+        return getClient().helpers.search<Item>({
+            index: config.elasticSearchIndexItems,
+            size: size,
+            q
+        });
+    }
+    catch (err: any) {
+        throw err;
+    }
 }
 
 export function getFullPath(item: Item, type: 'access' | 'original' | null = null): string {
