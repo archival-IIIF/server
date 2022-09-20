@@ -1,6 +1,7 @@
 import config from './Config.js';
 import logger from './Logger.js';
-import {Client} from '@elastic/elasticsearch/index';
+import {ApiError, Client, RequestEvent} from '@elastic/elasticsearch/index';
+import {ResurrectEvent} from '@elastic/elasticsearch/lib/pool/index';
 
 let testClient: Client | null = null;
 const client = (config.elasticSearchUser && config.elasticSearchPassword)
@@ -10,6 +11,23 @@ const client = (config.elasticSearchUser && config.elasticSearchPassword)
         ssl: {rejectUnauthorized: false}
     })
     : new Client({node: config.elasticSearchUrl});
+
+if (config.env !== 'test') {
+    await client.ping();
+
+    const log = (phase: string, err: ApiError | null, result: RequestEvent | ResurrectEvent) => {
+        // @ts-ignore
+        const {body, ...toDebugger} = result;
+        logger.debug(`ElasticSearch '${phase}': ${JSON.stringify(toDebugger)}`);
+        if (err)
+            logger.error(`ElasticSearch threw an error during the '${phase}' phase`, {err});
+    };
+
+    client.on('request', (err, result) => log('request', err, result));
+    client.on('response', (err, result) => log('response', err, result));
+    client.on('sniff', (err, result) => log('sniff', err, result));
+    client.on('resurrect', (err, result) => log('resurrect', err, result));
+}
 
 export default function getClient(): Client {
     if (config.env === 'test' && testClient)
