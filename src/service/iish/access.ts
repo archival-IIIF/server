@@ -1,4 +1,4 @@
-import {AccessParams} from '../../lib/Service.js';
+import {AccessParams} from '../../lib/ServiceTypes.js';
 import {getRootItemByCollectionId} from '../../lib/Item.js';
 import {AccessState, isIpInRange, hasToken, Access} from '../../lib/Security.js';
 

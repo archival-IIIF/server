@@ -1,5 +1,4 @@
-import {IIIFMetadataParams} from '../lib/Service.js';
-import {IIIFMetadata} from './util/types.js';
+import {IIIFMetadata, IIIFMetadataParams} from '../lib/ServiceTypes.js';
 
 export default async function getIIIFMetadata({item}: IIIFMetadataParams): Promise<IIIFMetadata> {
     return {

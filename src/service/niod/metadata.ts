@@ -5,8 +5,8 @@ import {createReadStream, existsSync} from 'fs';
 
 import config from '../../lib/Config.js';
 import logger from '../../lib/Logger.js';
-import {MetadataParams} from '../../lib/Service.js';
 import {MinimalItem} from '../../lib/ItemInterfaces.js';
+import {MetadataParams} from '../../lib/ServiceTypes.js';
 import {getCollectionIdsIndexed, updateItems} from '../../lib/Item.js';
 
 import * as NIOD from './util/NIOD.js';

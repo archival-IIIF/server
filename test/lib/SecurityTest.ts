@@ -5,12 +5,13 @@ import sinonChai from 'sinon-chai';
 import {createItem} from '../../src/lib/Item.js';
 import {setRedisClient} from '../../src/lib/Redis.js';
 import config, {setConfig} from '../../src/lib/Config.js';
-import {AccessParams, setServicesRunning} from '../../src/lib/Service.js';
+import {AccessParams} from '../../src/lib/ServiceTypes.js';
 
 import {
     Access, AccessState, hasAccess, hasAdminAccess, requiresAuthentication, isIpInRange,
     setAccessIdForIdentity, setAccessTokenForAccessId, getAccessIdFromRequest, removeAccessIdFromRequest
 } from '../../src/lib/Security.js';
+import {setLibsRunning} from '../../src/lib/Service.js';
 import {extendContext, ExtendedContext} from '../../src/lib/Koa.js';
 
 chai.use(sinonChai);
@@ -37,18 +38,6 @@ describe('Security', () => {
     const openItem = createItem({id: 'open', collection_id: 'test', label: 'Open item'});
     const tieredItem = createItem({id: 'tiered', collection_id: 'test', label: 'Tiered item'});
     const closedItem = createItem({id: 'closed', collection_id: 'test', label: 'Closed item'});
-
-    async function determineAccess({item, ip, identities = []}: AccessParams): Promise<Access> {
-        switch (item) {
-            case openItem:
-                return {state: AccessState.OPEN};
-            case tieredItem:
-                return {state: AccessState.TIERED, tier: {name: 'tiered', maxSize: 500}};
-            case closedItem:
-            default:
-                return {state: AccessState.CLOSED};
-        }
-    }
 
     beforeEach(() => {
         const redisGetStub = sinon.stub();
@@ -79,12 +68,22 @@ describe('Security', () => {
 
         setConfig('accessToken', adminAccessToken);
         setRedisClient(redis);
-        setServicesRunning([{
-            name: 'access-for-test',
-            type: 'access',
-            runAs: 'lib',
-            getService: () => determineAccess
-        }]);
+        setLibsRunning({
+            access: {
+                name: 'access-for-test',
+                loadService: async () => async ({item, ip, identities = []}: AccessParams): Promise<Access> => {
+                    switch (item) {
+                        case openItem:
+                            return {state: AccessState.OPEN};
+                        case tieredItem:
+                            return {state: AccessState.TIERED, tier: {name: 'tiered', maxSize: 500}};
+                        case closedItem:
+                        default:
+                            return {state: AccessState.CLOSED};
+                    }
+                }
+            }
+        });
     });
 
     afterEach(() => {

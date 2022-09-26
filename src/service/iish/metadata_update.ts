@@ -5,7 +5,7 @@ import {parseXml, Element} from 'libxmljs2';
 import config from '../../lib/Config.js';
 import logger from '../../lib/Logger.js';
 import {runTask} from '../../lib/Task.js';
-import {MetadataParams} from '../../lib/Service.js';
+import {MetadataParams} from '../../lib/ServiceTypes.js';
 
 const ns = {
     'oai': 'http://www.openarchives.org/OAI/2.0/'

@@ -8,11 +8,11 @@ import chokidar from 'chokidar';
 import config from '../lib/Config.js';
 import logger from '../lib/Logger.js';
 import {runTask} from '../lib/Task.js';
-import {IndexParams} from '../lib/Service.js';
+import {IndexParams} from '../lib/ServiceTypes.js';
 
 const collectionsWatching: { [path: string]: Date | null } = {};
 
-export default function watchDirectoryForChanges(): void {
+export default async function watchDirectoryForChanges(): Promise<void> {
     if (!config.hotFolderPath || !existsSync(config.hotFolderPath))
         throw new Error('No hot folder or incorrect hot folder to watch!');
 

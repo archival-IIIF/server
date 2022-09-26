@@ -1,8 +1,8 @@
 import config from '../lib/Config.js';
 import derivatives from '../lib/Derivative.js';
 import {VideoItem} from '../lib/ItemInterfaces.js';
-import {DerivativeParams} from '../lib/Service.js';
 import {getChildItemsByType} from '../lib/Item.js';
+import {DerivativeParams} from '../lib/ServiceTypes.js';
 
 import {createDerivativeWithCommand, createDerivativeWithBuffer} from './util/derivative_creation.js';
 import {imageResourceUri} from '../builder/UriHelper.js';

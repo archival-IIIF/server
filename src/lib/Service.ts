@@ -1,171 +1,200 @@
 import config from './Config.js';
-import {Item} from './ItemInterfaces.js';
-import {TextItem} from '../service/util/types.js';
 
-export interface Service {
-    name: string;
+interface Service {
     type: string;
-
-    [propName: string]: any;
+    runAs: 'worker' | 'lib' | 'standalone' | 'cron';
+    implementations: ImplementationService[];
 }
 
-export interface WebService extends Service {
-    runAs: 'web';
+export interface ImplementationService {
+    name: string;
+    loadService: () => Promise<any>;
 }
 
-export interface ArgService extends Service {
-    runAs: 'worker' | 'lib';
-    getService: () => Promise<<P, R>(params: P) => Promise<R>>;
-}
-
-export interface StandaloneService extends Service {
-    runAs: 'standalone' | 'cron';
-    getService: () => Promise<<R>() => Promise<R>>;
-}
-
-export interface CronService extends StandaloneService {
-    runAs: 'cron';
+export interface CronImplementationService extends ImplementationService {
     cron: string;
 }
 
-export type EmptyParams = {};
-export type IndexParams = { collectionPath: string };
-export type TextParams = { collectionId: string, items: TextItem[] };
-export type MetadataParams = { oaiIdentifier?: string | null, rootId?: string, collectionId?: string };
-export type ReindexParams = { collectionIds?: string[], query?: string };
-export type DerivativeParams = { collectionId: string };
-export type AccessParams = { item: Item, ip?: string, identities?: string[] };
-export type AuthTextsParams = { item: Item };
-export type IIIFMetadataParams = { item: Item };
-export type ProcessUpdateParams = { type: string, query: string };
+export interface ImplementationService {
+    name: string;
+    loadService: () => Promise<any>;
+}
 
 export const allServices: Service[] = [{
-    name: 'web',
-    type: 'web',
-    runAs: 'web',
-}, {
-    name: 'directory-watcher-changes',
-    type: 'watcher',
-    runAs: 'standalone',
-    getService: async () => (await import('../service/directory_watcher_changes.js')).default
-}, {
-    name: 'directory-watcher-file-trigger',
-    type: 'watcher',
-    runAs: 'standalone',
-    getService: async () => (await import('../service/directory_watcher_file_trigger.js')).default
-}, {
-    name: 'iish-archivematica-index',
     type: 'index',
     runAs: 'worker',
-    getService: async () => (await import('../service/iish/archivematica_index.js')).default
+    implementations: [{
+        name: 'iish-archivematica-index',
+        loadService: async () => (await import('../service/iish/archivematica_index.js')).default
+    }]
 }, {
-    name: 'text-index',
     type: 'text',
     runAs: 'worker',
-    getService: async () => (await import('../service/text_index.js')).default
+    implementations: [{
+        name: 'text-index',
+        loadService: async () => (await import('../service/text_index.js')).default
+    }]
 }, {
-    name: 'iish-metadata',
     type: 'metadata',
     runAs: 'worker',
-    getService: async () => (await import('../service/iish/metadata.js')).default
+    implementations: [{
+        name: 'iish-metadata',
+        loadService: async () => (await import('../service/iish/metadata.js')).default
+    }, {
+        name: 'niod-metadata',
+        loadService: async () => (await import('../service/niod/metadata.js')).default
+    }]
 }, {
-    name: 'niod-metadata',
-    type: 'metadata',
-    runAs: 'worker',
-    getService: async () => (await import('../service/niod/metadata.js')).default
-}, {
-    name: 'iish-archivematica-reindex',
     type: 'reindex',
     runAs: 'worker',
-    getService: async () => (await import('../service/iish/archivematica_reindex.js')).default
+    implementations: [{
+        name: 'iish-archivematica-reindex',
+        loadService: async () => (await import('../service/iish/archivematica_reindex.js')).default
+    }]
 }, {
-    name: 'process-update',
     type: 'process-update',
     runAs: 'worker',
-    getService: async () => (await import('../service/process_update.js')).default
+    implementations: [{
+        name: 'process-update',
+        loadService: async () => (await import('../service/process_update.js')).default
+    }]
 }, {
-    name: 'all-metadata-update',
     type: 'all-metadata-update',
     runAs: 'worker',
-    getService: async () => (await import('../service/all_metadata_update.js')).default
+    implementations: [{
+        name: 'all-metadata-update',
+        loadService: async () => (await import('../service/all_metadata_update.js')).default
+    }]
 }, {
-    name: 'waveform',
     type: 'waveform',
     runAs: 'worker',
-    getService: async () => (await import('../service/waveform.js')).default
+    implementations: [{
+        name: 'waveform',
+        loadService: async () => (await import('../service/waveform.js')).default
+    }]
 }, {
-    name: 'pdf-image',
     type: 'pdf-image',
     runAs: 'worker',
-    getService: async () => (await import('../service/pdf_image.js')).default
+    implementations: [{
+        name: 'pdf-image',
+        loadService: async () => (await import('../service/pdf_image.js')).default
+    }]
 }, {
-    name: 'video-image',
     type: 'video-image',
     runAs: 'worker',
-    getService: async () => (await import('../service/video_image.js')).default
+    implementations: [{
+        name: 'video-image',
+        loadService: async () => (await import('../service/video_image.js')).default
+    }]
 }, {
-    name: 'iish-metadata-update',
+    type: 'access',
+    runAs: 'lib',
+    implementations: [{
+        name: 'default-access',
+        loadService: async () => (await import('../service/access.js')).default
+    }, {
+        name: 'iish-access',
+        loadService: async () => (await import('../service/iish/access.js')).default
+    }, {
+        name: 'niod-access',
+        loadService: async () => (await import('../service/niod/access.js')).default
+    }]
+}, {
+    type: 'auth-texts',
+    runAs: 'lib',
+    implementations: [{
+        name: 'default-auth-texts',
+        loadService: async () => (await import('../service/auth_texts.js')).default
+    }, {
+        name: 'iish-auth-texts',
+        loadService: async () => (await import('../service/iish/auth_texts.js')).default
+    }]
+}, {
+    type: 'iiif-metadata',
+    runAs: 'lib',
+    implementations: [{
+        name: 'default-iiif-metadata',
+        loadService: async () => (await import('../service/iiif_metadata.js')).default
+    }, {
+        name: 'iish-iiif-metadata',
+        loadService: async () => (await import('../service/iish/iiif_metadata.js')).default
+    }]
+}, {
+    type: 'watcher',
+    runAs: 'standalone',
+    implementations: [{
+        name: 'directory-watcher-changes',
+        loadService: async () => (await import('../service/directory_watcher_changes.js')).default
+    }, {
+        name: 'directory-watcher-file-trigger',
+        loadService: async () => (await import('../service/directory_watcher_file_trigger.js')).default
+    }]
+}, {
     type: 'metadata-update',
     runAs: 'cron',
-    cron: '58 11 * * *',
-    getService: async () => (await import('../service/iish/metadata_update.js')).default
-}, {
-    name: 'default-access',
-    type: 'access',
-    runAs: 'lib',
-    getService: async () => (await import('../service/access.js')).default
-}, {
-    name: 'iish-access',
-    type: 'access',
-    runAs: 'lib',
-    getService: async () => (await import('../service/iish/access.js')).default
-}, {
-    name: 'niod-access',
-    type: 'access',
-    runAs: 'lib',
-    getService: async () => (await import('../service/niod/access.js')).default
-}, {
-    name: 'default-auth-texts',
-    type: 'auth-texts',
-    runAs: 'lib',
-    getService: async () => (await import('../service/auth_texts.js')).default
-}, {
-    name: 'iish-auth-texts',
-    type: 'auth-texts',
-    runAs: 'lib',
-    getService: async () => (await import('../service/iish/auth_texts.js')).default
-}, {
-    name: 'default-iiif-metadata',
-    type: 'iiif-metadata',
-    runAs: 'lib',
-    getService: async () => (await import('../service/iiif_metadata.js')).default
-}, {
-    name: 'iish-iiif-metadata',
-    type: 'iiif-metadata',
-    runAs: 'lib',
-    getService: async () => (await import('../service/iish/iiif_metadata.js')).default
+    implementations: [{
+        name: 'iish-metadata-update',
+        cron: '58 11 * * *',
+        loadService: async () => (await import('../service/iish/metadata_update.js')).default
+    } as CronImplementationService]
 }];
 
-export let servicesRunning: Service[] = config.services.map(name => {
-    const serviceFound = allServices.find(service => service.name.toLowerCase() === name.toLowerCase());
+export let isRunningWeb: boolean = config.services.find(name => name.toLowerCase() === 'web') != undefined;
+export let workersRunning: { [type: string]: ImplementationService } = {};
+export let libsRunning: { [type: string]: ImplementationService } = {};
+export let standalonesRunning: { [type: string]: ImplementationService } = {};
+export let cronsRunning: { [type: string]: CronImplementationService } = {};
+
+for (const name of config.services.filter(name => name.toLowerCase() != 'web')) {
+    const serviceFound = allServices.find(service =>
+        service.implementations.find(impl =>
+            impl.name.toLowerCase() === name.toLowerCase()));
     if (!serviceFound)
         throw new Error(`No service found with the name ${name}!`);
-    return {...serviceFound};
-});
 
-servicesRunning.reduce<string[]>((acc, service) => {
-    if (acc.includes(service.type))
-        throw new Error(`There is more than one service of type '${service.type}' configured!`);
-    acc.push(service.type);
-    return acc;
-}, []);
+    const implementation = serviceFound.implementations
+        .find(impl => impl.name.toLowerCase() === name.toLowerCase());
+    if (!implementation)
+        throw new Error(`No implementation found with the name ${name}!`);
 
-if (servicesRunning.find(service => service.runAs === 'web'))
-    servicesRunning = servicesRunning.map(
-        service => service.runAs === 'worker' ? <Service>{...service, runAs: 'lib'} : {...service});
+    switch (serviceFound.runAs) {
+        case 'worker':
+            if (serviceFound.type in workersRunning)
+                throw new Error(`There is more than one worker of type '${serviceFound.type}' configured!`);
+            workersRunning[serviceFound.type] = {name: implementation.name, loadService: implementation.loadService};
+            break;
+        case 'lib':
+            if (serviceFound.type in libsRunning)
+                throw new Error(`There is more than one lib of type '${serviceFound.type}' configured!`);
+            libsRunning[serviceFound.type] = implementation;
+            break;
+        case 'standalone':
+            if (serviceFound.type in standalonesRunning)
+                throw new Error(`There is more than one standalone of type '${serviceFound.type}' configured!`);
+            standalonesRunning[serviceFound.type] = implementation;
+            break;
+        case 'cron':
+            if (serviceFound.type in cronsRunning)
+                throw new Error(`There is more than one cron of type '${serviceFound.type}' configured!`);
+            cronsRunning[serviceFound.type] = implementation as CronImplementationService;
+            break;
+    }
+}
+
+for (const libService of allServices.filter(service => service.runAs === 'lib')) {
+    if (!(libService.type in libsRunning)) {
+        libsRunning[libService.type] = libService.implementations[0];
+    }
+}
 
 // for testing purposes
-export function setServicesRunning(services: Service[]) {
+export function setLibsRunning(services: { [type: string]: ImplementationService }) {
     if (config.env === 'test')
-        servicesRunning = services;
+        libsRunning = services;
+}
+
+// for testing purposes
+export function setWorkersRunning(services: { [type: string]: ImplementationService }) {
+    if (config.env === 'test')
+        workersRunning = services;
 }

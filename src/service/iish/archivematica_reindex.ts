@@ -3,7 +3,7 @@ import getClient from '../../lib/ElasticSearch.js';
 import {runTask} from '../../lib/Task.js';
 import {Item} from '../../lib/ItemInterfaces.js';
 import {getFullPath, getItemsSearch} from '../../lib/Item.js';
-import {IndexParams, ReindexParams} from '../../lib/Service.js';
+import {IndexParams, ReindexParams} from '../../lib/ServiceTypes.js';
 
 export default async function processReindex({collectionIds, query}: ReindexParams): Promise<void> {
     if (query) {

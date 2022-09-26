@@ -2,18 +2,16 @@ import moment from 'moment';
 import {Context} from 'koa';
 import {v4 as uuid} from 'uuid';
 import {inRange} from 'range_check';
+import {RedisClientType} from 'redis';
 import {AccessTier} from '@archival-iiif/presentation-builder/v2';
 
 import config from './Config.js';
 import logger from './Logger.js';
+import {runLib} from './Task.js';
 import {Item} from './ItemInterfaces.js';
 import {ExtendedContext} from './Koa.js';
-import {runTaskWithResponse} from './Task.js';
 import {getPersistentClient} from './Redis.js';
-import {AccessParams, AuthTextsParams} from './Service.js';
-
-import {AuthTextsByType} from '../service/util/types.js';
-import {RedisClientType} from 'redis';
+import {AccessParams, AuthTextsByType, AuthTextsParams} from './ServiceTypes.js';
 
 type AccessTokenBody = Record<'access_token', string | undefined>;
 
@@ -44,7 +42,7 @@ export async function hasAccess(ctx: ExtendedContext, item: Item, acceptToken = 
         return {state: AccessState.OPEN};
 
     if (!isAuthenticationEnabled()) {
-        const access = await runTaskWithResponse<AccessParams, Access>('access', {item});
+        const access = await runLib<AccessParams, Access>('access', {item});
         logger.debug(`Access for ${item.id} is ${access.state} without authentication enabled`);
 
         return access;
@@ -62,7 +60,7 @@ export async function hasAccess(ctx: ExtendedContext, item: Item, acceptToken = 
     else
         logger.debug('Determining access with no access id and no identities');
 
-    const access = await runTaskWithResponse<AccessParams, Access>('access', {item, ip, identities});
+    const access = await runLib<AccessParams, Access>('access', {item, ip, identities});
     logger.debug(`Access for ${item.id} is ${access.state} based on ip ${ip} and ${identities.length} identities`);
 
     return access;
@@ -93,7 +91,7 @@ export function getIpAddress(ctx: Context): string {
 
 export async function getDefaultAccess(item: Item): Promise<Access> {
     if (isAuthenticationEnabled())
-        return runTaskWithResponse<AccessParams, Access>('access', {item});
+        return runLib<AccessParams, Access>('access', {item});
 
     return {state: AccessState.OPEN};
 }
@@ -104,7 +102,7 @@ export async function requiresAuthentication(item: Item): Promise<boolean> {
 }
 
 export async function getAuthTexts(item: Item): Promise<AuthTextsByType> {
-    return runTaskWithResponse<AuthTextsParams, AuthTextsByType>('auth-texts', {item});
+    return runLib<AuthTextsParams, AuthTextsByType>('auth-texts', {item});
 }
 
 export function isIpInRange(ip: string): boolean {

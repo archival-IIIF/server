@@ -1,19 +1,23 @@
 import {promisify} from 'util';
+import {RedisClientType} from 'redis';
 
 import config from './Config.js';
 import logger from './Logger.js';
-import {RedisMessage} from './Task.js';
 import getEsClient from './ElasticSearch.js';
-import {getPersistentClient, createNewPersistentClient} from './Redis.js';
+import {allServices, workersRunning} from './Service.js';
 import registerGracefulShutdownHandler from './GracefulShutdown.js';
-import {allServices, servicesRunning} from './Service.js';
-import {RedisClientType} from 'redis';
+import {getPersistentClient, createNewPersistentClient} from './Redis.js';
 
 type WorkerStatus = { waiting: RedisMessage<any>[], working: RedisMessage<any>[] };
 type WorkerStatusType = { type: string } & WorkerStatus;
 
 const sleep = promisify(setTimeout);
 let shutdown = false;
+
+interface RedisMessage<T> {
+    identifier: string;
+    data: T;
+}
 
 export async function workerStatus(): Promise<{ [type: string]: WorkerStatus }> {
     const client = getPersistentClient();
@@ -22,7 +26,7 @@ export async function workerStatus(): Promise<{ [type: string]: WorkerStatus }> 
 
     const results = await Promise.all(allServices
         .filter(service => service.runAs === 'worker')
-        .filter(service => !servicesRunning.find(running => running.name === service.name))
+        .filter(service => !(service.type in workersRunning))
         .map(async service => {
             const nameQueue = 'tasks:' + service.type;
             const nameProgressList = 'tasks:' + service.type + ':progress';
@@ -163,19 +167,16 @@ export async function handleMessage<A, R>(type: string, task: RedisMessage<A>, m
     try {
         logger.debug(`Received a new task with type '${type}' and identifier '${task.identifier}' and data ${JSON.stringify(task.data)}`);
 
-        const nameQueue = 'tasks:' + type;
         const nameProgressList = 'tasks:' + type + ':progress';
         const nameExpiration = 'tasks:' + type + ':' + task.identifier;
 
         await client.setEx(nameExpiration, 60 * 5, task.identifier);
-
-        const result = await process(task.data);
+        await process(task.data);
 
         await client
             .multi()
             .del(nameExpiration)
             .lRem(nameProgressList, 1, msg)
-            .publish(nameQueue, JSON.stringify({identifier: task.identifier, data: result}))
             .exec();
 
         logger.debug(`Finished task with type '${type}' and identifier '${task.identifier}' and data ${JSON.stringify(task.data)}`);

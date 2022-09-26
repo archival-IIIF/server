@@ -1,14 +1,12 @@
 import {existsSync} from 'fs';
 
-import {IIIFMetadata} from '../service/util/types.js';
-
 import {Text} from '../lib/Text.js';
 import config from '../lib/Config.js';
 import derivatives from '../lib/Derivative.js';
-import {runTaskWithResponse} from '../lib/Task.js';
-import {IIIFMetadataParams} from '../lib/Service.js';
+import {runLib} from '../lib/Task.js';
 import getPronomInfo, {PronomInfo} from '../lib/Pronom.js';
 import {getFullDerivativePath, getItem} from '../lib/Item.js';
+import {IIIFMetadataParams, IIIFMetadata} from '../lib/ServiceTypes.js';
 import {getAuthTexts, requiresAuthentication} from '../lib/Security.js';
 import {Item, FileItem, ImageItem, RootItem, FolderItem} from '../lib/ItemInterfaces.js';
 
@@ -121,7 +119,7 @@ export async function addMetadata(base: Base, root: Item): Promise<void> {
     for (const md of root.metadata)
         base.setMetadata(md.label, md.value);
 
-    const md = await runTaskWithResponse<IIIFMetadataParams, IIIFMetadata>('iiif-metadata', {item: root});
+    const md = await runLib<IIIFMetadataParams, IIIFMetadata>('iiif-metadata', {item: root});
     if (md.homepage && md.homepage.length > 0)
         base.setHomepage(md.homepage);
 

@@ -1,5 +1,4 @@
-import {AuthTextsParams} from '../lib/Service.js';
-import {AuthTextsByType} from './util/types.js';
+import {AuthTextsParams, AuthTextsByType} from '../lib/ServiceTypes.js';
 import {isAuthenticationEnabled, isExternalEnabled, isIpAccessEnabled, isLoginEnabled} from '../lib/Security.js';
 
 const logout = {

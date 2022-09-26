@@ -3,8 +3,8 @@ import {parseXml, Document, Element} from 'libxmljs2';
 
 import config from '../../lib/Config.js';
 import logger from '../../lib/Logger.js';
-import {MetadataParams} from '../../lib/Service.js';
 import {MinimalItem} from '../../lib/ItemInterfaces.js';
+import {MetadataParams} from '../../lib/ServiceTypes.js';
 import {updateItems, getCollectionsByMetadataId, getCollectionIdsIndexed} from '../../lib/Item.js';
 
 import * as EAD from './util/EAD.js';

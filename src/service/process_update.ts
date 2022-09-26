@@ -2,7 +2,7 @@ import config from '../lib/Config.js';
 import {runTask} from '../lib/Task.js';
 import {Item} from '../lib/ItemInterfaces.js';
 import getClient from '../lib/ElasticSearch.js';
-import {ProcessUpdateParams, MetadataParams, DerivativeParams} from '../lib/Service.js';
+import {ProcessUpdateParams, MetadataParams, DerivativeParams} from '../lib/ServiceTypes.js';
 
 export default async function processUpdate({type, query}: ProcessUpdateParams): Promise<void> {
     const scrollItems = getClient().helpers.scrollDocuments<Item>({

@@ -1,4 +1,16 @@
+import {Item} from './ItemInterfaces.js';
 import {AuthTexts} from '@archival-iiif/presentation-builder/v2';
+
+export type EmptyParams = {};
+export type IndexParams = { collectionPath: string };
+export type TextParams = { collectionId: string, items: TextItem[] };
+export type MetadataParams = { oaiIdentifier?: string | null, rootId?: string, collectionId?: string };
+export type ReindexParams = { collectionIds?: string[], query?: string };
+export type DerivativeParams = { collectionId: string };
+export type AccessParams = { item: Item, ip?: string, identities?: string[] };
+export type AuthTextsParams = { item: Item };
+export type IIIFMetadataParams = { item: Item };
+export type ProcessUpdateParams = { type: string, query: string };
 
 export type TextItem = {
     id: string,

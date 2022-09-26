@@ -108,7 +108,7 @@ describe('Item', () => {
 
             await indexItems(items);
 
-            expect(elasticSearch.bulk).to.have.been.calledWithExactly({refresh: 'wait_for', operations: bulkBody});
+            expect(elasticSearch.bulk).to.have.been.calledWithExactly({refresh: 'wait_for', body: bulkBody});
         });
 
         it('should send no bulk index action to ElasticSearch on empty input', async () => {
@@ -140,7 +140,7 @@ describe('Item', () => {
 
             await updateItems(items);
 
-            expect(elasticSearch.bulk).to.have.been.calledWithExactly({operations: bulkBody});
+            expect(elasticSearch.bulk).to.have.been.calledWithExactly({body: bulkBody});
         });
 
         it('should send no bulk update action to ElasticSearch on empty input', async () => {

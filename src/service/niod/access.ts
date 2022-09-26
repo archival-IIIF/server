@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import {AccessParams} from '../../lib/Service.js';
+import {AccessParams} from '../../lib/ServiceTypes.js';
 import {AccessState, Access} from '../../lib/Security.js';
 import {getRootItemByCollectionId} from '../../lib/Item.js';
 

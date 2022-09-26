@@ -7,7 +7,7 @@ import {runTask} from '../lib/Task.js';
 import {workerStatus} from '../lib/Worker.js';
 import {ExtendedContext} from '../lib/Koa.js';
 import {hasAdminAccess, getIpAddress} from '../lib/Security.js';
-import {EmptyParams, IndexParams, MetadataParams, ProcessUpdateParams, ReindexParams} from '../lib/Service.js';
+import {EmptyParams, IndexParams, MetadataParams, ProcessUpdateParams, ReindexParams} from '../lib/ServiceTypes.js';
 
 import registerToken from './register_token.js';
 import indexCollection from './api_index.js';

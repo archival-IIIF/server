@@ -9,10 +9,9 @@ import logger from '../../lib/Logger.js';
 import {runTask} from '../../lib/Task.js';
 import {evictCache} from '../../lib/Cache.js';
 import {createItem, indexItems, deleteItems} from '../../lib/Item.js';
-import {IndexParams, MetadataParams, TextParams, DerivativeParams} from '../../lib/Service.js';
 import {MinimalItem, FileItem, FolderItem, Item} from '../../lib/ItemInterfaces.js';
+import {TextItem, IndexParams, MetadataParams, TextParams, DerivativeParams} from '../../lib/ServiceTypes.js';
 
-import {TextItem} from '../util/types.js';
 import {getTypeForPronom, pronomByExtension} from '../util/archivematica_pronom_data.js';
 
 type WalkTreeParams = {

@@ -4,26 +4,28 @@ import config from './lib/Config.js';
 import logger from './lib/Logger.js';
 
 import {extendContext, ExtendedContext} from './lib/Koa.js';
-import {servicesRunning, ArgService, StandaloneService, CronService} from './lib/Service.js';
+import {
+    isRunningWeb,
+    workersRunning,
+    standalonesRunning,
+    cronsRunning,
+    ImplementationService,
+    CronImplementationService
+} from './lib/Service.js';
 
-servicesRunning.forEach(function initService(service) {
-    switch (service.runAs) {
-        case 'web':
-            startWeb();
-            break;
-        case 'worker':
-            startWorker(service as ArgService);
-            break;
-        case 'standalone':
-            if (config.appInstance === undefined || parseInt(config.appInstance) === 0)
-                startStandalone(service as StandaloneService);
-            break;
-        case 'cron':
-            if (config.appInstance === undefined || parseInt(config.appInstance) === 0)
-                startCron(service as CronService);
-            break;
-    }
-});
+if (isRunningWeb)
+    await startWeb();
+
+for (const type of Object.keys(workersRunning))
+    await startWorker(type, workersRunning[type]);
+
+if (config.appInstance === undefined || parseInt(config.appInstance) === 0) {
+    for (const type of Object.keys(standalonesRunning))
+        await startStandalone(standalonesRunning[type]);
+
+    for (const type of Object.keys(cronsRunning))
+        await startCron(cronsRunning[type]);
+}
 
 async function startWeb() {
     const {default: Koa} = await import('koa');
@@ -105,20 +107,20 @@ async function startWeb() {
     logger.info(`Started the web service on ${config.baseUrl} 🚀`);
 }
 
-async function startStandalone(service: StandaloneService) {
-    const serviceFunc = await service.getService();
-    serviceFunc();
-    logger.info(`Standalone initialized for ${service.name}`);
-}
-
-async function startWorker(service: ArgService) {
+async function startWorker(type: string, service: ImplementationService) {
     const {onTask} = await import('./lib/Worker.js');
-    onTask(service.type, await service.getService());
-    logger.info(`Worker initialized for ${service.name}`);
+    onTask(type, await service.loadService());
+    logger.info(`Worker initialized for '${service.name}'`);
 }
 
-async function startCron(service: CronService) {
+async function startStandalone(service: ImplementationService) {
+    const serviceFunc = await service.loadService();
+    serviceFunc();
+    logger.info(`Standalone initialized for '${service.name}'`);
+}
+
+async function startCron(service: CronImplementationService) {
     const cron = await import('node-cron');
-    cron.schedule(service.cron, await service.getService());
+    cron.schedule(service.cron, await service.loadService());
     logger.info(`Cron ${service.cron} scheduled for ${service.name}`);
 }

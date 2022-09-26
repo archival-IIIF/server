@@ -1,6 +1,6 @@
 import derivatives from '../lib/Derivative.js';
-import {DerivativeParams} from '../lib/Service.js';
 import {getChildItemsByType} from '../lib/Item.js';
+import {DerivativeParams} from '../lib/ServiceTypes.js';
 
 import {createDerivativeWithCommand} from './util/derivative_creation.js';
 

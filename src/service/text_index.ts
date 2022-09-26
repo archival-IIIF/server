@@ -4,7 +4,7 @@ import {join, extname} from 'path';
 import iconv from 'iconv-lite';
 
 import config from '../lib/Config.js';
-import {TextParams} from '../lib/Service.js';
+import {TextParams} from '../lib/ServiceTypes.js';
 import {indexTexts, deleteTexts, readAlto} from '../lib/Text.js';
 
 import fixCommonUTF8Problems from './util/unicode_debug_mapping.js';
