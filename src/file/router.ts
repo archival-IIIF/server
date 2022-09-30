@@ -25,7 +25,7 @@ router.use(async (ctx, next) => {
 
     const rangeHeader = ctx.header.range;
     if (!rangeHeader)
-        return await next();
+        return next();
 
     const [bytes, ranges] = rangeHeader.split('=');
     if (bytes !== 'bytes' || !ranges || ranges.includes(','))

@@ -38,8 +38,8 @@ export default async function registerToken(token: string | undefined, collectio
             to: to ? to.toDate() : null
         };
 
-    if (!tokenInfo.collection_ids.includes(collection))
-        tokenInfo.collection_ids.push(collection);
+    if (!tokenInfo.ids.includes(collection))
+        tokenInfo.ids.push(collection);
 
     let multi: any = client.multi().set(`token:${token}`, JSON.stringify(tokenInfo));
     if (tokenInfo.to)

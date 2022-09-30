@@ -11,7 +11,7 @@ export interface MinimalItem {
 export interface Item {
     id: string;
     parent_id: string | null;
-    top_parent_id: string | null;
+    parent_ids: string[];
     collection_id: string;
     metadata_id: string | null;
     type: string;
@@ -20,7 +20,7 @@ export interface Item {
     description: string | null;
     authors: { type: string; name: string; }[];
     dates: string[];
-    physical: number | null;
+    physical: string | null;
     size: number | null;
     order: number | null,
     created_at: Date | null;

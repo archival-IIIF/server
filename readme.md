@@ -18,11 +18,15 @@ index the DIPs created by [Archivematica](https://www.archivematica.org) and to 
     2. [IIIF Presentation API](#iiif-presentation-api)
     3. [IIIF Authentication API](#iiif-authentication-api)
     4. [File API](#file-api)
-    5. [Admin API](#admin-api)
+    5. [PDF API](#pdf-api)
+    6. [Admin API](#admin-api)
 4. [Installation](#installation)
     1. [Docker Compose](#docker-compose)
     2. [Manual installation](#manual-installation)
 5. [Configuration](#configuration)
+6. [Data model](#data-model)
+    1. [Items](#items)
+    2. [Texts](#texts)
 
 ## Components
 
@@ -444,3 +448,76 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_REDIS_PERSIST_DISABLED`: Turn Redis persistent server on/off (Sets up jobs and auth tokens)
 - `IIIF_SERVER_REDIS_PERSIST_HOST`: Host of the Redis persistent server
 - `IIIF_SERVER_REDIS_PERSIST_PORT`: Port of the Redis persistent server
+
+## Data model
+
+The ElasticSearch index is configured with two different indexes: one for the `items` and one for the `texts`.
+
+### Items
+
+The `items` index consists of items which can be categorized into different types:
+
+- `metadata`: Items which only have descriptive metadata (renders to a IIIF collection)
+- `folder`: Items which will be rendered as a folder in a filesystem structure (renders to a IIIF collection)
+- `root`: Items which describe a specific object (renders to a IIIF manifest)
+- `file`: A file which cannot be categorized in one of the other file types
+- `pdf`: A PDF file
+- `image`: An image file
+- `audio`: An audio file
+- `video`: A video file
+
+Using these types hierarchies can be build. Items with the type `metadata` always end up with either a `folder` or
+a `root` type. Items with the `folder` or `root` type may not necessarily have a parent `metadata` item. Items with
+a `folder` type may have child items which can be either `folder` types or any of the `file` types. Items with a `root`
+type may only have child items which are any of the `file` types.
+
+![](./docs/item-types.png)
+
+| Field         | Type     | Required                              | Description                                                | 
+|---------------|----------|---------------------------------------|------------------------------------------------------------|
+| id            | string   | Always                                | The identifier of the item.                                |
+| parent_id     | string   | If file type or not root folder       | The identifier of the parent item (creates a hierarchy).   |
+| parent_ids    | string[] | If file type or not root folder       | The path of all items identifiers all the way to the root. |
+| collection_id | string   | Always                                | The identifier of the root item or root folder item.       |
+| metadata_id   | string   | If item contains descriptive metadata | The identifier of the descriptive metadata used.           |
+| type          | string   | Always                                | One of the item types described above.                     |
+| formats       | string[] |                                       | Categorization of formats.                                 |
+| label         | string   | Always                                | The label of the item.                                     |
+| description   | string   |                                       | The description of the item.                               |
+| authors       | object[] |                                       | All authors of the item.                                   |
+| _type_        | string   | Always                                |                                                            |
+| _name_        | string   | Always                                |                                                            |
+| dates         | string[] |                                       | All dates of the item.                                     |
+| physical      | string   |                                       | Physical information about the item.                       |
+| size          | integer  | If file type                          | The file size.                                             |
+| order         | integer  |                                       | A number to determine the order of all child items.        |
+| created_at    | date     | If file or folder type                | The date of file creation.                                 |
+| width         | integer  | If image or video type                | The width of the image / video.                            |
+| height        | integer  | If image or video type                | The height of the image / video.                           |
+| resolution    | integer  | If image type                         | The resolution of the image.                               |
+| duration      | double   | If audio or video type                | The duration of the audio / video.                         |
+| metadata      | object[] |                                       | Additional metadata as key/value pairs.                    |
+| _label_       | string   | Always                                |                                                            |
+| _value_       | string   | Always                                |                                                            |
+| original      | object   | If file type either this or access    | Data about the original file.                              |
+| _uri_         | string   | If file type either this or access    | Relative path to the original file.                        |
+| _puid_        | string   |                                       | PRONOM identifier of the original file.                    |
+| access        | object   | If file type either this or access    | Data about the access copy of the file.                    |
+| _uri_         | string   | If file type either this or access    | Relative path to the access file.                          |
+| _puid_        | string   |                                       | PRONOM identifier of the access file.                      |
+
+### Texts
+
+The `texts` index consists of all indexed text files. These can be either plain text files or ALTO-XML files.
+
+| Field         | Type   | Required                      | Description                                                   | 
+|---------------|--------|-------------------------------|---------------------------------------------------------------|
+| id            | string | Always                        | The identifier of the text item.                              |
+| item_id       | string | Always                        | The identifier of the file item.                              |
+| collection_id | string | Always                        | The identifier of the root item or root folder item.          |
+| type          | string | Always                        | Either a `transcription` or a `translation`.                  |
+| language      | string |                               | The langauge of the text using `BCP 47` language codes.       |
+| uri           | string | Always                        | Relative path to the source file.                             |
+| source        | string | Always                        | Either `plain` or `alto`.                                     |
+| text          | string | Always                        | The text (plain text version).                                |
+| structure     | object | If word coordinates are known | Internally build structure of the text with word coordinates. |

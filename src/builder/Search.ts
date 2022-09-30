@@ -1,5 +1,4 @@
 import {FileItem, Item} from '../lib/ItemInterfaces.js';
-import {getFullPath, OcrWord, readAlto, Text} from '../lib/Text.js';
 
 import {
     Canvas,
@@ -10,12 +9,11 @@ import {
     TermList
 } from '@archival-iiif/presentation-builder/v2';
 
-import {SearchResult, SearchResultMatch} from '../search/search.js';
+import {SearchResult} from '../search/search.js';
 import {canvasUri, searchAnnoUri, searchUri, autocompleteUri} from './UriHelper.js';
 
-export async function getAnnotationList(searchResults: SearchResult[], query: string, ignored: string[],
-                                        items: Item[], id: string,
-                                        type?: string, language?: string | null): Promise<AnnotationList> {
+export function getAnnotationList(searchResults: SearchResult[], query: string, ignored: string[],
+                                  items: Item[], id: string, type?: string, language?: string | null): AnnotationList {
     const uriQuery = `?q=${encodeURIComponent(query)}`;
     const annotationList = new AnnotationList(searchUri(id, type, language) + uriQuery);
 
@@ -26,17 +24,12 @@ export async function getAnnotationList(searchResults: SearchResult[], query: st
         const item = items.find(item => item.id === searchResult.text.item_id) as FileItem;
         const canvas = new Canvas(canvasUri(id, item.order || 0));
 
-        if (searchResult.text.source === 'plain') {
+        if (!searchResult.text.structure) {
             const annotationId = searchAnnoUri(id, type, language, searchResult.text.id) + uriQuery;
             const textResource = new TextResource(searchResult.text.text);
 
             const annotation = new Annotation(annotationId, textResource);
-            annotation.setCanvas(canvas, {
-                x: 0,
-                y: 0,
-                w: item.width as number,
-                h: item.height as number
-            });
+            annotation.setCanvas(canvas);
             resources.push(annotation);
 
             const searchHit = new SearchHit();
@@ -46,25 +39,24 @@ export async function getAnnotationList(searchResults: SearchResult[], query: st
 
             hits.push(searchHit);
         }
-        else if (searchResult.text.source === 'alto') {
+        else {
             const uniqueResources = new Set();
             for (const match of searchResult.matches) {
                 const searchHit = new SearchHit();
 
-                const ocrWords = await findInAlto(searchResult.text, match);
-                for (const ocrWord of ocrWords) {
-                    if (ocrWord.x && ocrWord.y && ocrWord.width && ocrWord.height) {
+                for (const word of match.words) {
+                    if (word.x && word.y && word.width && word.height) {
                         const annotationId =
-                            searchAnnoUri(id, type, language, searchResult.text.id + '_' + ocrWord.idx)
+                            searchAnnoUri(id, type, language, searchResult.text.id + '_' + word.idx)
                             + uriQuery;
-                        const textResource = new TextResource(ocrWord.word);
+                        const textResource = new TextResource(word.content);
 
                         const annotation = new Annotation(annotationId, textResource);
                         annotation.setCanvas(canvas, {
-                            x: ocrWord.x,
-                            y: ocrWord.y,
-                            w: ocrWord.width,
-                            h: ocrWord.height
+                            x: word.x,
+                            y: word.y,
+                            w: word.width,
+                            h: word.height
                         });
 
                         if (!uniqueResources.has(annotationId)) {
@@ -97,7 +89,7 @@ export async function getAnnotationList(searchResults: SearchResult[], query: st
     return annotationList;
 }
 
-export function getAutocomplete(suggestions: string[][], query: string, ignored: string[],
+export function getAutocomplete(suggestions: Set<string>, query: string, ignored: string[],
                                 id: string, type?: string, language?: string | null): TermList {
     const uriQuery = (query: string) => `?q=${encodeURIComponent(query)}`;
 
@@ -106,46 +98,8 @@ export function getAutocomplete(suggestions: string[][], query: string, ignored:
 
     ignored.length > 0 && termList.setIgnored(ignored);
 
-    const uniqueSuggestions = new Set();
-    suggestions.forEach(suggestion => {
-        const term = suggestion.join(' ');
-        if (!uniqueSuggestions.has(term.toLowerCase())) {
-            uniqueSuggestions.add(term.toLowerCase());
-            termList.addTerm(term, searchUri(id, type, language) + uriQuery(term));
-        }
-    });
+    for (const suggestion of suggestions)
+        termList.addTerm(suggestion, searchUri(id, type, language) + uriQuery(suggestion));
 
     return termList;
-}
-
-async function findInAlto(text: Text, match: SearchResultMatch): Promise<OcrWord[]> {
-    const ocrWords = await readAlto(getFullPath(text));
-    return match.match
-        .split(' ')
-        .map(word => findMatchingOcrWords(ocrWords, word, match.before, match.after))
-        .flat();
-}
-
-function findMatchingOcrWords(ocrWords: OcrWord[], match: string, before: string, after: string): OcrWord[] {
-    return ocrWords
-        .filter(ocrWord => ocrWord.word.includes(match))
-        .filter(ocrWord => {
-            let beforeText = ' ';
-            let curIdx = Math.max(0, ocrWord.idx - (before.split(' ').length + 5));
-            let endIdx = ocrWord.idx + 1;
-            while (curIdx < endIdx) {
-                beforeText += ocrWords[curIdx].word + ' ';
-                curIdx++;
-            }
-
-            let afterText = ' ';
-            curIdx = ocrWord.idx;
-            endIdx = Math.min(ocrWord.idx + (after.split(' ').length + 5), ocrWords.length);
-            while (curIdx < endIdx) {
-                afterText += ocrWords[curIdx].word + ' ';
-                curIdx++;
-            }
-
-            return beforeText.includes(before) && afterText.includes(after);
-        });
 }

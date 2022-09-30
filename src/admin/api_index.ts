@@ -10,9 +10,12 @@ export default async function indexCollection(collection: { id?: string; name?: 
     if (!('items' in collection) || !collection.items)
         throw new HttpError(400, 'Items missing');
 
-    await deleteItems(collection.id);
-    await evictCache('collection', collection.id);
-    await evictCache('manifest', collection.id);
+    await Promise.all([
+        deleteItems(collection.id),
+        evictCache('collection', collection.id),
+        evictCache('manifest', collection.id),
+        evictCache('annopage', collection.id)
+    ]);
 
     const items = [createItem({
         'id': collection.id,

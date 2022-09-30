@@ -37,5 +37,5 @@ export async function evictCache(type: string, group: string): Promise<void> {
 
     const groupKey = `${type}:${group}`;
     const keysToRemove = await client.sMembers(groupKey);
-    await client.del([groupKey].concat(keysToRemove));
+    await client.del([groupKey, ...keysToRemove]);
 }

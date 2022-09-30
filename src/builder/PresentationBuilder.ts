@@ -6,13 +6,13 @@ import {Access} from '../lib/Security.js';
 import {DerivativeType} from '../lib/Derivative.js';
 import {FileItem, FolderItem, Item, MetadataItem, RootItem} from '../lib/ItemInterfaces.js';
 
+import {SearchResult} from '../search/search.js';
+
 import * as Search from './Search.js';
 import * as Metadata from './Metadata.js';
 import * as Digitized from './Digitized.js';
 import * as DigitalBorn from './DigitalBorn.js';
 import * as ImageFunctions from './Image.js';
-
-import {SearchResult} from '../search/search.js';
 
 export interface PresentationBuilder {
     isCollection: (item: Item | null) => boolean;
@@ -21,8 +21,8 @@ export interface PresentationBuilder {
     getManifest: (item: Item, access: Access) => Promise<Manifest | null>;
     getReference: (item: Item) => Promise<Collection | Manifest | null>;
     getSearch: (searchResults: SearchResult[], query: string, ignored: string[], items: Item[],
-                id: string, type?: string, language?: string) => Promise<AnnotationList>;
-    getAutocomplete: (suggestions: string[][], query: string, ignored: string[],
+                id: string, type?: string, language?: string) => AnnotationList;
+    getAutocomplete: (suggestions: Set<string>, query: string, ignored: string[],
                       id: string, type?: string, language?: string) => TermList;
     getImageInfo: (item: Item, derivative: DerivativeType | null,
                    profile: ImageProfile, access: Access) => Promise<Image>;
@@ -77,13 +77,12 @@ export async function getReference(item: Item): Promise<Collection | Manifest | 
     return null;
 }
 
-export async function getSearch(searchResults: SearchResult[], query: string, ignored: string[],
-                                items: Item[], id: string,
-                                type?: string, language?: string | null): Promise<AnnotationList> {
+export function getSearch(searchResults: SearchResult[], query: string, ignored: string[],
+                          items: Item[], id: string, type?: string, language?: string | null): AnnotationList {
     return Search.getAnnotationList(searchResults, query, ignored, items, id, type, language);
 }
 
-export function getAutocomplete(suggestions: string[][], query: string, ignored: string[],
+export function getAutocomplete(suggestions: Set<string>, query: string, ignored: string[],
                                 id: string, type?: string, language?: string | null): TermList {
     return Search.getAutocomplete(suggestions, query, ignored, id, type, language);
 }

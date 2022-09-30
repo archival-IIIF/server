@@ -1,6 +1,7 @@
 import {getChildItems} from '../lib/Item.js';
+import {getWordsFromStructure} from '../lib/TextStructure.js';
 import {Item, RootItem, FileItem} from '../lib/ItemInterfaces.js';
-import {getTextsForCollectionId, getFullPath, readAlto, Text, withTexts} from '../lib/Text.js';
+import {getTextsForCollectionId, Text, withTexts} from '../lib/Text.js';
 
 import {
     Base, Canvas, Service, Manifest, Resource,
@@ -50,9 +51,8 @@ export async function getManifest(parentItem: RootItem): Promise<Manifest> {
         return canvas;
     })));
 
-    // TODO: Search service
-    // if (texts.length > 0)
-    //     setSearchService(manifest, parentItem);
+    if (texts.length > 0)
+        setSearchService(manifest, parentItem);
 
     return manifest;
 }
@@ -96,39 +96,34 @@ export async function getAnnotationPage(item: RootItem, text: Text): Promise<Ann
         nextItem ? annoPageUri(item.id, nextItem.id) : undefined
     );
 
-    // TODO: Search service
-    // setSearchService(annoPage, text);
-    // setSearchService(annoCollection, item, text.type, text.language);
+    setSearchService(annoPage, text);
+    setSearchService(annoCollection, item, text.type, text.language);
 
-    switch (text.source) {
-        case 'plain':
-            const resource = Resource.createTextResource(text.text, text.language);
-            const annotation = new Annotation(annoUri(item.id, childItem.id), resource, 'supplementing');
+    if (text.structure) {
+        const annotations: Annotation[] = [];
 
-            annotation.setTextGranularity('page');
-            annotation.setCanvas(canvas);
+        for (const word of getWordsFromStructure(text.structure)) {
+            if (word.x && word.y && word.width && word.height) {
+                const resource = Resource.createTextResource(word.content, text.language);
+                const annotation = new Annotation(annoUri(item.id, childItem.id, word.idx), resource, 'supplementing');
 
-            annoPage.setItems(annotation);
-            break;
-        case 'alto':
-            const annotations: Annotation[] = [];
+                annotation.setTextGranularity('word');
+                annotation.setCanvas(canvas, {x: word.x, y: word.y, w: word.width, h: word.height});
 
-            const words = await readAlto(getFullPath(text));
-            for (const [idx, word] of words.entries()) {
-                if (word.x && word.y && word.width && word.height) {
-                    const resource = Resource.createTextResource(word.word, text.language);
-                    const annotation = new Annotation(
-                        annoUri(item.id, childItem.id, idx + 1), resource, 'supplementing');
-
-                    annotation.setTextGranularity('word');
-                    annotation.setCanvas(canvas, {x: word.x, y: word.y, w: word.width, h: word.height});
-
-                    annotations.push(annotation);
-                }
+                annotations.push(annotation);
             }
+        }
 
-            annoPage.setItems(annotations);
-            break;
+        annoPage.setItems(annotations);
+    }
+    else {
+        const resource = Resource.createTextResource(text.text, text.language);
+        const annotation = new Annotation(annoUri(item.id, childItem.id), resource, 'supplementing');
+
+        annotation.setTextGranularity('page');
+        annotation.setCanvas(canvas);
+
+        annoPage.setItems(annotation);
     }
 
     return annoPage;

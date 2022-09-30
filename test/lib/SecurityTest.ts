@@ -53,9 +53,9 @@ describe('Security', () => {
         redisGetStub.resolves(null as any);
 
         redisMulti = {
-            set: sinon.stub().returns(redisMulti),
-            expire: sinon.stub().returns(redisMulti),
-            del: sinon.stub().returns(redisMulti),
+            set: sinon.stub().returnsThis(),
+            expire: sinon.stub().returnsThis(),
+            del: sinon.stub().returnsThis(),
             exec: sinon.fake()
         };
 

@@ -23,7 +23,7 @@ export default async function processMetadata({oaiIdentifier, rootId, collection
             oaiIdentifier = `${EAD.EAD_OAI_PREFIX}${rootId}`;
 
         if (!oaiIdentifier && collectionId)
-            oaiIdentifier = await getOAIIdentifier(collectionId, config.metadataSrwUrl);
+            oaiIdentifier = await getOAIIdentifier(collectionId);
 
         if (oaiIdentifier)
             await updateWithIdentifier(oaiIdentifier, collectionId);
@@ -35,12 +35,12 @@ export default async function processMetadata({oaiIdentifier, rootId, collection
     }
 }
 
-export async function getOAIIdentifier(collectionId: string, url: string): Promise<string | null> {
+export async function getOAIIdentifier(collectionId: string): Promise<string | null> {
     const rootId = EAD.getRootId(collectionId);
     if (collectionId.includes('ARCH') || collectionId.includes('COLL'))
         return `${EAD.EAD_OAI_PREFIX}${rootId}`;
 
-    const marcSearchResult = await got(url, {
+    const marcSearchResult = await got(config.metadataSrwUrl as string, {
         https: {rejectUnauthorized: false}, resolveBodyOnly: true, searchParams: {
             operation: 'searchRetrieve',
             query: `marc.852$p="${collectionId}"`
@@ -53,7 +53,7 @@ export async function getOAIIdentifier(collectionId: string, url: string): Promi
         return `${MarcXML.MARC_OAI_PREFIX}${marcId}`;
 
     if (rootId !== collectionId) {
-        const marcRootSearchResult = await got(url, {
+        const marcRootSearchResult = await got(config.metadataSrwUrl as string, {
             https: {rejectUnauthorized: false}, resolveBodyOnly: true, searchParams: {
                 operation: 'searchRetrieve',
                 query: `marc.852$p="${rootId}"`
@@ -84,7 +84,6 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
         }
     });
 
-    const allMetadata: MinimalItem[] = [];
     const xmlParsed = parseXml(xml);
 
     const collections = new Set<string>();
@@ -108,6 +107,7 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
 
     logger.debug(`Updating metadata for collections: ${Array.from(collections).join(' ')}`);
 
+    const allMetadata: MinimalItem[] = [];
     for (const collectionId of collections) {
         const metadataItems = (metadataPrefix === 'ead')
             ? updateEAD(xmlParsed, oaiIdentifier, collectionId)
@@ -139,8 +139,8 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
                 }
             }
         }
-        else if (mdItem.iish && mdItem.top_parent_id in access)
-            mdItem.iish.access = access[mdItem.top_parent_id];
+        else if (mdItem.iish && mdItem.parent_ids?.length > 0 && mdItem.parent_ids[mdItem.parent_ids.length - 1] in access)
+            mdItem.iish.access = access[mdItem.parent_ids[mdItem.parent_ids.length - 1]];
     }
 
     await updateItems(allMetadata);
@@ -155,22 +155,19 @@ export function updateEAD(xml: Document, oaiIdentifier: string, collectionId: st
     const access = EAD.getAccess(collectionId, xml);
     const metadata = EAD.getMetadata(collectionId, xml);
 
-    let prevUnitId: string | null = null;
+    let parents: string[] = [];
     return metadata.map(md => {
         const id = (md.unitId === rootId) ? rootId : `${rootId}.${md.unitId}`;
         const item: MinimalItem = {
             id: id,
+            parent_id: parents.length > 0 ? parents[0] : null,
+            parent_ids: parents,
             collection_id: id,
             metadata_id: oaiIdentifier,
             formats: md.formats,
             label: md.title,
             metadata: []
         };
-
-        if (prevUnitId) {
-            item.top_parent_id = rootId;
-            item.parent_id = prevUnitId;
-        }
 
         if (md.order)
             item.order = md.order;
@@ -203,7 +200,7 @@ export function updateEAD(xml: Document, oaiIdentifier: string, collectionId: st
                 item.metadata.push({label: 'Inventory number', value: md.unitId});
         }
 
-        prevUnitId = item.id;
+        parents = [id, ...parents];
 
         return item;
     });
@@ -228,20 +225,7 @@ export function updateMarc(xml: Document, oaiIdentifier: string, collectionId: s
             }
         };
 
-        if (md.description)
-            item.description = md.description;
-
-        if (md.authors)
-            item.authors = md.authors;
-
-        if (md.dates)
-            item.dates = md.dates;
-
-        if (md.physical)
-            item.physical = md.physical;
-
-        if (md.signature)
-            item.metadata.push({label: 'Call number', value: md.signature});
+        updateMarcMetadata(md, item);
 
         return item;
     });
@@ -262,19 +246,23 @@ export function updateRootWithMarc(xml: Document, item: MinimalItem): void {
             metadataHdl: md.metadataHdl
         };
 
-        if (md.description)
-            item.description = md.description;
-
-        if (md.authors)
-            item.authors = md.authors;
-
-        if (md.dates)
-            item.dates = md.dates;
-
-        if (md.physical)
-            item.physical = md.physical;
-
-        if (md.signature)
-            item.metadata.push({label: 'Call number', value: md.signature});
+        updateMarcMetadata(md, item);
     }
+}
+
+function updateMarcMetadata(md: MarcXML.MARCXMLMetadata, item: MinimalItem): void {
+    if (md.description)
+        item.description = md.description;
+
+    if (md.authors)
+        item.authors = md.authors;
+
+    if (md.dates)
+        item.dates = md.dates;
+
+    if (md.physical)
+        item.physical = md.physical;
+
+    if (md.signature)
+        item.metadata.push({label: 'Call number', value: md.signature});
 }

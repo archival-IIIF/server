@@ -5,9 +5,10 @@ import iconv from 'iconv-lite';
 
 import config from '../lib/Config.js';
 import {TextParams} from '../lib/ServiceTypes.js';
-import {indexTexts, deleteTexts, readAlto} from '../lib/Text.js';
+import {indexTexts, deleteTexts} from '../lib/Text.js';
 
 import fixCommonUTF8Problems from './util/unicode_debug_mapping.js';
+import {getTextFromStructure, readAlto, TextStructure} from '../lib/TextStructure.js';
 
 const readFileAsync = promisify(fs.readFile);
 
@@ -17,7 +18,8 @@ export default async function processText({collectionId, items}: TextParams) {
             const path = join(config.dataRootPath, config.collectionsRelativePath, item.uri);
 
             const source = getTextSource(path);
-            const text = await getTextFromFile(path, item.encoding);
+            const structure = await getTextStructure(path);
+            const text = await getText(path, item.encoding, structure);
 
             return {
                 id: item.id,
@@ -27,7 +29,8 @@ export default async function processText({collectionId, items}: TextParams) {
                 language: item.language,
                 uri: item.uri,
                 source,
-                text
+                text,
+                structure
             };
         }));
 
@@ -52,23 +55,20 @@ function getTextSource(uri: string): 'alto' | 'plain' {
     }
 }
 
-export async function getTextFromFile(uri: string, encoding: string | null): Promise<string> {
+export async function getTextStructure(uri: string): Promise<TextStructure | null> {
     const extension = extname(uri);
     switch (extension) {
         case '.xml':
-            return getAltoText(uri);
-        case '.txt':
+            return readAlto(uri);
         default:
-            return getPlainText(uri, encoding);
+            return null;
     }
 }
 
-async function getAltoText(uri: string): Promise<string> {
-    const altoWords = await readAlto(uri);
-    return altoWords.map(altoWord => altoWord.word).join(' ');
-}
+export async function getText(uri: string, encoding: string | null, structure: TextStructure | null): Promise<string> {
+    if (structure)
+        return getTextFromStructure(structure);
 
-async function getPlainText(uri: string, encoding: string | null): Promise<string> {
     const textBuffer = await readFileAsync(uri);
     const encodedText = iconv.decode(textBuffer, encoding || 'utf8');
     const fixedText = encoding ? encodedText : fixCommonUTF8Problems(encodedText);

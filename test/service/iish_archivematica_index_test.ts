@@ -136,6 +136,7 @@ describe('iish_archivematica_index', () => {
                 expect(childItems).to.deep.equal([
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'folder',
                         'id': '36a44e3e-d93e-4305-8df8-8ae94031c712',
                         'collection_id': 'test',
@@ -143,6 +144,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '36a44e3e-d93e-4305-8df8-8ae94031c712',
+                        'parent_ids': ['36a44e3e-d93e-4305-8df8-8ae94031c712', 'test'],
                         'type': 'file',
                         'size': 5,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -156,6 +158,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '36a44e3e-d93e-4305-8df8-8ae94031c712',
+                        'parent_ids': ['36a44e3e-d93e-4305-8df8-8ae94031c712', 'test'],
                         'type': 'pdf',
                         'size': 937592,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -169,6 +172,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '36a44e3e-d93e-4305-8df8-8ae94031c712',
+                        'parent_ids': ['36a44e3e-d93e-4305-8df8-8ae94031c712', 'test'],
                         'type': 'file',
                         'size': 6,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -182,6 +186,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '36a44e3e-d93e-4305-8df8-8ae94031c712',
+                        'parent_ids': ['36a44e3e-d93e-4305-8df8-8ae94031c712', 'test'],
                         'type': 'file',
                         'size': 394892,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -195,6 +200,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '36a44e3e-d93e-4305-8df8-8ae94031c712',
+                        'parent_ids': ['36a44e3e-d93e-4305-8df8-8ae94031c712', 'test'],
                         'type': 'folder',
                         'id': '9b8cdd0e-3b4c-49f6-aa27-4d001c123939',
                         'collection_id': 'test',
@@ -202,6 +208,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '9b8cdd0e-3b4c-49f6-aa27-4d001c123939',
+                        'parent_ids': ['9b8cdd0e-3b4c-49f6-aa27-4d001c123939', '36a44e3e-d93e-4305-8df8-8ae94031c712', 'test'],
                         'type': 'file',
                         'size': 12,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -215,6 +222,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '36a44e3e-d93e-4305-8df8-8ae94031c712',
+                        'parent_ids': ['36a44e3e-d93e-4305-8df8-8ae94031c712', 'test'],
                         'type': 'folder',
                         'id': '3792e009-83d0-4b65-a8a4-d6c6e717ee81',
                         'collection_id': 'test',
@@ -222,6 +230,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '3792e009-83d0-4b65-a8a4-d6c6e717ee81',
+                        'parent_ids': ['3792e009-83d0-4b65-a8a4-d6c6e717ee81', '36a44e3e-d93e-4305-8df8-8ae94031c712', 'test'],
                         'type': 'file',
                         'size': 6,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -235,6 +244,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'folder',
                         'id': '9fa985d4-0afb-4c97-88e6-c4d822f71b1c',
                         'collection_id': 'test',
@@ -242,6 +252,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '9fa985d4-0afb-4c97-88e6-c4d822f71b1c',
+                        'parent_ids': ['9fa985d4-0afb-4c97-88e6-c4d822f71b1c', 'test'],
                         'type': 'file',
                         'size': 31627,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -255,6 +266,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '9fa985d4-0afb-4c97-88e6-c4d822f71b1c',
+                        'parent_ids': ['9fa985d4-0afb-4c97-88e6-c4d822f71b1c', 'test'],
                         'type': 'file',
                         'size': 32368,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -268,6 +280,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '9fa985d4-0afb-4c97-88e6-c4d822f71b1c',
+                        'parent_ids': ['9fa985d4-0afb-4c97-88e6-c4d822f71b1c', 'test'],
                         'type': 'file',
                         'size': 33886,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -281,6 +294,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '9fa985d4-0afb-4c97-88e6-c4d822f71b1c',
+                        'parent_ids': ['9fa985d4-0afb-4c97-88e6-c4d822f71b1c', 'test'],
                         'type': 'file',
                         'size': 30156,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -294,6 +308,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '9fa985d4-0afb-4c97-88e6-c4d822f71b1c',
+                        'parent_ids': ['9fa985d4-0afb-4c97-88e6-c4d822f71b1c', 'test'],
                         'type': 'file',
                         'size': 32764,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -307,6 +322,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'folder',
                         'id': '4467a746-4f5c-4c58-9521-5e13537e4ba7',
                         'collection_id': 'test',
@@ -314,6 +330,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '4467a746-4f5c-4c58-9521-5e13537e4ba7',
+                        'parent_ids': ['4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': '20a7ae4f-cf9c-4769-8db3-ef9c043d799f',
                         'collection_id': 'test',
@@ -321,6 +338,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '20a7ae4f-cf9c-4769-8db3-ef9c043d799f',
+                        'parent_ids': ['20a7ae4f-cf9c-4769-8db3-ef9c043d799f', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': '0668afa1-cb11-4b5f-9d37-e1b6cad93c77',
                         'collection_id': 'test',
@@ -328,6 +346,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '0668afa1-cb11-4b5f-9d37-e1b6cad93c77',
+                        'parent_ids': ['0668afa1-cb11-4b5f-9d37-e1b6cad93c77', '20a7ae4f-cf9c-4769-8db3-ef9c043d799f', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'file',
                         'size': 25,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -341,6 +360,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '4467a746-4f5c-4c58-9521-5e13537e4ba7',
+                        'parent_ids': ['4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': '326d47e5-68be-4b67-9714-e2651ae37d54',
                         'collection_id': 'test',
@@ -348,6 +368,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '326d47e5-68be-4b67-9714-e2651ae37d54',
+                        'parent_ids': ['326d47e5-68be-4b67-9714-e2651ae37d54', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'file',
                         'size': 25,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -361,6 +382,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '326d47e5-68be-4b67-9714-e2651ae37d54',
+                        'parent_ids': ['326d47e5-68be-4b67-9714-e2651ae37d54', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': '2180bd46-305a-4e44-85ee-650c5c69bd93',
                         'collection_id': 'test',
@@ -368,6 +390,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '2180bd46-305a-4e44-85ee-650c5c69bd93',
+                        'parent_ids': ['2180bd46-305a-4e44-85ee-650c5c69bd93', '326d47e5-68be-4b67-9714-e2651ae37d54', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'file',
                         'size': 25,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -381,6 +404,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '4467a746-4f5c-4c58-9521-5e13537e4ba7',
+                        'parent_ids': ['4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': '865d980f-de1f-4531-9a10-d0e1ff63accf',
                         'collection_id': 'test',
@@ -388,6 +412,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '865d980f-de1f-4531-9a10-d0e1ff63accf',
+                        'parent_ids': ['865d980f-de1f-4531-9a10-d0e1ff63accf', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': 'f2a2170f-185e-4b6c-a0bb-2a429117adf8',
                         'collection_id': 'test',
@@ -395,6 +420,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'f2a2170f-185e-4b6c-a0bb-2a429117adf8',
+                        'parent_ids': ['f2a2170f-185e-4b6c-a0bb-2a429117adf8', '865d980f-de1f-4531-9a10-d0e1ff63accf', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': 'b2b5791b-74dd-4087-a4eb-668697ad4133',
                         'collection_id': 'test',
@@ -402,6 +428,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'b2b5791b-74dd-4087-a4eb-668697ad4133',
+                        'parent_ids': ['b2b5791b-74dd-4087-a4eb-668697ad4133', 'f2a2170f-185e-4b6c-a0bb-2a429117adf8', '865d980f-de1f-4531-9a10-d0e1ff63accf', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': '45e69b0e-b143-4ac0-b6a1-308b564a2172',
                         'collection_id': 'test',
@@ -409,6 +436,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '45e69b0e-b143-4ac0-b6a1-308b564a2172',
+                        'parent_ids': ['45e69b0e-b143-4ac0-b6a1-308b564a2172', 'b2b5791b-74dd-4087-a4eb-668697ad4133', 'f2a2170f-185e-4b6c-a0bb-2a429117adf8', '865d980f-de1f-4531-9a10-d0e1ff63accf', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'file',
                         'size': 25,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -422,6 +450,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '865d980f-de1f-4531-9a10-d0e1ff63accf',
+                        'parent_ids': ['865d980f-de1f-4531-9a10-d0e1ff63accf', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': '4094f821-32ef-4d28-8727-43f477c49cd3',
                         'collection_id': 'test',
@@ -429,6 +458,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '4094f821-32ef-4d28-8727-43f477c49cd3',
+                        'parent_ids': ['4094f821-32ef-4d28-8727-43f477c49cd3', '865d980f-de1f-4531-9a10-d0e1ff63accf', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'file',
                         'size': 25,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -442,6 +472,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'folder',
                         'id': '15a9b5bf-73a3-4cd0-a4de-9eea871c60b5',
                         'collection_id': 'test',
@@ -449,6 +480,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '15a9b5bf-73a3-4cd0-a4de-9eea871c60b5',
+                        'parent_ids': ['15a9b5bf-73a3-4cd0-a4de-9eea871c60b5', 'test'],
                         'type': 'image',
                         'size': 158562,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -465,6 +497,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '15a9b5bf-73a3-4cd0-a4de-9eea871c60b5',
+                        'parent_ids': ['15a9b5bf-73a3-4cd0-a4de-9eea871c60b5', 'test'],
                         'type': 'pdf',
                         'size': 937592,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -478,6 +511,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'folder',
                         'id': '19404958-cc13-49ab-81e2-e7ef3625ac67',
                         'collection_id': 'test',
@@ -485,6 +519,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '19404958-cc13-49ab-81e2-e7ef3625ac67',
+                        'parent_ids': ['19404958-cc13-49ab-81e2-e7ef3625ac67', 'test'],
                         'type': 'folder',
                         'id': 'd42fbca6-ce71-4519-9f2a-2cd6eed25bc1',
                         'collection_id': 'test',
@@ -492,6 +527,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'd42fbca6-ce71-4519-9f2a-2cd6eed25bc1',
+                        'parent_ids': ['d42fbca6-ce71-4519-9f2a-2cd6eed25bc1', '19404958-cc13-49ab-81e2-e7ef3625ac67', 'test'],
                         'type': 'file',
                         'size': 3788,
                         'created_at': new Date('2016-06-12T22:00:00.000Z'),
@@ -505,6 +541,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'folder',
                         'id': '1b1ad765-c4a7-4632-afe4-5b8326df8a7a',
                         'collection_id': 'test',
@@ -512,6 +549,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '1b1ad765-c4a7-4632-afe4-5b8326df8a7a',
+                        'parent_ids': ['1b1ad765-c4a7-4632-afe4-5b8326df8a7a', 'test'],
                         'type': 'folder',
                         'id': '08e45eca-b21c-4ba9-9efe-3b1d1d441600',
                         'collection_id': 'test',
@@ -519,6 +557,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '08e45eca-b21c-4ba9-9efe-3b1d1d441600',
+                        'parent_ids': ['08e45eca-b21c-4ba9-9efe-3b1d1d441600', '1b1ad765-c4a7-4632-afe4-5b8326df8a7a', 'test'],
                         'type': 'video',
                         'size': 7196047,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -535,6 +574,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '08e45eca-b21c-4ba9-9efe-3b1d1d441600',
+                        'parent_ids': ['08e45eca-b21c-4ba9-9efe-3b1d1d441600', '1b1ad765-c4a7-4632-afe4-5b8326df8a7a', 'test'],
                         'type': 'video',
                         'size': 6513420,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -555,6 +595,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '1b1ad765-c4a7-4632-afe4-5b8326df8a7a',
+                        'parent_ids': ['1b1ad765-c4a7-4632-afe4-5b8326df8a7a', 'test'],
                         'type': 'folder',
                         'id': '03fdd2a1-d7c4-4e05-8560-248c1c84f253',
                         'collection_id': 'test',
@@ -562,6 +603,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '03fdd2a1-d7c4-4e05-8560-248c1c84f253',
+                        'parent_ids': ['03fdd2a1-d7c4-4e05-8560-248c1c84f253', '1b1ad765-c4a7-4632-afe4-5b8326df8a7a', 'test'],
                         'type': 'audio',
                         'size': 247848,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -576,6 +618,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '03fdd2a1-d7c4-4e05-8560-248c1c84f253',
+                        'parent_ids': ['03fdd2a1-d7c4-4e05-8560-248c1c84f253', '1b1ad765-c4a7-4632-afe4-5b8326df8a7a', 'test'],
                         'type': 'audio',
                         'size': 2722964,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -594,6 +637,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'folder',
                         'id': '9129d878-4bdb-449b-8fca-60c9a47c92d6',
                         'collection_id': 'test',
@@ -601,6 +645,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'folder',
                         'id': '7b5cd45e-1d10-48ce-a98b-3128bbad140d',
                         'collection_id': 'test',
@@ -608,6 +653,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': '7b5cd45e-1d10-48ce-a98b-3128bbad140d',
+                        'parent_ids': ['7b5cd45e-1d10-48ce-a98b-3128bbad140d', 'test'],
                         'type': 'file',
                         'size': 103936,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
@@ -636,6 +682,7 @@ describe('iish_archivematica_index', () => {
                 expect(childItems).to.deep.equal([
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'image',
                         'size': 144401772,
                         'order': 1,
@@ -667,6 +714,7 @@ describe('iish_archivematica_index', () => {
                 expect(childItems).to.deep.equal([
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'image',
                         'size': 16976840,
                         'order': 1,
@@ -684,6 +732,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'image',
                         'size': 16751032,
                         'order': 2,
@@ -701,6 +750,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'image',
                         'size': 16839700,
                         'order': 3,
@@ -718,6 +768,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'image',
                         'size': 16814940,
                         'order': 4,
@@ -735,6 +786,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'image',
                         'size': 16814940,
                         'order': 5,
@@ -752,6 +804,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'image',
                         'size': 16883520,
                         'order': 6,
@@ -769,6 +822,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'image',
                         'size': 16676376,
                         'order': 7,
@@ -786,6 +840,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'image',
                         'size': 16835720,
                         'order': 8,
@@ -868,6 +923,7 @@ describe('iish_archivematica_index', () => {
                 expect(childItems).to.deep.equal([
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'audio',
                         'size': 21626768,
                         'order': 1,
@@ -887,6 +943,7 @@ describe('iish_archivematica_index', () => {
                     }),
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'audio',
                         'size': 26169544,
                         'order': 2,
@@ -921,6 +978,7 @@ describe('iish_archivematica_index', () => {
                 expect(childItems).to.deep.equal([
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'video',
                         'size': 13541802540,
                         'order': 1,
@@ -957,6 +1015,7 @@ describe('iish_archivematica_index', () => {
                 expect(childItems).to.deep.equal([
                     createItem({
                         'parent_id': 'test',
+                        'parent_ids': ['test'],
                         'type': 'image',
                         'size': 64600916,
                         'order': 1,

@@ -1,13 +1,10 @@
-import * as fs from 'fs';
 import * as path from 'path';
-import {promisify} from 'util';
-import {parseXml, Element} from 'libxmljs2';
 import {ResponseError} from '@elastic/transport/lib/errors.js';
 
 import config from './Config.js';
 import logger from './Logger.js';
-import {cache} from './Cache.js';
 import getClient from './ElasticSearch.js';
+import {TextStructure} from './TextStructure.js';
 
 export interface Text {
     id: string;
@@ -18,22 +15,8 @@ export interface Text {
     uri: string;
     source: 'plain' | 'alto';
     text: string;
+    structure: TextStructure | null;
 }
-
-export interface OcrWord {
-    idx: number;
-    x: number | null;
-    y: number | null;
-    width: number | null;
-    height: number | null;
-    word: string;
-}
-
-const readFileAsync = promisify(fs.readFile);
-
-const ns = {
-    'alto': 'http://www.loc.gov/standards/alto/ns-v2#'
-};
 
 export async function indexTexts(textItems: Text[]): Promise<void> {
     try {
@@ -99,32 +82,6 @@ function getTexts(q: string): AsyncIterable<Text> {
     catch (err: any) {
         throw err;
     }
-}
-
-export async function readAlto(uri: string): Promise<OcrWord[]> {
-    return cache('alto', 'alto', uri, async () => {
-        const altoXml = await readFileAsync(uri, 'utf8');
-        const alto = parseXml(altoXml);
-        return alto.find<Element>('//alto:String | //String', ns).map((stringElem, idx) => {
-            const word = stringElem.attr('CONTENT')?.value();
-            if (!word)
-                return null;
-
-            const x = stringElem.attr('HPOS')?.value();
-            const y = stringElem.attr('VPOS')?.value();
-            const width = stringElem.attr('WIDTH')?.value();
-            const height = stringElem.attr('HEIGHT')?.value();
-
-            return {
-                idx,
-                x: x && parseInt(x),
-                y: y && parseInt(y),
-                width: width && parseInt(width),
-                height: height && parseInt(height),
-                word
-            };
-        }).filter(ocrWord => ocrWord != null) as OcrWord[];
-    });
 }
 
 export function getFullPath(item: Text): string {

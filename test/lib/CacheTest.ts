@@ -24,8 +24,8 @@ describe('Cache', () => {
         };
 
         redisMulti = {
-            sAdd: sinon.stub().returns(redisMulti),
-            set: sinon.stub().returns(redisMulti),
+            sAdd: sinon.stub().returnsThis(),
+            set: sinon.stub().returnsThis(),
             exec: sinon.fake()
         };
 

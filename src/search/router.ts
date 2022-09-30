@@ -35,7 +35,7 @@ router.get('/:id', async ctx => {
         : await searchInText(ctx.queryFirst('q') as string, id);
 
     ctx.set('Content-Type', 'application/json');
-    ctx.body = await getSearch(searchResults, ctx.queryFirst('q') as string, ignored(ctx.query), items, id);
+    ctx.body = getSearch(searchResults, ctx.queryFirst('q') as string, ignored(ctx.query), items, id);
 });
 
 router.get('/:id/:type(_:language)?', async ctx => {
@@ -51,7 +51,7 @@ router.get('/:id/:type(_:language)?', async ctx => {
         ctx.queryFirst('q') as string, texts[0].collection_id, texts[0].type, texts[0].language);
 
     ctx.set('Content-Type', 'application/json');
-    ctx.body = await getSearch(searchResults, ctx.queryFirst('q') as string, ignored(ctx.query),
+    ctx.body = getSearch(searchResults, ctx.queryFirst('q') as string, ignored(ctx.query),
         items, texts[0].collection_id, texts[0].type, texts[0].language);
 });
 

@@ -4,47 +4,53 @@ import Router from '@koa/router';
 import logger from '../lib/Logger.js';
 import config from '../lib/Config.js';
 import {ExtendedContext} from '../lib/Koa.js';
-import {MetadataItem} from '../lib/ItemInterfaces.js';
+import {Item, MetadataItem} from '../lib/ItemInterfaces.js';
 import {createItem, getAllRootItems, withItems} from '../lib/Item.js';
 
 import {setContent} from './util.js';
 import {getCollectionWithChildren} from '../builder/PresentationBuilder.js';
 
-export const router = new Router<DefaultState, ExtendedContext>({prefix: '/collection'});
+interface TopCollection {
+    id: string;
+    url: string;
+    label: string;
+    getChildren: () => Promise<Item[]>;
+}
 
-router.get('/top', async ctx => {
-    logger.info('Received a request for a top IIIF collection');
-
-    const topCollection = createItem({
-        id: 'top',
-        collection_id: 'top',
-        label: config.attribution || 'Top'
-    }) as MetadataItem;
-
-    const children = [
+const topCollections: TopCollection[] = [{
+    id: 'top',
+    url: '/top',
+    label: config.attribution || 'Top',
+    getChildren: async () => [
         createItem({
             id: 'all',
             collection_id: 'top',
             label: 'All'
-        }),
-    ];
+        })
+    ]
+}, {
+    id: 'all',
+    url: '/all',
+    label: 'All',
+    getChildren: () => withItems(getAllRootItems())
+}]
 
-    setContent(ctx, await getCollectionWithChildren(topCollection, children));
+export const router = new Router<DefaultState, ExtendedContext>({prefix: '/collection'});
 
-    logger.info('Sending a top IIIF collection');
-});
+for (const topCollection of topCollections) {
+    router.get(topCollection.url, async ctx => {
+        logger.info(`Received a request for '${topCollection.id}' IIIF collection`);
 
-router.get('/all', async ctx => {
-    logger.info('Received a request for all IIIF collections');
+        const collection = createItem({
+            id: topCollection.id,
+            collection_id: 'top',
+            label: topCollection.label
+        }) as MetadataItem;
 
-    const allCollection = createItem({
-        id: 'all',
-        collection_id: 'top',
-        label: 'All'
-    }) as MetadataItem;
+        const children = await topCollection.getChildren();
 
-    const children = await withItems(getAllRootItems());
-    setContent(ctx, await getCollectionWithChildren(allCollection, children));
+        setContent(ctx, await getCollectionWithChildren(collection, children));
 
-    logger.info('Sending all IIIF collections');
-});
+        logger.info(`Sending '${topCollection.id}' IIIF collection`);
+    });
+}

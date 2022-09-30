@@ -10,7 +10,7 @@ import {Item, MinimalItem} from './ItemInterfaces.js';
 export function createItem(obj: MinimalItem): Item {
     return {
         parent_id: null,
-        top_parent_id: null,
+        parent_ids: [],
         metadata_id: null,
         type: 'metadata',
         formats: [],
@@ -175,7 +175,7 @@ function getItems(q: string, sort = true): AsyncIterable<Item> {
         return getClient().helpers.scrollDocuments<Item>({
             index: config.elasticSearchIndexItems,
             size: 10_000,
-            sort: sort ? 'label:asc' : undefined,
+            sort: sort ? 'label.raw:asc' : undefined,
             q
         });
     }

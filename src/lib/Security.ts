@@ -21,7 +21,7 @@ export type Access =
 
 export interface Token {
     token: string;
-    collection_ids: string[];
+    ids: string[];
     from: Date | null;
     to: Date | null;
 }
@@ -112,8 +112,8 @@ export function isIpInRange(ip: string): boolean {
 export async function hasToken(item: Item, identities: string[]): Promise<boolean> {
     if (isLoginEnabled() || isExternalEnabled()) {
         const tokensInfo = await checkTokenDb(identities);
-        const tokenInfo = tokensInfo.find(tokenInfo => tokenInfo.collection_ids.includes(item.collection_id) ||
-            (item.top_parent_id && tokenInfo.collection_ids.includes(item.top_parent_id)));
+        const tokenInfo = tokensInfo.find(tokenInfo =>
+            tokenInfo.ids.find(id => item.id === id || item.parent_ids.includes(id)));
         return tokenInfo !== undefined;
     }
     return false;

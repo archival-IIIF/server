@@ -14,18 +14,7 @@ import {TextItem, IndexParams, MetadataParams, TextParams, DerivativeParams} fro
 
 import {getTypeForPronom, pronomByExtension} from '../util/archivematica_pronom_data.js';
 
-type WalkTreeParams = {
-    id: string;
-    mets: Document;
-    objects: string[];
-    relativeRootPath: string;
-    curNode: Element;
-    curNodePhysical: Element;
-    structureIISH: Element | null;
-    parent?: string | null;
-};
-
-type CollectionProcessingResult = {
+interface CollectionProcessingResult {
     rootItem: Item,
     childItems: Item[],
     textItems: TextItem[]
@@ -63,9 +52,12 @@ export default async function processDip({collectionPath}: IndexParams): Promise
             runTask<TextParams>('text', {collectionId: rootItem.id, items: textItems});
 
         // Run derivative services
-        runTask<DerivativeParams>('waveform', {collectionId: rootItem.id});
-        runTask<DerivativeParams>('pdf-image', {collectionId: rootItem.id});
-        runTask<DerivativeParams>('video-image', {collectionId: rootItem.id});
+        if (childItems.find(item => item.type === 'audio'))
+            runTask<DerivativeParams>('waveform', {collectionId: rootItem.id});
+        if (childItems.find(item => item.type === 'pdf'))
+            runTask<DerivativeParams>('pdf-image', {collectionId: rootItem.id});
+        if (childItems.find(item => item.type === 'video'))
+            runTask<DerivativeParams>('video-image', {collectionId: rootItem.id});
     }
     catch (e: any) {
         const err = new Error(`Failed to index the collection ${collectionPath}: ${e.message}`);
@@ -95,15 +87,15 @@ export async function processCollection(collectionPath: string): Promise<Collect
         .replace(`${config.dataRootPath}/${config.collectionsRelativePath}/`, '');
 
     const rootItem = getRootItem(mets, rootStructureIISH);
-    const [childItems, textItems] = walkTree({
-        id: rootItem.id,
+    const [childItems, textItems] = walkTree(
+        rootItem.id,
         mets,
         objects,
         relativeRootPath,
-        curNode: rootLogical || rootPhysical,
-        curNodePhysical: rootPhysical,
-        structureIISH: rootStructureIISH
-    });
+        rootLogical || rootPhysical,
+        rootPhysical,
+        rootStructureIISH,
+        [rootItem.id]);
 
     return {rootItem, childItems, textItems};
 }
@@ -112,7 +104,8 @@ async function cleanup(id: string): Promise<void> {
     await Promise.all([
         deleteItems(id),
         evictCache('collection', id),
-        evictCache('manifest', id)
+        evictCache('manifest', id),
+        evictCache('annopage', id)
     ]);
 }
 
@@ -135,15 +128,16 @@ function getRootItem(mets: Document, structureIISH: Element | null): Item {
     const id = originalNameElem.text().replace(`-${uuidElem.text()}`, '');
 
     return createItem({
-        'id': id,
-        'collection_id': id,
-        'type': structureIISH ? 'root' : 'folder',
-        'label': id
+        id: id,
+        collection_id: id,
+        type: structureIISH ? 'root' : 'folder',
+        label: id
     } as MinimalItem);
 }
 
-function walkTree({id, mets, objects, relativeRootPath, curNode, curNodePhysical, structureIISH, parent = null}:
-                      WalkTreeParams): [Item[], TextItem[]] {
+function walkTree(id: string, mets: Document, objects: string[], relativeRootPath: string,
+                  curNode: Element, curNodePhysical: Element,
+                  structureIISH: Element | null, parents: string[]): [Item[], TextItem[]] {
     let items: Item[] = [];
     let texts: TextItem[] = [];
 
@@ -156,33 +150,32 @@ function walkTree({id, mets, objects, relativeRootPath, curNode, curNodePhysical
         const nodePhysical = curNodePhysical.get<Element>(`./mets:div[@LABEL="${label}"]`, ns) || curNodePhysical;
         const typeAttr = node.attr('TYPE');
         if (typeAttr && typeAttr.value() === 'Directory') {
-            const folderInfo = !structureIISH ? readFolder(id, label, mets, node, nodePhysical, parent) : null;
+            const folderInfo = !structureIISH ? readFolder(id, label, mets, node, nodePhysical, parents) : null;
             if (folderInfo)
                 items.push(folderInfo);
 
-            if (folderInfo || (structureIISH && !parent)) {
-                const [childItems, childTexts] = walkTree({
+            if (folderInfo || (structureIISH && parents.length === 1)) {
+                const [childItems, childTexts] = walkTree(
                     id,
                     mets,
                     objects,
                     relativeRootPath,
-                    curNode: node,
-                    curNodePhysical: nodePhysical,
+                    node,
+                    nodePhysical,
                     structureIISH,
-                    parent: folderInfo ? folderInfo.id : label
-                });
+                    [folderInfo ? folderInfo.id : label, ...parents]);
 
                 items = items.concat(childItems);
                 texts = texts.concat(childTexts);
             }
         }
-        else if (!structureIISH || (parent === 'preservation')) {
-            const fileInfo = readFile(id, label, mets, objects, relativeRootPath, nodePhysical, structureIISH, parent);
+        else if (!structureIISH || (parents[0] === 'preservation')) {
+            const fileInfo = readFile(id, label, mets, objects, relativeRootPath, nodePhysical, structureIISH, parents);
             if (fileInfo)
                 items.push(fileInfo);
         }
-        else if (structureIISH && parent && (parent === 'transcription' || parent.startsWith('translation_'))) {
-            const textInfo = readText(id, label, mets, objects, relativeRootPath, nodePhysical, structureIISH, parent);
+        else if (structureIISH && (parents[0] === 'transcription' || parents[0].startsWith('translation_'))) {
+            const textInfo = readText(id, label, mets, objects, relativeRootPath, nodePhysical, structureIISH, parents[0]);
             if (textInfo)
                 texts.push(textInfo);
         }
@@ -192,7 +185,7 @@ function walkTree({id, mets, objects, relativeRootPath, curNode, curNodePhysical
 }
 
 function readFolder(rootId: string, label: string, mets: Document, node: Element,
-                    nodePhysical: Element, parent: string | null): Item | null {
+                    nodePhysical: Element, parents: string[]): Item | null {
     const dmdIdAttr = node.attr('DMDID') ? node.attr('DMDID') : nodePhysical.attr('DMDID');
     const dmdId = dmdIdAttr ? dmdIdAttr.value() : null;
     if (!dmdId)
@@ -213,16 +206,17 @@ function readFolder(rootId: string, label: string, mets: Document, node: Element
         throw new Error(`No identifier found for object with DMD id ${dmdId}`);
 
     return createItem({
-        'id': id,
-        'parent_id': parent || rootId,
-        'collection_id': rootId,
-        'type': 'folder',
-        'label': name
+        id: id,
+        parent_id: parents[0],
+        parent_ids: parents,
+        collection_id: rootId,
+        type: 'folder',
+        label: name
     } as FolderItem);
 }
 
 function readFile(rootId: string, label: string, mets: Document, objects: string[], relativeRootPath: string,
-                  node: Element, structureIISH: Element | null, parent: string | null): Item | null {
+                  node: Element, structureIISH: Element | null, parents: string[]): Item | null {
     const fptrElem = node.get<Element>('mets:fptr', ns);
     if (!fptrElem || !fptrElem.attr('FILEID'))
         throw new Error(`Missing a fptr or file id for a file with the label ${label}`);
@@ -285,32 +279,33 @@ function readFile(rootId: string, label: string, mets: Document, objects: string
     }
 
     return createItem({
-        'id': id,
-        'parent_id': (parent && (parent !== 'preservation')) ? parent : rootId,
-        'collection_id': rootId,
-        'type': type,
-        'label': name,
-        'size': size,
-        'order': order,
-        'created_at': creationDate,
-        'width': resolution.width,
-        'height': resolution.height,
-        'resolution': dpi,
-        'duration': duration,
-        'original': {
-            'uri': isOriginal ? path.join(relativeRootPath, file) : null,
-            'puid': pronomKey,
+        id: id,
+        parent_id: structureIISH ? rootId : parents[0],
+        parent_ids: structureIISH ? [rootId] : parents,
+        collection_id: rootId,
+        type: type,
+        label: name,
+        size: size,
+        order: order,
+        created_at: creationDate,
+        width: resolution.width,
+        height: resolution.height,
+        resolution: dpi,
+        duration: duration,
+        original: {
+            uri: isOriginal ? path.join(relativeRootPath, file) : null,
+            puid: pronomKey,
         },
-        'access': {
-            'uri': !isOriginal ? path.join(relativeRootPath, file) : null,
-            'puid': (!isOriginal && extension in pronomByExtension)
+        access: {
+            uri: !isOriginal ? path.join(relativeRootPath, file) : null,
+            puid: (!isOriginal && extension in pronomByExtension)
                 ? pronomByExtension[extension] : null
         }
     } as FileItem);
 }
 
 function readText(rootId: string, label: string, mets: Document, objects: string[], relativeRootPath: string,
-                  node: Element, structureIISH: Element, parent: string): TextItem | null {
+                  node: Element, structureIISH: Element, typeAndLang: string): TextItem | null {
     const fptrElem = node.get<Element>('mets:fptr', ns);
     if (!fptrElem || !fptrElem.attr('FILEID'))
         throw new Error(`Missing a fptr or file id for a file with the label ${label}`);
@@ -361,9 +356,9 @@ function readText(rootId: string, label: string, mets: Document, objects: string
     if (!itemId)
         throw new Error(`Missing a file id for a file with id ${itemFileId}`);
 
-    const isTranslation = parent.startsWith('translation_');
+    const isTranslation = typeAndLang.startsWith('translation_');
     const type = isTranslation ? 'translation' : 'transcription';
-    const language = isTranslation ? parent.split('_')[1] : null;
+    const language = isTranslation ? typeAndLang.split('_')[1] : null;
 
     return {id, itemId, type, language, encoding, uri: path.join(relativeRootPath, file)};
 }

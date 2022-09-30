@@ -1,9 +1,9 @@
 import {Text} from '../lib/Text.js';
 import config from '../lib/Config.js';
 import getClient from '../lib/ElasticSearch.js';
+import {getWordsFromStructure, TextWord} from '../lib/TextStructure.js';
 
-const PRE_TAG = '{{{';
-const POST_TAG = '}}}';
+const PRE_TAG = '{{{', POST_TAG = '}}}';
 
 export interface SearchResult {
     text: Text,
@@ -14,6 +14,7 @@ export interface SearchResultMatch {
     match: string,
     before: string,
     after: string
+    words: TextWord[]
 }
 
 export async function searchInCollection(query: string, collectionId: string,
@@ -30,7 +31,7 @@ export async function searchInText(query: string, textId: string): Promise<Searc
 }
 
 export async function autoCompleteForCollection(query: string, collectionId: string,
-                                                type?: string, language?: string | null): Promise<string[][]> {
+                                                type?: string, language?: string | null): Promise<Set<string>> {
     return autocomplete(query, {
         collection_id: collectionId,
         type,
@@ -38,7 +39,7 @@ export async function autoCompleteForCollection(query: string, collectionId: str
     });
 }
 
-export async function autocompleteForText(query: string, textId: string): Promise<string[][]> {
+export async function autocompleteForText(query: string, textId: string): Promise<Set<string>> {
     return autocomplete(query, {id: textId});
 }
 
@@ -48,7 +49,7 @@ async function search(query: string, filters: { [field: string]: string | undefi
     const isPhraseMatch = query.startsWith('"') && query.endsWith('"');
     query = isPhraseMatch ? query.substring(1, query.length - 1) : query;
 
-    const response = await getClient().search({
+    const response = await getClient().search<Text>({
         index: config.elasticSearchIndexTexts,
         size: config.maxSearchResults,
         body: {
@@ -69,7 +70,8 @@ async function search(query: string, filters: { [field: string]: string | undefi
                 }
             },
             highlight: {
-                type: 'plain',
+                type: 'unified',
+                number_of_fragments: 0,
                 pre_tags: [PRE_TAG],
                 post_tags: [POST_TAG],
                 fields: {
@@ -81,15 +83,16 @@ async function search(query: string, filters: { [field: string]: string | undefi
 
     return response.hits.hits.map(hit => ({
         text: hit._source as Text,
-        matches: hit.highlight ? hit.highlight.text.flatMap(hl => mapMatches(hl)) : []
+        matches: mapMatches(hit._source as Text, hit.highlight?.text[0] || '', isPhraseMatch ? query : null)
     }));
 }
 
-async function autocomplete(query: string, filters: { [field: string]: string | undefined }): Promise<string[][]> {
+async function autocomplete(query: string, filters: { [field: string]: string | undefined }): Promise<Set<string>> {
     query = query.trim();
 
     const response = await getClient().search({
         index: config.elasticSearchIndexTexts,
+        size: config.maxSearchResults,
         body: {
             _source: false,
             query: {
@@ -108,8 +111,11 @@ async function autocomplete(query: string, filters: { [field: string]: string | 
                 }
             },
             highlight: {
-                pre_tags: [PRE_TAG],
-                post_tags: [POST_TAG],
+                boundary_scanner: 'word',
+                fragmenter: 'simple',
+                number_of_fragments: 100,
+                pre_tags: [''],
+                post_tags: [''],
                 fields: {
                     'text.autocomplete': {}
                 }
@@ -118,41 +124,75 @@ async function autocomplete(query: string, filters: { [field: string]: string | 
     });
 
     if (response.hits.hits.length === 0)
-        return [];
+        return new Set();
 
-    const firstQueryWord = query.split(' ')[0].toLowerCase();
-
-    return response.hits.hits.reduce<string[][]>((acc, hit) => {
+    return response.hits.hits.reduce((acc, hit) => {
         if (hit.highlight) {
-            for (const hl of hit.highlight['text.autocomplete']) {
-                for (const match of mapMatches(hl)) {
-                    const word = match.match;
-                    if (word.toLowerCase().startsWith(firstQueryWord))
-                        acc.push([word]);
-                    else
-                        acc[acc.length - 1].push(word);
-                }
-            }
+            for (const word of hit.highlight['text.autocomplete'])
+                acc.add(word.toLowerCase());
         }
         return acc;
-    }, []);
+    }, new Set<string>());
 }
 
-function mapMatches(hl: string): SearchResultMatch[] {
-    const tags = [];
-    while (hl.indexOf(PRE_TAG) >= 0) {
-        const idxStart = hl.indexOf(PRE_TAG);
-        hl = hl.replace(PRE_TAG, '');
+function mapMatches(text: Text, hl: string, matchExact: string | null): SearchResultMatch[] {
+    const matches: SearchResultMatch[] = [];
+    const words = text.structure ? getWordsFromStructure(text.structure) : [];
+    const tokens = hl
+        .split(/[\t\r\n\s]+/)
+        .filter(token => token.length > 0);
 
-        const idxEnd = hl.indexOf(POST_TAG);
-        hl = hl.replace(POST_TAG, '');
+    let tokenIdx = 0, wordIdx = 0, curMatch: SearchResultMatch | null = null;
+    while (tokenIdx < tokens.length) {
+        const token = tokens[tokenIdx];
+        const word = wordIdx < words.length ? words[wordIdx] : null;
 
-        tags.push([idxStart, idxEnd]);
+        if (token.startsWith(PRE_TAG)) {
+            if (curMatch == null)
+                curMatch = {
+                    match: getHighlightedWord(tokens[tokenIdx]),
+                    before: getSnippet(tokens, tokenIdx, -5),
+                    after: '',
+                    words: word ? [word] : []
+                };
+            else {
+                curMatch.match += ' ' + getHighlightedWord(tokens[tokenIdx]);
+                if (word) curMatch.words.push(word);
+            }
+        }
+
+        if (word?.isHyphenated) {
+            wordIdx++;
+            curMatch?.words.push(words[wordIdx]);
+        }
+
+        if (curMatch && (!matchExact || matchExact === curMatch.match)) {
+            curMatch.after = getSnippet(tokens, tokenIdx, 5);
+            matches.push(curMatch);
+            curMatch = null;
+        }
+
+        tokenIdx++;
+        wordIdx++;
     }
 
-    return tags.map(([idxStart, idxEnd]) => ({
-        match: hl.substring(idxStart, idxEnd),
-        before: hl.substring(0, idxStart),
-        after: hl.substring(idxEnd)
-    }));
+    return matches;
+}
+
+function getHighlightedWord(token: string): string {
+    return token.replace(PRE_TAG, '').replace(POST_TAG, '');
+}
+
+function getSnippet(tokens: string[], idx: number, size: number): string {
+    const words = [];
+    const startIdx = size < 0 ? Math.max(0, idx + size) : idx + 1;
+    const endIdx = size < 0 ? idx : Math.min(idx + size + 1, tokens.length);
+
+    let curIdx = startIdx;
+    while (curIdx < endIdx) {
+        words.push(getHighlightedWord(tokens[curIdx]));
+        curIdx++;
+    }
+
+    return words.join(' ');
 }

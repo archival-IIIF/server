@@ -54,25 +54,25 @@ describe('iish_metadata', () => {
         });
 
         it('should determine the OAI indentifier from an ARCH identifier', async () => {
-            const identifier = await getOAIIdentifier('ARCH12345', 'http://srw');
+            const identifier = await getOAIIdentifier('ARCH12345');
 
             expect(identifier).to.equal('oai:socialhistoryservices.org:10622/ARCH12345');
         });
 
         it('should determine the OAI indentifier from an COLL identifier', async () => {
-            const identifier = await getOAIIdentifier('COLL12345', 'http://srw');
+            const identifier = await getOAIIdentifier('COLL12345');
 
             expect(identifier).to.equal('oai:socialhistoryservices.org:10622/COLL12345');
         });
 
         it('should determine the OAI indentifier from the MARCXML result from an SRW call', async () => {
-            const identifier = await getOAIIdentifier('1234567890', 'http://srw');
+            const identifier = await getOAIIdentifier('1234567890');
 
             expect(identifier).to.equal('oai:socialhistoryservices.org:N12345');
         });
 
         it('should return no OAI indentifier if the MARCXML does not exist', async () => {
-            const identifier = await getOAIIdentifier('567890', 'http://srw');
+            const identifier = await getOAIIdentifier('567890');
 
             expect(identifier).to.be.null;
         });
@@ -107,6 +107,8 @@ describe('iish_metadata', () => {
                         '2019'
                     ],
                     'physical': '1 m.',
+                    'parent_id': null,
+                    'parent_ids': [],
                     'order': 1
                 },
                 {
@@ -120,7 +122,7 @@ describe('iish_metadata', () => {
                         'value': 'Collection title'
                     }],
                     'parent_id': 'ARCH12345',
-                    'top_parent_id': 'ARCH12345',
+                    'parent_ids': ['ARCH12345'],
                     'order': 2
                 },
                 {
@@ -145,7 +147,7 @@ describe('iish_metadata', () => {
                         'type': 'ead'
                     },
                     'parent_id': 'ARCH12345.dda3da21e3f74df90a6160aebac41f6b',
-                    'top_parent_id': 'ARCH12345',
+                    'parent_ids': ['ARCH12345.dda3da21e3f74df90a6160aebac41f6b', 'ARCH12345'],
                     'dates': [
                         '2019'
                     ],

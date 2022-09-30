@@ -59,6 +59,14 @@ export function setElasticSearchClient(client: Client): void {
                 index: config.elasticSearchIndexItems,
                 body: {
                     mappings: {
+                        dynamic_templates: [{
+                            strings_as_keywords: {
+                                match_mapping_type: 'string',
+                                mapping: {
+                                    type: 'keyword'
+                                }
+                            }
+                        }],
                         properties: {
                             id: {
                                 type: 'keyword'
@@ -66,7 +74,7 @@ export function setElasticSearchClient(client: Client): void {
                             parent_id: {
                                 type: 'keyword'
                             },
-                            top_parent_id: {
+                            parent_ids: {
                                 type: 'keyword'
                             },
                             collection_id: {
@@ -83,7 +91,11 @@ export function setElasticSearchClient(client: Client): void {
                             },
                             label: {
                                 type: 'text',
-                                fielddata: true
+                                fields: {
+                                    raw: {
+                                        type: 'keyword'
+                                    }
+                                }
                             },
                             description: {
                                 type: 'text'
@@ -127,15 +139,7 @@ export function setElasticSearchClient(client: Client): void {
                                 type: 'short'
                             },
                             metadata: {
-                                type: 'nested',
-                                properties: {
-                                    label: {
-                                        type: 'keyword'
-                                    },
-                                    value: {
-                                        type: 'keyword'
-                                    }
-                                }
+                                type: 'flattened'
                             },
                             original: {
                                 properties: {
@@ -222,6 +226,7 @@ export function setElasticSearchClient(client: Client): void {
                             },
                             text: {
                                 type: 'text',
+                                index_options: 'offsets',
                                 fields: {
                                     autocomplete: {
                                         type: 'text',
@@ -229,6 +234,10 @@ export function setElasticSearchClient(client: Client): void {
                                         search_analyzer: 'autocomplete_search'
                                     }
                                 }
+                            },
+                            structure: {
+                                type: 'object',
+                                enabled: false
                             }
                         }
                     }
