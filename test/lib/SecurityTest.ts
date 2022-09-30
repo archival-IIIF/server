@@ -98,7 +98,7 @@ describe('Security', () => {
 
     describe('#hasAccess()', () => {
         it('should always return open access if the request includes admin rights', async () => {
-            const ctx = {...defaultCtx, request: {body: {access_token: adminAccessToken}}};
+            const ctx: unknown = {...defaultCtx, request: {body: {access_token: adminAccessToken}}};
             const access = await hasAccess(ctx as ExtendedContext, closedItem);
             expect(access).to.deep.equal({state: AccessState.OPEN});
         });
@@ -124,13 +124,13 @@ describe('Security', () => {
 
     describe('#hasAdminAccess()', () => {
         it('should return true if the request body contains a valid access token', () => {
-            const ctx = {...defaultCtx, request: {body: {access_token: adminAccessToken}}};
+            const ctx: unknown = {...defaultCtx, request: {body: {access_token: adminAccessToken}}};
             const hasAccess = hasAdminAccess(ctx as ExtendedContext);
             expect(hasAccess).to.be.true;
         });
 
         it('should return false if the request body does not contain a valid access token', () => {
-            const ctx = {...defaultCtx, request: {body: {access_token: 'not-valid'}}};
+            const ctx: unknown = {...defaultCtx, request: {body: {access_token: 'not-valid'}}};
             const hasAccess = hasAdminAccess(ctx as ExtendedContext);
             expect(hasAccess).to.be.false;
         });

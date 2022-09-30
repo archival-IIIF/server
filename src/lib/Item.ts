@@ -1,10 +1,11 @@
 import * as path from 'path';
+import {ResponseError} from '@elastic/transport/lib/errors.js';
+
 import logger from './Logger.js';
 import config from './Config.js';
+import getClient from './ElasticSearch.js';
 import {DerivativeType} from './Derivative.js';
 import {Item, MinimalItem} from './ItemInterfaces.js';
-import getClient from './ElasticSearch.js';
-import {ResponseError} from "@elastic/elasticsearch/lib/errors";
 
 export function createItem(obj: MinimalItem): Item {
     return {
@@ -92,8 +93,8 @@ export async function deleteItems(collectionId: string): Promise<void> {
 export async function getItem(id: string): Promise<Item | null> {
     try {
         logger.debug(`Obtain item from ElasticSearch with id ${id}`);
-        const response = await getClient().get<{ _source: Item }>({index: config.elasticSearchIndexItems, id: id});
-        return response.body._source;
+        const response = await getClient().get<Item>({index: config.elasticSearchIndexItems, id: id});
+        return response._source || null;
     }
     catch (err: any) {
         if (err instanceof ResponseError && err.statusCode === 404)

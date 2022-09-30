@@ -1,14 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import {promisify} from 'util';
-import {parseXml, Element, Attribute} from 'libxmljs2';
+import {parseXml, Element} from 'libxmljs2';
+import {ResponseError} from '@elastic/transport/lib/errors.js';
 
-import config from '../lib/Config.js';
-
+import config from './Config.js';
 import logger from './Logger.js';
 import {cache} from './Cache.js';
 import getClient from './ElasticSearch.js';
-import {ResponseError} from "@elastic/elasticsearch/lib/errors";
 
 export interface Text {
     id: string;
@@ -67,8 +66,8 @@ export async function deleteTexts(collectionId: string): Promise<void> {
 
 export async function getText(id: string): Promise<Text | null> {
     try {
-        const response = await getClient().get<{ _source: Text }>({index: config.elasticSearchIndexTexts, id: id});
-        return response.body._source;
+        const response = await getClient().get<Text>({index: config.elasticSearchIndexTexts, id: id});
+        return response._source || null;
     }
     catch (err: any) {
         if (err instanceof ResponseError && err.statusCode === 404)

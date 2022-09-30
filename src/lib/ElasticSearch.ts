@@ -1,21 +1,25 @@
+import {Client} from '@elastic/elasticsearch';
+import {DiagnosticResult} from '@elastic/transport/lib/types.js';
+import {ResurrectEvent} from '@elastic/transport/lib/pool/index.js';
+import {ElasticsearchClientError} from '@elastic/transport/lib/errors.js';
+
 import config from './Config.js';
 import logger from './Logger.js';
-import {ApiError, Client, RequestEvent} from '@elastic/elasticsearch/index';
-import {ResurrectEvent} from '@elastic/elasticsearch/lib/pool/index';
 
 let testClient: Client | null = null;
 const client = (config.elasticSearchUser && config.elasticSearchPassword)
     ? new Client({
         node: config.elasticSearchUrl,
         auth: {username: config.elasticSearchUser, password: config.elasticSearchPassword},
-        ssl: {rejectUnauthorized: false}
+        tls: {rejectUnauthorized: false}
     })
     : new Client({node: config.elasticSearchUrl});
 
 if (config.env !== 'test') {
     await client.ping();
 
-    const log = (phase: string, err: ApiError | null, result: RequestEvent | ResurrectEvent) => {
+    const log = (phase: string, err: ElasticsearchClientError | null,
+                 result: DiagnosticResult | ResurrectEvent | null) => {
         // @ts-ignore
         const {body, ...toDebugger} = result;
         logger.debug(`ElasticSearch '${phase}': ${JSON.stringify(toDebugger)}`);
@@ -23,10 +27,10 @@ if (config.env !== 'test') {
             logger.error(`ElasticSearch threw an error during the '${phase}' phase`, {err});
     };
 
-    client.on('request', (err, result) => log('request', err, result));
-    client.on('response', (err, result) => log('response', err, result));
-    client.on('sniff', (err, result) => log('sniff', err, result));
-    client.on('resurrect', (err, result) => log('resurrect', err, result));
+    client.diagnostic.on('request', (err, result) => log('request', err, result));
+    client.diagnostic.on('response', (err, result) => log('response', err, result));
+    client.diagnostic.on('sniff', (err, result) => log('sniff', err, result));
+    client.diagnostic.on('resurrect', (err, result) => log('resurrect', err, result));
 }
 
 export default function getClient(): Client {
@@ -50,7 +54,7 @@ export function setElasticSearchClient(client: Client): void {
         await client.ping();
 
         const itemsExists = await client.indices.exists({index: config.elasticSearchIndexItems});
-        if (!itemsExists.body) {
+        if (!itemsExists) {
             await client.indices.create({
                 index: config.elasticSearchIndexItems,
                 body: {
@@ -162,7 +166,7 @@ export function setElasticSearchClient(client: Client): void {
         }
 
         const textsExists = await client.indices.exists({index: config.elasticSearchIndexTexts});
-        if (!textsExists.body) {
+        if (!textsExists) {
             await client.indices.create({
                 index: config.elasticSearchIndexTexts,
                 body: {

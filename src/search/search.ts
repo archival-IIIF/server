@@ -1,32 +1,9 @@
+import {Text} from '../lib/Text.js';
 import config from '../lib/Config.js';
 import getClient from '../lib/ElasticSearch.js';
-import {Text} from '../lib/Text.js';
-import {ApiResponse} from '@elastic/elasticsearch/lib/Transport';
 
 const PRE_TAG = '{{{';
 const POST_TAG = '}}}';
-
-interface SearchResponse {
-    hits: {
-        total: number,
-        hits: {
-            _source: Text,
-            highlight: {
-                text: string[]
-            }
-        }[]
-    }
-}
-
-interface AutocompleteResponse {
-    hits: {
-        hits: {
-            highlight: {
-                'text.autocomplete': string[]
-            }
-        }[]
-    }
-}
 
 export interface SearchResult {
     text: Text,
@@ -71,7 +48,7 @@ async function search(query: string, filters: { [field: string]: string | undefi
     const isPhraseMatch = query.startsWith('"') && query.endsWith('"');
     query = isPhraseMatch ? query.substring(1, query.length - 1) : query;
 
-    const response: ApiResponse<SearchResponse> = await getClient().search({
+    const response = await getClient().search({
         index: config.elasticSearchIndexTexts,
         size: config.maxSearchResults,
         body: {
@@ -102,7 +79,7 @@ async function search(query: string, filters: { [field: string]: string | undefi
         }
     });
 
-    return response.body.hits.hits.map(hit => ({
+    return response.hits.hits.map(hit => ({
         text: hit._source as Text,
         matches: hit.highlight ? hit.highlight.text.flatMap(hl => mapMatches(hl)) : []
     }));
@@ -111,7 +88,7 @@ async function search(query: string, filters: { [field: string]: string | undefi
 async function autocomplete(query: string, filters: { [field: string]: string | undefined }): Promise<string[][]> {
     query = query.trim();
 
-    const response: ApiResponse<AutocompleteResponse> = await getClient().search({
+    const response = await getClient().search({
         index: config.elasticSearchIndexTexts,
         body: {
             _source: false,
@@ -140,12 +117,12 @@ async function autocomplete(query: string, filters: { [field: string]: string | 
         }
     });
 
-    if (response.body.hits.hits.length === 0)
+    if (response.hits.hits.length === 0)
         return [];
 
     const firstQueryWord = query.split(' ')[0].toLowerCase();
 
-    return response.body.hits.hits.reduce<string[][]>((acc, hit) => {
+    return response.hits.hits.reduce<string[][]>((acc, hit) => {
         if (hit.highlight) {
             for (const hl of hit.highlight['text.autocomplete']) {
                 for (const match of mapMatches(hl)) {
