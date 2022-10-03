@@ -123,7 +123,7 @@ const videoTypes = [
     'fmt/200',
     'fmt/104',
     'fmt/105',
-    'fmt/106',
+     //'fmt/106',
     'fmt/107',
     'fmt/108',
     'fmt/109',
