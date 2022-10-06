@@ -78,11 +78,11 @@ export async function createCanvas(item: FileItem, parentItem: Item, setAuth: bo
 
 export async function getResource(item: FileItem, setAuth: boolean = false): Promise<Resource> {
     if (item.type === 'image')
-        return await getImageResource(item as ImageItem, 'full', setAuth);
+        return getImageResource(item as ImageItem, 'full', setAuth);
 
     const accessPronomData = item.access.puid ? getPronomInfo(item.access.puid) : null;
     const originalPronomData = item.original.puid ? getPronomInfo(item.original.puid) : null;
-    const defaultMime = accessPronomData ? accessPronomData.mime : (originalPronomData as PronomInfo).mime;
+    const defaultMime = accessPronomData?.mime || originalPronomData?.mime || 'application/octet-stream';
 
     const resource = Resource.createResource(fileUri(item.id), getType(item.type), defaultMime,
         item.width, item.height, item.duration);
