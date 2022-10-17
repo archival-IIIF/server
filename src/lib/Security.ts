@@ -11,7 +11,7 @@ import {runLib} from './Task.js';
 import {Item} from './ItemInterfaces.js';
 import {ExtendedContext} from './Koa.js';
 import {getPersistentClient} from './Redis.js';
-import {AccessParams, AuthTextsByType, AuthTextsParams} from './ServiceTypes.js';
+import {AccessParams, AuthTextsByType, ItemParams} from './ServiceTypes.js';
 
 type AccessTokenBody = Record<'access_token', string | undefined>;
 
@@ -102,7 +102,7 @@ export async function requiresAuthentication(item: Item): Promise<boolean> {
 }
 
 export async function getAuthTexts(item: Item): Promise<AuthTextsByType> {
-    return runLib<AuthTextsParams, AuthTextsByType>('auth-texts', {item});
+    return runLib<ItemParams, AuthTextsByType>('auth-texts', {item});
 }
 
 export function isIpInRange(ip: string): boolean {

@@ -7,7 +7,7 @@ import {runTask} from '../lib/Task.js';
 import {workerStatus} from '../lib/Worker.js';
 import {ExtendedContext} from '../lib/Koa.js';
 import {hasAdminAccess, getIpAddress} from '../lib/Security.js';
-import {EmptyParams, IndexParams, MetadataParams, ProcessUpdateParams, ReindexParams} from '../lib/ServiceTypes.js';
+import {EmptyParams, CollectionPathParams, MetadataParams, ProcessUpdateParams, ReindexParams} from '../lib/ServiceTypes.js';
 
 import registerToken from './register_token.js';
 import indexCollection from './api_index.js';
@@ -45,7 +45,7 @@ router.post('/index', async ctx => {
     if (!existsSync(body.path))
         throw new HttpError(400, `The provided path "${body.path}" does not seem to exist`);
 
-    runTask<IndexParams>('index', {collectionPath: body.path});
+    runTask<CollectionPathParams>('index', {collectionPath: body.path});
     ctx.body = 'Collection is sent to the queue for indexing';
 });
 
@@ -64,18 +64,18 @@ router.post('/reindex', async ctx => {
 });
 
 router.post('/update_metadata', async ctx => {
-    const body = ctx.request.body as Record<'oai_identifier' | 'root_id' | 'collection_id', string | undefined>;
-    if (!body.oai_identifier && !body.root_id && !body.collection_id)
+    const body = ctx.request.body as Record<'metadata_id' | 'root_id' | 'collection_id', string | undefined>;
+    if (!body.metadata_id && !body.root_id && !body.collection_id)
         throw new HttpError(400,
             'Please provide an OAI identifier or a root/collection id of the record(s) to update');
 
     runTask<MetadataParams>('metadata', {
-        oaiIdentifier: body.oai_identifier,
+        metadataId: body.metadata_id,
         rootId: body.root_id,
         collectionId: body.collection_id
     });
 
-    ctx.body = 'OAI identifier and/or root/collection id is sent to the queue for metadata update';
+    ctx.body = 'Metadata identifier and/or root/collection id is sent to the queue for metadata update';
 });
 
 router.post('/all_metadata_update', async ctx => {

@@ -1,8 +1,5 @@
-import fs from 'fs';
-import {promisify} from 'util';
 import {Element, parseXml} from 'libxmljs2';
-
-const readFileAsync = promisify(fs.readFile);
+import {readFileAsync} from './Promisified.js';
 
 export interface TextStructure {
     blocks: TextBlock[];

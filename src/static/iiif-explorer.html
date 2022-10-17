@@ -29,7 +29,7 @@
 
           var iiifExplorer = document.querySelector('iiif-explorer');
           iiifExplorer.addEventListener('selectManifest', function (e) {
-              window.open('/universalviewer#?manifest=' + e.detail.id);
+              window.open('/helper/viewer?manifest=' + e.detail.id);
           });
       });
   </script>

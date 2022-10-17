@@ -26,6 +26,9 @@ export const allServices: Service[] = [{
     implementations: [{
         name: 'iish-archivematica-index',
         loadService: async () => (await import('../service/iish/archivematica_index.js')).default
+    }, {
+        name: 'ecodices-index',
+        loadService: async () => (await import('../service/ecodices/index.js')).default
     }]
 }, {
     type: 'text',
@@ -41,8 +44,8 @@ export const allServices: Service[] = [{
         name: 'iish-metadata',
         loadService: async () => (await import('../service/iish/metadata.js')).default
     }, {
-        name: 'niod-metadata',
-        loadService: async () => (await import('../service/niod/metadata.js')).default
+        name: 'ecodices-metadata',
+        loadService: async () => (await import('../service/ecodices/metadata.js')).default
     }]
 }, {
     type: 'reindex',
@@ -110,14 +113,40 @@ export const allServices: Service[] = [{
         loadService: async () => (await import('../service/iish/auth_texts.js')).default
     }]
 }, {
-    type: 'iiif-metadata',
+    type: 'basic-iiif-metadata',
     runAs: 'lib',
     implementations: [{
-        name: 'default-iiif-metadata',
-        loadService: async () => (await import('../service/iiif_metadata.js')).default
+        name: 'default-basic-iiif-metadata',
+        loadService: async () => (await import('../service/basic_iiif_metadata.js')).default
     }, {
-        name: 'iish-iiif-metadata',
-        loadService: async () => (await import('../service/iish/iiif_metadata.js')).default
+        name: 'iish-basic-iiif-metadata',
+        loadService: async () => (await import('../service/iish/basic_iiif_metadata.js')).default
+    }, {
+        name: 'ecodices-basic-iiif-metadata',
+        loadService: async () => (await import('../service/ecodices/basic_iiif_metadata.js')).default
+    }]
+}, {
+    type: 'canvas-iiif-metadata',
+    runAs: 'lib',
+    implementations: [{
+        name: 'default-canvas-iiif-metadata',
+        loadService: async () => (await import('../service/basic_iiif_metadata.js')).default
+    }, {
+        name: 'ecodices-canvas-iiif-metadata',
+        loadService: async () => (await import('../service/ecodices/canvas_iiif_metadata.js')).default
+    }]
+}, {
+    type: 'root-file-item',
+    runAs: 'lib',
+    implementations: [{
+        name: 'default-root-file-item',
+        loadService: async () => (await import('../service/root_file_item.js')).default
+    }, {
+        name: 'iish-root-file-item',
+        loadService: async () => (await import('../service/iish/root_file_item.js')).default
+    }, {
+        name: 'ecodices-root-file-item',
+        loadService: async () => (await import('../service/ecodices/root_file_item.js')).default
     }]
 }, {
     type: 'watcher',

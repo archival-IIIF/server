@@ -1,16 +1,16 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import {promisify} from 'util';
 import moment from 'moment';
+import {existsSync} from 'fs';
+import {basename, extname, join} from 'path';
 import {parseXml, Attribute, Document, Element} from 'libxmljs2';
 
 import config from '../../lib/Config.js';
 import logger from '../../lib/Logger.js';
 import {runTask} from '../../lib/Task.js';
 import {evictCache} from '../../lib/Cache.js';
+import {readdirAsync, readFileAsync} from '../../lib/Promisified.js';
 import {createItem, indexItems, deleteItems} from '../../lib/Item.js';
-import {MinimalItem, FileItem, FolderItem, Item} from '../../lib/ItemInterfaces.js';
-import {TextItem, IndexParams, MetadataParams, TextParams, DerivativeParams} from '../../lib/ServiceTypes.js';
+import {MinimalItem, FolderItem, Item} from '../../lib/ItemInterfaces.js';
+import {TextItem, CollectionPathParams, MetadataParams, TextParams, CollectionIdParams} from '../../lib/ServiceTypes.js';
 
 import {getTypeForPronom, pronomByExtension} from '../util/archivematica_pronom_data.js';
 
@@ -21,9 +21,6 @@ interface CollectionProcessingResult {
 }
 
 type premis = 'premis' | 'premisv3';
-
-const readdirAsync = promisify(fs.readdir);
-const readFileAsync = promisify(fs.readFile);
 
 const ns = {
     'mets': 'http://www.loc.gov/METS/',
@@ -36,7 +33,7 @@ const ns = {
     'File': 'http://ns.exiftool.ca/File/1.0/'
 };
 
-export default async function processDip({collectionPath}: IndexParams): Promise<void> {
+export default async function processDip({collectionPath}: CollectionPathParams): Promise<void> {
     try {
         const {rootItem, childItems, textItems} = await processCollection(collectionPath);
 
@@ -53,11 +50,11 @@ export default async function processDip({collectionPath}: IndexParams): Promise
 
         // Run derivative services
         if (childItems.find(item => item.type === 'audio'))
-            runTask<DerivativeParams>('waveform', {collectionId: rootItem.id});
+            runTask<CollectionIdParams>('waveform', {collectionId: rootItem.id});
         if (childItems.find(item => item.type === 'pdf'))
-            runTask<DerivativeParams>('pdf-image', {collectionId: rootItem.id});
+            runTask<CollectionIdParams>('pdf-image', {collectionId: rootItem.id});
         if (childItems.find(item => item.type === 'video'))
-            runTask<DerivativeParams>('video-image', {collectionId: rootItem.id});
+            runTask<CollectionIdParams>('video-image', {collectionId: rootItem.id});
     }
     catch (e: any) {
         const err = new Error(`Failed to index the collection ${collectionPath}: ${e.message}`);
@@ -71,7 +68,7 @@ export async function processCollection(collectionPath: string): Promise<Collect
     if (!metsFile)
         throw new Error(`No METS file found in the collection ${collectionPath}`);
 
-    const metsPath = path.join(collectionPath, metsFile);
+    const metsPath = join(collectionPath, metsFile);
     const metsXml = await readFileAsync(metsPath, 'utf8');
 
     const mets = parseXml(metsXml);
@@ -81,8 +78,8 @@ export async function processCollection(collectionPath: string): Promise<Collect
     if (!rootPhysical)
         throw new Error('Could not find the physical structmap in the METS file');
 
-    const objectsPath = path.join(collectionPath, 'objects');
-    const objects = fs.existsSync(objectsPath) ? await readdirAsync(objectsPath) : [];
+    const objectsPath = join(collectionPath, 'objects');
+    const objects = existsSync(objectsPath) ? await readdirAsync(objectsPath) : [];
     const relativeRootPath = objectsPath
         .replace(`${config.dataRootPath}/${config.collectionsRelativePath}/`, '');
 
@@ -168,13 +165,11 @@ function walkTree(id: string, mets: Document, objects: string[], relativeRootPat
                 items = items.concat(childItems);
                 texts = texts.concat(childTexts);
             }
-        }
-        else if (!structureIISH || (parents[0] === 'preservation')) {
+        } else if (!structureIISH || (parents[0] === 'preservation')) {
             const fileInfo = readFile(id, label, mets, objects, relativeRootPath, nodePhysical, structureIISH, parents);
             if (fileInfo)
                 items.push(fileInfo);
-        }
-        else if (structureIISH && (parents[0] === 'transcription' || parents[0].startsWith('translation_'))) {
+        } else if (structureIISH && (parents[0] === 'transcription' || parents[0].startsWith('translation_'))) {
             const textInfo = readText(id, label, mets, objects, relativeRootPath, nodePhysical, structureIISH, parents[0]);
             if (textInfo)
                 texts.push(textInfo);
@@ -200,7 +195,7 @@ function readFolder(rootId: string, label: string, mets: Document, node: Element
         throw new Error(`No original name found for object with DMD id ${dmdId}`);
 
     const originalName = originalNameElem.text();
-    const name = path.basename(originalName);
+    const name = basename(originalName);
     const id = getIdentifier(premisObj, 'premisv3');
     if (!id)
         throw new Error(`No identifier found for object with DMD id ${dmdId}`);
@@ -252,7 +247,7 @@ function readFile(rootId: string, label: string, mets: Document, objects: string
 
     const pronomKeyElem = objCharacteristics.get<Element>(`./${premisNS}:format/${premisNS}:formatRegistry/${premisNS}:formatRegistryName[text()="PRONOM"]/../${premisNS}:formatRegistryKey`, ns);
     const pronomKey = pronomKeyElem ? pronomKeyElem.text() : null;
-    const name = path.basename(originalName);
+    const name = basename(originalName);
     const type = getTypeForPronom(pronomKey);
 
     if (!objCharacteristicsExt && (type === 'image' || type === 'video' || type === 'audio'))
@@ -269,7 +264,7 @@ function readFile(rootId: string, label: string, mets: Document, objects: string
         throw new Error(`Expected to find a file starting with ${internalId}`);
 
     const isOriginal = file.endsWith(label);
-    const extension = path.extname(file);
+    const extension = extname(file);
 
     let order = null;
     if (structureIISH) {
@@ -293,15 +288,15 @@ function readFile(rootId: string, label: string, mets: Document, objects: string
         resolution: dpi,
         duration: duration,
         original: {
-            uri: isOriginal ? path.join(relativeRootPath, file) : null,
+            uri: isOriginal ? join(relativeRootPath, file) : null,
             puid: pronomKey,
         },
         access: {
-            uri: !isOriginal ? path.join(relativeRootPath, file) : null,
+            uri: !isOriginal ? join(relativeRootPath, file) : null,
             puid: (!isOriginal && extension in pronomByExtension)
                 ? pronomByExtension[extension] : null
         }
-    } as FileItem);
+    } as Item);
 }
 
 function readText(rootId: string, label: string, mets: Document, objects: string[], relativeRootPath: string,
@@ -360,7 +355,7 @@ function readText(rootId: string, label: string, mets: Document, objects: string
     const type = isTranslation ? 'translation' : 'transcription';
     const language = isTranslation ? typeAndLang.split('_')[1] : null;
 
-    return {id, itemId, type, language, encoding, uri: path.join(relativeRootPath, file)};
+    return {id, itemId, type, language, encoding, uri: join(relativeRootPath, file)};
 }
 
 function findPremisNsAndObj(mets: Document, fileId: string): [premis, Element] | null {

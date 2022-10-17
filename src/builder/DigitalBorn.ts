@@ -3,10 +3,12 @@ import moment from 'moment';
 
 import {Base, Collection, Manifest, Resource} from '@archival-iiif/presentation-builder/v3';
 
+import {runLib} from '../lib/Task.js';
 import getPronomInfo from '../lib/Pronom.js';
 import {getChildItems} from '../lib/Item.js';
 import {iconsByExtension} from '../lib/FileIcon.js';
 import {Access, AccessState} from '../lib/Security.js';
+import {BasicIIIFMetadata, ItemParams} from '../lib/ServiceTypes.js';
 import {Item, FolderItem, FileItem, ImageItem} from '../lib/ItemInterfaces.js';
 
 import {
@@ -26,11 +28,12 @@ const defaultFileIcon = 'blank';
 const defaultFolderIcon = 'folder';
 
 export async function getCollection(item: FolderItem, access: Access, builder: PresentationBuilder): Promise<Collection> {
+    const md = await runLib<ItemParams, BasicIIIFMetadata>('basic-iiif-metadata', {item});
     const label = ((access.state !== AccessState.CLOSED) || (item.collection_id === item.id))
         ? item.label : 'Access denied';
     const collection = await createCollection(item, label);
 
-    await addMetadataDB(collection, item);
+    await addMetadataDB(collection, item, md);
 
     if (access.state !== AccessState.CLOSED) {
         const children = await getChildItems(item);
@@ -49,8 +52,10 @@ export async function getManifest(item: FileItem, access: Access): Promise<Manif
     const manifest = await createManifest(item, label);
 
     if (access.state !== AccessState.CLOSED) {
+        const md = await runLib<ItemParams, BasicIIIFMetadata>('basic-iiif-metadata', {item});
+
         manifest.setBehavior('unordered');
-        await addMetadataDB(manifest, item);
+        await addMetadataDB(manifest, item, md);
         await setThumbnail(manifest, item);
 
         const canvas = await createCanvas(item, item);
@@ -96,7 +101,7 @@ export async function getReference(item: Item): Promise<Collection | Manifest> {
     return manifest;
 }
 
-async function addMetadataDB(base: Base, root: Item): Promise<void> {
+async function addMetadataDB(base: Base, root: Item, md: BasicIIIFMetadata): Promise<void> {
     if (root.original.puid) {
         const pronomData = getPronomInfo(root.original.puid);
         if (pronomData)
@@ -124,7 +129,7 @@ async function addMetadataDB(base: Base, root: Item): Promise<void> {
         base.setMetadata('Original modification date', date);
     }
 
-    await addMetadata(base, root);
+    await addMetadata(base, root, md);
 }
 
 async function setThumbnail(base: Base, item: Item) {

@@ -1,4 +1,4 @@
-import {AuthTextsParams, AuthTextsByType} from '../lib/ServiceTypes.js';
+import {ItemParams, AuthTextsByType} from '../lib/ServiceTypes.js';
 import {isAuthenticationEnabled, isExternalEnabled, isIpAccessEnabled, isLoginEnabled} from '../lib/Security.js';
 
 const logout = {
@@ -21,7 +21,7 @@ const external = {
     failureDescription: 'Unfortunately access to this record is restricted.',
 };
 
-export default async function getAuthTexts({item}: AuthTextsParams): Promise<AuthTextsByType> {
+export default async function getAuthTexts({item}: ItemParams): Promise<AuthTextsByType> {
     let authTexts = {};
     if (isAuthenticationEnabled()) {
         if (isLoginEnabled())

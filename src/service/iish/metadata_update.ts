@@ -18,7 +18,7 @@ export default async function updateMetadata(): Promise<void> {
     try {
         const fromDate = moment().subtract(5, 'days').format('YYYY-MM-DD');
         for (const oaiIdentifier of await getOAIIdentifiersOfUpdated(fromDate, config.metadataOaiUrl))
-            runTask<MetadataParams>('metadata', {oaiIdentifier});
+            runTask<MetadataParams>('metadata', {metadataId: oaiIdentifier});
     }
     catch (err: any) {
         logger.error(`Failed to run the recurring update metadata procedure: ${err.message}`, {err});

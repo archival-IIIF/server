@@ -11,7 +11,7 @@ import {getCollectionIdsIndexed, updateItems} from '../../lib/Item.js';
 
 import * as NIOD from './util/NIOD.js';
 
-export default async function processMetadata({oaiIdentifier, rootId, collectionId}: MetadataParams): Promise<void> {
+export default async function processMetadata({metadataId, rootId, collectionId}: MetadataParams): Promise<void> {
     if (!config.metadataPath)
         throw new Error('Cannot process metadata, as there is no metadata path configured!');
 

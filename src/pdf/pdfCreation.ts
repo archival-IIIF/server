@@ -11,7 +11,8 @@ export default async function createPDF(rootItem: RootItem, items: ImageItem[], 
     const document = await PDFDocument.create();
 
     document.setTitle(rootItem.label);
-    rootItem.authors.length > 0 && document.setAuthor(rootItem.authors[0].name);
+    rootItem.authors.length > 0 && document.setAuthor(
+        Array.isArray(rootItem.authors[0].name) ? rootItem.authors[0].name[0] : rootItem.authors[0].name);
     config.attribution && document.setProducer(config.attribution);
     config.attribution && document.setCreator(config.attribution);
 

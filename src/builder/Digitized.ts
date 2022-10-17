@@ -1,7 +1,9 @@
-import {getChildItems} from '../lib/Item.js';
+import {runLib} from '../lib/Task.js';
 import {getWordsFromStructure} from '../lib/TextStructure.js';
 import {Item, RootItem, FileItem} from '../lib/ItemInterfaces.js';
+import {BasicIIIFMetadata, ItemParams} from '../lib/ServiceTypes.js';
 import {getTextsForCollectionId, Text, withTexts} from '../lib/Text.js';
+import {getChildItems, getRangeItemsByCollectionId} from '../lib/Item.js';
 
 import {
     Base, Canvas, Service, Manifest, Resource,
@@ -14,6 +16,7 @@ import {
     createCanvas,
     addThumbnail,
     addMetadata,
+    addStructures,
     createAnnotationPage,
 } from './PresentationUtils.js';
 
@@ -32,11 +35,13 @@ export async function getManifest(parentItem: RootItem): Promise<Manifest> {
     const manifest = await createManifest(parentItem);
 
     const items = await getChildItems(parentItem) as FileItem[];
+    const ranges = await getRangeItemsByCollectionId(parentItem.id);
     const texts = await withTexts(getTextsForCollectionId(parentItem.id));
+    const md = await runLib<ItemParams, BasicIIIFMetadata>('basic-iiif-metadata', {item: parentItem});
 
-    addBehavior(manifest, parentItem, items.length > 1);
+    addBehavior(manifest, parentItem, md, items.length > 1);
     await addThumbnail(manifest, parentItem);
-    await addMetadata(manifest, parentItem);
+    await addMetadata(manifest, parentItem, md);
 
     manifest.setItems(await Promise.all(items.map(async (item, idx) => {
         const canvas = await createCanvas(item, parentItem, idx === 0);
@@ -46,10 +51,12 @@ export async function getManifest(parentItem: RootItem): Promise<Manifest> {
             .forEach(text => addText(canvas, parentItem, text));
 
         await addThumbnail(canvas, item);
-        await addMetadata(canvas, item);
+        await addMetadata(canvas, item, md);
 
         return canvas;
     })));
+
+    await addStructures(manifest, parentItem, items, ranges);
 
     if (texts.length > 0)
         setSearchService(manifest, parentItem);
@@ -129,13 +136,9 @@ export async function getAnnotationPage(item: RootItem, text: Text): Promise<Ann
     return annoPage;
 }
 
-function addBehavior(manifest: Manifest, item: Item, hasMultipleItems = true): void {
+function addBehavior(manifest: Manifest, item: Item, md: BasicIIIFMetadata, hasMultipleItems = true): void {
     manifest.setViewingDirection('left-to-right');
-
-    if (hasMultipleItems && item.formats.includes('book'))
-        manifest.setBehavior('paged');
-    else
-        manifest.setBehavior('individuals');
+    manifest.setBehavior(hasMultipleItems && md.behavior ? md.behavior : 'individuals');
 }
 
 function addText(canvas: Canvas, item: Item, text: Text): void {

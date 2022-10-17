@@ -7,7 +7,7 @@ import chokidar from 'chokidar';
 import config from '../lib/Config.js';
 import logger from '../lib/Logger.js';
 import {runTask} from '../lib/Task.js';
-import {IndexParams} from '../lib/ServiceTypes.js';
+import {CollectionPathParams} from '../lib/ServiceTypes.js';
 
 export default async function watchDirectoryForFileTrigger(): Promise<void> {
     if (!config.hotFolderPath || !existsSync(config.hotFolderPath))
@@ -37,5 +37,5 @@ async function startIndexForNewCollection(path: string): Promise<void> {
 
     await move(path, newPath);
     logger.info(`Moved collection from hot folder ${path} to ${newPath}; sending index task to queue`);
-    runTask<IndexParams>('index', {collectionPath: newPath});
+    runTask<CollectionPathParams>('index', {collectionPath: newPath});
 }

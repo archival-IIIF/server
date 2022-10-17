@@ -1,8 +1,7 @@
 if (process.env.NODE_ENV === 'test') {
     const dotenv = await import('dotenv');
     dotenv.config({path: '.test.env'});
-}
-else if (process.env.NODE_ENV !== 'production')
+} else if (process.env.NODE_ENV !== 'production')
     await import('dotenv/config');
 
 export interface Config {
@@ -18,13 +17,12 @@ export interface Config {
     audioRelativePath?: string;
     elasticSearchUser?: string;
     elasticSearchPassword?: string;
-    elasticSearchIndexItems: string;
-    elasticSearchIndexTexts: string;
     ipAddressHeader?: string;
     imageServerUrl: string;
     imageServerName: 'loris' | 'sharp';
     logoDimensions?: [number, number];
     audioDimensions?: [number, number];
+    viewerUrl: string;
     pdfPagesThreshold?: number;
     pdfSessionSeconds?: number;
     pdfImageSize: string;
@@ -48,6 +46,8 @@ export interface Config {
     externalDisabled: boolean;
     accessTtl: number;
     elasticSearchUrl: string;
+    elasticSearchIndexItems: string;
+    elasticSearchIndexTexts: string;
     redisVolatile: null | {
         host: string;
         port: number;
@@ -100,6 +100,13 @@ const config: Config = {
 
         const dimensions = process.env.IIIF_SERVER_AUDIO_DIM.split(':');
         return [parseInt(dimensions[0]), parseInt(dimensions[1])] as [number, number];
+    })(),
+
+    viewerUrl: (_ => {
+        if (!process.env.IIIF_SERVER_VIEWER_URL || (process.env.IIIF_SERVER_VIEWER_URL === 'null'))
+            return 'https://projectmirador.org/embed/?iiif-content=';
+
+        return process.env.IIIF_SERVER_VIEWER_URL;
     })(),
 
     pdfPagesThreshold: (_ => {

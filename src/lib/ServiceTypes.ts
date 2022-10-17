@@ -1,16 +1,17 @@
-import {Item} from './ItemInterfaces.js';
+import {Item, RootItem} from './ItemInterfaces.js';
 import {AuthTexts} from '@archival-iiif/presentation-builder/v2';
+import {ManifestBehavior, CanvasBehavior} from '@archival-iiif/presentation-builder/v3';
 
 export type EmptyParams = {};
-export type IndexParams = { collectionPath: string };
-export type TextParams = { collectionId: string, items: TextItem[] };
-export type MetadataParams = { oaiIdentifier?: string | null, rootId?: string, collectionId?: string };
-export type ReindexParams = { collectionIds?: string[], query?: string };
-export type DerivativeParams = { collectionId: string };
-export type AccessParams = { item: Item, ip?: string, identities?: string[] };
-export type AuthTextsParams = { item: Item };
-export type IIIFMetadataParams = { item: Item };
+export type ItemParams = { item: Item };
+export type RootItemChildItemsParams = { rootItem: RootItem, childItems: Item[] };
+export type CollectionIdParams = { collectionId: string };
+export type CollectionPathParams = { collectionPath: string };
 export type ProcessUpdateParams = { type: string, query: string };
+export type TextParams = { collectionId: string, items: TextItem[] };
+export type ReindexParams = { collectionIds?: string[], query?: string };
+export type AccessParams = { item: Item, ip?: string, identities?: string[] };
+export type MetadataParams = { metadataId?: string | null, rootId?: string, collectionId?: string };
 
 export type TextItem = {
     id: string,
@@ -21,10 +22,17 @@ export type TextItem = {
     uri: string
 };
 
-export interface IIIFMetadata {
+export interface BasicIIIFMetadata {
+    rights?: string;
+    behavior?: ManifestBehavior;
     homepage: IIIFMetadataHomepage;
     metadata: IIIFMetadataPairs;
     seeAlso: IIIFMetadataSeeAlso;
+}
+
+export interface CanvasIIIFMetadata {
+    label?: string;
+    behavior?: CanvasBehavior;
 }
 
 export type IIIFMetadataHomepage = { id: string; label: string; }[];

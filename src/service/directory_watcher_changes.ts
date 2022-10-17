@@ -8,7 +8,7 @@ import chokidar from 'chokidar';
 import config from '../lib/Config.js';
 import logger from '../lib/Logger.js';
 import {runTask} from '../lib/Task.js';
-import {IndexParams} from '../lib/ServiceTypes.js';
+import {CollectionPathParams} from '../lib/ServiceTypes.js';
 
 const collectionsWatching: { [path: string]: Date | null } = {};
 
@@ -65,7 +65,7 @@ async function startIndexForNewCollection(path: string): Promise<void> {
 
     await move(path, newPath);
     logger.info(`Moved collection from hot folder ${path} to ${newPath}; sending index task to queue`);
-    runTask<IndexParams>('index', {collectionPath: newPath});
+    runTask<CollectionPathParams>('index', {collectionPath: newPath});
 
     delete collectionsWatching[path];
 }

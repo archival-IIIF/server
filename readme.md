@@ -55,12 +55,14 @@ The worker services wait for new jobs to appear in a queue in [Redis](https://re
 index workers that indexes data in
 [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch) and derivative workers that create
 specific derivatives of collection items. At the moment, the Archival IIIF server identifies a number of different
-types of worker services:
+fileinfo of worker services:
 
 - **Index worker**: Gets a job with the path of a collection to be indexed in
   [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch). Current implementations:
     - `iish-archivematica-index`: A specific IISH implementation of the index worker. Indexes DIPs created by the
       Archivematica instance of the IISH.
+    - `ecodices-index`: A specific eCodices implementation of the index worker. Indexes DIPs created by the
+      Archivematica instance of eCodices.
 - **Text index worker**: Gets a job with a collection id and a list of all transcriptions/transliterations to be indexed
   in [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch). Current implementations:
     - `text-index`: Indexes plain text files and ALTO files.
@@ -73,6 +75,7 @@ types of worker services:
   implementations:
     - `iish-metadata`: Looks for and indexes metadata from the OAI service of the IISH.
     - `niod-metadata`: Looks for and indexes metadata from NIOD.
+    - `ecodices-metadata`: Looks for and indexes metadata from eCodices.
 - **All metadata update worker**: Starts the metadata process again for all items. Current implementations:
     - `all-metadata-update`: Default implementation.
 - **Waveform derivative worker**: Gets a job with a collection id and then builds waveform representations of all audio
@@ -119,9 +122,13 @@ libraries:
     - `default-access`: All granted; default implementation
     - `iish-access`: IISH specific implementation.
     - `niod-access`: NIOD specific implementation.
-- **IIIF metadata**: Provides implementation specific IIIF metadata. Current implementations:
-    - `default-iiif-metadata`: Default (no IIIF metadata) implementation.
-    - `iish-iiif-metadata`: IISH specific implementation.
+- **Basic IIIF metadata**: Provides implementation specific IIIF metadata. Current implementations:
+    - `default-basic-iiif-metadata`: Default (no IIIF metadata) implementation.
+    - `iish-basic-iiif-metadata`: IISH specific implementation.
+    - `ecodices-basic-iiif-metadata`: eCodices specific implementation.
+- **Canvas IIIF metadata**: Provides implementation specific IIIF metadata for a canvas. Current implementations:
+    - `default-canvas-iiif-metadata`: Default (no IIIF metadata) implementation.
+    - `ecodices-canvas-iiif-metadata`: eCodices specific implementation.
 - **Authentication texts**: Provides implementation specific texts to help the user with authenticating. Current
   implementations:
     - `default-auth-texts`: Default implementation.
@@ -386,7 +393,8 @@ The environment variables used to configure the application:
         - `all-metadata-update`: Runs a **worker** that triggers a reindex of all metadata
         - `default-access`: Loads a **library** that grants access to all items
         - `default-auth-texts`: Loads a **library** that provides authentication empty assistance texts
-        - `default-iiif-metadata`: Loads a **library** that provides no extra IIIF metadata
+        - `default-basic-iiif-metadata`: Loads a **library** that provides no basic IIIF metadata
+        - `default-canvas-iiif-metadata`: Loads a **library** that provides no canvas IIIF metadata
     - Derivative services:
         - `waveform`: Runs a **worker** that creates waveforms from audio files
         - `pdf-image`: Runs a **worker** that creates images from pdf files
@@ -399,10 +407,17 @@ The environment variables used to configure the application:
         - `iish-access`: Loads a **library** that determines access to items for IISH collections
         - `iish-auth-texts`: Loads a **library** that provides authentication assistance texts of items from IISH
           collections
-        - `iish-iiif-metadata`: Loads a **library** that provides IIIF metadata of items from IISH collections
+        - `iish-basic-iiif-metadata`: Loads a **library** that provides IIIF metadata of items from IISH collections
     - NIOD specific services:
         - `niod-metadata`: Runs a **worker** that indexes NIOD metadata
         - `niod-access`: Loads a **library** that determines access to items for NIOD collections
+    - eCodices specific servies:
+        - `ecodices-index`: Runs a **worker** that indexes eCodices DIPs from Archivematica
+        - `ecodices-metadata`: Runs a **worker** that indexes eCodices metadata
+        - `ecodices-basic-iiif-metadata`: Loads a **library** that provides IIIF metadata of items from eCodices
+          collections
+        - `ecodices-canvas-iiif-metadata`: Loads a **library** that provides IIIF metadata of canvases from eCodices
+          collections
 - `IIIF_SERVER_SECRET`: Signed cookie key
 - `IIIF_SERVER_ACCESS_TOKEN`: Access token for administrator access
 - `IIIF_SERVER_IMAGE_SERVER_URL`: URL of the external IIIF image server (such as Loris)
@@ -414,6 +429,7 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_PORT`: Port to run the web server
 - `IIIF_SERVER_ATTRIBUTION`: Attribution to add to the IIIF manifests
 - `IIIF_SERVER_BASE_URL`: The public base URL of the application
+- `IIIF_SERVER_VIEWER_URL`: The URL of the main IIIF viewer to use (the manifest URI will be added to this URL)
 - `IIIF_SERVER_HOT_FOLDER_PATH`: The path to the hot folder where new collections to be indexed are placed
 - `IIIF_SERVER_HOT_FOLDER_PATTERN`: The pattern of a file in the root of a new collection to trigger indexing
 - `IIIF_SERVER_DATA_ROOT_PATH`: The root path of the data storage
@@ -455,56 +471,59 @@ The ElasticSearch index is configured with two different indexes: one for the `i
 
 ### Items
 
-The `items` index consists of items which can be categorized into different types:
+The `items` index consists of items which can be categorized into different fileinfo:
 
 - `metadata`: Items which only have descriptive metadata (renders to a IIIF collection)
 - `folder`: Items which will be rendered as a folder in a filesystem structure (renders to a IIIF collection)
 - `root`: Items which describe a specific object (renders to a IIIF manifest)
-- `file`: A file which cannot be categorized in one of the other file types
+- `range`: Items which describe a range within a specific object (renders to a range within a IIIF manifest)
+- `file`: A file which cannot be categorized in one of the other file fileinfo
 - `pdf`: A PDF file
 - `image`: An image file
 - `audio`: An audio file
 - `video`: A video file
 
-Using these types hierarchies can be build. Items with the type `metadata` always end up with either a `folder` or
+Using these fileinfo hierarchies can be build. Items with the type `metadata` always end up with either a `folder` or
 a `root` type. Items with the `folder` or `root` type may not necessarily have a parent `metadata` item. Items with
-a `folder` type may have child items which can be either `folder` types or any of the `file` types. Items with a `root`
-type may only have child items which are any of the `file` types.
+a `folder` type may have child items which can be either `folder` fileinfo or any of the `file` fileinfo. Items with
+a `root` type may only have child items which are any of the `file` fileinfo. Items with a `range` type appear for files
+with a `root` type.
 
-![](./docs/item-types.png)
+![](./docs/item-fileinfo.png)
 
-| Field         | Type     | Required                              | Description                                                | 
-|---------------|----------|---------------------------------------|------------------------------------------------------------|
-| id            | string   | Always                                | The identifier of the item.                                |
-| parent_id     | string   | If file type or not root folder       | The identifier of the parent item (creates a hierarchy).   |
-| parent_ids    | string[] | If file type or not root folder       | The path of all items identifiers all the way to the root. |
-| collection_id | string   | Always                                | The identifier of the root item or root folder item.       |
-| metadata_id   | string   | If item contains descriptive metadata | The identifier of the descriptive metadata used.           |
-| type          | string   | Always                                | One of the item types described above.                     |
-| formats       | string[] |                                       | Categorization of formats.                                 |
-| label         | string   | Always                                | The label of the item.                                     |
-| description   | string   |                                       | The description of the item.                               |
-| authors       | object[] |                                       | All authors of the item.                                   |
-| _type_        | string   | Always                                |                                                            |
-| _name_        | string   | Always                                |                                                            |
-| dates         | string[] |                                       | All dates of the item.                                     |
-| physical      | string   |                                       | Physical information about the item.                       |
-| size          | integer  | If file type                          | The file size.                                             |
-| order         | integer  |                                       | A number to determine the order of all child items.        |
-| created_at    | date     | If file or folder type                | The date of file creation.                                 |
-| width         | integer  | If image or video type                | The width of the image / video.                            |
-| height        | integer  | If image or video type                | The height of the image / video.                           |
-| resolution    | integer  | If image type                         | The resolution of the image.                               |
-| duration      | double   | If audio or video type                | The duration of the audio / video.                         |
-| metadata      | object[] |                                       | Additional metadata as key/value pairs.                    |
-| _label_       | string   | Always                                |                                                            |
-| _value_       | string   | Always                                |                                                            |
-| original      | object   | If file type either this or access    | Data about the original file.                              |
-| _uri_         | string   | If file type either this or access    | Relative path to the original file.                        |
-| _puid_        | string   |                                       | PRONOM identifier of the original file.                    |
-| access        | object   | If file type either this or access    | Data about the access copy of the file.                    |
-| _uri_         | string   | If file type either this or access    | Relative path to the access file.                          |
-| _puid_        | string   |                                       | PRONOM identifier of the access file.                      |
+| Field         | Type     | Required                                    | Description                                                | 
+|---------------|----------|---------------------------------------------|------------------------------------------------------------|
+| id            | string   | Always                                      | The identifier of the item.                                |
+| parent_id     | string   | If file type, range type or not root folder | The identifier of the parent item (creates a hierarchy).   |
+| parent_ids    | string[] | If file type, range type or not root folder | The path of all items identifiers all the way to the root. |
+| range_ids     | string[] | If file type                                | All range item identifiers.                                |
+| collection_id | string   | Always                                      | The identifier of the root item or root folder item.       |
+| metadata_id   | string   | If item contains descriptive metadata       | The identifier of the descriptive metadata used.           |
+| type          | string   | Always                                      | One of the item types described above.                     |
+| formats       | string[] |                                             | Categorization of formats.                                 |
+| label         | string   | Always                                      | The label of the item.                                     |
+| description   | string   |                                             | The description of the item.                               |
+| authors       | object[] |                                             | All authors of the item.                                   |
+| _type_        | string   | Always                                      |                                                            |
+| _name_        | string   | Always                                      |                                                            |
+| dates         | string[] |                                             | All dates of the item.                                     |
+| physical      | string   |                                             | Physical information about the item.                       |
+| size          | integer  | If file type                                | The file size.                                             |
+| order         | integer  |                                             | A number to determine the order of all child items.        |
+| created_at    | date     | If file or folder type                      | The date of file creation.                                 |
+| width         | integer  | If image or video type                      | The width of the image / video.                            |
+| height        | integer  | If image or video type                      | The height of the image / video.                           |
+| resolution    | integer  | If image type                               | The resolution of the image.                               |
+| duration      | double   | If audio or video type                      | The duration of the audio / video.                         |
+| metadata      | object[] |                                             | Additional metadata as key/value pairs.                    |
+| _label_       | string   | Always                                      |                                                            |
+| _value_       | string   | Always                                      |                                                            |
+| original      | object   | If file type either this or access          | Data about the original file.                              |
+| _uri_         | string   | If file type either this or access          | Relative path to the original file.                        |
+| _puid_        | string   |                                             | PRONOM identifier of the original file.                    |
+| access        | object   | If file type either this or access          | Data about the access copy of the file.                    |
+| _uri_         | string   | If file type either this or access          | Relative path to the access file.                          |
+| _puid_        | string   |                                             | PRONOM identifier of the access file.                      |
 
 ### Texts
 

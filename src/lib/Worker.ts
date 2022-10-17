@@ -1,8 +1,8 @@
-import {promisify} from 'util';
 import {RedisClientType} from 'redis';
 
 import config from './Config.js';
 import logger from './Logger.js';
+import {sleep} from './Promisified.js';
 import getEsClient from './ElasticSearch.js';
 import {allServices, workersRunning} from './Service.js';
 import registerGracefulShutdownHandler from './GracefulShutdown.js';
@@ -11,7 +11,6 @@ import {getPersistentClient, createNewPersistentClient} from './Redis.js';
 type WorkerStatus = { waiting: RedisMessage<any>[], working: RedisMessage<any>[] };
 type WorkerStatusType = { type: string } & WorkerStatus;
 
-const sleep = promisify(setTimeout);
 let shutdown = false;
 
 interface RedisMessage<T> {

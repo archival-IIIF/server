@@ -1,10 +1,9 @@
 import Router from '@koa/router';
 import {Context, DefaultState} from 'koa';
 
-import * as fs from 'fs';
-import * as path from 'path';
 import mime from 'mime-types';
-import {promisify} from 'util';
+import {basename} from 'path';
+import {createReadStream, existsSync, Stats} from 'fs';
 
 import config from '../lib/Config.js';
 import logger from '../lib/Logger.js';
@@ -12,11 +11,10 @@ import HttpError from '../lib/HttpError.js';
 import getPronomInfo from '../lib/Pronom.js';
 import derivatives from '../lib/Derivative.js';
 import {ExtendedContext} from '../lib/Koa.js';
+import {statAsync} from '../lib/Promisified.js';
 import {AccessState, hasAccess, hasAdminAccess} from '../lib/Security.js';
-import {determineItem, getFullPath, getPronom, getAvailableType, hasType, getFullDerivativePath} from '../lib/Item.js';
 import {getText, getFullPath as getFullTextPath} from '../lib/Text.js';
-
-const statAsync = promisify(fs.stat);
+import {determineItem, getFullPath, getPronom, getAvailableType, hasType, getFullDerivativePath} from '../lib/Item.js';
 
 export const router = new Router<DefaultState, ExtendedContext>({prefix: '/file'});
 
@@ -65,7 +63,7 @@ router.get('/:id/:type(original|access)?', async ctx => {
             throw new HttpError(404, `No file found with the id ${ctx.params.id}`);
 
         const fullPath = getFullTextPath(text);
-        const name = path.basename(fullPath);
+        const name = basename(fullPath);
         const stat = await statAsync(fullPath);
 
         ctx.set('Content-Type', text.source === 'alto' ? 'application/xml' : 'text/plain');
@@ -98,7 +96,7 @@ router.get('/:id/:type(original|access)?', async ctx => {
         throw new HttpError(404, `No file found for id ${ctx.params.id} and type ${type}`);
 
     const pronom = getPronom(item, type);
-    const name = path.basename(fullPath);
+    const name = basename(fullPath);
     const pronomInfo = getPronomInfo(pronom);
     const stat = await statAsync(fullPath);
     const contentType = (pronomInfo && pronomInfo.mime) ? pronomInfo.mime : mime.contentType(name);
@@ -138,7 +136,7 @@ router.get('/:id/:derivative', async ctx => {
         throw new HttpError(401, 'Access denied');
 
     const fullPath = getFullDerivativePath(item, info);
-    if (!fs.existsSync(fullPath))
+    if (!existsSync(fullPath))
         throw new HttpError(404, `No derivative found for id ${ctx.params.id} of type ${ctx.params.derivative}`);
 
     const stat = await statAsync(fullPath);
@@ -151,12 +149,12 @@ router.get('/:id/:derivative', async ctx => {
     logger.info(`Sending a derivative with id ${ctx.params.id} of type ${ctx.params.derivative}`);
 });
 
-function setBody(ctx: Context, stat: fs.Stats, fullPath: string) {
+function setBody(ctx: Context, stat: Stats, fullPath: string) {
     const options: { start?: number, end?: number } = {};
     if (ctx.state.start && ctx.state.end &&
         (ctx.state.start < stat.size) && ((ctx.state.end < stat.size) || !isFinite(ctx.state.end))) {
         options.start = ctx.state.start;
         options.end = ctx.state.end;
     }
-    ctx.body = fs.createReadStream(fullPath, options);
+    ctx.body = createReadStream(fullPath, options);
 }

@@ -1,10 +1,10 @@
 import derivatives from '../lib/Derivative.js';
 import {getChildItemsByType} from '../lib/Item.js';
-import {DerivativeParams} from '../lib/ServiceTypes.js';
+import {CollectionIdParams} from '../lib/ServiceTypes.js';
 
 import {createDerivativeWithCommand} from './util/derivative_creation.js';
 
-export default async function processAudioItems({collectionId}: DerivativeParams): Promise<void> {
+export default async function processAudioItems({collectionId}: CollectionIdParams): Promise<void> {
     try {
         const items = await getChildItemsByType(collectionId, 'audio');
         for (const item of items) {

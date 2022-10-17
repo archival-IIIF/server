@@ -1,16 +1,13 @@
-import * as fs from 'fs';
-import {promisify} from 'util';
-import {join, extname} from 'path';
 import iconv from 'iconv-lite';
+import {join, extname} from 'path';
 
 import config from '../lib/Config.js';
 import {TextParams} from '../lib/ServiceTypes.js';
+import {readFileAsync} from '../lib/Promisified.js';
 import {indexTexts, deleteTexts} from '../lib/Text.js';
 
 import fixCommonUTF8Problems from './util/unicode_debug_mapping.js';
 import {getTextFromStructure, readAlto, TextStructure} from '../lib/TextStructure.js';
-
-const readFileAsync = promisify(fs.readFile);
 
 export default async function processText({collectionId, items}: TextParams) {
     try {

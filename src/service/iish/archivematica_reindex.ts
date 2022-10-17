@@ -3,7 +3,7 @@ import getClient from '../../lib/ElasticSearch.js';
 import {runTask} from '../../lib/Task.js';
 import {Item} from '../../lib/ItemInterfaces.js';
 import {getFullPath, getItemsSearch} from '../../lib/Item.js';
-import {IndexParams, ReindexParams} from '../../lib/ServiceTypes.js';
+import {CollectionPathParams, ReindexParams} from '../../lib/ServiceTypes.js';
 
 export default async function processReindex({collectionIds, query}: ReindexParams): Promise<void> {
     if (query) {
@@ -14,14 +14,14 @@ export default async function processReindex({collectionIds, query}: ReindexPara
         });
 
         for await (const item of scrollItems)
-            runTask<IndexParams>('index', {collectionPath: getPathForItem(item)});
+            runTask<CollectionPathParams>('index', {collectionPath: getPathForItem(item)});
     }
 
     if (collectionIds) {
         for (const collectionId of collectionIds) {
             const items = await getItemsSearch(`parent_id:"${collectionId}"`, 1);
             for (const item of items)
-                runTask<IndexParams>('index', {collectionPath: getPathForItem(item)});
+                runTask<CollectionPathParams>('index', {collectionPath: getPathForItem(item)});
         }
     }
 }

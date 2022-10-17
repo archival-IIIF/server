@@ -1,16 +1,11 @@
 import {dirname} from 'path';
-import {promisify} from 'util';
-import {writeFile} from 'fs';
 import {ensureDir} from 'fs-extra';
-import {exec} from 'child_process';
 
 import logger from '../../lib/Logger.js';
 import {Item} from '../../lib/ItemInterfaces.js';
 import {DerivativeType} from '../../lib/Derivative.js';
+import {execAsync, writeFileAsync} from '../../lib/Promisified.js';
 import {getFullPath, getFullDerivativePath} from '../../lib/Item.js';
-
-const execAsync = promisify(exec);
-const writeFileAsync = promisify(writeFile);
 
 export async function createDerivativeWithCommand(item: Item, derivative: DerivativeType,
                                                   getCommand: (input: string, output: string) => string): Promise<void> {

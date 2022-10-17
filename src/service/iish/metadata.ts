@@ -14,19 +14,19 @@ const ns = {
     'marc': 'http://www.loc.gov/MARC21/slim'
 };
 
-export default async function processMetadata({oaiIdentifier, rootId, collectionId}: MetadataParams): Promise<void> {
+export default async function processMetadata({metadataId, rootId, collectionId}: MetadataParams): Promise<void> {
     if (!config.metadataOaiUrl || !config.metadataSrwUrl)
         throw new Error('Cannot process metadata, as there is no OAI or SRW URL configured!');
 
     try {
-        if (!oaiIdentifier && rootId)
-            oaiIdentifier = `${EAD.EAD_OAI_PREFIX}${rootId}`;
+        if (!metadataId && rootId)
+            metadataId = `${EAD.EAD_OAI_PREFIX}${rootId}`;
 
-        if (!oaiIdentifier && collectionId)
-            oaiIdentifier = await getOAIIdentifier(collectionId);
+        if (!metadataId && collectionId)
+            metadataId = await getOAIIdentifier(collectionId);
 
-        if (oaiIdentifier)
-            await updateWithIdentifier(oaiIdentifier, collectionId);
+        if (metadataId)
+            await updateWithIdentifier(metadataId, collectionId);
     }
     catch (e: any) {
         const err = new Error(`Failed to process the metadata for ${collectionId}: ${e.message}`);
@@ -97,8 +97,7 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
             const collectionIds = MarcXML.getCollectionIds(xmlParsed);
             for (const colId of await getCollectionIdsIndexed(collectionIds))
                 collections.add(colId);
-        }
-        else {
+        } else {
             const collectionId = oaiIdentifier.replace(EAD.EAD_OAI_PREFIX, '');
             for (const colId of await getCollectionIdsIndexed(EAD.getRootId(collectionId)))
                 collections.add(colId);
@@ -138,8 +137,7 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
                     access[mdItem.id] = mdItem.iish.access;
                 }
             }
-        }
-        else if (mdItem.iish && mdItem.parent_ids?.length > 0 && mdItem.parent_ids[mdItem.parent_ids.length - 1] in access)
+        } else if (mdItem.iish && mdItem.parent_ids?.length > 0 && mdItem.parent_ids[mdItem.parent_ids.length - 1] in access)
             mdItem.iish.access = access[mdItem.parent_ids[mdItem.parent_ids.length - 1]];
     }
 
@@ -165,6 +163,7 @@ export function updateEAD(xml: Document, oaiIdentifier: string, collectionId: st
             collection_id: id,
             metadata_id: oaiIdentifier,
             formats: md.formats,
+            behavior: md.formats.includes('book') ? 'paged' : 'individuals',
             label: md.title,
             metadata: []
         };

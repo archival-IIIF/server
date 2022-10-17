@@ -1,8 +1,8 @@
 import config from '../../lib/Config.js';
 import {Item} from '../../lib/ItemInterfaces.js';
 import {
-    IIIFMetadataParams,
-    IIIFMetadata,
+    ItemParams,
+    BasicIIIFMetadata,
     IIIFMetadataHomepage,
     IIIFMetadataPairs,
     IIIFMetadataSeeAlso
@@ -11,8 +11,9 @@ import {
 import {EAD_OAI_PREFIX} from './util/EAD.js';
 import {MARC_OAI_PREFIX} from './util/MARCXML.js';
 
-export default async function getIIIFMetadata({item}: IIIFMetadataParams): Promise<IIIFMetadata> {
+export default async function getBasicIIIFMetadata({item}: ItemParams): Promise<BasicIIIFMetadata> {
     return {
+        behavior: item.formats.includes('book') ? 'paged' : 'individuals',
         homepage: getHomepage(item),
         metadata: getMetadata(item),
         seeAlso: getSeeAlso(item)

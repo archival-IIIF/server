@@ -13,6 +13,7 @@ const annoType = (type?: string, language?: string | null) => type ? '/' + type 
 export const collectionUri = (id: string) => `${prefixPresentationUrl}/collection/${id}`;
 export const manifestUri = (id: string) => `${prefixPresentationUrl}/${id}/manifest`;
 export const canvasUri = (id: string, page: number) => `${prefixPresentationUrl}/${id}/canvas/${page}`;
+export const rangeUri = (id: string, range: number) => `${prefixPresentationUrl}/${id}/range/${range}`;
 export const annoPageUri = (id: string, childId: string) => `${prefixPresentationUrl}/${id}/annopage/${childId}`;
 export const annoCollUri = (id: string, type: string, language?: string | null) =>
     `${prefixPresentationUrl}/annocoll/${id}${annoType(type, language)}`;

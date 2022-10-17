@@ -2,16 +2,16 @@ import {existsSync} from 'fs';
 
 import {Text} from '../lib/Text.js';
 import config from '../lib/Config.js';
-import derivatives from '../lib/Derivative.js';
 import {runLib} from '../lib/Task.js';
-import getPronomInfo, {PronomInfo} from '../lib/Pronom.js';
+import getPronomInfo from '../lib/Pronom.js';
+import derivatives from '../lib/Derivative.js';
 import {getFullDerivativePath, getItem} from '../lib/Item.js';
-import {IIIFMetadataParams, IIIFMetadata} from '../lib/ServiceTypes.js';
+import {ItemParams, BasicIIIFMetadata, CanvasIIIFMetadata} from '../lib/ServiceTypes.js';
 import {getAuthTexts, requiresAuthentication} from '../lib/Security.js';
-import {Item, FileItem, ImageItem, RootItem, FolderItem} from '../lib/ItemInterfaces.js';
+import {Item, FileItem, ImageItem, RootItem, FolderItem, RangeItem} from '../lib/ItemInterfaces.js';
 
 import {
-    Base, Manifest, Collection, AuthService,
+    Base, Manifest, Collection, AuthService, Range,
     Canvas, Resource, Service, Annotation, AnnotationPage
 } from '@archival-iiif/presentation-builder/v3';
 
@@ -20,6 +20,7 @@ import {
     annoUri,
     authUri,
     canvasUri,
+    rangeUri,
     collectionUri,
     derivativeUri,
     fileUri,
@@ -27,6 +28,8 @@ import {
     imageUri,
     manifestUri
 } from './UriHelper.js';
+
+type HierarchyType = { range: RangeItem, children: HierarchyType[], items: Item[] };
 
 export function createMinimalCollection(item: Item, label?: string): Collection {
     return new Collection(collectionUri(item.id), label || item.label);
@@ -62,7 +65,13 @@ export function createAnnotationPage(item: Item, text: Text): AnnotationPage {
 }
 
 export async function createCanvas(item: FileItem, parentItem: Item, setAuth: boolean = false): Promise<Canvas> {
-    const canvas = new Canvas(canvasUri(parentItem.id, item.order || 0), item.width, item.height, item.duration);
+    const canvasInfo = await runLib<ItemParams, CanvasIIIFMetadata>('canvas-iiif-metadata', {item});
+
+    const canvas = new Canvas(canvasUri(parentItem.id, item.order || 0), canvasInfo.label,
+        item.width, item.height, item.duration);
+    if (canvasInfo.behavior)
+        canvas.setBehavior(canvasInfo.behavior);
+
     const annoPage = new AnnotationPage(annoPageUri(parentItem.id, item.id));
     canvas.setItems(annoPage);
 
@@ -74,6 +83,67 @@ export async function createCanvas(item: FileItem, parentItem: Item, setAuth: bo
     addDerivatives(annotation, item);
 
     return canvas;
+}
+
+export async function addStructures(manifest: Manifest, parentItem: Item,
+                                    items: Item[], ranges: RangeItem[]): Promise<void> {
+    const hierarchyById: { [id: string]: HierarchyType } = {};
+    const hierarchy: HierarchyType[] = items
+        .flatMap(item => item.range_ids)
+        .reduce<HierarchyType[]>((acc, id) => {
+            let range = ranges.find(r => r.id === id);
+            if (!(id in hierarchyById) && range) {
+                let addToAcc = true;
+                let toAdd: HierarchyType = {
+                    range,
+                    children: [],
+                    items: items.filter(item => item.range_ids.includes(id))
+                };
+
+                hierarchyById[id] = toAdd;
+                range = ranges.find(r => r.id === range?.parent_id);
+                while (range) {
+                    const curHierarchy = range.id in hierarchyById
+                        ? hierarchyById[range.id]
+                        : {range, children: [], items: []};
+                    curHierarchy.children.push(toAdd);
+
+                    if (range.id in hierarchyById)
+                        addToAcc = false;
+                    else
+                        hierarchyById[range.id] = curHierarchy;
+
+                    range = ranges.find(r => r.id === range?.parent_id);
+                    toAdd = curHierarchy;
+                }
+
+                if (addToAcc)
+                    acc.push(toAdd);
+            }
+            return acc;
+        }, []);
+
+    let i = 1;
+    const createRangeId = () => rangeUri(parentItem.id, i++);
+
+    manifest.setStructures(await Promise.all(hierarchy.map(curLevel =>
+        createRange(curLevel, parentItem.id, createRangeId))));
+}
+
+async function createRange(curLevel: HierarchyType, rootId: string, createRangeId: () => string): Promise<Range> {
+    const range = new Range(createRangeId(), curLevel.range.label);
+
+    const children = await Promise.all(curLevel.children.map(childLevel =>
+        createRange(childLevel, rootId, createRangeId)));
+    const canvases = curLevel.items.map(item => new Canvas(canvasUri(rootId, item.order || 0)));
+    range.setItems([...children, ...canvases]);
+
+    if (curLevel.range.description)
+        range.setSummary(curLevel.range.description);
+
+    await addMetadata(range, curLevel.range);
+
+    return range;
 }
 
 export async function getResource(item: FileItem, setAuth: boolean = false): Promise<Resource> {
@@ -96,10 +166,16 @@ export async function addThumbnail(base: Base, item: RootItem | FileItem): Promi
     base.setThumbnail(resource);
 }
 
-export async function addMetadata(base: Base, root: Item): Promise<void> {
+export async function addMetadata(base: Base, root: Item, md?: BasicIIIFMetadata): Promise<void> {
     if (root.authors.length > 0) {
-        const authors: { [type: string]: string[] } = root.authors.reduce((acc: { [type: string]: string[] }, author) => {
-            acc[author.type] ? acc[author.type].push(author.name) : acc[author.type] = [author.name];
+        const authors = root.authors.reduce((acc: { [type: string]: string[] }, author) => {
+            if (!acc[author.type])
+                acc[author.type] = [];
+
+            Array.isArray(author.name)
+                ? acc[author.type].push(...author.name)
+                : acc[author.type].push(author.name);
+
             return acc;
         }, {});
 
@@ -108,7 +184,7 @@ export async function addMetadata(base: Base, root: Item): Promise<void> {
     }
 
     if (root.dates.length > 0)
-        base.setMetadata('Dates', root.dates);
+        base.setMetadata(root.dates.length > 1 ? 'Dates' : 'Date', root.dates);
 
     if (root.physical)
         base.setMetadata('Physical description', String(root.physical));
@@ -119,16 +195,20 @@ export async function addMetadata(base: Base, root: Item): Promise<void> {
     for (const md of root.metadata)
         base.setMetadata(md.label, md.value);
 
-    const md = await runLib<IIIFMetadataParams, IIIFMetadata>('iiif-metadata', {item: root});
-    if (md.homepage && md.homepage.length > 0)
-        base.setHomepage(md.homepage);
+    if (md) {
+        if (md.rights)
+            base.setRights(md.rights);
 
-    if (md.metadata && md.metadata.length > 0)
-        for (const metadata of md.metadata)
-            base.setMetadata(metadata.label, metadata.value);
+        if (md.homepage && md.homepage.length > 0)
+            base.setHomepage(md.homepage);
 
-    if (md.seeAlso && md.seeAlso.length > 0)
-        base.setSeeAlso(md.seeAlso);
+        if (md.metadata && md.metadata.length > 0)
+            for (const metadata of md.metadata)
+                base.setMetadata(metadata.label, metadata.value);
+
+        if (md.seeAlso && md.seeAlso.length > 0)
+            base.setSeeAlso(md.seeAlso);
+    }
 }
 
 export function getType(type: string): string {

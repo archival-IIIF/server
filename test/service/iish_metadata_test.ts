@@ -1,10 +1,9 @@
 import {join} from 'path';
-import {readFile} from 'fs';
-import {promisify} from 'util';
-
 import {parseXml} from 'libxmljs2';
 import nock from 'nock';
 import {expect} from 'chai';
+
+import {readFileAsync} from '../../src/lib/Promisified.js';
 
 import {
     getOAIIdentifier,
@@ -13,7 +12,6 @@ import {
 } from '../../src/service/iish/metadata.js';
 
 const testRootDirectory = './test/service';
-const readFileAsync = promisify(readFile);
 
 describe('iish_metadata', () => {
     describe('#getOAIIdentifier()', () => {

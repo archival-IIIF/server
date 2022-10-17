@@ -3,14 +3,17 @@ import {ResponseError} from '@elastic/transport/lib/errors.js';
 
 import logger from './Logger.js';
 import config from './Config.js';
+import {runLib} from './Task.js';
 import getClient from './ElasticSearch.js';
 import {DerivativeType} from './Derivative.js';
-import {Item, MinimalItem} from './ItemInterfaces.js';
+import {RootItemChildItemsParams} from './ServiceTypes.js';
+import {Item, MinimalItem, RangeItem, RootItem} from './ItemInterfaces.js';
 
 export function createItem(obj: MinimalItem): Item {
     return {
         parent_id: null,
         parent_ids: [],
+        range_ids: [],
         metadata_id: null,
         type: 'metadata',
         formats: [],
@@ -107,11 +110,10 @@ export async function determineItem(id: string): Promise<Item | null> {
     const item = await getItem(id);
     if (item && item.type === 'root') {
         const children = await getChildItems(item);
-
-        const page = item.formats.includes('archive') ? 2 : 1;
-        const firstChild = children.find(child => child.order === page);
-
-        return firstChild || children[0];
+        return runLib<RootItemChildItemsParams, Item>('root-file-item', {
+            rootItem: item as RootItem,
+            childItems: children
+        });
     }
     return item;
 }
@@ -119,9 +121,6 @@ export async function determineItem(id: string): Promise<Item | null> {
 export async function getChildItems(item: Item): Promise<Item[]> {
     if (item._childItems === undefined) {
         const items = await withItems(getItems(`parent_id:"${item.id}"`));
-        items.sort((cA, cB) =>
-            (cA.order !== null && cB.order !== null && cA.order < cB.order) ? -1 : 1);
-
         for (const childItem of items) {
             childItem._parentItem = item;
             if (item.id === item.collection_id && item.id === childItem.collection_id)
@@ -136,6 +135,10 @@ export async function getChildItems(item: Item): Promise<Item[]> {
 
 export async function getChildItemsByType(id: string, type: string): Promise<Item[]> {
     return withItems(getItems(`parent_id:"${id}" AND type:"${type}"`));
+}
+
+export async function getRangeItemsByCollectionId(id: string): Promise<RangeItem[]> {
+    return (await withItems(getItems(`collection_id:"${id}" AND type:"range"`))) as RangeItem[];
 }
 
 export async function getRootItemByCollectionId(item: Item): Promise<Item | null> {
@@ -175,7 +178,7 @@ function getItems(q: string, sort = true): AsyncIterable<Item> {
         return getClient().helpers.scrollDocuments<Item>({
             index: config.elasticSearchIndexItems,
             size: 10_000,
-            sort: sort ? 'label.raw:asc' : undefined,
+            sort: sort !== undefined ? ['order', 'label.raw'] : undefined,
             q
         });
     }

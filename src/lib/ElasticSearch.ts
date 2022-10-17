@@ -77,6 +77,9 @@ export function setElasticSearchClient(client: Client): void {
                             parent_ids: {
                                 type: 'keyword'
                             },
+                            range_ids: {
+                                type: 'keyword'
+                            },
                             collection_id: {
                                 type: 'keyword'
                             },

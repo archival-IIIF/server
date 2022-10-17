@@ -2,14 +2,14 @@ import config from '../lib/Config.js';
 import derivatives from '../lib/Derivative.js';
 import {VideoItem} from '../lib/ItemInterfaces.js';
 import {getChildItemsByType} from '../lib/Item.js';
-import {DerivativeParams} from '../lib/ServiceTypes.js';
+import {CollectionIdParams} from '../lib/ServiceTypes.js';
 
 import {createDerivativeWithCommand, createDerivativeWithBuffer} from './util/derivative_creation.js';
 import {imageResourceUri} from '../builder/UriHelper.js';
 
 const timestamp = (seconds: number) => new Date(seconds * 1000).toISOString().substring(11, 23);
 
-export default async function processVideoItems({collectionId}: DerivativeParams): Promise<void> {
+export default async function processVideoItems({collectionId}: CollectionIdParams): Promise<void> {
     try {
         const items = await getChildItemsByType(collectionId, 'video');
         for (const item of items) {

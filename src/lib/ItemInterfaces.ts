@@ -1,5 +1,10 @@
 export type FileType = 'file' | 'pdf' | 'image' | 'audio' | 'video';
 
+export interface Metadata {
+    label: string;
+    value: string | string[];
+}
+
 export interface MinimalItem {
     id: string;
     collection_id: string;
@@ -12,13 +17,14 @@ export interface Item {
     id: string;
     parent_id: string | null;
     parent_ids: string[];
+    range_ids: string[];
     collection_id: string;
     metadata_id: string | null;
     type: string;
     formats: string[];
     label: string;
     description: string | null;
-    authors: { type: string; name: string; }[];
+    authors: { type: string; name: string | string[]; }[];
     dates: string[];
     physical: string | null;
     size: number | null;
@@ -28,7 +34,7 @@ export interface Item {
     height: number | null;
     resolution: number | null;
     duration: number | null;
-    metadata: { label: string; value: string | string[]; }[];
+    metadata: Metadata[];
     original: {
         uri: string | null,
         puid: string | null
@@ -44,6 +50,25 @@ export interface Item {
 export interface MetadataItem extends Item {
     metadata_id: string;
     type: 'metadata';
+    size: null;
+    order: null,
+    created_at: null;
+    width: null;
+    height: null;
+    resolution: null;
+    duration: null;
+    original: {
+        uri: null,
+        puid: null
+    },
+    access: {
+        uri: null,
+        puid: null
+    }
+}
+
+export interface RangeItem extends Item {
+    type: 'range';
     size: null;
     order: null,
     created_at: null;
