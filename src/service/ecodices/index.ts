@@ -1,15 +1,17 @@
-import {basename, parse, join} from 'path';
+import {basename, join, parse} from 'path';
 
 import config from '../../lib/Config.js';
 import logger from '../../lib/Logger.js';
 import {runTask} from '../../lib/Task.js';
-import {evictCache} from '../../lib/Cache.js';
-import {CollectionPathParams, MetadataParams} from '../../lib/ServiceTypes.js';
+import {createItem, indexItems} from '../../lib/Item.js';
 import {ImageItem, Item, RangeItem} from '../../lib/ItemInterfaces.js';
-import {createItem, deleteItems, indexItems} from '../../lib/Item.js';
 import {readdirAsync, sizeOf, statAsync} from '../../lib/Promisified.js';
+import {CollectionPathParams, MetadataParams} from '../../lib/ServiceTypes.js';
 
 import {parseLabel} from './util/fileinfo.js'
+
+import {cleanup} from '../util/index_utils.js';
+import {processCollection} from '../util/archivematica.js';
 import {pronomByExtension} from '../util/archivematica_pronom_data.js';
 
 interface CollectionProcessingResult {
@@ -18,9 +20,9 @@ interface CollectionProcessingResult {
     rangeItems: Item[]
 }
 
-export default async function processFolder({collectionPath}: CollectionPathParams): Promise<void> {
+export default async function processFolderDemo({collectionPath}: CollectionPathParams): Promise<void> {
     try {
-        const {rootItem, childItems, rangeItems} = await processCollection(collectionPath);
+        const {rootItem, childItems, rangeItems} = await processCollectionDemo(collectionPath);
 
         logger.debug(`Collection ${collectionPath} processed; running cleanup and index`);
 
@@ -38,19 +40,14 @@ export default async function processFolder({collectionPath}: CollectionPathPara
     }
 }
 
-async function processCollection(collectionPath: string): Promise<CollectionProcessingResult> {
+async function processCollectionDemo(collectionPath: string): Promise<CollectionProcessingResult> {
     const relativeRootPath = collectionPath
         .replace(`${config.dataRootPath}/${config.collectionsRelativePath}/`, '');
     const collectionId = basename(collectionPath);
 
     const childItems: ImageItem[] = [], rangeItems: RangeItem[] = [];
     const files = await readdirAsync(collectionPath);
-    await Promise.all(files.map(file => processFile(collectionId, relativeRootPath, file, childItems, rangeItems)));
-
-    let i = 0;
-    childItems.sort(sortImageItems);
-    //childItems.forEach(item => item.order = parseLabel(item.label).isBonus ? i : ++i);
-    childItems.forEach(item => item.order = ++i);
+    await Promise.all(files.map(file => processFileDemo(collectionId, relativeRootPath, file, childItems, rangeItems)));
 
     const rootItem = createItem({
         id: collectionId,
@@ -62,11 +59,10 @@ async function processCollection(collectionPath: string): Promise<CollectionProc
     return {rootItem, childItems, rangeItems};
 }
 
-async function processFile(collectionId: string, relativeRootPath: string, file: string,
-                           childItems: ImageItem[], rangeItems: RangeItem[]): Promise<void> {
+async function processFileDemo(collectionId: string, relativeRootPath: string, file: string,
+                               childItems: ImageItem[], rangeItems: RangeItem[]): Promise<void> {
     const filename = basename(file);
     const parsedFileName = parse(filename);
-    const label = parsedFileName.name.replace(collectionId + '_', '').trim();
     const path = join(config.dataRootPath, config.collectionsRelativePath, relativeRootPath, file);
 
     const stats = await statAsync(path);
@@ -74,15 +70,13 @@ async function processFile(collectionId: string, relativeRootPath: string, file:
     if (!dimensions || !dimensions.width || !dimensions.height)
         throw new Error(`Couldn't determine the image dimensions of ${file}`);
 
-    const fileInfo = parseLabel(label);
-
     const childItem = createItem({
-        id: parsedFileName.name,
+        id: filename,
         parent_id: collectionId,
         parent_ids: [collectionId],
         collection_id: collectionId,
         type: 'image',
-        label: label,
+        label: filename,
         size: stats.size,
         order: 0,
         created_at: stats.ctime,
@@ -96,6 +90,49 @@ async function processFile(collectionId: string, relativeRootPath: string, file:
     }) as ImageItem;
     childItems.push(childItem);
 
+    processFile(collectionId, childItem, rangeItems);
+}
+
+export async function processFolder({collectionPath}: CollectionPathParams): Promise<void> {
+    try {
+        const {rootItem, childItems} = await processCollection(collectionPath, {type: 'root'});
+        const rangeItems = processItems(rootItem.collection_id, childItems as ImageItem[]);
+
+        logger.debug(`Collection ${collectionPath} processed; running cleanup and index`);
+
+        await cleanup(rootItem.id);
+        await indexItems([rootItem, ...childItems, ...rangeItems]);
+
+        logger.debug(`Collection ${collectionPath} indexed; running metadata index`);
+
+        runTask<MetadataParams>('metadata', {collectionId: rootItem.id});
+    }
+    catch (e: any) {
+        const err = new Error(`Failed to index the collection ${collectionPath}: ${e.message}`);
+        err.stack = e.stack;
+        throw err;
+    }
+}
+
+function processItems(collectionId: string, childItems: ImageItem[]): RangeItem[] {
+    const rangeItems: RangeItem[] = [];
+    for (const childItem of childItems)
+        processFile(collectionId, childItem, rangeItems);
+
+    let i = 0;
+    childItems.sort(sortImageItems);
+    childItems.forEach(item => item.order = ++i);
+
+    return rangeItems;
+}
+
+function processFile(collectionId: string, childItem: ImageItem, rangeItems: RangeItem[]): void {
+    const filename = childItem.label;
+    const parsedFileName = parse(filename);
+    const label = parsedFileName.name.replace(collectionId + '_', '').trim();
+    childItem.label = label;
+
+    const fileInfo = parseLabel(label);
     if (fileInfo.type)
         createRangeItem(childItem, rangeItems, null, collectionId, `${collectionId}_${fileInfo.type.code}_Range`, fileInfo.type.name);
 
@@ -108,14 +145,6 @@ async function processFile(collectionId: string, relativeRootPath: string, file:
         else if (fileInfo.isBackEndPaper)
             createRangeItem(childItem, rangeItems, parentId, collectionId, `${collectionId}_BackEndPapers_Range`, 'Backend papers');
     }
-}
-
-async function cleanup(id: string): Promise<void> {
-    await Promise.all([
-        deleteItems(id),
-        evictCache('collection', id),
-        evictCache('manifest', id)
-    ]);
 }
 
 function createRangeItem(childItem: ImageItem | null, rangeItems: RangeItem[], parentRangeId: string | null,

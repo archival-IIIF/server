@@ -61,6 +61,7 @@ describe('Item', () => {
                 id: '12345',
                 parent_id: null,
                 parent_ids: [],
+                range_ids: [],
                 collection_id: '67890',
                 metadata_id: null,
                 type: 'pdf',

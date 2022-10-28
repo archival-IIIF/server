@@ -10,121 +10,124 @@ import {
     determineResolution,
     determineDpi,
     determineDuration,
-    determineEncoding
-} from '../../src/service/iish/archivematica_index.js';
+    determineEncoding, ns,
+} from '../../src/service/util/archivematica.js';
 
 const testRootDirectory = './test/service';
 const rej = (err: Error) => err;
 
-describe('iish_archivematica_index', () => {
+describe('archivematica', () => {
     describe('#processCollection()', () => {
         it('should fail for an empty collection', async () => {
-            const result = await processCollection('').then(null, rej);
+            const result = await processCollection('', {type: 'root'}).then(null, rej);
             expect(result).to.be.an('error');
         });
 
         describe('having collections with invalid METS files', () => {
             it('should fail for missing a physical structmap', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-structmap');
-                const result = await processCollection(path).then(null, rej);
+                const path = join(testRootDirectory, 'test-archivematica-collections/invalid-mets-no-structmap');
+                const result = await processCollection(path, {type: 'root'}).then(null, rej);
 
                 expect(result).to.be.an('error');
                 expect((result as Error).message).to.equal('Could not find the physical structmap in the METS file');
             });
 
             it('should fail for missing a root item', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-root-item');
-                const result = await processCollection(path).then(null, rej);
+                const path = join(testRootDirectory, 'test-archivematica-collections/invalid-mets-no-root-item');
+                const result = await processCollection(path, {type: 'root'}).then(null, rej);
 
                 expect(result).to.be.an('error');
                 expect((result as Error).message).to.equal('Could not find the premis object of the root item in the METS file');
             });
 
             it('should fail for missing the label of an item in the structmap', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-label');
-                const result = await processCollection(path).then(null, rej);
+                const path = join(testRootDirectory, 'test-archivematica-collections/invalid-mets-no-label');
+                const result = await processCollection(path, {type: 'root'}).then(null, rej);
 
                 expect(result).to.be.an('error');
                 expect((result as Error).message).to.equal('Expected to find a label for an element in the structmap');
             });
 
             it('should fail for missing a premis object for a folder', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-premis-object-folder');
-                const result = await processCollection(path).then(null, rej);
+                const path = join(testRootDirectory, 'test-archivematica-collections/invalid-mets-no-premis-object-folder');
+                const result = await processCollection(path, {type: 'folder'}).then(null, rej);
 
                 expect(result).to.be.an('error');
                 expect((result as Error).message).to.equal('No premis object found for DMD id dmdSec_2');
             });
 
             it('should fail for missing the original name of a folder', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-name-folder');
-                const result = await processCollection(path).then(null, rej);
+                const path = join(testRootDirectory, 'test-archivematica-collections/invalid-mets-no-name-folder');
+                const result = await processCollection(path, {type: 'folder'}).then(null, rej);
 
                 expect(result).to.be.an('error');
                 expect((result as Error).message).to.equal('No original name found for object with DMD id dmdSec_2');
             });
 
             it('should fail for missing the identifier of a folder', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-id-folder');
-                const result = await processCollection(path).then(null, rej);
+                const path = join(testRootDirectory, 'test-archivematica-collections/invalid-mets-no-id-folder');
+                const result = await processCollection(path, {type: 'folder'}).then(null, rej);
 
                 expect(result).to.be.an('error');
                 expect((result as Error).message).to.equal('No identifier found for object with DMD id dmdSec_2');
             });
 
             it('should fail for missing a fptr of a file', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-fptr-file');
-                const result = await processCollection(path).then(null, rej);
+                const path = join(testRootDirectory, 'test-archivematica-collections/invalid-mets-no-fptr-file');
+                const result = await processCollection(path, {type: 'folder'}).then(null, rej);
 
                 expect(result).to.be.an('error');
                 expect((result as Error).message).to.equal('Missing a fptr or file id for a file with the label test_0001.tif');
             });
 
             it('should fail for missing the original name of a file', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-name-file');
-                const result = await processCollection(path).then(null, rej);
+                const path = join(testRootDirectory, 'test-archivematica-collections/invalid-mets-no-name-file');
+                const result = await processCollection(path, {type: 'folder'}).then(null, rej);
 
                 expect(result).to.be.an('error');
                 expect((result as Error).message).to.equal('No original name found for object with file id file-2a863aca-eff6-4bb7-812f-cb797e75f793');
             });
 
             it('should fail for missing the identifier of a file', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-id-file');
-                const result = await processCollection(path).then(null, rej);
+                const path = join(testRootDirectory, 'test-archivematica-collections/invalid-mets-no-id-file');
+                const result = await processCollection(path, {type: 'folder'}).then(null, rej);
 
                 expect(result).to.be.an('error');
                 expect((result as Error).message).to.equal('No identifier found for object with file id file-2a863aca-eff6-4bb7-812f-cb797e75f793');
             });
 
             it('should fail for missing the object characteristics of a file', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-obj-chars-file');
-                const result = await processCollection(path).then(null, rej);
+                const path = join(testRootDirectory, 'test-archivematica-collections/invalid-mets-no-obj-chars-file');
+                const result = await processCollection(path, {type: 'folder'}).then(null, rej);
 
                 expect(result).to.be.an('error');
                 expect((result as Error).message).to.equal('No object characteristics found for object with file id file-2a863aca-eff6-4bb7-812f-cb797e75f793');
             });
 
             it('should fail for missing the binary of a file', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-objects-file');
-                const result = await processCollection(path).then(null, rej);
+                const path = join(testRootDirectory, 'test-archivematica-collections/invalid-mets-no-objects-file');
+                const result = await processCollection(path, {type: 'folder'}).then(null, rej);
 
                 expect(result).to.be.an('error');
                 expect((result as Error).message).to.equal('Expected to find a file starting with 2a863aca-eff6-4bb7-812f-cb797e75f793');
             });
 
             it('should fail for missing a fptr of a file for a text layer', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/invalid-mets-no-fptr-text');
-                const result = await processCollection(path).then(null, rej);
+                const path = join(testRootDirectory, 'test-archivematica-collections/invalid-mets-no-fptr-text');
+                const result = await processCollection(path, {
+                    type: 'root',
+                    isText: (label: string, parents: string[]) => parents[0] === 'transcription' || parents[0].startsWith('translation_'),
+                }).then(null, rej);
 
                 expect(result).to.be.an('error');
-                expect((result as Error).message).to.equal('Missing a fptr or file id for a file for the text layer with label test_01.txt');
+                expect((result as Error).message).to.equal('Missing a file id for a file for the text layer with label test_01.txt');
             });
         });
 
         describe('having collections resulting in valid items', () => {
             it('should return valid items for a digital born collection', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/digital-born');
-                const {rootItem, childItems, textItems} = await processCollection(path);
+                const path = join(testRootDirectory, 'test-archivematica-collections/digital-born');
+                const {rootItem, childItems, textItems} = await processCollection(path, {type: 'folder'});
 
                 expect(textItems).to.be.empty;
                 expect(rootItem).to.deep.equal(createItem({
@@ -141,344 +144,313 @@ describe('iish_archivematica_index', () => {
                         'id': '36a44e3e-d93e-4305-8df8-8ae94031c712',
                         'collection_id': 'test',
                         'label': '14 - Silly filenames'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '36a44e3e-d93e-4305-8df8-8ae94031c712',
                         'parent_ids': ['36a44e3e-d93e-4305-8df8-8ae94031c712', 'test'],
                         'type': 'file',
                         'size': 5,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/d861c189-17b6-44f4-98c1-6183365ae7b2-_.________.txt'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/d861c189-17b6-44f4-98c1-6183365ae7b2-_.________.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': 'd861c189-17b6-44f4-98c1-6183365ae7b2',
                         'collection_id': 'test',
                         'label': '*."[]:;|=,.txt'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '36a44e3e-d93e-4305-8df8-8ae94031c712',
                         'parent_ids': ['36a44e3e-d93e-4305-8df8-8ae94031c712', 'test'],
                         'type': 'pdf',
                         'size': 937592,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/cde36b27-4f35-4943-9b43-3690176f1573-s____________een_PDF.pdf'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/cde36b27-4f35-4943-9b43-3690176f1573-s____________een_PDF.pdf'),
                             'puid': 'fmt/18'
                         },
                         'id': 'cde36b27-4f35-4943-9b43-3690176f1573',
                         'collection_id': 'test',
                         'label': 's %    !  & $een PDF.pdf'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '36a44e3e-d93e-4305-8df8-8ae94031c712',
                         'parent_ids': ['36a44e3e-d93e-4305-8df8-8ae94031c712', 'test'],
                         'type': 'file',
                         'size': 6,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/b2eadb49-d49d-4840-8b58-4db5ae2cc1c0-filename_with_a___grave_accent.txt'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/b2eadb49-d49d-4840-8b58-4db5ae2cc1c0-filename_with_a___grave_accent.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': 'b2eadb49-d49d-4840-8b58-4db5ae2cc1c0',
                         'collection_id': 'test',
                         'label': 'filename with a ` grave accent.txt'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '36a44e3e-d93e-4305-8df8-8ae94031c712',
                         'parent_ids': ['36a44e3e-d93e-4305-8df8-8ae94031c712', 'test'],
                         'type': 'file',
                         'size': 394892,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/99826f9b-3557-4af1-94cf-a33908970592-Is._a_()_DOCX_file.docx'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/99826f9b-3557-4af1-94cf-a33908970592-Is._a_()_DOCX_file.docx'),
                             'puid': 'fmt/412'
                         },
                         'id': '99826f9b-3557-4af1-94cf-a33908970592',
                         'collection_id': 'test',
                         'label': 'Is. a () DOCX file.docx'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '36a44e3e-d93e-4305-8df8-8ae94031c712',
                         'parent_ids': ['36a44e3e-d93e-4305-8df8-8ae94031c712', 'test'],
                         'type': 'folder',
                         'id': '9b8cdd0e-3b4c-49f6-aa27-4d001c123939',
                         'collection_id': 'test',
                         'label': 'Is %    !  &  foldër'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '9b8cdd0e-3b4c-49f6-aa27-4d001c123939',
                         'parent_ids': ['9b8cdd0e-3b4c-49f6-aa27-4d001c123939', '36a44e3e-d93e-4305-8df8-8ae94031c712', 'test'],
                         'type': 'file',
                         'size': 12,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/5e87e233-0cbf-44e2-869b-81096ac45083-hello.txt'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/5e87e233-0cbf-44e2-869b-81096ac45083-hello.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': '5e87e233-0cbf-44e2-869b-81096ac45083',
                         'collection_id': 'test',
                         'label': 'hello.txt'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '36a44e3e-d93e-4305-8df8-8ae94031c712',
                         'parent_ids': ['36a44e3e-d93e-4305-8df8-8ae94031c712', 'test'],
                         'type': 'folder',
                         'id': '3792e009-83d0-4b65-a8a4-d6c6e717ee81',
                         'collection_id': 'test',
                         'label': 'folder with a ` grave accent'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '3792e009-83d0-4b65-a8a4-d6c6e717ee81',
                         'parent_ids': ['3792e009-83d0-4b65-a8a4-d6c6e717ee81', '36a44e3e-d93e-4305-8df8-8ae94031c712', 'test'],
                         'type': 'file',
                         'size': 6,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/e0f7fd08-aede-446c-9018-380935607146-hello.txt'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/e0f7fd08-aede-446c-9018-380935607146-hello.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': 'e0f7fd08-aede-446c-9018-380935607146',
                         'collection_id': 'test',
                         'label': 'hello.txt'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': 'test',
                         'parent_ids': ['test'],
                         'type': 'folder',
                         'id': '9fa985d4-0afb-4c97-88e6-c4d822f71b1c',
                         'collection_id': 'test',
                         'label': '01 - Foreign languages'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '9fa985d4-0afb-4c97-88e6-c4d822f71b1c',
                         'parent_ids': ['9fa985d4-0afb-4c97-88e6-c4d822f71b1c', 'test'],
                         'type': 'file',
                         'size': 31627,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/48655999-3cb5-491a-b7b7-71de271b2ced-coleccoes_digitais_afluencia.docx'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/48655999-3cb5-491a-b7b7-71de271b2ced-coleccoes_digitais_afluencia.docx'),
                             'puid': 'fmt/412'
                         },
                         'id': '48655999-3cb5-491a-b7b7-71de271b2ced',
                         'collection_id': 'test',
                         'label': 'colecções digitais afluência.docx'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '9fa985d4-0afb-4c97-88e6-c4d822f71b1c',
                         'parent_ids': ['9fa985d4-0afb-4c97-88e6-c4d822f71b1c', 'test'],
                         'type': 'file',
                         'size': 32368,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/0e3e7a54-42cb-4b95-b7c7-3103dd17e132-Pritok_tsifrovykh_kollektsii.docx'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/0e3e7a54-42cb-4b95-b7c7-3103dd17e132-Pritok_tsifrovykh_kollektsii.docx'),
                             'puid': 'fmt/412'
                         },
                         'id': '0e3e7a54-42cb-4b95-b7c7-3103dd17e132',
                         'collection_id': 'test',
                         'label': 'Приток цифровых коллекций.docx'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '9fa985d4-0afb-4c97-88e6-c4d822f71b1c',
                         'parent_ids': ['9fa985d4-0afb-4c97-88e6-c4d822f71b1c', 'test'],
                         'type': 'file',
                         'size': 33886,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/e2264454-c4b4-48b7-a1e6-10cbe4898883-antrbaah_ddijittaal_sNgrh.docx'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/e2264454-c4b4-48b7-a1e6-10cbe4898883-antrbaah_ddijittaal_sNgrh.docx'),
                             'puid': 'fmt/412'
                         },
                         'id': 'e2264454-c4b4-48b7-a1e6-10cbe4898883',
                         'collection_id': 'test',
                         'label': 'অন্তর্বাহ ডিজিটাল সংগ্রহ.docx'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '9fa985d4-0afb-4c97-88e6-c4d822f71b1c',
                         'parent_ids': ['9fa985d4-0afb-4c97-88e6-c4d822f71b1c', 'test'],
                         'type': 'file',
                         'size': 30156,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/27e5fd23-ddb4-4152-ac10-311ce53a5d5f-Liu_Ru_Shu_Zi_Guan_Cang_.docx'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/27e5fd23-ddb4-4152-ac10-311ce53a5d5f-Liu_Ru_Shu_Zi_Guan_Cang_.docx'),
                             'puid': 'fmt/412'
                         },
                         'id': '27e5fd23-ddb4-4152-ac10-311ce53a5d5f',
                         'collection_id': 'test',
                         'label': '流入數字館藏.docx'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '9fa985d4-0afb-4c97-88e6-c4d822f71b1c',
                         'parent_ids': ['9fa985d4-0afb-4c97-88e6-c4d822f71b1c', 'test'],
                         'type': 'file',
                         'size': 32764,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/cdabc053-5770-4fff-8fe7-a6db2b86bb0f-mjmw_h_hy_dyjytl_jryn.docx'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/cdabc053-5770-4fff-8fe7-a6db2b86bb0f-mjmw_h_hy_dyjytl_jryn.docx'),
                             'puid': 'fmt/412'
                         },
                         'id': 'cdabc053-5770-4fff-8fe7-a6db2b86bb0f',
                         'collection_id': 'test',
                         'label': 'مجموعه های دیجیتال جریان.docx'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': 'test',
                         'parent_ids': ['test'],
                         'type': 'folder',
                         'id': '4467a746-4f5c-4c58-9521-5e13537e4ba7',
                         'collection_id': 'test',
                         'label': '15 - Structured collection'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '4467a746-4f5c-4c58-9521-5e13537e4ba7',
                         'parent_ids': ['4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': '20a7ae4f-cf9c-4769-8db3-ef9c043d799f',
                         'collection_id': 'test',
                         'label': 'untitled folder 3'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '20a7ae4f-cf9c-4769-8db3-ef9c043d799f',
                         'parent_ids': ['20a7ae4f-cf9c-4769-8db3-ef9c043d799f', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': '0668afa1-cb11-4b5f-9d37-e1b6cad93c77',
                         'collection_id': 'test',
                         'label': 'untitled subfolder 1'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '0668afa1-cb11-4b5f-9d37-e1b6cad93c77',
                         'parent_ids': ['0668afa1-cb11-4b5f-9d37-e1b6cad93c77', '20a7ae4f-cf9c-4769-8db3-ef9c043d799f', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'file',
                         'size': 25,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/8f6d51c3-44f4-48f5-92ac-9b57a1eecd44-file_5.txt'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/8f6d51c3-44f4-48f5-92ac-9b57a1eecd44-file_5.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': '8f6d51c3-44f4-48f5-92ac-9b57a1eecd44',
                         'collection_id': 'test',
                         'label': 'file 5.txt'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '4467a746-4f5c-4c58-9521-5e13537e4ba7',
                         'parent_ids': ['4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': '326d47e5-68be-4b67-9714-e2651ae37d54',
                         'collection_id': 'test',
                         'label': 'untitled folder 2'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '326d47e5-68be-4b67-9714-e2651ae37d54',
                         'parent_ids': ['326d47e5-68be-4b67-9714-e2651ae37d54', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'file',
                         'size': 25,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/5a05c498-491b-4e7e-8c8f-082d2a048e30-file_3.txt'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/5a05c498-491b-4e7e-8c8f-082d2a048e30-file_3.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': '5a05c498-491b-4e7e-8c8f-082d2a048e30',
                         'collection_id': 'test',
                         'label': 'file 3.txt'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '326d47e5-68be-4b67-9714-e2651ae37d54',
                         'parent_ids': ['326d47e5-68be-4b67-9714-e2651ae37d54', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': '2180bd46-305a-4e44-85ee-650c5c69bd93',
                         'collection_id': 'test',
                         'label': 'untitled subfolder 1'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '2180bd46-305a-4e44-85ee-650c5c69bd93',
                         'parent_ids': ['2180bd46-305a-4e44-85ee-650c5c69bd93', '326d47e5-68be-4b67-9714-e2651ae37d54', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'file',
                         'size': 25,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/d2992c1d-47cd-4ac2-91c4-4b923dfaa009-file_4.txt'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/d2992c1d-47cd-4ac2-91c4-4b923dfaa009-file_4.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': 'd2992c1d-47cd-4ac2-91c4-4b923dfaa009',
                         'collection_id': 'test',
                         'label': 'file 4.txt'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '4467a746-4f5c-4c58-9521-5e13537e4ba7',
                         'parent_ids': ['4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': '865d980f-de1f-4531-9a10-d0e1ff63accf',
                         'collection_id': 'test',
                         'label': 'untitled folder name with more than so many characters'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '865d980f-de1f-4531-9a10-d0e1ff63accf',
                         'parent_ids': ['865d980f-de1f-4531-9a10-d0e1ff63accf', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': 'f2a2170f-185e-4b6c-a0bb-2a429117adf8',
                         'collection_id': 'test',
                         'label': 'untitled subfolder name with more than so many characters'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': 'f2a2170f-185e-4b6c-a0bb-2a429117adf8',
                         'parent_ids': ['f2a2170f-185e-4b6c-a0bb-2a429117adf8', '865d980f-de1f-4531-9a10-d0e1ff63accf', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': 'b2b5791b-74dd-4087-a4eb-668697ad4133',
                         'collection_id': 'test',
                         'label': 'untitled subsubfolder name with more than so many characters'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': 'b2b5791b-74dd-4087-a4eb-668697ad4133',
                         'parent_ids': ['b2b5791b-74dd-4087-a4eb-668697ad4133', 'f2a2170f-185e-4b6c-a0bb-2a429117adf8', '865d980f-de1f-4531-9a10-d0e1ff63accf', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': '45e69b0e-b143-4ac0-b6a1-308b564a2172',
                         'collection_id': 'test',
                         'label': 'long subsubsubfolder name with more than so many characters'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '45e69b0e-b143-4ac0-b6a1-308b564a2172',
                         'parent_ids': ['45e69b0e-b143-4ac0-b6a1-308b564a2172', 'b2b5791b-74dd-4087-a4eb-668697ad4133', 'f2a2170f-185e-4b6c-a0bb-2a429117adf8', '865d980f-de1f-4531-9a10-d0e1ff63accf', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'file',
                         'size': 25,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/76bf89e6-513c-4aee-ae0e-6a0f44642e49-long_filename_with_more_than_two_hundred_and_sixty_five_characters.txt'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/76bf89e6-513c-4aee-ae0e-6a0f44642e49-long_filename_with_more_than_two_hundred_and_sixty_five_characters.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': '76bf89e6-513c-4aee-ae0e-6a0f44642e49',
                         'collection_id': 'test',
                         'label': 'long filename with more than two hundred and sixty five characters.txt'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '865d980f-de1f-4531-9a10-d0e1ff63accf',
                         'parent_ids': ['865d980f-de1f-4531-9a10-d0e1ff63accf', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'folder',
                         'id': '4094f821-32ef-4d28-8727-43f477c49cd3',
                         'collection_id': 'test',
                         'label': 'untitled subfolder 2'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '4094f821-32ef-4d28-8727-43f477c49cd3',
                         'parent_ids': ['4094f821-32ef-4d28-8727-43f477c49cd3', '865d980f-de1f-4531-9a10-d0e1ff63accf', '4467a746-4f5c-4c58-9521-5e13537e4ba7', 'test'],
                         'type': 'file',
                         'size': 25,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/e2ac85c1-a0e1-4654-bff2-c1ed42f173d8-file_2.txt'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/e2ac85c1-a0e1-4654-bff2-c1ed42f173d8-file_2.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': 'e2ac85c1-a0e1-4654-bff2-c1ed42f173d8',
                         'collection_id': 'test',
                         'label': 'file 2.txt'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': 'test',
                         'parent_ids': ['test'],
                         'type': 'folder',
                         'id': '15a9b5bf-73a3-4cd0-a4de-9eea871c60b5',
                         'collection_id': 'test',
                         'label': '00 - General collection'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '15a9b5bf-73a3-4cd0-a4de-9eea871c60b5',
                         'parent_ids': ['15a9b5bf-73a3-4cd0-a4de-9eea871c60b5', 'test'],
                         'type': 'image',
@@ -488,74 +460,67 @@ describe('iish_archivematica_index', () => {
                         'height': 986,
                         'resolution': 300,
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/27d72523-a748-47d3-bb30-f351971d6d5b-9000004608.jpg'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/27d72523-a748-47d3-bb30-f351971d6d5b-9000004608.jpg'),
                             'puid': 'x-fmt/391'
                         },
                         'id': '27d72523-a748-47d3-bb30-f351971d6d5b',
                         'collection_id': 'test',
                         'label': '9000004608.jpg'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '15a9b5bf-73a3-4cd0-a4de-9eea871c60b5',
                         'parent_ids': ['15a9b5bf-73a3-4cd0-a4de-9eea871c60b5', 'test'],
                         'type': 'pdf',
                         'size': 937592,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/4ab2e912-77dc-49d1-8640-8db5ad1b3faf-dpctw11-01.pdf'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/4ab2e912-77dc-49d1-8640-8db5ad1b3faf-dpctw11-01.pdf'),
                             'puid': 'fmt/18'
                         },
                         'id': '4ab2e912-77dc-49d1-8640-8db5ad1b3faf',
                         'collection_id': 'test',
                         'label': 'dpctw11-01.pdf'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': 'test',
                         'parent_ids': ['test'],
                         'type': 'folder',
                         'id': '19404958-cc13-49ab-81e2-e7ef3625ac67',
                         'collection_id': 'test',
                         'label': '09 - Packed files'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '19404958-cc13-49ab-81e2-e7ef3625ac67',
                         'parent_ids': ['19404958-cc13-49ab-81e2-e7ef3625ac67', 'test'],
                         'type': 'folder',
                         'id': 'd42fbca6-ce71-4519-9f2a-2cd6eed25bc1',
                         'collection_id': 'test',
                         'label': 'Packed files 1.zip'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': 'd42fbca6-ce71-4519-9f2a-2cd6eed25bc1',
                         'parent_ids': ['d42fbca6-ce71-4519-9f2a-2cd6eed25bc1', '19404958-cc13-49ab-81e2-e7ef3625ac67', 'test'],
                         'type': 'file',
                         'size': 3788,
                         'created_at': new Date('2016-06-12T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/cfb12b25-43e7-4544-b59e-56afce43b8bb-uitleg-archivematica.txt'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/cfb12b25-43e7-4544-b59e-56afce43b8bb-uitleg-archivematica.txt'),
                             'puid': 'x-fmt/111'
                         },
                         'id': 'cfb12b25-43e7-4544-b59e-56afce43b8bb',
                         'collection_id': 'test',
                         'label': 'uitleg-archivematica.txt'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': 'test',
                         'parent_ids': ['test'],
                         'type': 'folder',
                         'id': '1b1ad765-c4a7-4632-afe4-5b8326df8a7a',
                         'collection_id': 'test',
                         'label': '02 - Audio and video'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '1b1ad765-c4a7-4632-afe4-5b8326df8a7a',
                         'parent_ids': ['1b1ad765-c4a7-4632-afe4-5b8326df8a7a', 'test'],
                         'type': 'folder',
                         'id': '08e45eca-b21c-4ba9-9efe-3b1d1d441600',
                         'collection_id': 'test',
                         'label': 'video'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '08e45eca-b21c-4ba9-9efe-3b1d1d441600',
                         'parent_ids': ['08e45eca-b21c-4ba9-9efe-3b1d1d441600', '1b1ad765-c4a7-4632-afe4-5b8326df8a7a', 'test'],
                         'type': 'video',
@@ -565,14 +530,13 @@ describe('iish_archivematica_index', () => {
                         'height': 576,
                         'duration': 29.376,
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/2826689d-bab9-49d9-9e96-cfe5a44a4937-F113.mp4'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/2826689d-bab9-49d9-9e96-cfe5a44a4937-F113.mp4'),
                             'puid': 'fmt/199'
                         },
                         'id': '2826689d-bab9-49d9-9e96-cfe5a44a4937',
                         'collection_id': 'test',
                         'label': 'F113.mp4'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '08e45eca-b21c-4ba9-9efe-3b1d1d441600',
                         'parent_ids': ['08e45eca-b21c-4ba9-9efe-3b1d1d441600', '1b1ad765-c4a7-4632-afe4-5b8326df8a7a', 'test'],
                         'type': 'video',
@@ -582,26 +546,23 @@ describe('iish_archivematica_index', () => {
                         'height': 576,
                         'duration': 23.352,
                         'original': {
-                            'uri': null,
-                            'puid': 'fmt/5'
+                            'uri': null, 'puid': 'fmt/5'
                         },
                         'access': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/8f5bf966-4c42-4b1b-a3aa-04e2a8b2c971-F113.mp4'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/8f5bf966-4c42-4b1b-a3aa-04e2a8b2c971-F113.mp4'),
                             'puid': 'fmt/199'
                         },
                         'id': '8f5bf966-4c42-4b1b-a3aa-04e2a8b2c971',
                         'collection_id': 'test',
                         'label': 'F113.avi'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '1b1ad765-c4a7-4632-afe4-5b8326df8a7a',
                         'parent_ids': ['1b1ad765-c4a7-4632-afe4-5b8326df8a7a', 'test'],
                         'type': 'folder',
                         'id': '03fdd2a1-d7c4-4e05-8560-248c1c84f253',
                         'collection_id': 'test',
                         'label': 'audio'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '03fdd2a1-d7c4-4e05-8560-248c1c84f253',
                         'parent_ids': ['03fdd2a1-d7c4-4e05-8560-248c1c84f253', '1b1ad765-c4a7-4632-afe4-5b8326df8a7a', 'test'],
                         'type': 'audio',
@@ -609,14 +570,13 @@ describe('iish_archivematica_index', () => {
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'duration': 15.464,
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/1b42c5be-5a78-4e64-91e4-0548ccea0d70-Die_Internationale_as_mp3.mp3'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/1b42c5be-5a78-4e64-91e4-0548ccea0d70-Die_Internationale_as_mp3.mp3'),
                             'puid': 'fmt/134'
                         },
                         'id': '1b42c5be-5a78-4e64-91e4-0548ccea0d70',
                         'collection_id': 'test',
                         'label': 'Die_Internationale as mp3.mp3'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '03fdd2a1-d7c4-4e05-8560-248c1c84f253',
                         'parent_ids': ['03fdd2a1-d7c4-4e05-8560-248c1c84f253', '1b1ad765-c4a7-4632-afe4-5b8326df8a7a', 'test'],
                         'type': 'audio',
@@ -624,41 +584,37 @@ describe('iish_archivematica_index', () => {
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'duration': 15.436,
                         'original': {
-                            'uri': null,
-                            'puid': 'fmt/141'
+                            'uri': null, 'puid': 'fmt/141'
                         },
                         'access': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/740158f5-601d-40ee-b4da-6f554a398858-Die_Internationale_as_wav.mp3'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/740158f5-601d-40ee-b4da-6f554a398858-Die_Internationale_as_wav.mp3'),
                             'puid': 'fmt/134'
                         },
                         'id': '740158f5-601d-40ee-b4da-6f554a398858',
                         'collection_id': 'test',
                         'label': 'Die_Internationale as wav.wav'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': 'test',
                         'parent_ids': ['test'],
                         'type': 'folder',
                         'id': '9129d878-4bdb-449b-8fca-60c9a47c92d6',
                         'collection_id': 'test',
                         'label': '16 - Virus material'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': 'test',
                         'parent_ids': ['test'],
                         'type': 'folder',
                         'id': '7b5cd45e-1d10-48ce-a98b-3128bbad140d',
                         'collection_id': 'test',
                         'label': '04 - Word processing files'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': '7b5cd45e-1d10-48ce-a98b-3128bbad140d',
                         'parent_ids': ['7b5cd45e-1d10-48ce-a98b-3128bbad140d', 'test'],
                         'type': 'file',
                         'size': 103936,
                         'created_at': new Date('2018-07-10T22:00:00.000Z'),
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digital-born/objects/766bbce1-0bc1-4b08-86cc-3ddff91e8c66-Testfile_Archivematica_-_DE_BASIS_voor_vervaardiging_van_videomateriaal.doc'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digital-born/objects/766bbce1-0bc1-4b08-86cc-3ddff91e8c66-Testfile_Archivematica_-_DE_BASIS_voor_vervaardiging_van_videomateriaal.doc'),
                             'puid': 'fmt/40'
                         },
                         'id': '766bbce1-0bc1-4b08-86cc-3ddff91e8c66',
@@ -669,8 +625,8 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should return valid items for a digitized single object collection', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/digitized-single-object');
-                const {rootItem, childItems, textItems} = await processCollection(path);
+                const path = join(testRootDirectory, 'test-archivematica-collections/digitized-single-object');
+                const {rootItem, childItems, textItems} = await processCollection(path, {type: 'root'});
 
                 expect(textItems).to.be.empty;
                 expect(rootItem).to.deep.equal(createItem({
@@ -685,13 +641,12 @@ describe('iish_archivematica_index', () => {
                         'parent_ids': ['test'],
                         'type': 'image',
                         'size': 144401772,
-                        'order': 1,
                         'created_at': new Date('2017-10-05T22:00:00.000Z'),
                         'width': 5854,
                         'height': 8221,
                         'resolution': 300,
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-single-object/objects/2a863aca-eff6-4bb7-812f-cb797e75f793-test_0001.tif'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-single-object/objects/2a863aca-eff6-4bb7-812f-cb797e75f793-test_0001.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': '2a863aca-eff6-4bb7-812f-cb797e75f793',
@@ -702,8 +657,20 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should return valid items for a digitized images collection', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images');
-                const {rootItem, childItems, textItems} = await processCollection(path);
+                const path = join(testRootDirectory, 'test-archivematica-collections/digitized-images');
+                const {rootItem, childItems, textItems} = await processCollection(path, {
+                    type: 'root',
+                    customStructMapId: 'structMap_iish',
+                    isText: (label: string, parents: string[]) => parents[0] === 'transcription' || parents[0].startsWith('translation_'),
+                    getTypeAndLang: (label: string, parents: string[]) => ({
+                        type: parents[0].startsWith('translation_') ? 'translation' : 'transcription',
+                        language: parents[0].startsWith('translation_') ? parents[0].split('_')[1] : null
+                    }),
+                    withRootCustomForText: (rootCustom: Element, fileId: string) => {
+                        const fptrs = rootCustom.find<Element>(`./mets:div[@TYPE="page"]/mets:fptr[@FILEID="${fileId}"]/../mets:fptr`, ns);
+                        return fptrs.map(fptrElem => fptrElem.attr('FILEID')?.value() || null).filter(id => id !== null) as string[];
+                    },
+                });
 
                 expect(rootItem).to.deep.equal(createItem({
                     'type': 'root',
@@ -717,139 +684,124 @@ describe('iish_archivematica_index', () => {
                         'parent_ids': ['test'],
                         'type': 'image',
                         'size': 16976840,
-                        'order': 1,
                         'created_at': new Date('2018-10-08T22:00:00.000Z'),
                         'width': 1960,
                         'height': 2887,
                         'resolution': 304,
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/b8b7aca7-0a0d-452e-a98d-94c8e7607aa5-test_01.tif'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/b8b7aca7-0a0d-452e-a98d-94c8e7607aa5-test_01.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': 'b8b7aca7-0a0d-452e-a98d-94c8e7607aa5',
                         'collection_id': 'test',
                         'label': 'test_01.tif'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': 'test',
                         'parent_ids': ['test'],
                         'type': 'image',
                         'size': 16751032,
-                        'order': 2,
                         'created_at': new Date('2018-10-08T22:00:00.000Z'),
                         'width': 1942,
                         'height': 2875,
                         'resolution': 304,
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/9a99eef6-3e69-4cdf-ae68-4f304194bb64-test_02.tif'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/9a99eef6-3e69-4cdf-ae68-4f304194bb64-test_02.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': '9a99eef6-3e69-4cdf-ae68-4f304194bb64',
                         'collection_id': 'test',
                         'label': 'test_02.tif'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': 'test',
                         'parent_ids': ['test'],
                         'type': 'image',
                         'size': 16839700,
-                        'order': 3,
                         'created_at': new Date('2018-10-08T22:00:00.000Z'),
                         'width': 1955,
                         'height': 2871,
                         'resolution': 304,
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/88348a48-c658-4150-a1bb-e4b05d6f1f2b-test_03.tif'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/88348a48-c658-4150-a1bb-e4b05d6f1f2b-test_03.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': '88348a48-c658-4150-a1bb-e4b05d6f1f2b',
                         'collection_id': 'test',
                         'label': 'test_03.tif'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': 'test',
                         'parent_ids': ['test'],
                         'type': 'image',
                         'size': 16814940,
-                        'order': 4,
                         'created_at': new Date('2018-10-08T22:00:00.000Z'),
                         'width': 1944,
                         'height': 2883,
                         'resolution': 304,
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/a236198f-1844-4771-baac-59712c767fbe-test_04.tif'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/a236198f-1844-4771-baac-59712c767fbe-test_04.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': 'a236198f-1844-4771-baac-59712c767fbe',
                         'collection_id': 'test',
                         'label': 'test_04.tif'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': 'test',
                         'parent_ids': ['test'],
                         'type': 'image',
                         'size': 16814940,
-                        'order': 5,
                         'created_at': new Date('2018-10-08T22:00:00.000Z'),
                         'width': 1944,
                         'height': 2883,
                         'resolution': 304,
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/62a1e40c-af27-472c-b870-818d6cb6464b-test_05.tif'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/62a1e40c-af27-472c-b870-818d6cb6464b-test_05.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': '62a1e40c-af27-472c-b870-818d6cb6464b',
                         'collection_id': 'test',
                         'label': 'test_05.tif'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': 'test',
                         'parent_ids': ['test'],
                         'type': 'image',
                         'size': 16883520,
-                        'order': 6,
                         'created_at': new Date('2018-10-08T22:00:00.000Z'),
                         'width': 1956,
                         'height': 2877,
                         'resolution': 304,
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/76cf7fac-c2f9-412c-b773-2872777646f6-test_06.tif'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/76cf7fac-c2f9-412c-b773-2872777646f6-test_06.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': '76cf7fac-c2f9-412c-b773-2872777646f6',
                         'collection_id': 'test',
                         'label': 'test_06.tif'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': 'test',
                         'parent_ids': ['test'],
                         'type': 'image',
                         'size': 16676376,
-                        'order': 7,
                         'created_at': new Date('2018-10-08T22:00:00.000Z'),
                         'width': 1932,
                         'height': 2877,
                         'resolution': 304,
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/62008a42-e2e7-4446-95f2-c5aa70ceacf7-test_07.tif'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/62008a42-e2e7-4446-95f2-c5aa70ceacf7-test_07.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': '62008a42-e2e7-4446-95f2-c5aa70ceacf7',
                         'collection_id': 'test',
                         'label': 'test_07.tif'
-                    }),
-                    createItem({
+                    }), createItem({
                         'parent_id': 'test',
                         'parent_ids': ['test'],
                         'type': 'image',
                         'size': 16835720,
-                        'order': 8,
                         'created_at': new Date('2018-10-08T22:00:00.000Z'),
                         'width': 1960,
                         'height': 2863,
                         'resolution': 304,
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/96693817-a99b-4c78-833f-7c9ff4b7c089-test_08.tif'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/96693817-a99b-4c78-833f-7c9ff4b7c089-test_08.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': '96693817-a99b-4c78-833f-7c9ff4b7c089',
@@ -864,54 +816,49 @@ describe('iish_archivematica_index', () => {
                         'type': 'transcription',
                         'language': null,
                         'encoding': 'ISO-8859-1',
-                        'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/cf34ab26-d4a2-4b73-99bf-9da8171084b0-test_01.txt')
-                    },
-                    {
+                        'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/cf34ab26-d4a2-4b73-99bf-9da8171084b0-test_01.txt')
+                    }, {
                         'id': 'cf32e677-59d9-4245-ba1b-ba56572a16b9',
                         'itemId': '88348a48-c658-4150-a1bb-e4b05d6f1f2b',
                         'type': 'transcription',
                         'language': null,
                         'encoding': 'UTF-8',
-                        'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/cf32e677-59d9-4245-ba1b-ba56572a16b9-test_03.txt')
-                    },
-                    {
+                        'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/cf32e677-59d9-4245-ba1b-ba56572a16b9-test_03.txt')
+                    }, {
                         'id': '029f77b2-f464-4746-9312-bb58603c91e3',
                         'itemId': 'a236198f-1844-4771-baac-59712c767fbe',
                         'type': 'transcription',
                         'language': null,
                         'encoding': 'UTF-8',
-                        'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/029f77b2-f464-4746-9312-bb58603c91e3-test_04.txt')
-                    },
-                    {
+                        'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/029f77b2-f464-4746-9312-bb58603c91e3-test_04.txt')
+                    }, {
                         'id': 'ddc232cf-9a29-45b1-89f0-da4b39ff73ee',
                         'itemId': '62a1e40c-af27-472c-b870-818d6cb6464b',
                         'type': 'transcription',
                         'language': null,
                         'encoding': 'ISO-8859-1',
-                        'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/ddc232cf-9a29-45b1-89f0-da4b39ff73ee-test_05.txt')
-                    },
-                    {
+                        'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/ddc232cf-9a29-45b1-89f0-da4b39ff73ee-test_05.txt')
+                    }, {
                         'id': 'ebd8c23a-5e65-49ee-8b82-f6fa269d8ace',
                         'itemId': '76cf7fac-c2f9-412c-b773-2872777646f6',
                         'type': 'transcription',
                         'language': null,
                         'encoding': 'UTF-8',
-                        'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/ebd8c23a-5e65-49ee-8b82-f6fa269d8ace-test_06.txt')
-                    },
-                    {
+                        'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/ebd8c23a-5e65-49ee-8b82-f6fa269d8ace-test_06.txt')
+                    }, {
                         'id': '833c9e39-399f-4b60-b1ec-7d407ced96e4',
                         'itemId': '62008a42-e2e7-4446-95f2-c5aa70ceacf7',
                         'type': 'transcription',
                         'language': null,
                         'encoding': 'UTF-8',
-                        'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-images/objects/833c9e39-399f-4b60-b1ec-7d407ced96e4-test_07.txt')
+                        'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/833c9e39-399f-4b60-b1ec-7d407ced96e4-test_07.txt')
                     }
                 ]);
             });
 
             it('should return valid items for a digitized audio collection', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/digitized-audio');
-                const {rootItem, childItems, textItems} = await processCollection(path);
+                const path = join(testRootDirectory, 'test-archivematica-collections/digitized-audio');
+                const {rootItem, childItems, textItems} = await processCollection(path, {type: 'root'});
 
                 expect(textItems).to.be.empty;
                 expect(rootItem).to.deep.equal(createItem({
@@ -926,47 +873,33 @@ describe('iish_archivematica_index', () => {
                         'parent_ids': ['test'],
                         'type': 'audio',
                         'size': 21626768,
-                        'order': 1,
                         'created_at': new Date('2018-12-19T23:00:00.000Z'),
                         'duration': 122.6,
                         'original': {
-                            'uri': null,
-                            'puid': 'fmt/141'
+                            'uri': null, 'puid': 'fmt/141'
                         },
                         'access': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-audio/objects/843d35b3-6ad8-4e33-9e3c-e5b25b13fde7-test_1.mp3'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-audio/objects/843d35b3-6ad8-4e33-9e3c-e5b25b13fde7-test_1.mp3'),
                             'puid': 'fmt/134'
                         },
                         'id': '843d35b3-6ad8-4e33-9e3c-e5b25b13fde7',
                         'collection_id': 'test',
                         'label': 'test_1.wav'
-                    }),
-                    createItem({
-                        'parent_id': 'test',
-                        'parent_ids': ['test'],
-                        'type': 'audio',
-                        'size': 26169544,
-                        'order': 2,
-                        'created_at': new Date('2018-12-19T23:00:00.000Z'),
-                        'duration': 148.353,
-                        'original': {
-                            'uri': null,
-                            'puid': 'fmt/141'
-                        },
-                        'access': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-audio/objects/171b4119-baed-4423-8e32-c1f37cc230c9-test_2.mp3'),
+                    }), createItem({
+                        'parent_id': 'test', 'parent_ids': ['test'], 'type': 'audio', 'size': 26169544,
+                        'created_at': new Date('2018-12-19T23:00:00.000Z'), 'duration': 148.353, 'original': {
+                            'uri': null, 'puid': 'fmt/141'
+                        }, 'access': {
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-audio/objects/171b4119-baed-4423-8e32-c1f37cc230c9-test_2.mp3'),
                             'puid': 'fmt/134'
-                        },
-                        'id': '171b4119-baed-4423-8e32-c1f37cc230c9',
-                        'collection_id': 'test',
-                        'label': 'test_2.wav'
+                        }, 'id': '171b4119-baed-4423-8e32-c1f37cc230c9', 'collection_id': 'test', 'label': 'test_2.wav'
                     })
                 ]);
             });
 
             it('should return valid items for a digitized video collection', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/digitized-video');
-                const {rootItem, childItems, textItems} = await processCollection(path);
+                const path = join(testRootDirectory, 'test-archivematica-collections/digitized-video');
+                const {rootItem, childItems, textItems} = await processCollection(path, {type: 'root'});
 
                 expect(textItems).to.be.empty;
                 expect(rootItem).to.deep.equal(createItem({
@@ -981,17 +914,15 @@ describe('iish_archivematica_index', () => {
                         'parent_ids': ['test'],
                         'type': 'video',
                         'size': 13541802540,
-                        'order': 1,
                         'created_at': new Date('2018-07-05T22:00:00.000Z'),
                         'width': 1920,
                         'height': 1080,
                         'duration': 8266.72,
                         'original': {
-                            'uri': null,
-                            'puid': 'x-fmt/384'
+                            'uri': null, 'puid': 'x-fmt/384'
                         },
                         'access': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/digitized-video/objects/f294d9ea-edfc-45b2-8a42-6d792d860955-test_001.mp4'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-video/objects/f294d9ea-edfc-45b2-8a42-6d792d860955-test_001.mp4'),
                             'puid': 'fmt/199'
                         },
                         'id': 'f294d9ea-edfc-45b2-8a42-6d792d860955',
@@ -1002,8 +933,8 @@ describe('iish_archivematica_index', () => {
             });
 
             it('should return valid items for a premis v3 METS file', async () => {
-                const path = join(testRootDirectory, 'test-iish-archivematica-collections/premis-v3');
-                const {rootItem, childItems, textItems} = await processCollection(path);
+                const path = join(testRootDirectory, 'test-archivematica-collections/premis-v3');
+                const {rootItem, childItems, textItems} = await processCollection(path, {type: 'root'});
 
                 expect(textItems).to.be.empty;
                 expect(rootItem).to.deep.equal(createItem({
@@ -1018,13 +949,12 @@ describe('iish_archivematica_index', () => {
                         'parent_ids': ['test'],
                         'type': 'image',
                         'size': 64600916,
-                        'order': 1,
                         'created_at': new Date('2019-01-16T23:00:00.000Z'),
                         'width': 3855,
                         'height': 5584,
                         'resolution': 800,
                         'original': {
-                            'uri': join(testRootDirectory, 'test-iish-archivematica-collections/premis-v3/objects/916cceb5-12c5-43c1-a98e-acf1647d1aca-test_0001.tif'),
+                            'uri': join(testRootDirectory, 'test-archivematica-collections/premis-v3/objects/916cceb5-12c5-43c1-a98e-acf1647d1aca-test_0001.tif'),
                             'puid': 'fmt/353'
                         },
                         'id': 'C969A354-284F-4ECB-BAA6-62C24DF72643',

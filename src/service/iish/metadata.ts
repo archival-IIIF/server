@@ -163,7 +163,6 @@ export function updateEAD(xml: Document, oaiIdentifier: string, collectionId: st
             collection_id: id,
             metadata_id: oaiIdentifier,
             formats: md.formats,
-            behavior: md.formats.includes('book') ? 'paged' : 'individuals',
             label: md.title,
             metadata: []
         };
