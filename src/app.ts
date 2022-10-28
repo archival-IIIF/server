@@ -39,9 +39,9 @@ async function startWeb() {
     const {router: iiifAuthRouter} = await import('./authentication/router.js');
     const {router: fileRouter} = await import('./file/router.js');
     const {router: pdfRouter} = await import('./pdf/router.js');
-    const {router: adminRouter} = await import('./admin/router.js');
     const {router: textRouter} = await import('./text/router.js');
     const {router: helperRouter} = await import('./helper/router.js');
+    const {router: adminRouter} = await import('./admin/router.js');
     const {router: staticRouter} = await import('./static/router.js');
 
     const app = new Koa<DefaultState, ExtendedContext>();
@@ -96,9 +96,9 @@ async function startWeb() {
 
     app.use(fileRouter.routes());
     app.use(pdfRouter.routes());
-    app.use(adminRouter.routes());
     app.use(textRouter.routes());
     app.use(helperRouter.routes());
+    app.use(adminRouter.routes());
     app.use(staticRouter.routes());
 
     app.proxy = true;

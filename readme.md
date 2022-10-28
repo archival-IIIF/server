@@ -3,9 +3,6 @@
 The Archival IIIF server indexes and provides [IIIF](https://iiif.io) services for digital collections. The server can
 be configured with a number of different services to index the digital collections and to create derivatives.
 
-The [IISH](https://iisg.amsterdam) (International Institute of Social History)  has created a number of services to
-index the DIPs created by [Archivematica](https://www.archivematica.org) and to give access through IIIF.
-
 1. [Components](#components)
 2. [Services](#services)
     1. [Default services](#default-service)
@@ -16,10 +13,13 @@ index the DIPs created by [Archivematica](https://www.archivematica.org) and to 
 3. [Web API](#web-api)
     1. [IIIF Image API](#iiif-image-api)
     2. [IIIF Presentation API](#iiif-presentation-api)
-    3. [IIIF Authentication API](#iiif-authentication-api)
-    4. [File API](#file-api)
-    5. [PDF API](#pdf-api)
-    6. [Admin API](#admin-api)
+    3. [IIIF Content Search API](#iiif-content-search-api)
+    4. [IIIF Authentication API](#iiif-authentication-api)
+    5. [File API](#file-api)
+    6. [PDF API](#pdf-api)
+    7. [Text API](#text-api)
+    8. [Helper API](#helper-api)
+    9. [Admin API](#admin-api)
 4. [Installation](#installation)
     1. [Docker Compose](#docker-compose)
     2. [Manual installation](#manual-installation)
@@ -59,7 +59,7 @@ fileinfo of worker services:
 
 - **Index worker**: Gets a job with the path of a collection to be indexed in
   [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch). Current implementations:
-    - `iish-archivematica-index`: A specific IISH implementation of the index worker. Indexes DIPs created by the
+    - `iish-index`: A specific IISH implementation of the index worker. Indexes DIPs created by the
       Archivematica instance of the IISH.
     - `ecodices-index`: A specific eCodices implementation of the index worker. Indexes DIPs created by the
       Archivematica instance of eCodices.
@@ -68,8 +68,8 @@ fileinfo of worker services:
     - `text-index`: Indexes plain text files and ALTO files.
 - **Reindex worker**: Gets a list of collections ids to be reindexed or a query for
   [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch). Current implementations:
-    - `iish-archivematica-reindex`: A specific IISH implementation of the reindex worker. Can start reindexing for
-      DIPs created by the Archivematica instance of the IISH.
+    - `archivematica-reindex`: An Archivematica implementation of the reindex worker. Can start reindexing for DIPs
+      created by Archivematica instances.
 - **Metadata index worker**: Gets a job with a collection id and/or a OAI identifier and obtains the metadata from an
   OAI endpoint to be indexed in [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch). Current
   implementations:
@@ -183,6 +183,57 @@ IIIF Presentation API. Returns the JSON-LD description for the manifest with the
 IIIF Presentation API. Returns the JSON-LD description for the annotation page with the given annotation page id for a
 manifest with the given id.
 
+### IIIF Content Search API
+
+_See also the [IIIF Content Search API](https://iiif.io/api/search/1.0/)_
+
+**URL**: `/iiif/search/[id]`
+
+**Method**: `GET`
+
+IIIF Content Search search API. Search the text of a manifest with the given id.
+
+---
+
+**URL**: `/iiif/search/[id]/[type]`
+
+**Method**: `GET`
+
+IIIF Content Search search API. Search the text of a given type, of a manifest with the given id.
+
+---
+
+**URL**: `/iiif/search/[id]/[type]/[language]`
+
+**Method**: `GET`
+
+IIIF Content Search search API. Search the text of a given type and given language, of a manifest with the given id.
+
+---
+
+**URL**: `/iiif/autocomplete/[id]`
+
+**Method**: `GET`
+
+IIIF Content Search autocomplete API. Autocompletion for the text of a manifest with the given id.
+
+---
+
+**URL**: `/iiif/autocomplete/[id]/[type]`
+
+**Method**: `GET`
+
+IIIF Content Search autocomplete API. Autocompletion for the text of a given type, of a manifest with the given id.
+
+---
+
+**URL**: `/iiif/autocomplete/[id]/[type]/[language]`
+
+**Method**: `GET`
+
+IIIF Content Search autocomplete API. Autocompletion for the text of a given type and given language, of a manifest with
+the given id.
+
 ### IIIF Authentication API
 
 _See also the [IIIF Authentication API](https://iiif.io/api/auth/1.0/)_
@@ -257,7 +308,41 @@ Provides access to the derivative of the given type for the file with the given 
 
 Generates a PDF version of a collection with the given id.
 
+### Text API
+
+**URL**: `/text/[id]`
+
+**Method**: `GET`
+
+Obtain an HTML version of the text with the given id.
+
+---
+
+**URL**: `/text/[id]/txt`
+
+**Method**: `GET`
+
+Obtain plain text version of the text with the given id.
+
+### Helper API
+
+**URL**: `/helper/viewer`
+
+**Method**: `GET`
+
+**Parameters**: `manifest`
+
+Opens a given IIIF manifest in the configured viewer.
+
 ### Admin API
+
+**URL**: `/admin/worker_status`
+
+**Method**: `GET`
+
+Shows that status of all workers. Can only be used by an administrator with a valid access token.
+
+---
 
 **URL**: `/admin/index`
 
@@ -293,10 +378,10 @@ only be used by an administrator with a valid access token.
 
 **Method**: `POST`
 
-**Parameters**: `oai_identifier`, `root_id`, `collection_id`
+**Parameters**: `metadata_id`, `root_id`, `collection_id`
 
-Creates a job for the metadata worker to force-update the metadata for the given OAI identifier and/or root/collection
-id. Can only be used by an administrator with a valid access token.
+Creates a job for the metadata worker to force-update the metadata for the given metadata id and/or root/collection id.
+Can only be used by an administrator with a valid access token.
 
 ---
 
@@ -335,9 +420,9 @@ Use the provided Docker Compose or install manually.
 
 ### Docker Compose
 
-1. Set up any IIIF image compliant server:
-    * The Docker Compose comes with support for [Loris](https://github.com/loris-imageserver/loris).
-    * Or use our [image server](https://github.com/archival-IIIF/image).
+1. Set up any IIIF image compliant server. The Docker Compose comes with support for:
+    * [Our image server](https://github.com/archival-IIIF/image-server).
+    * [Loris](https://github.com/loris-imageserver/loris).
 2. See for example the provided `docker-compose.yml.example`:
     * Note: Clone the `web` service definition to create multiple services and use the env variable
       `IIIF_SERVER_SERVICES` to define which services that container should run.
@@ -355,7 +440,7 @@ Use the provided Docker Compose or install manually.
     * Use our [image server](https://github.com/archival-IIIF/image).
     * Or set up any IIIF image compliant server.
 2. Install
-    * [Node.js 16.x LTS](https://nodejs.org/en)
+    * [Node.js 18.x LTS](https://nodejs.org/en)
     * [yarn](https://yarnpkg.com) or [npm](https://www.npmjs.com)
     * [ElasticSearch 7.x.x](https://www.elastic.co/webinars/getting-started-elasticsearch)
     * IIIF image server (e.g. [Loris](https://github.com/loris-imageserver/loris))
@@ -370,7 +455,7 @@ Use the provided Docker Compose or install manually.
     * Set up the environment variables for production
     * With PM2, [set up a config.yml file](https://pm2.io/doc/en/runtime/guide/ecosystem-file/)
       with the environment variables
-5. Run `yarn install` or `npm install`
+5. Run `npm install` or `yarn install`
 6. Run `tsc` to transpile the application
 7. Start the application:
     * Run `node src/app.js`
@@ -489,7 +574,7 @@ a `folder` type may have child items which can be either `folder` fileinfo or an
 a `root` type may only have child items which are any of the `file` fileinfo. Items with a `range` type appear for files
 with a `root` type.
 
-![](./docs/item-fileinfo.png)
+![](./docs/item-types.png)
 
 | Field         | Type     | Required                                    | Description                                                | 
 |---------------|----------|---------------------------------------------|------------------------------------------------------------|

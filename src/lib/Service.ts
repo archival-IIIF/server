@@ -24,8 +24,8 @@ export const allServices: Service[] = [{
     type: 'index',
     runAs: 'worker',
     implementations: [{
-        name: 'iish-archivematica-index',
-        loadService: async () => (await import('../service/iish/archivematica_index.js')).default
+        name: 'iish-index',
+        loadService: async () => (await import('../service/iish/index.js')).default
     }, {
         name: 'ecodices-index',
         loadService: async () => (await import('../service/ecodices/index.js')).default
@@ -51,8 +51,8 @@ export const allServices: Service[] = [{
     type: 'reindex',
     runAs: 'worker',
     implementations: [{
-        name: 'iish-archivematica-reindex',
-        loadService: async () => (await import('../service/iish/archivematica_reindex.js')).default
+        name: 'archivematica-reindex',
+        loadService: async () => (await import('../service/archivematica_reindex.js')).default
     }]
 }, {
     type: 'process-update',

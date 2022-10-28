@@ -8,7 +8,7 @@ const prefixFileUrl = `${config.baseUrl}/file`;
 const prefixIconUrl = `${config.baseUrl}/file-icon`;
 const prefixTextUrl = `${config.baseUrl}/text`;
 
-const annoType = (type?: string, language?: string | null) => type ? '/' + type + (language ? '_' + language : '') : '';
+const annoType = (type?: string, language?: string | null) => type ? '/' + type + (language ? '/' + language : '') : '';
 
 export const collectionUri = (id: string) => `${prefixPresentationUrl}/collection/${id}`;
 export const manifestUri = (id: string) => `${prefixPresentationUrl}/${id}/manifest`;

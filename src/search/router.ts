@@ -38,7 +38,7 @@ router.get('/:id', async ctx => {
     ctx.body = getSearch(searchResults, ctx.queryFirst('q') as string, ignored(ctx.query), items, id);
 });
 
-router.get('/:id/:type(_:language)?', async ctx => {
+router.get('/:id/:type(/:language)?', async ctx => {
     const texts = await withTexts(getTextsForCollectionId(ctx.params.id, ctx.params.type, ctx.params.language));
     if (!texts || texts.length === 0)
         throw new HttpError(404,
@@ -70,7 +70,7 @@ router.get('/autocomplete/:id', async ctx => {
         item ? item.collection_id : (text ? text.id : ''));
 });
 
-router.get('/autocomplete/:id/:type(_:language)?', async ctx => {
+router.get('/autocomplete/:id/:type(/:language)?', async ctx => {
     const texts = await withTexts(getTextsForCollectionId(ctx.params.id, ctx.params.type, ctx.params.language));
     if (!texts || texts.length === 0)
         throw new HttpError(404,

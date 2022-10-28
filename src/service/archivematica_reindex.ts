@@ -1,9 +1,9 @@
-import config from '../../lib/Config.js';
-import getClient from '../../lib/ElasticSearch.js';
-import {runTask} from '../../lib/Task.js';
-import {Item} from '../../lib/ItemInterfaces.js';
-import {getFullPath, getItemsSearch} from '../../lib/Item.js';
-import {CollectionPathParams, ReindexParams} from '../../lib/ServiceTypes.js';
+import config from '../lib/Config.js';
+import {runTask} from '../lib/Task.js';
+import {Item} from '../lib/ItemInterfaces.js';
+import getClient from '../lib/ElasticSearch.js';
+import {getFullPath, getItemsSearch} from '../lib/Item.js';
+import {CollectionPathParams, ReindexParams} from '../lib/ServiceTypes.js';
 
 export default async function processReindex({collectionIds, query}: ReindexParams): Promise<void> {
     if (query) {
