@@ -14,17 +14,23 @@ export default async function getCanvasIIIFMetadata({item}: ItemParams): Promise
 function getLabel(fileInfo: FileInfo): string {
     const pageLabels = [];
     for (const page of fileInfo.pages)
-        pageLabels.push(`${page.folioPageNumber || ''}${page.subFolio || ''}${page.isRecto ? 'r' : ''}${page.isVerso ? 'v' : ''}`);
+        pageLabels.push(`${page.folioPageNumber}${page.isRecto ? 'r' : ''}${page.isVerso ? 'v' : ''} ${page.subFolioPage || ''}`.trim());
 
     const labels = [];
+    if (fileInfo.hasColorChecker)
+        labels.push('ColorChecker');
+
     if (fileInfo.type)
         labels.push(fileInfo.type.name);
 
+    if (fileInfo.isFolium)
+        labels.push('Folium');
+
     if (fileInfo.isFrontEndPaper)
-        labels.push('Frontend paper');
+        labels.push('Front endpaper');
 
     if (fileInfo.isBackEndPaper)
-        labels.push('Backend paper');
+        labels.push('Back endpaper');
 
     if (pageLabels.length > 0)
         labels.push(pageLabels.join('-'));
@@ -35,8 +41,6 @@ function getLabel(fileInfo: FileInfo): string {
             labels.push('Note');
         else if (fileInfo.hasRuler)
             labels.push('Ruler');
-        else if (fileInfo.hasColorChecker)
-            labels.push('ColorChecker');
     }
 
     const extraLabels = [];
@@ -46,14 +50,8 @@ function getLabel(fileInfo: FileInfo): string {
     if (!isAdditional && fileInfo.isNote)
         extraLabels.push('note');
 
-    if (!isAdditional || fileInfo.isNote) {
-        if (fileInfo.hasRuler && fileInfo.hasColorChecker)
-            extraLabels.push('with ColorChecker and ruler');
-        else if (!isAdditional && fileInfo.hasRuler)
-            extraLabels.push('with ruler');
-        else if (!isAdditional && fileInfo.hasColorChecker)
-            extraLabels.push('with ColorChecker');
-    }
+    if ((!isAdditional || fileInfo.isNote) && fileInfo.hasRuler)
+        extraLabels.push('with ruler');
 
     if (extraLabels.length > 0)
         labels.push(`(${extraLabels.join('; ')})`);

@@ -173,6 +173,13 @@ function extractMetadata(metadataId: string, parentId: string, collectionId: str
 function extractRanges(childItems: Item[], collectionId: string, eCodicesSource: Element):
     { items: MinimalItem[], ranges: MinimalItem[] } {
     const parentRangeId = `${collectionId}_Contents_Range`;
+    const parentRange = {
+        id: parentRangeId,
+        collection_id: collectionId,
+        type: 'range',
+        label: 'Contents'
+    };
+
     const items: MinimalItem[] = [], ranges: MinimalItem[] = [];
     const childsParsed = childItems.map(item => parseLabel(item.label));
 
@@ -191,12 +198,12 @@ function extractRanges(childItems: Item[], collectionId: string, eCodicesSource:
 
         const fromIdx = childsParsed.findIndex(
             p => p.pages.length > 0 && equalsPages(fromPage, p.pages[0])
-                || (p.pages.length == 2 && equalsPages(fromPage, p.pages[1])));
+                || (p.pages.length === 2 && equalsPages(fromPage, p.pages[1])));
         const toIdx = childsParsed.findIndex(
             p => (p.pages.length > 0 && equalsPages(toPage, p.pages[0]))
-                || (p.pages.length == 2 && equalsPages(toPage, p.pages[1]))) + 1;
+                || (p.pages.length === 2 && equalsPages(toPage, p.pages[1]))) + 1;
 
-        if (fromIdx < 0 || toIdx <= 0 || fromIdx >= toIdx || toIdx >= childsParsed.length)
+        if (fromIdx < 0 || toIdx <= 0 || fromIdx >= toIdx || toIdx > childsParsed.length)
             throw new Error(`Cannot find range for ${froms[0]} till ${tos[0]}!`);
 
         const id = (froms.length > 0 && tos.length > 0)
@@ -218,6 +225,9 @@ function extractRanges(childItems: Item[], collectionId: string, eCodicesSource:
             label: item.label,
             range_ids: item.range_ids.concat([id]),
         })));
+
+        if (ranges.length === 0)
+            ranges.push(parentRange);
 
         ranges.push({
             id: id,

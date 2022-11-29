@@ -103,6 +103,7 @@ const config: Config = {
     })(),
 
     viewerUrl: (_ => {
+        // UniversalViewer URL: https://www.universalviewer.dev/uv.html#?manifest=
         if (!process.env.IIIF_SERVER_VIEWER_URL || (process.env.IIIF_SERVER_VIEWER_URL === 'null'))
             return 'https://projectmirador.org/embed/?iiif-content=';
 
