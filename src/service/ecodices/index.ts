@@ -178,13 +178,8 @@ function sortImageItems(a: ImageItem, b: ImageItem): number {
             return pageA.subFolioPage.localeCompare(pageB.subFolioPage);
 
         if (pageA.subFolioPage && !pageB.subFolioPage ||
-            pageB.subFolioPage && !pageA.subFolioPage) {
-            if (pageA.subFolioPage)
-                return pageA.subFolioPage === 'bis' ? -1 : 1;
-
-            if (pageB.subFolioPage)
-                return pageB.subFolioPage === 'bis' ? 1 : -1;
-        }
+            pageB.subFolioPage && !pageA.subFolioPage)
+            return pageA.subFolioPage ? 1 : -1;
 
         if ((pageA.isVerso || pageA.isRecto) && (pageB.isVerso || pageB.isRecto) &&
             !(pageA.isVerso && pageB.isVerso) && !(pageA.isRecto && pageB.isRecto))
