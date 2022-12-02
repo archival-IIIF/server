@@ -149,6 +149,16 @@ export const allServices: Service[] = [{
         loadService: async () => (await import('../service/ecodices/root_file_item.js')).default
     }]
 }, {
+    type: 'top-collections',
+    runAs: 'lib',
+    implementations: [{
+        name: 'default-top-collections',
+        loadService: async () => (await import('../service/top_collections.js')).default
+    }, {
+        name: 'iish-top-collections',
+        loadService: async () => (await import('../service/iish/top_collections.js')).default
+    }]
+}, {
     type: 'watcher',
     runAs: 'standalone',
     implementations: [{

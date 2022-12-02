@@ -172,7 +172,7 @@ export function getAllRootItems(): AsyncIterable<Item> {
     return getItems('type:(root OR folder OR metadata) AND NOT _exists_:parent_id');
 }
 
-function getItems(q: string, sort = true): AsyncIterable<Item> {
+export function getItems(q: string, sort = true): AsyncIterable<Item> {
     try {
         logger.debug(`Obtain items from ElasticSearch with query "${q}"`);
         return getClient().helpers.scrollDocuments<Item>({

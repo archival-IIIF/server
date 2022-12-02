@@ -122,6 +122,10 @@ libraries:
     - `default-access`: All granted; default implementation
     - `iish-access`: IISH specific implementation.
     - `niod-access`: NIOD specific implementation.
+- **Authentication texts**: Provides implementation specific texts to help the user with authenticating. Current
+  implementations:
+    - `default-auth-texts`: Default implementation.
+    - `iish-auth-texts`: IISH specific implementation.
 - **Basic IIIF metadata**: Provides implementation specific IIIF metadata. Current implementations:
     - `default-basic-iiif-metadata`: Default (no IIIF metadata) implementation.
     - `iish-basic-iiif-metadata`: IISH specific implementation.
@@ -129,10 +133,13 @@ libraries:
 - **Canvas IIIF metadata**: Provides implementation specific IIIF metadata for a canvas. Current implementations:
     - `default-canvas-iiif-metadata`: Default (no IIIF metadata) implementation.
     - `ecodices-canvas-iiif-metadata`: eCodices specific implementation.
-- **Authentication texts**: Provides implementation specific texts to help the user with authenticating. Current
-  implementations:
-    - `default-auth-texts`: Default implementation.
-    - `iish-auth-texts`: IISH specific implementation.
+- **Root file item**: Provides implementation specific logic to determine the child item which represent the root:
+    - `default-root-file-item`: Default implementation: always the first page.
+    - `iish-root-file-item`: IISH specific implementation.
+    - `ecodices-root-file-item`: eCodices specific implementation.
+- **Top collections**: Provides implementation specific IIIF top collections:
+    - `default-top-collections`: Default implementation listing all IIIF collections/manifests.
+    - `iish-top-collections`: IISH specific implementation.
 
 ## Web API
 
@@ -480,6 +487,8 @@ The environment variables used to configure the application:
         - `default-auth-texts`: Loads a **library** that provides authentication empty assistance texts
         - `default-basic-iiif-metadata`: Loads a **library** that provides no basic IIIF metadata
         - `default-canvas-iiif-metadata`: Loads a **library** that provides no canvas IIIF metadata
+        - `default-root-file-item`: Loads a **library** that provides the child item representative for the root item
+        - `default-top-collections`: Loads a **library** that provides top IIIF collections
     - Derivative services:
         - `waveform`: Runs a **worker** that creates waveforms from audio files
         - `pdf-image`: Runs a **worker** that creates images from pdf files
@@ -493,6 +502,9 @@ The environment variables used to configure the application:
         - `iish-auth-texts`: Loads a **library** that provides authentication assistance texts of items from IISH
           collections
         - `iish-basic-iiif-metadata`: Loads a **library** that provides IIIF metadata of items from IISH collections
+        - `iish-root-file-item`: Loads a **library** that provides the child item representative for the root item of
+          items from IISH collections
+        - `iish-top-collections`: Loads a **library** that provides top IIIF collections for IISH collections
     - NIOD specific services:
         - `niod-metadata`: Runs a **worker** that indexes NIOD metadata
         - `niod-access`: Loads a **library** that determines access to items for NIOD collections
@@ -503,6 +515,8 @@ The environment variables used to configure the application:
           collections
         - `ecodices-canvas-iiif-metadata`: Loads a **library** that provides IIIF metadata of canvases from eCodices
           collections
+        - `ecodices-root-file-item`: Loads a **library** that provides the child item representative for the root item
+          of items from eCodices collections
 - `IIIF_SERVER_SECRET`: Signed cookie key
 - `IIIF_SERVER_ACCESS_TOKEN`: Access token for administrator access
 - `IIIF_SERVER_IMAGE_SERVER_URL`: URL of the external IIIF image server (such as Loris)

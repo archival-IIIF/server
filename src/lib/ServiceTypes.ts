@@ -35,6 +35,14 @@ export interface CanvasIIIFMetadata {
     behavior?: CanvasBehavior;
 }
 
+
+export interface TopCollection {
+    urlPattern: string;
+    getId: (params: Record<string, string>) => string;
+    getLabel: (params: Record<string, string>) => string;
+    getChildren: (params: Record<string, string>) => Promise<Item[]>;
+}
+
 export type IIIFMetadataHomepage = { id: string; label: string; }[];
 export type IIIFMetadataPairs = { label: string; value: string; }[];
 export type IIIFMetadataSeeAlso = { id: string; format: string; profile: string; label: string; }[];
