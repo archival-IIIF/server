@@ -1,26 +1,19 @@
-import {basename, join, parse} from 'path';
+import {parse} from 'path';
 
-import config from '../../lib/Config.js';
 import logger from '../../lib/Logger.js';
 import {runTask} from '../../lib/Task.js';
 import {createItem, indexItems} from '../../lib/Item.js';
 import {ImageItem, RangeItem} from '../../lib/ItemInterfaces.js';
-import {readdirAsync, sizeOf, statAsync} from '../../lib/Promisified.js';
 import {CollectionPathParams, MetadataParams} from '../../lib/ServiceTypes.js';
 
 import {parseLabel} from './util/fileinfo.js'
 
 import {cleanup} from '../util/index_utils.js';
-import {CollectionProcessingResult, processCollection} from '../util/archivematica.js';
-import {pronomByExtension} from '../util/archivematica_pronom_data.js';
-
-const demo = true;
+import {processCollection} from '../util/archivematica.js';
 
 export default async function processForIndex({collectionPath}: CollectionPathParams): Promise<void> {
     try {
-        const {rootItem, childItems} = demo
-            ? await processCollectionDemo(collectionPath)
-            : await processCollection(collectionPath, {type: 'root'});
+        const {rootItem, childItems} = await processCollection(collectionPath, {type: 'root'});
         const rangeItems = processItems(rootItem.collection_id, childItems as ImageItem[]);
 
         logger.debug(`Collection ${collectionPath} processed; running cleanup and index`);
@@ -37,57 +30,6 @@ export default async function processForIndex({collectionPath}: CollectionPathPa
         err.stack = e.stack;
         throw err;
     }
-}
-
-async function processCollectionDemo(collectionPath: string): Promise<CollectionProcessingResult> {
-    const relativeRootPath = collectionPath
-        .replace(`${config.dataRootPath}/${config.collectionsRelativePath}/`, '');
-    const collectionId = basename(collectionPath);
-
-    const childItems: ImageItem[] = [];
-    const files = await readdirAsync(collectionPath);
-    await Promise.all(files.map(file => processFileDemo(collectionId, relativeRootPath, file, childItems)));
-
-    const rootItem = createItem({
-        id: collectionId,
-        collection_id: collectionId,
-        type: 'root',
-        label: collectionId
-    });
-
-    return {rootItem, childItems, textItems: []};
-}
-
-async function processFileDemo(collectionId: string, relativeRootPath: string, file: string,
-                               childItems: ImageItem[]): Promise<void> {
-    const filename = basename(file);
-    const parsedFileName = parse(filename);
-    const path = join(config.dataRootPath, config.collectionsRelativePath, relativeRootPath, file);
-
-    const stats = await statAsync(path);
-    const dimensions = await sizeOf(path);
-    if (!dimensions || !dimensions.width || !dimensions.height)
-        throw new Error(`Couldn't determine the image dimensions of ${file}`);
-
-    const childItem = createItem({
-        id: filename,
-        parent_id: collectionId,
-        parent_ids: [collectionId],
-        collection_id: collectionId,
-        type: 'image',
-        label: filename,
-        size: stats.size,
-        order: 0,
-        created_at: stats.ctime,
-        width: dimensions.width,
-        height: dimensions.height,
-        resolution: 300,
-        access: {
-            uri: join(relativeRootPath, file),
-            puid: pronomByExtension[parsedFileName.ext.toLowerCase()]
-        }
-    }) as ImageItem;
-    childItems.push(childItem);
 }
 
 function processItems(collectionId: string, childItems: ImageItem[]): RangeItem[] {
