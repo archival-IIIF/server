@@ -22,7 +22,7 @@ export async function indexTexts(textItems: Text[]): Promise<void> {
     try {
         while (textItems.length > 0) {
             const body = textItems
-                .splice(0, 100)
+                .splice(0, 10)
                 .map(item => [
                     {index: {_index: config.elasticSearchIndexTexts, _id: item.id}},
                     item
@@ -30,7 +30,7 @@ export async function indexTexts(textItems: Text[]): Promise<void> {
 
             await getClient().bulk({
                 refresh: 'wait_for',
-                body: [].concat(...body as [])
+                operations: [].concat(...body as [])
             });
         }
     }
@@ -42,8 +42,7 @@ export async function indexTexts(textItems: Text[]): Promise<void> {
 export async function deleteTexts(collectionId: string): Promise<void> {
     await getClient().deleteByQuery({
         index: config.elasticSearchIndexTexts,
-        q: `collection_id:${collectionId}`,
-        body: {}
+        q: `collection_id:${collectionId}`
     });
 }
 

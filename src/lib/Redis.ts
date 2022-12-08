@@ -83,4 +83,3 @@ function createClientWithSocketOptions(name: string, redisSocketOptions: RedisSo
         connect();
     }
 })();
-

@@ -53,7 +53,7 @@ export async function indexItems(items: Item[]): Promise<void> {
 
             await getClient().bulk({
                 refresh: 'wait_for',
-                body: [].concat(...body as [])
+                operations: [].concat(...body as [])
             });
         }
     }
@@ -76,7 +76,7 @@ export async function updateItems(items: MinimalItem[]): Promise<void> {
                 ]);
 
             await getClient().bulk({
-                body: [].concat(...body as [])
+                operations: [].concat(...body as [])
             });
         }
     }
