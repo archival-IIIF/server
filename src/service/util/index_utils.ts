@@ -3,10 +3,12 @@ import {evictCache} from '../../lib/Cache.js';
 import {deleteItems} from '../../lib/Item.js';
 import {Item} from '../../lib/ItemInterfaces.js';
 import {CollectionIdParams, MetadataParams, TextItem, TextParams} from '../../lib/ServiceTypes.js';
+import {deleteTexts} from '../../lib/Text.js';
 
 export async function cleanup(id: string): Promise<void> {
     await Promise.all([
         deleteItems(id),
+        deleteTexts(id),
         evictCache('collection', id),
         evictCache('manifest', id),
         evictCache('annopage', id)
@@ -15,8 +17,6 @@ export async function cleanup(id: string): Promise<void> {
 
 export function runTasks(collectionId: string, items: Item[], textItems: TextItem[]): void {
     runTask<MetadataParams>('metadata', {collectionId});
-    if (textItems.length > 0)
-        runTask<TextParams>('text', {collectionId, items: textItems});
 
     // Run derivative services
     if (items.find(item => item.type === 'audio'))
@@ -25,4 +25,7 @@ export function runTasks(collectionId: string, items: Item[], textItems: TextIte
         runTask<CollectionIdParams>('pdf-image', {collectionId});
     if (items.find(item => item.type === 'video'))
         runTask<CollectionIdParams>('video-image', {collectionId});
+
+    for (const textItem of textItems)
+        runTask<TextParams>('text', {item: textItem});
 }

@@ -8,7 +8,7 @@ export type RootItemChildItemsParams = { rootItem: RootItem, childItems: Item[] 
 export type CollectionIdParams = { collectionId: string };
 export type CollectionPathParams = { collectionPath: string };
 export type ProcessUpdateParams = { type: string, query: string };
-export type TextParams = { collectionId: string, items: TextItem[] };
+export type TextParams = { item: TextItem };
 export type ReindexParams = { collectionIds?: string[], query?: string };
 export type AccessParams = { item: Item, ip?: string, identities?: string[] };
 export type MetadataParams = { metadataId?: string | null, rootId?: string, collectionId?: string };
@@ -16,6 +16,7 @@ export type MetadataParams = { metadataId?: string | null, rootId?: string, coll
 export type TextItem = {
     id: string,
     itemId: string,
+    collectionId: string,
     type: 'transcription' | 'translation',
     language: string | null,
     encoding: string | null,

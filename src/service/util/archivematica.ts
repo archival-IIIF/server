@@ -1,7 +1,7 @@
 import moment from 'moment';
 import {existsSync} from 'fs';
 import {basename, extname, join} from 'path';
-import {parseXml, Attribute, Document, Element} from 'libxmljs2';
+import {parseXml, Document, Element} from 'libxmljs2';
 
 import config from '../../lib/Config.js';
 import {createItem} from '../../lib/Item.js';
@@ -336,6 +336,7 @@ function readText(rootId: string, label: string, mets: Document, objects: string
     return {
         id,
         itemId,
+        collectionId: rootId,
         type: typeAndLang.type,
         language: typeAndLang.language,
         encoding,

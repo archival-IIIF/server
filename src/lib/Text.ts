@@ -18,24 +18,16 @@ export interface Text {
     structure: TextStructure | null;
 }
 
-export async function indexTexts(textItems: Text[]): Promise<void> {
+export async function indexText(textItem: Text): Promise<void> {
     try {
-        while (textItems.length > 0) {
-            const body = textItems
-                .splice(0, 10)
-                .map(item => [
-                    {index: {_index: config.elasticSearchIndexTexts, _id: item.id}},
-                    item
-                ]);
-
-            await getClient().bulk({
-                refresh: 'wait_for',
-                operations: [].concat(...body as [])
-            });
-        }
+        await getClient().index({
+            index: config.elasticSearchIndexTexts,
+            id: textItem.id,
+            document: textItem
+        });
     }
     catch (e) {
-        throw new Error('Failed to index the text items!');
+        throw new Error('Failed to index the text item!');
     }
 }
 

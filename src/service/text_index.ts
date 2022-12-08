@@ -2,40 +2,37 @@ import iconv from 'iconv-lite';
 import {join, extname} from 'path';
 
 import config from '../lib/Config.js';
+import {indexText} from '../lib/Text.js';
 import {TextParams} from '../lib/ServiceTypes.js';
 import {readFileAsync} from '../lib/Promisified.js';
-import {indexTexts, deleteTexts} from '../lib/Text.js';
 
 import fixCommonUTF8Problems from './util/unicode_debug_mapping.js';
 import {getTextFromStructure, readAlto, TextStructure} from '../lib/TextStructure.js';
 
-export default async function processText({collectionId, items}: TextParams) {
+export default async function processText({item}: TextParams) {
     try {
-        const textItems = await Promise.all(items.map(async item => {
-            const path = join(config.dataRootPath, config.collectionsRelativePath, item.uri);
+        const path = join(config.dataRootPath, config.collectionsRelativePath, item.uri);
 
-            const source = getTextSource(path);
-            const structure = await getTextStructure(path);
-            const text = await getText(path, item.encoding, structure);
+        const source = getTextSource(path);
+        const structure = await getTextStructure(path);
+        const text = await getText(path, item.encoding, structure);
 
-            return {
+        if (text !== '') {
+            await indexText({
                 id: item.id,
                 item_id: item.itemId,
-                collection_id: collectionId,
+                collection_id: item.collectionId,
                 type: item.type,
                 language: item.language,
                 uri: item.uri,
                 source,
                 text,
                 structure
-            };
-        }));
-
-        await deleteTexts(collectionId);
-        await indexTexts(textItems.filter(textItem => textItem.text !== ''));
+            });
+        }
     }
     catch (e: any) {
-        const err = new Error(`Failed to process the texts for ${collectionId}: ${e.message}`);
+        const err = new Error(`Failed to process the text with id ${item.id} and item ${item.itemId} for ${item.collectionId}: ${e.message}`);
         err.stack = e.stack;
         throw err;
     }
