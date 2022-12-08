@@ -68,6 +68,9 @@ async function serveImage(relativePath: string, max: number | null,
     const response = await got(url, {
         responseType: 'buffer',
         throwHttpErrors: false,
+        timeout: {
+            request: 10000
+        },
         searchParams: max ? {max} : {},
     });
 

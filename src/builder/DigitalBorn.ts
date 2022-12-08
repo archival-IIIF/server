@@ -19,7 +19,8 @@ import {
     createCanvas,
     addMetadata,
     addThumbnail,
-    getType, setAuthServices
+    getType,
+    setAuthServices
 } from './PresentationUtils.js';
 import {PresentationBuilder} from './PresentationBuilder.js';
 import {accessUri, iconUri, originalUri} from './UriHelper.js';

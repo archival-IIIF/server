@@ -36,12 +36,12 @@ describe('Task', () => {
 
     describe('#runTask()', () => {
         it('should run local tasks; do not send to queue', async () => {
-            await runTask('local-test', {echo: 'Hello!'}, '123');
+            await runTask('local-test', {echo: 'Hello!'});
             expect(redis.rPush).to.have.not.been.called;
         });
 
         it('should send remote or unknown tasks to the queue', async () => {
-            await runTask('not-local-test', {echo: 'Hello!'}, '123');
+            await runTask('not-local-test', {echo: 'Hello!'});
             expect(redis.rPush).to.have.been.calledOnce;
         });
     });

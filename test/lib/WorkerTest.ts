@@ -16,7 +16,7 @@ describe('Worker', () => {
             multi: () => redisMulti,
             setEx: sinon.stub(),
             lRem: sinon.spy(),
-            brPopLPush: sinon.stub().resolves(undefined),
+            blMove: sinon.stub().resolves(undefined),
         };
 
         redisMulti = {
@@ -33,8 +33,8 @@ describe('Worker', () => {
         it('should monitor a queue', () => {
             waitForTask('test', async () => null, [], redis, redis);
 
-            expect(redis.brPopLPush).to.be.calledOnce;
-            expect(redis.brPopLPush).to.be.calledWithExactly('tasks:test', 'tasks:test:progress', 0);
+            expect(redis.blMove).to.be.calledOnce;
+            expect(redis.blMove).to.be.calledWithExactly('tasks:test', 'tasks:test:progress', 'RIGHT', 'LEFT', 0);
         });
     });
 });

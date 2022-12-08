@@ -88,8 +88,7 @@ export async function updateItems(items: MinimalItem[]): Promise<void> {
 export async function deleteItems(collectionId: string): Promise<void> {
     await getClient().deleteByQuery({
         index: config.elasticSearchIndexItems,
-        q: `collection_id:"${collectionId}"`,
-        body: {}
+        q: `collection_id:"${collectionId}"`
     });
 }
 
