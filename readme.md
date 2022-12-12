@@ -416,9 +416,9 @@ Can only be used by an administrator with a valid access token.
 
 **Method**: `POST`
 
-**Parameters**: `token`, `collection`, `from`, `to`
+**Parameters**: `token`, `id`, `from`, `to`
 
-Registers a token which may give access to a specific collection for a specific period of time. Can only be used by an
+Registers a token which may give access to a specific id for a specific period of time. Can only be used by an
 administrator with a valid access token.
 
 ## Installation

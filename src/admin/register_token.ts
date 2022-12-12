@@ -5,15 +5,15 @@ import {Token} from '../lib/Security.js';
 import HttpError from '../lib/HttpError.js';
 import {getPersistentClient} from '../lib/Redis.js';
 
-export default async function registerToken(token: string | undefined, collection: string | undefined,
+export default async function registerToken(token: string | undefined, id: string | undefined,
                                             from: moment.Moment | string | undefined,
                                             to: moment.Moment | string | undefined): Promise<Token> {
     const client = getPersistentClient();
     if (!client)
         throw new HttpError(400, 'There is no persistent Redis server configured for auth!');
 
-    if (!collection)
-        throw new HttpError(400, 'Please provide a collection!');
+    if (!id)
+        throw new HttpError(400, 'Please provide an id!');
 
     token = token || uuid();
     from = from ? moment(from) : undefined;
@@ -33,17 +33,17 @@ export default async function registerToken(token: string | undefined, collectio
         ? JSON.parse(tokenInfoResult)
         : {
             token,
-            collection_ids: [],
+            ids: [],
             from: from ? from.toDate() : null,
             to: to ? to.toDate() : null
         };
 
-    if (!tokenInfo.ids.includes(collection))
-        tokenInfo.ids.push(collection);
+    if (!tokenInfo.ids.includes(id))
+        tokenInfo.ids.push(id);
 
     let multi: any = client.multi().set(`token:${token}`, JSON.stringify(tokenInfo));
     if (tokenInfo.to)
-        multi = multi.expireat(`token:${token}`, moment(tokenInfo.to).unix());
+        multi = multi.expireAt(`token:${token}`, moment(tokenInfo.to).unix());
 
     await multi.exec();
 

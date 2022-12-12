@@ -98,6 +98,6 @@ router.post('/process_update', async ctx => {
 });
 
 router.post('/register_token', async ctx => {
-    const body = ctx.request.body as Record<'token' | 'collection' | 'from' | 'to', string | undefined>;
-    ctx.body = await registerToken(body.token, body.collection, body.from, body.to);
+    const body = ctx.request.body as Record<'token' | 'id' | 'from' | 'to', string | undefined>;
+    ctx.body = await registerToken(body.token, body.id, body.from, body.to);
 });
