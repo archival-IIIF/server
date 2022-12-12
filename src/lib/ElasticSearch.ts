@@ -57,111 +57,109 @@ export function setElasticSearchClient(client: Client): void {
         if (!itemsExists) {
             await client.indices.create({
                 index: config.elasticSearchIndexItems,
-                body: {
-                    mappings: {
-                        dynamic_templates: [{
-                            strings_as_keywords: {
-                                match_mapping_type: 'string',
-                                mapping: {
+                mappings: {
+                    dynamic_templates: [{
+                        strings_as_keywords: {
+                            match_mapping_type: 'string',
+                            mapping: {
+                                type: 'keyword'
+                            }
+                        }
+                    }],
+                    properties: {
+                        id: {
+                            type: 'keyword'
+                        },
+                        parent_id: {
+                            type: 'keyword'
+                        },
+                        parent_ids: {
+                            type: 'keyword'
+                        },
+                        range_ids: {
+                            type: 'keyword'
+                        },
+                        collection_id: {
+                            type: 'keyword'
+                        },
+                        metadata_id: {
+                            type: 'keyword'
+                        },
+                        type: {
+                            type: 'keyword'
+                        },
+                        formats: {
+                            type: 'keyword'
+                        },
+                        label: {
+                            type: 'text',
+                            fields: {
+                                raw: {
                                     type: 'keyword'
                                 }
                             }
-                        }],
-                        properties: {
-                            id: {
-                                type: 'keyword'
-                            },
-                            parent_id: {
-                                type: 'keyword'
-                            },
-                            parent_ids: {
-                                type: 'keyword'
-                            },
-                            range_ids: {
-                                type: 'keyword'
-                            },
-                            collection_id: {
-                                type: 'keyword'
-                            },
-                            metadata_id: {
-                                type: 'keyword'
-                            },
-                            type: {
-                                type: 'keyword'
-                            },
-                            formats: {
-                                type: 'keyword'
-                            },
-                            label: {
-                                type: 'text',
-                                fields: {
-                                    raw: {
-                                        type: 'keyword'
-                                    }
+                        },
+                        description: {
+                            type: 'text'
+                        },
+                        authors: {
+                            type: 'nested',
+                            properties: {
+                                type: {
+                                    type: 'keyword'
+                                },
+                                name: {
+                                    type: 'text'
                                 }
-                            },
-                            description: {
-                                type: 'text'
-                            },
-                            authors: {
-                                type: 'nested',
-                                properties: {
-                                    type: {
-                                        type: 'keyword'
-                                    },
-                                    name: {
-                                        type: 'text'
-                                    }
+                            }
+                        },
+                        dates: {
+                            type: 'keyword'
+                        },
+                        physical: {
+                            type: 'keyword'
+                        },
+                        size: {
+                            type: 'long'
+                        },
+                        order: {
+                            type: 'short',
+                        },
+                        created_at: {
+                            type: 'date'
+                        },
+                        width: {
+                            type: 'short'
+                        },
+                        height: {
+                            type: 'short'
+                        },
+                        resolution: {
+                            type: 'short'
+                        },
+                        duration: {
+                            type: 'short'
+                        },
+                        metadata: {
+                            type: 'flattened'
+                        },
+                        original: {
+                            properties: {
+                                uri: {
+                                    type: 'keyword'
+                                },
+                                puid: {
+                                    type: 'keyword'
                                 }
-                            },
-                            dates: {
-                                type: 'keyword'
-                            },
-                            physical: {
-                                type: 'keyword'
-                            },
-                            size: {
-                                type: 'long'
-                            },
-                            order: {
-                                type: 'short',
-                            },
-                            created_at: {
-                                type: 'date'
-                            },
-                            width: {
-                                type: 'short'
-                            },
-                            height: {
-                                type: 'short'
-                            },
-                            resolution: {
-                                type: 'short'
-                            },
-                            duration: {
-                                type: 'short'
-                            },
-                            metadata: {
-                                type: 'flattened'
-                            },
-                            original: {
-                                properties: {
-                                    uri: {
-                                        type: 'keyword'
-                                    },
-                                    puid: {
-                                        type: 'keyword'
-                                    }
-                                }
-                            },
-                            access: {
-                                properties: {
-                                    uri: {
-                                        type: 'keyword'
-                                    },
-                                    puid: {
-                                        type: 'keyword'
-                                    }
+                            }
+                        },
+                        access: {
+                            properties: {
+                                uri: {
+                                    type: 'keyword'
+                                },
+                                puid: {
+                                    type: 'keyword'
                                 }
                             }
                         }
@@ -176,72 +174,70 @@ export function setElasticSearchClient(client: Client): void {
         if (!textsExists) {
             await client.indices.create({
                 index: config.elasticSearchIndexTexts,
-                body: {
-                    settings: {
-                        analysis: {
-                            filter: {
-                                autocomplete_filter: {
-                                    type: 'edge_ngram',
-                                    min_gram: 1,
-                                    max_gram: 8
-                                },
-                                truncate_filter: {
-                                    type: 'truncate',
-                                    length: 8
-                                }
+                settings: {
+                    analysis: {
+                        filter: {
+                            autocomplete_filter: {
+                                type: 'edge_ngram',
+                                min_gram: 1,
+                                max_gram: 8
                             },
-                            analyzer: {
-                                autocomplete: {
-                                    type: 'custom',
-                                    tokenizer: 'standard',
-                                    filter: ['lowercase', 'autocomplete_filter']
-                                },
-                                autocomplete_search: {
-                                    type: 'custom',
-                                    tokenizer: 'standard',
-                                    filter: ['lowercase', 'truncate_filter']
-                                },
+                            truncate_filter: {
+                                type: 'truncate',
+                                length: 8
                             }
+                        },
+                        analyzer: {
+                            autocomplete: {
+                                type: 'custom',
+                                tokenizer: 'standard',
+                                filter: ['lowercase', 'autocomplete_filter']
+                            },
+                            autocomplete_search: {
+                                type: 'custom',
+                                tokenizer: 'standard',
+                                filter: ['lowercase', 'truncate_filter']
+                            },
                         }
-                    },
-                    mappings: {
-                        properties: {
-                            id: {
-                                type: 'keyword'
-                            },
-                            item_id: {
-                                type: 'keyword'
-                            },
-                            collection_id: {
-                                type: 'keyword'
-                            },
-                            type: {
-                                type: 'keyword'
-                            },
-                            language: {
-                                type: 'keyword'
-                            },
-                            uri: {
-                                type: 'keyword'
-                            },
-                            source: {
-                                type: 'keyword'
-                            },
-                            text: {
-                                type: 'text',
-                                index_options: 'offsets',
-                                fields: {
-                                    autocomplete: {
-                                        type: 'text',
-                                        analyzer: 'autocomplete',
-                                        search_analyzer: 'autocomplete_search'
-                                    }
+                    }
+                },
+                mappings: {
+                    properties: {
+                        id: {
+                            type: 'keyword'
+                        },
+                        item_id: {
+                            type: 'keyword'
+                        },
+                        collection_id: {
+                            type: 'keyword'
+                        },
+                        type: {
+                            type: 'keyword'
+                        },
+                        language: {
+                            type: 'keyword'
+                        },
+                        uri: {
+                            type: 'keyword'
+                        },
+                        source: {
+                            type: 'keyword'
+                        },
+                        text: {
+                            type: 'text',
+                            index_options: 'offsets',
+                            fields: {
+                                autocomplete: {
+                                    type: 'text',
+                                    analyzer: 'autocomplete',
+                                    search_analyzer: 'autocomplete_search'
                                 }
-                            },
-                            structure: {
-                                type: 'object',
-                                enabled: false
                             }
+                        },
+                        structure: {
+                            type: 'object',
+                            enabled: false
                         }
                     }
                 }

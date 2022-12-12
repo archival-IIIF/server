@@ -43,7 +43,7 @@ export default async function registerToken(token: string | undefined, collectio
 
     let multi: any = client.multi().set(`token:${token}`, JSON.stringify(tokenInfo));
     if (tokenInfo.to)
-        multi = multi.expireat(`token:${token}`, moment(tokenInfo.to).unix());
+        multi = multi.expireAt(`token:${token}`, moment(tokenInfo.to).unix());
 
     await multi.exec();
 
