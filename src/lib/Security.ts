@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import {Context} from 'koa';
 import {v4 as uuid} from 'uuid';
 import {inRange} from 'range_check';
@@ -128,13 +128,15 @@ export async function checkTokenDb(tokens: string[]): Promise<Token[]> {
                 if (!tokenInfo)
                     return false;
 
-                if (tokenInfo.from && tokenInfo.to && !moment().isBetween(moment(tokenInfo.from), moment(tokenInfo.to)))
-                    return false;
+                const now = dayjs();
+                const from = tokenInfo.from ? dayjs(tokenInfo.from) : null;
+                const to = tokenInfo.to ? dayjs(tokenInfo.to) : null;
 
-                if (tokenInfo.from && !moment().isAfter(moment(tokenInfo.from)))
+                if (from && to && !now.isAfter(from) && !now.isBefore(to))
                     return false;
-
-                return !(tokenInfo.to && !moment().isBefore(moment(tokenInfo.to)));
+                if (from && !now.isAfter(from))
+                    return false;
+                return !(to && !now.isBefore(to));
             });
     }
     catch (err) {

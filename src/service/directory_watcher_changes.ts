@@ -1,8 +1,8 @@
 import {existsSync} from 'fs';
 import {dirname, basename, resolve} from 'path';
 
+import dayjs from 'dayjs';
 import {move} from 'fs-extra';
-import moment from 'moment';
 import chokidar from 'chokidar';
 
 import config from '../lib/Config.js';
@@ -44,11 +44,11 @@ export default async function watchDirectoryForChanges(): Promise<void> {
     });
 
     setInterval(() => {
-        const maxAgeLastChange = moment().subtract(10, 'minutes');
+        const maxAgeLastChange = dayjs().subtract(10, 'minute');
 
         for (const path of Object.keys(collectionsWatching)) {
             if (collectionsWatching[path]) {
-                const lastChange = moment(collectionsWatching[path] as Date);
+                const lastChange = dayjs(collectionsWatching[path] as Date);
                 if (lastChange.isBefore(maxAgeLastChange))
                     startIndexForNewCollection(path);
             }

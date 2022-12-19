@@ -12,7 +12,7 @@ describe('Pronom', () => {
             'fmt/43': {
                 id: 668, name: 'JPEG File Interchange Format',
                 url: 'https://www.nationalarchives.gov.uk/PRONOM/Format/proFormatSearch.aspx?status=detailReport&id=668',
-                extensions: ['jpe', 'jpeg', 'jpg'], mime: 'image/jpeg'
+                extensions: ['jfi', 'jfif', 'jif', 'jpe', 'jpeg', 'jpg'], mime: 'image/jpeg'
             },
             'fmt/199': {
                 id: 924, name: 'MPEG-4 Media File',

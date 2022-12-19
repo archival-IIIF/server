@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import readline from 'readline';
 
 export function getRootId(collectionId: string): string {
@@ -49,7 +49,7 @@ export async function findAccessDate(collectionId: string, rl: readline.Interfac
             }
 
             if (key === 'openbaar vanaf(1)')
-                accessDatePerLevel[accessDatePerLevel.length - 1][1] = moment(value, 'DD-MM-YY').toDate();
+                accessDatePerLevel[accessDatePerLevel.length - 1][1] = dayjs(value, 'DD-MM-YY').toDate();
         }
     }
 

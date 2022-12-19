@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import {AccessParams} from '../../lib/ServiceTypes.js';
 import {AccessState, Access} from '../../lib/Security.js';
@@ -14,7 +14,7 @@ export default async function hasAccess({item, ip, identities = []}: AccessParam
     if (!accessDate)
         return {state: AccessState.OPEN};
 
-    if (moment().isAfter(moment(accessDate)))
+    if (dayjs().isAfter(dayjs(accessDate)))
         return {state: AccessState.OPEN};
 
     return {state: AccessState.CLOSED};

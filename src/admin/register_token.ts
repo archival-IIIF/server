@@ -1,13 +1,13 @@
+import dayjs from 'dayjs';
 import {v4 as uuid} from 'uuid';
-import moment from 'moment';
 
 import {Token} from '../lib/Security.js';
 import HttpError from '../lib/HttpError.js';
 import {getPersistentClient} from '../lib/Redis.js';
 
 export default async function registerToken(token: string | undefined, id: string | undefined,
-                                            from: moment.Moment | string | undefined,
-                                            to: moment.Moment | string | undefined): Promise<Token> {
+                                            from: dayjs.Dayjs | string | undefined,
+                                            to: dayjs.Dayjs | string | undefined): Promise<Token> {
     const client = getPersistentClient();
     if (!client)
         throw new HttpError(400, 'There is no persistent Redis server configured for auth!');
@@ -16,8 +16,8 @@ export default async function registerToken(token: string | undefined, id: strin
         throw new HttpError(400, 'Please provide an id!');
 
     token = token || uuid();
-    from = from ? moment(from) : undefined;
-    to = to ? moment(to) : undefined;
+    from = from ? dayjs(from) : undefined;
+    to = to ? dayjs(to) : undefined;
 
     if (from && !from.isValid())
         throw new HttpError(400, 'Please provide a valid from date!');
@@ -43,7 +43,7 @@ export default async function registerToken(token: string | undefined, id: strin
 
     let multi: any = client.multi().set(`token:${token}`, JSON.stringify(tokenInfo));
     if (tokenInfo.to)
-        multi = multi.expireAt(`token:${token}`, moment(tokenInfo.to).unix());
+        multi = multi.expireAt(`token:${token}`, dayjs(tokenInfo.to).unix());
 
     await multi.exec();
 

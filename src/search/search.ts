@@ -52,31 +52,29 @@ async function search(query: string, filters: { [field: string]: string | undefi
     const response = await getClient().search<Text>({
         index: config.elasticSearchIndexTexts,
         size: config.maxSearchResults,
-        body: {
-            query: {
-                bool: {
-                    must: {
-                        [isPhraseMatch ? 'match_phrase' : 'match']: {
-                            text: {
-                                query,
-                                fuzziness: !isPhraseMatch ? 'AUTO' : undefined
-                            }
+        query: {
+            bool: {
+                must: {
+                    [isPhraseMatch ? 'match_phrase' : 'match']: {
+                        text: {
+                            query,
+                            fuzziness: !isPhraseMatch ? 'AUTO' : undefined
                         }
-                    },
-                    should: undefined,
-                    filter: {
-                        term: filters
                     }
+                },
+                should: undefined,
+                filter: {
+                    term: filters
                 }
-            },
-            highlight: {
-                type: 'unified',
-                number_of_fragments: 0,
-                pre_tags: [PRE_TAG],
-                post_tags: [POST_TAG],
-                fields: {
-                    text: {}
-                }
+            }
+        },
+        highlight: {
+            type: 'unified',
+            number_of_fragments: 0,
+            pre_tags: [PRE_TAG],
+            post_tags: [POST_TAG],
+            fields: {
+                text: {}
             }
         }
     });
@@ -93,32 +91,30 @@ async function autocomplete(query: string, filters: { [field: string]: string | 
     const response = await getClient().search({
         index: config.elasticSearchIndexTexts,
         size: config.maxSearchResults,
-        body: {
-            _source: false,
-            query: {
-                bool: {
-                    must: {
-                        match_phrase: {
-                            'text.autocomplete': {
-                                query
-                            }
+        _source: false,
+        query: {
+            bool: {
+                must: {
+                    match_phrase: {
+                        'text.autocomplete': {
+                            query
                         }
-                    },
-                    should: undefined,
-                    filter: {
-                        term: filters
                     }
+                },
+                should: undefined,
+                filter: {
+                    term: filters
                 }
-            },
-            highlight: {
-                boundary_scanner: 'word',
-                fragmenter: 'simple',
-                number_of_fragments: 100,
-                pre_tags: [''],
-                post_tags: [''],
-                fields: {
-                    'text.autocomplete': {}
-                }
+            }
+        },
+        highlight: {
+            boundary_scanner: 'word',
+            fragmenter: 'simple',
+            number_of_fragments: 100,
+            pre_tags: [''],
+            post_tags: [''],
+            fields: {
+                'text.autocomplete': {}
             }
         }
     });

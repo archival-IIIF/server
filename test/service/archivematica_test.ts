@@ -811,6 +811,7 @@ describe('archivematica', () => {
                 ]);
                 expect(textItems).to.deep.equal([
                     {
+                        'collectionId': 'test',
                         'id': 'cf34ab26-d4a2-4b73-99bf-9da8171084b0',
                         'itemId': 'b8b7aca7-0a0d-452e-a98d-94c8e7607aa5',
                         'type': 'transcription',
@@ -818,6 +819,7 @@ describe('archivematica', () => {
                         'encoding': 'ISO-8859-1',
                         'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/cf34ab26-d4a2-4b73-99bf-9da8171084b0-test_01.txt')
                     }, {
+                        'collectionId': 'test',
                         'id': 'cf32e677-59d9-4245-ba1b-ba56572a16b9',
                         'itemId': '88348a48-c658-4150-a1bb-e4b05d6f1f2b',
                         'type': 'transcription',
@@ -825,6 +827,7 @@ describe('archivematica', () => {
                         'encoding': 'UTF-8',
                         'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/cf32e677-59d9-4245-ba1b-ba56572a16b9-test_03.txt')
                     }, {
+                        'collectionId': 'test',
                         'id': '029f77b2-f464-4746-9312-bb58603c91e3',
                         'itemId': 'a236198f-1844-4771-baac-59712c767fbe',
                         'type': 'transcription',
@@ -832,6 +835,7 @@ describe('archivematica', () => {
                         'encoding': 'UTF-8',
                         'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/029f77b2-f464-4746-9312-bb58603c91e3-test_04.txt')
                     }, {
+                        'collectionId': 'test',
                         'id': 'ddc232cf-9a29-45b1-89f0-da4b39ff73ee',
                         'itemId': '62a1e40c-af27-472c-b870-818d6cb6464b',
                         'type': 'transcription',
@@ -839,6 +843,7 @@ describe('archivematica', () => {
                         'encoding': 'ISO-8859-1',
                         'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/ddc232cf-9a29-45b1-89f0-da4b39ff73ee-test_05.txt')
                     }, {
+                        'collectionId': 'test',
                         'id': 'ebd8c23a-5e65-49ee-8b82-f6fa269d8ace',
                         'itemId': '76cf7fac-c2f9-412c-b773-2872777646f6',
                         'type': 'transcription',
@@ -846,6 +851,7 @@ describe('archivematica', () => {
                         'encoding': 'UTF-8',
                         'uri': join(testRootDirectory, 'test-archivematica-collections/digitized-images/objects/ebd8c23a-5e65-49ee-8b82-f6fa269d8ace-test_06.txt')
                     }, {
+                        'collectionId': 'test',
                         'id': '833c9e39-399f-4b60-b1ec-7d407ced96e4',
                         'itemId': '62008a42-e2e7-4446-95f2-c5aa70ceacf7',
                         'type': 'transcription',

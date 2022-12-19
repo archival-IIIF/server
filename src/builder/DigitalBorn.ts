@@ -1,5 +1,5 @@
+import dayjs from 'dayjs';
 import * as path from 'path';
-import moment from 'moment';
 
 import {Base, Collection, Manifest, Resource} from '@archival-iiif/presentation-builder/v3';
 
@@ -126,7 +126,7 @@ async function addMetadataDB(base: Base, root: Item, md: BasicIIIFMetadata): Pro
         const fileSize = `${(root.size / Math.pow(1024, steps)).toFixed(2)} ${['bytes', 'KB', 'MB', 'GB', 'TB'][steps]}`;
         base.setMetadata('Original file size', root.size > 0 ? fileSize : '0 bytes');
 
-        const date = moment(root.created_at).format('MMMM Do YYYY');
+        const date = dayjs(root.created_at).format('MMMM Do YYYY');
         base.setMetadata('Original modification date', date);
     }
 

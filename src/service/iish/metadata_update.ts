@@ -1,5 +1,5 @@
 import got from 'got';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import {parseXml, Element} from 'libxmljs2';
 
 import config from '../../lib/Config.js';
@@ -16,7 +16,7 @@ export default async function updateMetadata(): Promise<void> {
         throw new Error('Failed to run the update metadata service: there is no OAI URL configured!');
 
     try {
-        const fromDate = moment().subtract(5, 'days').format('YYYY-MM-DD');
+        const fromDate = dayjs().subtract(5, 'day').format('YYYY-MM-DD');
         for (const oaiIdentifier of await getOAIIdentifiersOfUpdated(fromDate, config.metadataOaiUrl))
             runTask<MetadataParams>('metadata', {metadataId: oaiIdentifier});
     }

@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import {existsSync} from 'fs';
 import {basename, extname, join} from 'path';
 import {parseXml, Document, Element} from 'libxmljs2';
@@ -234,8 +234,7 @@ function readFile(rootId: string, label: string, mets: Document, objects: string
     const size = sizeElem ? parseInt(sizeElem.text()) : null;
 
     const dateCreatedByAppElem = objCharacteristics.get<Element>(`.//${premisNS}:creatingApplication/${premisNS}:dateCreatedByApplication`, ns);
-    const creationDate = dateCreatedByAppElem
-        ? moment(dateCreatedByAppElem.text(), 'YYYY-MM-DD').toDate() : null;
+    const creationDate = dateCreatedByAppElem ? dayjs(dateCreatedByAppElem.text(), 'YYYY-MM-DD').toDate() : null;
 
     const pronomKey = objCharacteristics.get<Element>(`./${premisNS}:format/${premisNS}:formatRegistry/${premisNS}:formatRegistryName[text()="PRONOM"]/../${premisNS}:formatRegistryKey`, ns)?.text() || null;
     const name = basename(originalName);

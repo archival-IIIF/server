@@ -98,7 +98,7 @@ describe('Item', () => {
     describe('#indexItems()', () => {
         it('should send a valid bulk index action to ElasticSearch', async () => {
             const items = [{id: '123', label: 'A'}, {id: '456', label: 'B'}, {id: '789', label: 'C'}] as Item[];
-            const body = [
+            const operations = [
                 {index: {_index: 'items', _id: '123'}},
                 {id: '123', label: 'A'},
                 {index: {_index: 'items', _id: '456'}},
@@ -109,7 +109,7 @@ describe('Item', () => {
 
             await indexItems(items);
 
-            expect(elasticSearch.bulk).to.have.been.calledWithExactly({refresh: 'wait_for', body});
+            expect(elasticSearch.bulk).to.have.been.calledWithExactly({refresh: 'wait_for', operations});
         });
 
         it('should send no bulk index action to ElasticSearch on empty input', async () => {
@@ -121,7 +121,7 @@ describe('Item', () => {
     describe('#updateItems()', () => {
         it('should send a valid bulk update action to ElasticSearch', async () => {
             const items = [{id: '123', label: 'A'}, {id: '456', label: 'B'}, {id: '789', label: 'C'}] as Item[];
-            const body = [
+            const operations = [
                 {update: {_index: 'items', _id: '123'}},
                 {
                     doc: {id: '123', label: 'A'},
@@ -141,7 +141,7 @@ describe('Item', () => {
 
             await updateItems(items);
 
-            expect(elasticSearch.bulk).to.have.been.calledWithExactly({body});
+            expect(elasticSearch.bulk).to.have.been.calledWithExactly({operations});
         });
 
         it('should send no bulk update action to ElasticSearch on empty input', async () => {
