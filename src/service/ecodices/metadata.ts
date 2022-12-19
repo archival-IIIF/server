@@ -1,23 +1,24 @@
 import {join} from 'path';
-import {existsSync} from 'fs';
+import readline from 'readline';
 import {parseXml, Element} from 'libxmljs2';
+import {createReadStream, existsSync} from 'fs';
 
 import logger from '../../lib/Logger.js';
 import config from '../../lib/Config.js';
 import {MetadataParams} from '../../lib/ServiceTypes.js';
-import {readdirAsync, readFileAsync} from '../../lib/Promisified.js';
+import {readFileAsync} from '../../lib/Promisified.js';
 import {getChildItems, getItem, updateItems} from '../../lib/Item.js';
 import {Item, Metadata, MinimalItem} from '../../lib/ItemInterfaces.js';
 
 import {parseLabel, parsePage, equalsPages} from './util/fileinfo.js';
 
 const ns = {
-    'cmd': 'http://www.clarin.eu/cmd/'
+    'cmd': 'http://www.clarin.eu/cmd/1'
 };
 
 const languageNames = new Intl.DisplayNames(['en'], {type: 'language'});
 
-export default async function processMetadata({metadataId, rootId, collectionId}: MetadataParams): Promise<void> {
+export default async function processMetadata({metadataId, collectionId}: MetadataParams): Promise<void> {
     if (!config.metadataPath)
         throw new Error('Cannot process metadata, as there is no metadata path configured!');
 
@@ -39,16 +40,24 @@ export default async function processMetadata({metadataId, rootId, collectionId}
 }
 
 async function findMetadataIdByCollectionId(id: string): Promise<string | null> {
-    for (const file of await readdirAsync(config.metadataPath as string)) {
-        const path = join(config.metadataPath as string, file);
-        const cmdiXml = await readFileAsync(path, 'utf8');
-        const cmdi = parseXml(cmdiXml);
+    const rl = readline.createInterface({
+        input: createReadStream(join(config.metadataPath as string, 'mapping.csv'))
+    });
 
-        const eCodicesRoot = cmdi.get<Element>('//cmd:eCodices/cmd:Source', ns);
-        if (eCodicesRoot) {
-            const {collectionId} = getIdentifier(eCodicesRoot);
+    for await (const line of rl) {
+        const split = line.split(',');
+        if (split.length > 0) {
+            const collectionId = split[0]
+                .replaceAll('"', '')
+                .replaceAll(' ', '_')
+                .trim();
+
+            const metadataId = split[1]
+                .replaceAll('"', '')
+                .trim();
+
             if (collectionId === id)
-                return file.replace('.xml', '');
+                return metadataId;
         }
     }
 
@@ -56,18 +65,18 @@ async function findMetadataIdByCollectionId(id: string): Promise<string | null> 
 }
 
 async function updateWithMetadataId(metadataId: string): Promise<void> {
-    const path = join(config.metadataPath as string, `${metadataId}.xml`);
+    const path = join(config.metadataPath as string, metadataId);
     if (!existsSync(path))
-        throw new Error(`No metadata file found for ${metadataId} in ${path}`);
+        throw new Error(`No metadata file ${metadataId} found in ${path}`);
 
     const cmdiXml = await readFileAsync(path, 'utf8');
     const cmdi = parseXml(cmdiXml);
 
-    const eCodicesSource = cmdi.get<Element>('//cmd:eCodices/cmd:Source', ns);
-    if (!eCodicesSource)
-        throw new Error('Missing an eCodices Source element!');
+    const eCodicesRoot = cmdi.get<Element>('//cmd:eCodices', ns);
+    if (!eCodicesRoot)
+        throw new Error('Missing an eCodices root element!');
 
-    const {parentId, collectionId} = getIdentifier(eCodicesSource);
+    const {parentId, collectionId} = getIdentifier(eCodicesRoot);
 
     const item = await getItem(collectionId);
     if (!item || item.type !== 'root')
@@ -75,25 +84,27 @@ async function updateWithMetadataId(metadataId: string): Promise<void> {
 
     const childItems = await getChildItems(item);
 
-    const items = extractMetadata(metadataId, parentId, collectionId, eCodicesSource);
-    const {items: childUpdatedItems, ranges} = extractRanges(childItems, collectionId, eCodicesSource);
+    const items = extractMetadata(metadataId, parentId, collectionId, eCodicesRoot);
+    const {items: childUpdatedItems, ranges} = extractRanges(childItems, collectionId, eCodicesRoot);
 
     await updateItems(items.concat(childUpdatedItems).concat(ranges));
 
     logger.debug(`Updated metadata for ${metadataId}`);
 }
 
-function extractMetadata(metadataId: string, parentId: string, collectionId: string, eCodicesSource: Element): MinimalItem[] {
-    const settlement = getTexts(eCodicesSource, './cmd:Identifier/cmd:Settlement/cmd:settlement', true)[0];
-    const repository = getTexts(eCodicesSource, './cmd:Identifier/cmd:Repository/cmd:repository', true)[0];
+function extractMetadata(metadataId: string, parentId: string, collectionId: string, eCodicesRoot: Element): MinimalItem[] {
+    const settlement = getTexts(eCodicesRoot, './cmd:Source/cmd:Identifier/cmd:Settlement/cmd:settlement', true)[0];
+    const repository = getTexts(eCodicesRoot, './cmd:Source/cmd:Identifier/cmd:Repository/cmd:repository', true)[0];
 
-    const title = getTexts(eCodicesSource, './cmd:Head/cmd:Title/cmd:title', true)[0];
-    const summary = getTexts(eCodicesSource, './cmd:Contents/cmd:Summary/cmd:summary', true)[0];
-    const physDesc = getTexts(eCodicesSource, './cmd:PhysDesc/cmd:additions');
-    const formats = getTexts(eCodicesSource, './cmd:PhysDesc/cmd:ObjectDesc/cmd:form');
-    const acquisitor = getTexts(eCodicesSource, './cmd:History/cmd:Acquisition/cmd:PersName/cmd:persName');
-    const originDates = eCodicesSource
-        .find<Element>('./cmd:Head/cmd:OrigDate', ns)
+    const license = getTexts(eCodicesRoot, './cmd:Publication/cmd:Availability/cmd:licenceTarget', true)[0];
+
+    const title = getTexts(eCodicesRoot, './cmd:Source/cmd:Head/cmd:Title/cmd:title', true)[0];
+    const summary = getTexts(eCodicesRoot, './cmd:Source/cmd:Contents/cmd:Summary/cmd:summary', true)[0];
+    const physDesc = getTexts(eCodicesRoot, './cmd:Source/cmd:PhysDesc/cmd:additions');
+    const formats = getTexts(eCodicesRoot, './cmd:Source/cmd:PhysDesc/cmd:ObjectDesc/cmd:form');
+    const acquisitor = getTexts(eCodicesRoot, './cmd:Source/cmd:History/cmd:Acquisition/cmd:PersName/cmd:persName');
+    const originDates = eCodicesRoot
+        .find<Element>('./cmd:Source/cmd:Head/cmd:OrigDate', ns)
         .map(origPlace => origPlace.get('./cmd:note', ns)
             ? `${getTexts(origPlace, './cmd:origDate').join(', ')} (${getTexts(origPlace, './cmd:note')})`
             : `${getTexts(origPlace, './cmd:origDate').join(', ')}`);
@@ -107,40 +118,40 @@ function extractMetadata(metadataId: string, parentId: string, collectionId: str
     addMetadata(collectionMetadata, 'Repository', repository);
     addMetadata(collectionMetadata, 'Settlement', settlement);
 
-    addMetadata(recordMetadata, 'Contents', getTexts(eCodicesSource, './cmd:Identifier/cmd:Name'));
+    addMetadata(recordMetadata, 'Contents', getTexts(eCodicesRoot, './cmd:Source/cmd:Identifier/cmd:Name'));
 
-    addMetadata(recordMetadata, 'Place of origin', eCodicesSource
-        .find<Element>('./cmd:Head/cmd:OrigPlace', ns)
+    addMetadata(recordMetadata, 'Place of origin', eCodicesRoot
+        .find<Element>('./cmd:Source/cmd:Head/cmd:OrigPlace', ns)
         .map(origPlace => origPlace.get('./cmd:note', ns)
             ? `${getTexts(origPlace, './cmd:origPlace').join(', ')} (${getTexts(origPlace, './cmd:note')})`
             : `${getTexts(origPlace, './cmd:origPlace').join(', ')}`));
 
     addMetadata(recordMetadata, 'Language',
-        getTexts(eCodicesSource, './cmd:Contents/cmd:textLang/cmd:textLang')
+        getTexts(eCodicesRoot, './cmd:Source/cmd:Contents/cmd:textLang/cmd:textLang')
             .map(lang => languageNames.of(lang)) as string[]);
 
     addMetadata(recordMetadata, 'Material', [
-        ...getTexts(eCodicesSource, './cmd:PhysDesc/cmd:ObjectDesc/cmd:SupportDesc/cmd:Support/cmd:support'),
-        ...getTexts(eCodicesSource, './cmd:PhysDesc/cmd:ObjectDesc/cmd:SupportDesc/cmd:condition'),
-        ...getTexts(eCodicesSource, './cmd:PhysDesc/cmd:ObjectDesc/cmd:SupportDesc/cmd:Extent/cmd:Measure[not(cmd:type) or cmd:type[not(text())]]/cmd:measure'),
-        ...getTexts(eCodicesSource, './cmd:PhysDesc/cmd:ObjectDesc/cmd:layoutDesc/cmd:Layout/cmd:Measure/cmd:measure'),
-        ...getTexts(eCodicesSource, './cmd:PhysDesc/cmd:ObjectDesc/cmd:SupportDesc/cmd:Extent/cmd:Measure/cmd:type[text()=\'leavesCount\']/following-sibling::cmd:measure')
+        ...getTexts(eCodicesRoot, './cmd:Source/cmd:PhysDesc/cmd:ObjectDesc/cmd:SupportDesc/cmd:Support/cmd:support'),
+        ...getTexts(eCodicesRoot, './cmd:Source/cmd:PhysDesc/cmd:ObjectDesc/cmd:SupportDesc/cmd:condition'),
+        ...getTexts(eCodicesRoot, './cmd:Source/cmd:PhysDesc/cmd:ObjectDesc/cmd:SupportDesc/cmd:Extent/cmd:Measure[not(cmd:type) or cmd:type[not(text())]]/cmd:measure'),
+        ...getTexts(eCodicesRoot, './cmd:Source/cmd:PhysDesc/cmd:ObjectDesc/cmd:layoutDesc/cmd:Layout/cmd:Measure/cmd:measure'),
+        ...getTexts(eCodicesRoot, './cmd:Source/cmd:PhysDesc/cmd:ObjectDesc/cmd:SupportDesc/cmd:Extent/cmd:Measure/cmd:type[text()=\'leavesCount\']/following-sibling::cmd:measure')
             .map(text => `${text} leaves`),
-        ...getTexts(eCodicesSource, './cmd:PhysDesc/cmd:ObjectDesc/cmd:SupportDesc/cmd:Extent/cmd:Measure/cmd:type[text()=\'pagesCount\']/following-sibling::cmd:measure')
+        ...getTexts(eCodicesRoot, './cmd:Source/cmd:Source/cmd:PhysDesc/cmd:ObjectDesc/cmd:SupportDesc/cmd:Extent/cmd:Measure/cmd:type[text()=\'pagesCount\']/following-sibling::cmd:measure')
             .map(text => `${text} pages`),
-        ...getTexts(eCodicesSource, './cmd:PhysDesc/cmd:ObjectDesc/cmd:layoutDesc/cmd:Layout/cmd:Columns/cmd:columns')
+        ...getTexts(eCodicesRoot, './cmd:PhysDesc/cmd:ObjectDesc/cmd:layoutDesc/cmd:Layout/cmd:Columns/cmd:columns')
             .map(text => `${text} columns`),
-        ...getTexts(eCodicesSource, './cmd:PhysDesc/cmd:ObjectDesc/cmd:layoutDesc/cmd:Layout/cmd:WrittenLines/cmd:writtenLines')
+        ...getTexts(eCodicesRoot, './cmd:Source/cmd:Source/cmd:PhysDesc/cmd:ObjectDesc/cmd:layoutDesc/cmd:Layout/cmd:WrittenLines/cmd:writtenLines')
             .map(text => `${text} lines`),
-        ...getTexts(eCodicesSource, './cmd:PhysDesc/cmd:HandDesc/cmd:HandNote/cmd:script'),
-        ...getTexts(eCodicesSource, './cmd:PhysDesc/cmd:DecoDesc/cmd:DecoNote/cmd:decoNote'),
-        ...getTexts(eCodicesSource, './cmd:PhysDesc/cmd:bindingDesc/cmd:Binding/cmd:binding')
+        ...getTexts(eCodicesRoot, './cmd:Source/cmd:PhysDesc/cmd:HandDesc/cmd:HandNote/cmd:script'),
+        ...getTexts(eCodicesRoot, './cmd:Source/cmd:PhysDesc/cmd:DecoDesc/cmd:DecoNote/cmd:decoNote'),
+        ...getTexts(eCodicesRoot, './cmd:Source/cmd:PhysDesc/cmd:bindingDesc/cmd:Binding/cmd:binding')
     ]);
 
     addMetadata(recordMetadata, 'Format', formats);
-    addMetadata(recordMetadata, 'Origin', getTexts(eCodicesSource, './cmd:History/cmd:Origin/cmd:origin'));
-    addMetadata(recordMetadata, 'Provenance', getTexts(eCodicesSource, './cmd:History/cmd:Provenance/cmd:provenance'));
-    addMetadata(recordMetadata, 'Acquisition', getTexts(eCodicesSource, './cmd:History/cmd:Acquisition/cmd:acquisition'));
+    addMetadata(recordMetadata, 'Origin', getTexts(eCodicesRoot, './cmd:Source/cmd:History/cmd:Origin/cmd:origin'));
+    addMetadata(recordMetadata, 'Provenance', getTexts(eCodicesRoot, './cmd:Source/cmd:History/cmd:Provenance/cmd:provenance'));
+    addMetadata(recordMetadata, 'Acquisition', getTexts(eCodicesRoot, './cmd:Source/cmd:History/cmd:Acquisition/cmd:acquisition'));
 
     const collection: MinimalItem = {
         id: parentId,
@@ -164,13 +175,16 @@ function extractMetadata(metadataId: string, parentId: string, collectionId: str
         }],
         dates: originDates,
         physical: physDesc.length > 0 ? physDesc[0] : undefined,
-        metadata: recordMetadata
+        metadata: recordMetadata,
+        ecodices: {
+            license: license
+        }
     };
 
     return [collection, record];
 }
 
-function extractRanges(childItems: Item[], collectionId: string, eCodicesSource: Element):
+function extractRanges(childItems: Item[], collectionId: string, eCodicesRoot: Element):
     { items: MinimalItem[], ranges: MinimalItem[] } {
     const parentRangeId = `${collectionId}_Contents_Range`;
     const parentRange = {
@@ -183,7 +197,7 @@ function extractRanges(childItems: Item[], collectionId: string, eCodicesSource:
     const items: MinimalItem[] = [], ranges: MinimalItem[] = [];
     const childsParsed = childItems.map(item => parseLabel(item.label));
 
-    for (const itemElem of eCodicesSource.find<Element>('./cmd:Contents/cmd:Item', ns)) {
+    for (const itemElem of eCodicesRoot.find<Element>('./cmd:Source/cmd:Contents/cmd:Item', ns)) {
         const froms = getTexts(itemElem, './cmd:Locus/cmd:From/cmd:from');
         const tos = getTexts(itemElem, './cmd:Locus/cmd:To/cmd:to');
 
@@ -249,7 +263,7 @@ function extractRanges(childItems: Item[], collectionId: string, eCodicesSource:
 }
 
 function getIdentifier(root: Element): { parentId: string, collectionId: string } {
-    const identifier = getTexts(root, './cmd:Identifier/cmd:Idno/cmd:idno', true);
+    const identifier = getTexts(root, './cmd:Source/cmd:Identifier/cmd:Idno/cmd:idno', true);
     const identifierParts = identifier[0].split(' ');
     const parentId = identifierParts[0];
     const collectionId = identifierParts.join('_');

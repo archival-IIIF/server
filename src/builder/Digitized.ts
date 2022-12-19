@@ -44,6 +44,7 @@ export async function getManifest(parentItem: RootItem): Promise<Manifest> {
     await addMetadata(manifest, parentItem, md);
 
     manifest.setItems(await Promise.all(items.map(async (item, idx) => {
+        const md = await runLib<ItemParams, BasicIIIFMetadata>('basic-iiif-metadata', {item});
         const canvas = await createCanvas(item, parentItem, idx === 0);
 
         texts
