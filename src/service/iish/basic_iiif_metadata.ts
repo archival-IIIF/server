@@ -62,7 +62,12 @@ function getMetadata(item: Item): IIIFMetadataPairs {
             label: 'Refer to this item',
             value: `<a href="https://hdl.handle.net/10622/${item.id}">https://hdl.handle.net/10622/${item.id}</a>`
         });
-    else if (['folder', 'file', 'image', 'audio', 'video', 'pdf'].includes(item.type))
+    else if (['image'].includes(item.type))
+        metadata.push({
+            label: 'Refer to this image',
+            value: `<a href="https://hdl.handle.net/10622/${item.id}?locatt=view:level1">https://hdl.handle.net/10622/${item.id}?locatt=view:level1</a>`
+        });
+    else if (['folder', 'file', 'audio', 'video', 'pdf'].includes(item.type))
         metadata.push({
             label: `Refer to this ${item.type}`,
             value: `<a href="https://hdl.handle.net/10622/${item.id}">https://hdl.handle.net/10622/${item.id}</a>`
