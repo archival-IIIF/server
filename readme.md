@@ -551,16 +551,17 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_IP_ADDRESS_HEADER`: The header to read the IP address from, instead of `HTTP_X_FORWARDED_FOR`
 - `IIIF_SERVER_INTERNAL_IP_ADDRESSES`: If access may be granted based on IP address, provide a comma separated white
   list of ip addresses (Requires Redis persistent server)
-- `IIIF_SERVER_LOGIN_DISABLED`: Turn login based authentication on/off (Requires Redis persistent server)
-- `IIIF_SERVER_EXTERNAL_DISABLED`: Turn external based authentication on/off (Requires Redis persistent server)
+- `IIIF_SERVER_LOGIN_ENABLED`: Turn login based authentication on/off (Requires Redis persistent server)
+- `IIIF_SERVER_EXTERNAL_ENABLED`: Turn external based authentication on/off (Requires Redis persistent server)
+- `IIIF_SERVER_DNS_CACHE_ENABLED`: Turns DNS caching on/off
 - `IIIF_SERVER_ELASTICSEARCH_URL`: URL of the ElasticSearch indexer
 - `IIIF_SERVER_ELASTICSEARCH_USER`: Username of the ElasticSearch indexer if authentication is enabled
 - `IIIF_SERVER_ELASTICSEARCH_PASSWORD`: Password of the ElasticSearch indexer if authentication is enabled
 - `IIIF_SERVER_ELASTICSEARCH_INDEX_PREFIX`: The prefix in front of the name of the indices 'items' and 'texts'
-- `IIIF_SERVER_REDIS_VOLATILE_DISABLED`: Turn Redis volatile server on/off (Sets up caching)
+- `IIIF_SERVER_REDIS_VOLATILE_ENABLED`: Turn Redis volatile server on/off (Sets up caching)
 - `IIIF_SERVER_REDIS_VOLATILE_HOST`: Host of the Redis caching server
 - `IIIF_SERVER_REDIS_VOLATILE_PORT`: Port of the Redis caching server
-- `IIIF_SERVER_REDIS_PERSIST_DISABLED`: Turn Redis persistent server on/off (Sets up jobs and auth tokens)
+- `IIIF_SERVER_REDIS_PERSIST_ENABLED`: Turn Redis persistent server on/off (Sets up jobs and auth tokens)
 - `IIIF_SERVER_REDIS_PERSIST_HOST`: Host of the Redis persistent server
 - `IIIF_SERVER_REDIS_PERSIST_PORT`: Port of the Redis persistent server
 

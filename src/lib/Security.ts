@@ -26,8 +26,8 @@ export interface Token {
     to: Date | null;
 }
 
-export const isLoginEnabled = () => !config.loginDisabled;
-export const isExternalEnabled = () => !config.externalDisabled;
+export const isLoginEnabled = () => config.loginEnabled;
+export const isExternalEnabled = () => config.externalEnabled;
 export const isIpAccessEnabled = () => config.internalIpAddresses.length > 0;
 export const isAuthenticationEnabled = () => isLoginEnabled() || isExternalEnabled() || isIpAccessEnabled();
 

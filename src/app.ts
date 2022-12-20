@@ -3,6 +3,9 @@ import {DefaultState} from 'koa';
 import config from './lib/Config.js';
 import logger from './lib/Logger.js';
 
+if (config.dnsCacheEnabled)
+    await import('./lib/DnsCache.js');
+
 import {extendContext, ExtendedContext} from './lib/Koa.js';
 import {
     isRunningWeb,

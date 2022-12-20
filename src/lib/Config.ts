@@ -1,8 +1,11 @@
 if (process.env.NODE_ENV === 'test') {
     const dotenv = await import('dotenv');
     dotenv.config({path: '.test.env'});
-} else if (process.env.NODE_ENV !== 'production')
+}
+else if (process.env.NODE_ENV !== 'production')
     await import('dotenv/config');
+
+const isEnabled = (value?: string): boolean => !value || value === '1' || value.toLowerCase() === 'true';
 
 export interface Config {
     env?: string;
@@ -42,8 +45,9 @@ export interface Config {
     collectionsRelativePath: string;
     derivativeRelativePath: string;
     internalIpAddresses: string[];
-    loginDisabled: boolean;
-    externalDisabled: boolean;
+    loginEnabled: boolean;
+    externalEnabled: boolean;
+    dnsCacheEnabled: boolean;
     accessTtl: number;
     elasticSearchUrl: string;
     elasticSearchIndexItems: string;
@@ -72,6 +76,10 @@ const config: Config = {
     elasticSearchUser: process.env.IIIF_SERVER_ELASTICSEARCH_USER,
     elasticSearchPassword: process.env.IIIF_SERVER_ELASTICSEARCH_PASSWORD,
     ipAddressHeader: process.env.IIIF_SERVER_IP_ADDRESS_HEADER,
+
+    loginEnabled: isEnabled(process.env.IIIF_SERVER_LOGIN_ENABLED),
+    externalEnabled: isEnabled(process.env.IIIF_SERVER_EXTERNAL_ENABLED),
+    dnsCacheEnabled: isEnabled(process.env.IIIF_SERVER_DNS_CACHE_ENABLED),
 
     imageServerUrl: (_ => {
         if (!process.env.IIIF_SERVER_IMAGE_SERVER_URL || (process.env.IIIF_SERVER_IMAGE_SERVER_URL === 'null'))
@@ -222,17 +230,6 @@ const config: Config = {
         return process.env.IIIF_SERVER_INTERNAL_IP_ADDRESSES.split(',');
     })(),
 
-    loginDisabled: (_ => {
-        const loginDisabled = process.env.IIIF_SERVER_LOGIN_DISABLED;
-        return ((loginDisabled !== undefined) && (loginDisabled.toLowerCase() === 'true' || loginDisabled === '1'));
-    })(),
-
-    externalDisabled: (_ => {
-        const externalDisabled = process.env.IIIF_SERVER_EXTERNAL_DISABLED;
-        return ((externalDisabled !== undefined) &&
-            (externalDisabled.toLowerCase() === 'true' || externalDisabled === '1'));
-    })(),
-
     accessTtl: (_ => {
         const accessTtl = process.env.IIIF_SERVER_ACCESS_TTL ? parseInt(process.env.IIIF_SERVER_ACCESS_TTL) : 0;
         return (accessTtl > 0) ? accessTtl : 3600;
@@ -257,8 +254,7 @@ const config: Config = {
     })(),
 
     redisVolatile: (_ => {
-        const redisDisabled = process.env.IIIF_SERVER_REDIS_VOLATILE_DISABLED;
-        if (redisDisabled && (redisDisabled.toLowerCase() === 'true' || redisDisabled === '1'))
+        if (!isEnabled(process.env.IIIF_SERVER_REDIS_VOLATILE_ENABLED))
             return null;
 
         const host = (process.env.IIIF_SERVER_REDIS_VOLATILE_HOST && (process.env.IIIF_SERVER_REDIS_VOLATILE_HOST !== 'null'))
@@ -270,8 +266,7 @@ const config: Config = {
     })(),
 
     redisPersistent: (_ => {
-        const redisDisabled = process.env.IIIF_SERVER_REDIS_PERSIST_DISABLED;
-        if (redisDisabled && (redisDisabled.toLowerCase() === 'true' || redisDisabled === '1'))
+        if (!isEnabled(process.env.IIIF_SERVER_REDIS_PERSIST_ENABLED))
             return null;
 
         const host = (process.env.IIIF_SERVER_REDIS_PERSIST_HOST && (process.env.IIIF_SERVER_REDIS_PERSIST_HOST !== 'null'))

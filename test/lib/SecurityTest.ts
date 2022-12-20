@@ -89,8 +89,8 @@ describe('Security', () => {
     afterEach(() => {
         sinon.restore();
 
-        setConfig('loginDisabled', true);
-        setConfig('externalDisabled', true);
+        setConfig('loginEnabled', false);
+        setConfig('externalEnabled', false);
         setConfig('internalIpAddresses', []);
 
         setRedisClient(null);
@@ -104,19 +104,19 @@ describe('Security', () => {
         });
 
         it('should return access from service if authentication is enabled for open item', async () => {
-            setConfig('loginDisabled', false);
+            setConfig('loginEnabled', true);
             const access = await hasAccess(defaultCtx as ExtendedContext, openItem);
             expect(access).to.deep.equal({state: AccessState.OPEN});
         });
 
         it('should return restricted access from service if authentication is enabled for tiered item', async () => {
-            setConfig('loginDisabled', false);
+            setConfig('loginEnabled', true);
             const access = await hasAccess(defaultCtx as ExtendedContext, tieredItem);
             expect(access).to.deep.equal({state: AccessState.TIERED, tier: {name: 'tiered', maxSize: 500}});
         });
 
         it('should return closed access from service if authentication is enabled for closed item', async () => {
-            setConfig('loginDisabled', false);
+            setConfig('loginEnabled', true);
             const access = await hasAccess(defaultCtx as ExtendedContext, closedItem);
             expect(access).to.deep.equal({state: AccessState.CLOSED});
         });
@@ -172,19 +172,19 @@ describe('Security', () => {
         });
 
         it('should return false from service if authentication is enabled for open item', async () => {
-            setConfig('loginDisabled', false);
+            setConfig('loginEnabled', true);
             const requiresAuth = await requiresAuthentication(openItem);
             expect(requiresAuth).to.be.false;
         });
 
         it('should return true from service if authentication is enabled for tiered item', async () => {
-            setConfig('loginDisabled', false);
+            setConfig('loginEnabled', true);
             const requiresAuth = await requiresAuthentication(tieredItem);
             expect(requiresAuth).to.be.true;
         });
 
         it('should return true from service if authentication is enabled for closed item', async () => {
-            setConfig('loginDisabled', false);
+            setConfig('loginEnabled', true);
             const requiresAuth = await requiresAuthentication(closedItem);
             expect(requiresAuth).to.be.true;
         });
