@@ -13,7 +13,7 @@ import {Item, Metadata, MinimalItem} from '../../lib/ItemInterfaces.js';
 import {parseLabel, parsePage, equalsPages} from './util/fileinfo.js';
 
 const ns = {
-    'cmd': 'http://www.clarin.eu/cmd/1'
+    'cmd': 'http://www.clarin.eu/cmd/'
 };
 
 const languageNames = new Intl.DisplayNames(['en'], {type: 'language'});
