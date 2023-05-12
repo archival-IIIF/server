@@ -1,7 +1,7 @@
 FROM node:18-alpine AS builder
 
 # Install global NPM tooling
-RUN npm install typescript@4.9.4 -g
+RUN npm install typescript@5.0.4 -g
 
 # Copy the application
 RUN mkdir -p /opt/iiif-server
