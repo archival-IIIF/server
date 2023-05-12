@@ -56,7 +56,10 @@ async function findMetadataIdByCollectionId(id: string): Promise<string | null> 
                 .replaceAll('"', '')
                 .trim();
 
-            if (collectionId === id)
+            if (collectionId === id
+                || `ABD_${collectionId}` === id // TODO: Workaround by prefixing shelfmark with 'ABD'
+                || `MMW_${collectionId}` === id // TODO: Workaround by prefixing shelfmark with 'MMW'
+                || `TRL_${collectionId}` === id) // TODO: Workaround by prefixing shelfmark with 'TRL'
                 return metadataId;
         }
     }
@@ -76,9 +79,26 @@ async function updateWithMetadataId(metadataId: string): Promise<void> {
     if (!eCodicesRoot)
         throw new Error('Missing an eCodices root element!');
 
-    const {parentId, collectionId} = getIdentifier(eCodicesRoot);
+    let {parentId, collectionId} = getIdentifier(eCodicesRoot);
+    let item = await getItem(collectionId);
 
-    const item = await getItem(collectionId);
+    const orgCollectionId = collectionId;
+    if (!item) { // TODO: Workaround by prefixing shelfmark with 'ABD'
+        parentId = 'ABD';
+        collectionId = `${parentId}_${orgCollectionId}`;
+        item = await getItem(collectionId);
+    }
+    if (!item) { // TODO: Workaround by prefixing shelfmark with 'MMW'
+        parentId = 'MMW';
+        collectionId = `${parentId}_${orgCollectionId}`;
+        item = await getItem(collectionId);
+    }
+    if (!item) { // TODO: Workaround by prefixing shelfmark with 'TRL'
+        parentId = 'TRL';
+        collectionId = `${parentId}_${orgCollectionId}`;
+        item = await getItem(collectionId);
+    }
+
     if (!item || item.type !== 'root')
         throw new Error(`No root item found for collection ${collectionId}`);
 
