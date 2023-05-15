@@ -1,6 +1,6 @@
 {
   "name": "archival-iiif-server",
-  "version": "2.0.22",
+  "version": "2.0.23",
   "private": true,
   "type": "module",
   "dependencies": {
@@ -31,7 +31,7 @@
     "@koa/router": "12.0.0",
     "@elastic/elasticsearch": "8.7.0",
     "@archival-iiif/presentation-builder": "1.5.2",
-    "@types/node": "18.16.7",
+    "@types/node": "18.16.9",
     "@types/koa": "2.13.6",
     "@types/koa-morgan": "1.0.5",
     "@types/koa-json": "2.0.20",
@@ -43,7 +43,7 @@
     "@types/node-cron": "3.0.7",
     "@types/fs-extra": "11.0.1",
     "@types/mocha": "10.0.1",
-    "@types/sinon": "10.0.14",
+    "@types/sinon": "10.0.15",
     "@types/chai": "4.3.5",
     "@types/sinon-chai": "3.2.9",
     "@types/koa__router": "12.0.0"

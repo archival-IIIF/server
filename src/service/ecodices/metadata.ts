@@ -10,7 +10,7 @@ import {readFileAsync} from '../../lib/Promisified.js';
 import {getChildItems, getItem, updateItems} from '../../lib/Item.js';
 import {Item, Metadata, MinimalItem} from '../../lib/ItemInterfaces.js';
 
-import {parseLabel, parsePage, equalsPages} from './util/fileinfo.js';
+import {parseLabel, parsePage, equalsPages, FileInfo} from './util/fileinfo.js';
 
 const ns = {
     'cmd': 'http://www.clarin.eu/cmd/'
@@ -217,16 +217,17 @@ function extractRanges(childItems: Item[], collectionId: string, eCodicesRoot: E
     const items: MinimalItem[] = [], ranges: MinimalItem[] = [];
     const childsParsed = childItems.map(item => parseLabel(item.label));
 
+    const isPage = (i: FileInfo) => i.pages.length > 0 && !i.type &&
+        !i.isFrontEndPaper && !i.isBackEndPaper && !i.hasRuler && !i.hasColorChecker;
+    const firstPageFileInfo = childsParsed.find(isPage);
+    const lastPageFileInfo = [...childsParsed].reverse().find(isPage);
+
     for (const itemElem of eCodicesRoot.find<Element>('./cmd:Source/cmd:Contents/cmd:Item', ns)) {
         const froms = getTexts(itemElem, './cmd:Locus/cmd:From/cmd:from');
         const tos = getTexts(itemElem, './cmd:Locus/cmd:To/cmd:to');
 
-        const fromPage = (froms.length === 0)
-            ? childsParsed.find(p => p.pages.length > 0)?.pages[0]
-            : parsePage(froms[0]);
-        const toPage = (tos.length === 0)
-            ? [...childsParsed].reverse().find(p => p.pages.length > 0)?.pages[0]
-            : parsePage(tos[0]);
+        const fromPage = froms.length === 0 ? firstPageFileInfo?.pages[0] : parsePage(froms[0]);
+        const toPage = tos.length === 0 ? lastPageFileInfo?.pages[0] : parsePage(tos[0]);
         if (!fromPage || !toPage)
             throw new Error(`Cannot parse locus for ${froms[0]} and ${tos[0]}!`);
 
@@ -237,8 +238,11 @@ function extractRanges(childItems: Item[], collectionId: string, eCodicesRoot: E
             p => (p.pages.length > 0 && equalsPages(toPage, p.pages[0]))
                 || (p.pages.length === 2 && equalsPages(toPage, p.pages[1]))) + 1;
 
-        if (fromIdx < 0 || toIdx <= 0 || fromIdx >= toIdx || toIdx > childsParsed.length)
-            throw new Error(`Cannot find range for ${froms[0]} till ${tos[0]}!`);
+        if (fromIdx < 0 || toIdx <= 0 || fromIdx >= toIdx || toIdx > childsParsed.length) {
+            const missingRange = `Cannot find range for ${froms[0]} till ${tos[0]}!`;
+            const fullRange = `Full range is ${firstPageFileInfo?.label} till ${lastPageFileInfo?.label}!`;
+            throw new Error(missingRange + ' ' + fullRange);
+        }
 
         const id = (froms.length > 0 && tos.length > 0)
             ? `${collectionId}_${froms[0]}:${tos[0]}`

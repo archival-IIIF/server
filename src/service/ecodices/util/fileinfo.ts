@@ -3,6 +3,7 @@ const parseRegex = /(\d{1,3})(_bis_)?([rv]?)_?([a-z]?)(-(\d{1,3})(_bis_)?([rv]?)
 const matchesCode = (label: string, code: string) => label.match(new RegExp(`(^|_)${code}($|_)`, 'i')) !== null;
 
 export interface FileInfo {
+    label: string;
     type?: Type;
     pages: Page[];
     isNote: boolean;
@@ -87,6 +88,7 @@ export function parseLabel(label: string): FileInfo {
     }
 
     return {
+        label,
         type,
         pages,
         isNote,
@@ -100,8 +102,26 @@ export function parseLabel(label: string): FileInfo {
 }
 
 export function equalsPages(pageA: Page, pageB: Page): boolean {
+    return isExactMatch(pageA, pageB) ||
+        isRectoMatchOnFirst(pageA, pageB) || isRectoMatchOnFirst(pageB, pageA) ||
+        isVersoMatchOnFirst(pageA, pageB) || isVersoMatchOnFirst(pageB, pageA);
+}
+
+function isExactMatch(pageA: Page, pageB: Page): boolean {
     return pageA.folioPageNumber === pageB.folioPageNumber &&
         pageA.subFolioPage === pageB.subFolioPage &&
         pageA.isRecto === pageB.isRecto &&
         pageA.isVerso === pageB.isVerso;
+}
+
+function isRectoMatchOnFirst(pageA: Page, pageB: Page): boolean {
+    return pageA.folioPageNumber === pageB.folioPageNumber &&
+        pageA.subFolioPage === pageB.subFolioPage &&
+        pageA.isRecto && !pageB.isRecto && !pageB.isVerso;
+}
+
+function isVersoMatchOnFirst(pageA: Page, pageB: Page): boolean {
+    return pageA.folioPageNumber !== undefined && (pageA.folioPageNumber + 1) === pageB.folioPageNumber &&
+        pageA.subFolioPage === pageB.subFolioPage &&
+        pageA.isVerso && !pageB.isRecto && !pageB.isVerso;
 }
