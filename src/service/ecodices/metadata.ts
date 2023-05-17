@@ -29,8 +29,13 @@ export default async function processMetadata({metadataId, collectionId}: Metada
         if (!metadataId && collectionId)
             metadataId = await findMetadataIdByCollectionId(collectionId);
 
-        if (metadataId)
+        if (metadataId) {
+            metadataId = metadataId.endsWith('.xml')
+                ? metadataId.replaceAll('.xml', '').trim()
+                : metadataId;
+
             await updateWithMetadataId(metadataId);
+        }
     }
     catch (e: any) {
         const err = new Error(`Failed to process the metadata for ${metadataId}: ${e.message}`);
@@ -68,9 +73,9 @@ async function findMetadataIdByCollectionId(id: string): Promise<string | null> 
 }
 
 async function updateWithMetadataId(metadataId: string): Promise<void> {
-    const path = join(config.metadataPath as string, metadataId);
+    const path = join(config.metadataPath as string, `${metadataId}.xml`);
     if (!existsSync(path))
-        throw new Error(`No metadata file ${metadataId} found in ${path}`);
+        throw new Error(`No metadata file ${metadataId}.xml found in ${path}`);
 
     const cmdiXml = await readFileAsync(path, 'utf8');
     const cmdi = parseXml(cmdiXml);

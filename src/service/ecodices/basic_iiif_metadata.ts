@@ -9,8 +9,8 @@ export default async function getBasicIIIFMetadata({item}: ItemParams): Promise<
             ? (item.ecodices?.licence ? item.ecodices.licence : 'https://creativecommons.org/licences/by/4.0/')
             : undefined,
         behavior: 'individuals',
-        homepage: item.type === 'root' ? [{
-            id: 'https://ecodices.nl', // TODO: Link to record in browser
+        homepage: item.type === 'root' && item.metadata_id ? [{
+            id: `https://db.ecodices.nl/detail/${item.metadata_id}/overview`,
             label: 'Homepage'
         }] : [],
         metadata: item.type === 'root' ? [{
