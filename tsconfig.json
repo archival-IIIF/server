@@ -6,8 +6,8 @@
       "dom",
       "ES2022"
     ],
-    "module": "ES2022",
-    "moduleResolution": "node",
+    "module": "node16",
+    "moduleResolution": "node16",
     "moduleDetection": "force",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,

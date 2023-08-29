@@ -2,17 +2,18 @@ version: '3'
 
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.1
     restart: always
     environment:
       - discovery.type=single-node
+      - xpack.security.enabled=false
     volumes:
       - indexes:/usr/share/elasticsearch/data
     networks:
       - back-tier
 
   redis:
-    image: redis:7
+    image: redis:7-alpine
     restart: always
     volumes:
       - redis-persistance:/data
@@ -20,11 +21,11 @@ services:
       - back-tier
 
   image:
-    build: ./loris
+    image: image:latest # An image build based on https://github.com/archival-IIIF/image-server-core
+    command: -r /data
     restart: always
     volumes:
       - data:/data
-      - loris-conf:/etc/loris2/loris2.conf
     networks:
       - back-tier
 
@@ -34,6 +35,21 @@ services:
     environment:
       - NODE_ENV=production
       - IIIF_SERVER_SERVICES=text-index,waveform
+      - IIIF_SERVER_SECRET=secret
+      - IIIF_SERVER_ACCESS_TOKEN=secret
+      - IIIF_SERVER_IMAGE_SERVER_URL=http://image:3333
+      - IIIF_SERVER_IMAGE_SERVER_NAME=sharp
+      - IIIF_SERVER_IMAGE_TIER_SEPARATOR=__
+      - IIIF_SERVER_ATTRIBUTION="Provided by"
+      - IIIF_SERVER_BASE_URL=http://localhost:3333
+      - IIIF_SERVER_DATA_ROOT_PATH=/data
+      - IIIF_SERVER_COLLECTIONS_REL_PATH=collections
+      - IIIF_SERVER_DERIVATIVE_REL_PATH=data
+      - IIIF_SERVER_ELASTICSEARCH_URL=http://elasticsearch:9200
+      - IIIF_SERVER_REDIS_VOLATILE_ENABLED=true
+      - IIIF_SERVER_REDIS_VOLATILE_HOST=redis
+      - IIIF_SERVER_REDIS_PERSIST_ENABLED=true
+      - IIIF_SERVER_REDIS_PERSIST_HOST=redis
     volumes:
       - data:/data
     networks:
@@ -47,44 +63,28 @@ services:
       - IIIF_SERVER_SERVICES=web
       - IIIF_SERVER_SECRET=secret
       - IIIF_SERVER_ACCESS_TOKEN=secret
-      - IIIF_SERVER_UNIVERSAL_VIEWER_PATH=/opt/universalviewer
-      - IIIF_SERVER_ARCHIVAL_VIEWER_PATH=/opt/viewer
-      - IIIF_SERVER_UNIVERSAL_VIEWER_CONFIG_PATH=/opt/universalviewer-config.json
-      - IIIF_SERVER_IMAGE_SERVER_URL=http://localhost:8080
-      - IIIF_SERVER_METADATA_OAI_URL=http://localhost/oai
-      - IIIF_SERVER_METADATA_SRW_URL=http://localhost/srw
-      - IIIF_SERVER_IMAGE_TIER_SEPARATOR=_
-      - IIIF_SERVER_CACHE_DISABLED=false
-      - IIIF_SERVER_PORT=3333
-      - IIIF_SERVER_LOGO=/path/to/logo.jpg
-      - IIIF_SERVER_ATTRIBUTION=Provided by
+      - IIIF_SERVER_IMAGE_SERVER_URL=http://image:3333
+      - IIIF_SERVER_IMAGE_SERVER_NAME=sharp
+      - IIIF_SERVER_IMAGE_TIER_SEPARATOR=__
+      - IIIF_SERVER_ATTRIBUTION="Provided by"
       - IIIF_SERVER_BASE_URL=http://localhost:3333
-      - IIIF_SERVER_HOT_FOLDER_PATH=/data/hot
-      - IIIF_SERVER_HOT_FOLDER_PATTERN=METS\..*\.xml
       - IIIF_SERVER_DATA_ROOT_PATH=/data
       - IIIF_SERVER_COLLECTIONS_REL_PATH=collections
       - IIIF_SERVER_DERIVATIVE_REL_PATH=data
-      - IIIF_SERVER_LOGO_REL_PATH=logo.png
-      - IIIF_SERVER_LOGO_DIM=100:150
-      - IIIF_SERVER_LOG_LEVEL=debug
-      - IIIF_SERVER_INTERNAL_IP_ADDRESSES=
-      - IIIF_SERVER_LOGIN_DISABLED=false
-      - IIIF_SERVER_ELASTICSEARCH_URL=http://localhost:9200
-      - IIIF_SERVER_REDIS_DISABLED=false
-      - IIIF_SERVER_REDIS_HOST=localhost
-      - IIIF_SERVER_REDIS_PORT=6379
+      - IIIF_SERVER_ELASTICSEARCH_URL=http://elasticsearch:9200
+      - IIIF_SERVER_REDIS_VOLATILE_ENABLED=true
+      - IIIF_SERVER_REDIS_VOLATILE_HOST=redis
+      - IIIF_SERVER_REDIS_PERSIST_ENABLED=true
+      - IIIF_SERVER_REDIS_PERSIST_HOST=redis
     ports:
-      - "8000:3333"
+      - "3333:3333"
     volumes:
       - data:/data
-      - universal-viewer-conf:/opt/universalviewer-config.json
     networks:
       - front-tier
       - back-tier
 
 volumes:
-  universal-viewer-conf:
-  loris-conf:
   data:
   indexes:
   redis-persistance:
