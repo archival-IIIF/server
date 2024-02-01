@@ -72,7 +72,7 @@ router.get('/:id/annopage/:annoPageId', async ctx => {
 
     setContent(
         ctx,
-        await cache('annopage', item.collection_id, item.id,
+        await cache('annopage', item.collection_id, text.id,
             async () => getAnnotationPage(item, text))
     );
 
