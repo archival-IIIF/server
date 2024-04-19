@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import chai from 'chai';
+import * as chai from 'chai';
 import sinonChai from 'sinon-chai';
 
 import {waitForTask} from '../../src/lib/Worker.js';

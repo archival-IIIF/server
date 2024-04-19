@@ -37,7 +37,7 @@ describe('archivematica', () => {
                 const result = await processCollection(path, {type: 'root'}).then(null, rej);
 
                 expect(result).to.be.an('error');
-                expect((result as Error).message).to.equal('Could not find the premis object of the root item in the METS file');
+                expect((result as Error).message).to.equal('Could not find the root metadata for DMD id dmdSec_1');
             });
 
             it('should fail for missing the label of an item in the structmap', async () => {
@@ -61,7 +61,7 @@ describe('archivematica', () => {
                 const result = await processCollection(path, {type: 'folder'}).then(null, rej);
 
                 expect(result).to.be.an('error');
-                expect((result as Error).message).to.equal('No original name found for object with DMD id dmdSec_2');
+                expect((result as Error).message).to.equal('No original name found for dmdSec_2');
             });
 
             it('should fail for missing the identifier of a folder', async () => {
@@ -69,7 +69,7 @@ describe('archivematica', () => {
                 const result = await processCollection(path, {type: 'folder'}).then(null, rej);
 
                 expect(result).to.be.an('error');
-                expect((result as Error).message).to.equal('No identifier found for object with DMD id dmdSec_2');
+                expect((result as Error).message).to.equal('No identifier found for dmdSec_2');
             });
 
             it('should fail for missing a fptr of a file', async () => {
@@ -85,7 +85,7 @@ describe('archivematica', () => {
                 const result = await processCollection(path, {type: 'folder'}).then(null, rej);
 
                 expect(result).to.be.an('error');
-                expect((result as Error).message).to.equal('No original name found for object with file id file-2a863aca-eff6-4bb7-812f-cb797e75f793');
+                expect((result as Error).message).to.equal('No original name found for amdSec_5');
             });
 
             it('should fail for missing the identifier of a file', async () => {
@@ -93,7 +93,7 @@ describe('archivematica', () => {
                 const result = await processCollection(path, {type: 'folder'}).then(null, rej);
 
                 expect(result).to.be.an('error');
-                expect((result as Error).message).to.equal('No identifier found for object with file id file-2a863aca-eff6-4bb7-812f-cb797e75f793');
+                expect((result as Error).message).to.equal('No identifier found for amdSec_5');
             });
 
             it('should fail for missing the object characteristics of a file', async () => {
@@ -101,7 +101,7 @@ describe('archivematica', () => {
                 const result = await processCollection(path, {type: 'folder'}).then(null, rej);
 
                 expect(result).to.be.an('error');
-                expect((result as Error).message).to.equal('No object characteristics found for object with file id file-2a863aca-eff6-4bb7-812f-cb797e75f793');
+                expect((result as Error).message).to.equal('No object characteristics found for AMD id amdSec_5');
             });
 
             it('should fail for missing the binary of a file', async () => {
@@ -668,7 +668,9 @@ describe('archivematica', () => {
                     }),
                     withRootCustomForText: (rootCustom: Element, fileId: string) => {
                         const fptrs = rootCustom.find<Element>(`./mets:div[@TYPE="page"]/mets:fptr[@FILEID="${fileId}"]/../mets:fptr`, ns);
-                        return fptrs.map(fptrElem => fptrElem.attr('FILEID')?.value() || null).filter(id => id !== null) as string[];
+                        return fptrs
+                            .map(fptrElem => fptrElem.attr('FILEID')?.value())
+                            .find(id => id && id !== fileId) as string;
                     },
                 });
 

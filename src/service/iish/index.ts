@@ -25,7 +25,9 @@ export default async function processDip({collectionPath}: CollectionPathParams)
             },
             withRootCustomForText: (rootCustom: Element, fileId: string) => {
                 const fptrs = rootCustom.find<Element>(`./mets:div[@TYPE="page"]/mets:fptr[@FILEID="${fileId}"]/../mets:fptr`, ns);
-                return fptrs.map(fptrElem => fptrElem.attr('FILEID')?.value() || null).filter(id => id !== null) as string[];
+                return fptrs
+                    .map(fptrElem => fptrElem.attr('FILEID')?.value())
+                    .find(id => id && id !== fileId) as string;
             },
         });
 
