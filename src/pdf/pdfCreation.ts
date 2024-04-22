@@ -16,13 +16,9 @@ export default async function createPDF(rootItem: RootItem, items: ImageItem[], 
     config.attribution && document.setProducer(config.attribution);
     config.attribution && document.setCreator(config.attribution);
 
-    for (const item of items) {
-        logger.debug(`Create a PDF page for collection ${item.collection_id} with order ${item.order}; item id ${item.id}`);
-
-        const page = await createPdfPage(document, item, tier);
-        if (page)
-            document.addPage(page);
-    }
+    const pages = await Promise.all(items.map(async item => createPdfPage(document, item, tier)));
+    for (const page of pages)
+        page && document.addPage(page);
 
     const docBytes = await document.save();
 
@@ -30,6 +26,8 @@ export default async function createPDF(rootItem: RootItem, items: ImageItem[], 
 }
 
 async function createPdfPage(document: PDFDocument, item: ImageItem, tier?: AccessTier): Promise<PDFPage | null> {
+    logger.debug(`Create a PDF page for collection ${item.collection_id} with order ${item.order}; item id ${item.id}`);
+
     const image = await getImage(item, null, tier ? tier.maxSize : null, {
         region: 'full',
         size: config.pdfImageSize,
