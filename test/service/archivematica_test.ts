@@ -116,6 +116,7 @@ describe('archivematica', () => {
                 const path = join(testRootDirectory, 'test-archivematica-collections/invalid-mets-no-fptr-text');
                 const result = await processCollection(path, {
                     type: 'root',
+                    isFile: (label: string, parents: string[]) => parents[0] !== 'transcription' && !parents[0].startsWith('translation_'),
                     isText: (label: string, parents: string[]) => parents[0] === 'transcription' || parents[0].startsWith('translation_'),
                 }).then(null, rej);
 
@@ -661,6 +662,7 @@ describe('archivematica', () => {
                 const {rootItem, childItems, textItems} = await processCollection(path, {
                     type: 'root',
                     customStructMapId: 'structMap_iish',
+                    isFile: (label: string, parents: string[]) => parents[0] !== 'transcription' && !parents[0].startsWith('translation_'),
                     isText: (label: string, parents: string[]) => parents[0] === 'transcription' || parents[0].startsWith('translation_'),
                     getTypeAndLang: (label: string, parents: string[]) => ({
                         type: parents[0].startsWith('translation_') ? 'translation' : 'transcription',

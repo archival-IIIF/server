@@ -12,6 +12,7 @@ export default async function processDip({collectionPath}: CollectionPathParams)
         const {rootItem, childItems, textItems} = await processCollection(collectionPath, {
             type: 'custom',
             customStructMapId: 'structMap_iish',
+            isFile: (label: string, parents: string[]) => parents[0] !== 'transcription' && !parents[0].startsWith('translation_'),
             isText: (label: string, parents: string[]) => parents[0] === 'transcription' || parents[0].startsWith('translation_'),
             getTypeAndLang: (label: string, parents: string[]) => ({
                 type: parents[0].startsWith('translation_') ? 'translation' : 'transcription',

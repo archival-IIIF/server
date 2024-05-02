@@ -17,7 +17,7 @@ import derivatives, {DerivativeType} from '../lib/Derivative.js';
 import {Access, AccessState, hasAccess} from '../lib/Security.js';
 import {determineItem, getFullDerivativePath} from '../lib/Item.js';
 
-import {getImageInfo, getLogoInfo, getAudioInfo} from '../builder/PresentationBuilder.js';
+import {getImageInfo, getStaticImageInfo} from '../builder/PresentationBuilder.js';
 
 type ImageContext = ParameterizedContext<DefaultState, ExtendedContext & ImageOptions>;
 
@@ -39,10 +39,8 @@ router.get('/:name(logo|audio)/info.json', async ctx => {
 
     setContentType(ctx);
 
-    if (ctx.params.name === 'logo')
-        ctx.body = await getLogoInfo(getProfile());
-    if (ctx.params.name === 'audio')
-        ctx.body = await getAudioInfo(getProfile());
+    if (ctx.params.name === 'logo' || ctx.params.name === 'audio')
+        ctx.body = await getStaticImageInfo(ctx.params.name, getProfile());
 
     logger.info(`Sending image info of the ${ctx.params.name}`);
 });
@@ -172,7 +170,7 @@ async function getItemAndDerivative(id: string, tier: string): Promise<[Item, De
             throw new HttpError(404, `No image with id ${id}`);
     }
 
-    if (item.type === 'audio' && (!config.audioRelativePath || !config.audioDimensions))
+    if (item.type === 'audio' && (!config.audioRelativePath))
         throw new HttpError(404, `No image with id ${id}`);
 
     return [item, derivative || null];

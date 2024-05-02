@@ -25,6 +25,7 @@ export interface TextInfo {
 export interface Options {
     type: 'root' | 'folder' | 'custom',
     customStructMapId?: string,
+    isFile?: (label: string, parents: string[]) => boolean,
     isText?: (label: string, parents: string[]) => boolean,
     getTypeAndLang?: (label: string, parents: string[]) => TextInfo,
     withRootCustomForFile?: (rootCustom: Element, fileId: string) => object,
@@ -39,6 +40,7 @@ interface Opts {
     directoryMetadata: Map<string, Metadata>,
     objectsMetadata: Map<string, ObjectMetadata>,
     objectMapping: Map<string, string>,
+    isFile?: (label: string, parents: string[]) => boolean,
     isText?: (label: string, parents: string[]) => boolean,
     getTypeAndLang?: (label: string, parents: string[]) => TextInfo,
     withRootCustomForFile?: (rootCustom: Element, fileId: string) => object,
@@ -125,6 +127,7 @@ export async function processCollection(collectionPath: string, options: Options
         directoryMetadata,
         objectsMetadata,
         objectMapping,
+        isFile: options.isFile,
         isText: options.isText,
         withRootCustomForFile: options.withRootCustomForFile,
         withRootCustomForText: options.withRootCustomForText,
@@ -446,7 +449,7 @@ function walkTree(curNode: TreeNode, rootId: string, opts: Opts, parents: string
     for (const node of curNode.children.values()) {
         if (node.isDirectory)
             withDirectory(node, items, texts, rootId, opts, parents);
-        else if (opts.type === 'folder' || (opts.type === 'root' && parents[0] === 'preservation'))
+        else if (opts.type === 'folder' || (opts.type === 'root' && (!opts.isFile || opts.isFile(node.label, parents))))
             withFile(node, items, rootId, opts, parents);
         else if (opts.type === 'root' && opts.isText && opts.isText(node.label, parents))
             withTextFile(node, texts, rootId, opts, parents);

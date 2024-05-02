@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {Context} from 'koa';
-import {v4 as uuid} from 'uuid';
+import {randomUUID} from 'crypto';
 import {inRange} from 'range_check';
 import {RedisClientType} from 'redis';
 import {AccessTier} from '@archival-iiif/presentation-builder/v2';
@@ -154,7 +154,7 @@ export async function setAccessIdForIdentity(identity: string, accessId: string 
     const identities = accessIdInfo ? accessIdInfo.identities : [];
     const token = accessIdInfo ? accessIdInfo.token : null;
 
-    accessId = accessId || uuid();
+    accessId = accessId || randomUUID();
 
     if (!identities.includes(identity)) {
         identities.push(identity);
@@ -169,7 +169,7 @@ export async function setAccessTokenForAccessId(accessId: string): Promise<strin
     const accessIdInfo = await getIdentitiesAndTokensForAccessId(accessId);
     if (accessIdInfo) {
         const identities = accessIdInfo.identities;
-        const token = accessIdInfo.token || uuid();
+        const token = accessIdInfo.token || randomUUID();
 
         if (!accessIdInfo.token) {
             const client = getClient();

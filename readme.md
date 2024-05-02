@@ -537,8 +537,6 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_LOGO_REL_PATH`: The relative path to the image with the logo to add to the IIIF manifests
 - `IIIF_SERVER_AUDIO_REL_PATH`: The relative path to the image with the audio icon to add to the IIIF manifests
 - `IIIF_SERVER_METADATA_PATH`: The path to the folder which contains all the metadata
-- `IIIF_SERVER_LOGO_DIM`: The dimensions of the logo, separated by a ':'
-- `IIIF_SERVER_AUDIO_DIM`: The dimensions of the audio icon, separated by a ':'
 - `IIIF_SERVER_PDF_PAGES_THRESHOLD`: If defined, limit dynamic PDF creation per IP address when over this configured
   threshold (Requires Redis volatile server)
 - `IIIF_SERVER_PDF_SESSION_SECONDS`: If defined, the number of seconds to limit dynamic PDF creation per IP address (

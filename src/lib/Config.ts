@@ -23,8 +23,6 @@ export interface Config {
     ipAddressHeader?: string;
     imageServerUrl: string;
     imageServerName: 'loris' | 'sharp';
-    logoDimensions?: [number, number];
-    audioDimensions?: [number, number];
     viewerUrl: string;
     pdfPagesThreshold?: number;
     pdfSessionSeconds?: number;
@@ -92,22 +90,6 @@ const config: Config = {
             !['loris', 'sharp'].includes(process.env.IIIF_SERVER_IMAGE_SERVER_NAME))
             throw new Error('Image server name should either be \'loris\' or \'sharp\'');
         return process.env.IIIF_SERVER_IMAGE_SERVER_NAME as 'loris' | 'sharp';
-    })(),
-
-    logoDimensions: (_ => {
-        if (!process.env.IIIF_SERVER_LOGO_DIM || (process.env.IIIF_SERVER_LOGO_DIM === 'null'))
-            return undefined;
-
-        const dimensions = process.env.IIIF_SERVER_LOGO_DIM.split(':');
-        return [parseInt(dimensions[0]), parseInt(dimensions[1])] as [number, number];
-    })(),
-
-    audioDimensions: (_ => {
-        if (!process.env.IIIF_SERVER_AUDIO_DIM || (process.env.IIIF_SERVER_AUDIO_DIM === 'null'))
-            return undefined;
-
-        const dimensions = process.env.IIIF_SERVER_AUDIO_DIM.split(':');
-        return [parseInt(dimensions[0]), parseInt(dimensions[1])] as [number, number];
     })(),
 
     viewerUrl: (_ => {

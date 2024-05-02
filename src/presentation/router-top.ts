@@ -4,7 +4,7 @@ import Router from '@koa/router';
 import logger from '../lib/Logger.js';
 import {ExtendedContext} from '../lib/Koa.js';
 import {runLib} from '../lib/Task.js';
-import {createItem} from '../lib/Item.js';
+import {createItem, withItems} from '../lib/Item.js';
 import {MetadataItem} from '../lib/ItemInterfaces.js';
 import {EmptyParams, TopCollection} from '../lib/ServiceTypes.js';
 
@@ -25,7 +25,7 @@ for (const topCollection of topCollections) {
             label: topCollection.getLabel(ctx.params)
         }) as MetadataItem;
 
-        const children = await topCollection.getChildren(ctx.params);
+        const children = await withItems(topCollection.getChildren(ctx.params));
 
         setContent(ctx, await getCollectionWithChildren(collection, children));
 

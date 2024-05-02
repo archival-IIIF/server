@@ -167,17 +167,18 @@ export async function getCollectionIdsIndexed(ids: string | string[]): Promise<s
     return Array.from(new Set(items.map(item => item.collection_id) as string[]));
 }
 
-export function getAllRootItems(): AsyncIterable<Item> {
-    return getItems('type:(root OR folder OR metadata) AND NOT _exists_:parent_id');
+export function getAllRootItems(fields?: (keyof Item)[]): AsyncIterable<Item> {
+    return getItems('type:(root OR folder OR metadata) AND NOT _exists_:parent_id', fields);
 }
 
-export function getItems(q: string, sort = true): AsyncIterable<Item> {
+export function getItems(q: string, fields?: (keyof Item)[]): AsyncIterable<Item> {
     try {
         logger.debug(`Obtain items from ElasticSearch with query "${q}"`);
         return getClient().helpers.scrollDocuments<Item>({
             index: config.elasticSearchIndexItems,
             size: 10_000,
-            sort: sort !== undefined ? ['order', 'label.raw'] : undefined,
+            sort: ['order', 'label.raw'],
+            _source: fields as string[],
             q
         });
     }
@@ -202,7 +203,7 @@ export function getItemsSearch(q: string, size = 10): Promise<Item[]> {
 
 export function getFullPath(item: Item, type: 'access' | 'original' | null = null): string {
     const relativePath = getRelativePath(item, type);
-    return path.join(config.dataRootPath, relativePath);
+    return getFullPathFor(relativePath);
 }
 
 export function getRelativePath(item: Item, type: 'access' | 'original' | null = null): string {
@@ -216,12 +217,16 @@ export function getRelativePath(item: Item, type: 'access' | 'original' | null =
 
 export function getFullDerivativePath(item: Item, derivative: DerivativeType): string {
     const relativePath = getRelativeDerivativePath(item, derivative);
-    return path.join(config.dataRootPath, relativePath);
+    return getFullPathFor(relativePath);
 }
 
 export function getRelativeDerivativePath(item: Item, derivative: DerivativeType): string {
     return path.join(config.derivativeRelativePath, derivative.type,
         ...item.id.split('-'), `${item.id}.${derivative.extension}`);
+}
+
+export function getFullPathFor(relativePath: string): string {
+    return path.join(config.dataRootPath, relativePath);
 }
 
 export function getPronom(item: Item, type: 'access' | 'original' | null = null): string {

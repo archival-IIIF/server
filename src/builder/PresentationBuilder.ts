@@ -26,8 +26,7 @@ export interface PresentationBuilder {
                       id: string, type?: string, language?: string) => TermList;
     getImageInfo: (item: Item, derivative: DerivativeType | null,
                    profile: ImageProfile, access: Access) => Promise<Image>;
-    getLogoInfo: (profile: ImageProfile) => Promise<Image>;
-    getAudioInfo: (profile: ImageProfile) => Promise<Image>;
+    getStaticImageInfo: (type: 'logo' | 'audio', profile?: ImageProfile) => Promise<Image>;
 }
 
 export const isCollection = (item: Item | null): boolean =>
@@ -92,12 +91,8 @@ export async function getImageInfo(item: Item, derivative: DerivativeType | null
     return ImageFunctions.getInfo(item, derivative, profile, access.tier);
 }
 
-export async function getLogoInfo(profile: ImageProfile) {
-    return ImageFunctions.getLogoInfo(profile);
-}
-
-export async function getAudioInfo(profile: ImageProfile) {
-    return ImageFunctions.getAudioInfo(profile);
+export async function getStaticImageInfo(type: 'logo' | 'audio', profile?: ImageProfile) {
+    return ImageFunctions.getStaticImageInfo(type, profile);
 }
 
 const builder: PresentationBuilder = {
@@ -109,6 +104,5 @@ const builder: PresentationBuilder = {
     getSearch,
     getAutocomplete,
     getImageInfo,
-    getLogoInfo,
-    getAudioInfo
+    getStaticImageInfo,
 };

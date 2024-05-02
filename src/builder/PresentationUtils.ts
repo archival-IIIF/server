@@ -28,6 +28,7 @@ import {
     imageUri,
     manifestUri
 } from './UriHelper.js';
+import {getStaticImageInfo} from './Image.js';
 
 type HierarchyType = { range: RangeItem, children: HierarchyType[], items: Item[] };
 
@@ -126,8 +127,9 @@ export async function addStructures(manifest: Manifest, parentItem: Item,
     let i = 1;
     const createRangeId = () => rangeUri(parentItem.id, i++);
 
-    manifest.setStructures(await Promise.all(hierarchy.map(curLevel =>
-        createRange(curLevel, parentItem.id, createRangeId))));
+    const structures = await Promise.all(hierarchy.map(curLevel =>
+        createRange(curLevel, parentItem.id, createRangeId)))
+    structures.length > 0 && manifest.setStructures(structures);
 }
 
 async function createRange(curLevel: HierarchyType, rootId: string, createRangeId: () => string): Promise<Range> {
@@ -238,7 +240,7 @@ export async function setAuthServices(base: Base | Service, item: RootItem | Fil
 }
 
 async function setBaseDefaults(base: Base, item: Item): Promise<void> {
-    addDefaults(base);
+    await addDefaults(base);
 
     if (item.description)
         base.setSummary(item.description);
@@ -264,10 +266,11 @@ async function getImageResource(item: RootItem | FileItem, size = 'max', setAuth
     return resource;
 }
 
-function getLogo(size = 'max'): Resource {
-    let [width, height] = config.logoDimensions as [number | null, number | null];
-    width = (size === 'full' || size === 'max') ? width : null;
-    height = (size === 'full' || size === 'max') ? height : null;
+async function getLogo(size = 'max'): Promise<Resource> {
+    const imageInfo = await getStaticImageInfo('logo');
+
+    const width = (size === 'full' || size === 'max') ? imageInfo.width : null;
+    const height = (size === 'full' || size === 'max') ? imageInfo.height : null;
 
     const resource = Resource.createResource(
         imageResourceUri('logo', undefined, {size, format: 'png'}),
@@ -279,11 +282,11 @@ function getLogo(size = 'max'): Resource {
     return resource;
 }
 
-function addDefaults(base: Base): void {
+async function addDefaults(base: Base): Promise<void> {
     base.setContext();
 
     if (config.logoRelativePath)
-        base.setLogo(getLogo());
+        base.setLogo(await getLogo());
 
     if (config.attribution)
         base.setAttribution(config.attribution);

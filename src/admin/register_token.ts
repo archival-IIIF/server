@@ -1,13 +1,12 @@
 import dayjs from 'dayjs';
-import {v4 as uuid} from 'uuid';
+import {randomUUID} from 'crypto';
 
 import {Token} from '../lib/Security.js';
 import HttpError from '../lib/HttpError.js';
 import {getPersistentClient} from '../lib/Redis.js';
 
-export default async function registerToken(token: string | undefined, id: string | undefined,
-                                            from: dayjs.Dayjs | string | undefined,
-                                            to: dayjs.Dayjs | string | undefined): Promise<Token> {
+export default async function registerToken(token?: string, id?: string,
+                                            from?: dayjs.Dayjs | string, to?: dayjs.Dayjs | string): Promise<Token> {
     const client = getPersistentClient();
     if (!client)
         throw new HttpError(400, 'There is no persistent Redis server configured for auth!');
@@ -15,7 +14,7 @@ export default async function registerToken(token: string | undefined, id: strin
     if (!id)
         throw new HttpError(400, 'Please provide an id!');
 
-    token = token || uuid();
+    token = token || randomUUID();
     from = from ? dayjs(from) : undefined;
     to = to ? dayjs(to) : undefined;
 

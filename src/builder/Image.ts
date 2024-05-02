@@ -4,10 +4,12 @@ import config from '../lib/Config.js';
 import {Item} from '../lib/ItemInterfaces.js';
 import {sizeOf} from '../lib/Promisified.js';
 import {DerivativeType} from '../lib/Derivative.js';
-import {getFullDerivativePath} from '../lib/Item.js';
+import {getFullDerivativePath, getFullPathFor} from '../lib/Item.js';
 import {AccessState, getAuthTexts, getDefaultAccess} from '../lib/Security.js';
 
 import {authUri, imageUri} from './UriHelper.js';
+
+const dimensions: { [type: string]: [number, number] } = {};
 
 export async function getInfo(item: Item, derivative: DerivativeType | null,
                               profile: ImageProfile, tier?: AccessTier): Promise<Image> {
@@ -45,22 +47,21 @@ export async function getInfo(item: Item, derivative: DerivativeType | null,
     return imageInfo;
 }
 
-export async function getLogoInfo(profile: ImageProfile): Promise<Image> {
-    const [width, height] = config.logoDimensions as [number, number];
+export async function getStaticImageInfo(type: 'logo' | 'audio', profile?: ImageProfile): Promise<Image> {
+    let width: number | undefined, height: number | undefined;
+    if (type in dimensions)
+        [width, height] = dimensions[type];
+    else {
+        const relativePath = type === 'logo' ? config.logoRelativePath : config.audioRelativePath;
+        const size = await sizeOf(getFullPathFor(relativePath!));
+        width = size?.width as number;
+        height = size?.height as number;
+        dimensions[type] = [width, height];
+    }
 
-    const imageInfo = new Image(imageUri('logo'), width, height);
+    const imageInfo = new Image(imageUri(type), width, height);
     imageInfo.setContext('http://iiif.io/api/image/2/context.json');
-    imageInfo.setImageProfile(profile);
-
-    return imageInfo;
-}
-
-export async function getAudioInfo(profile: ImageProfile): Promise<Image> {
-    const [width, height] = config.audioDimensions as [number, number];
-
-    const imageInfo = new Image(imageUri('audio'), width, height);
-    imageInfo.setContext('http://iiif.io/api/image/2/context.json');
-    imageInfo.setImageProfile(profile);
+    profile && imageInfo.setImageProfile(profile);
 
     return imageInfo;
 }
