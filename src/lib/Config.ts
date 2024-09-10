@@ -10,6 +10,7 @@ const isEnabled = (value?: string): boolean => !value || value === '1' || value.
 export interface Config {
     env?: string;
     appInstance?: string;
+    provider: string;
     attribution?: string;
     hotFolderPath?: string;
     hotFolderPattern?: string;
@@ -78,6 +79,12 @@ const config: Config = {
     loginEnabled: isEnabled(process.env.IIIF_SERVER_LOGIN_ENABLED),
     externalEnabled: isEnabled(process.env.IIIF_SERVER_EXTERNAL_ENABLED),
     dnsCacheEnabled: isEnabled(process.env.IIIF_SERVER_DNS_CACHE_ENABLED),
+
+    provider: (_ => {
+        if (!process.env.IIIF_SERVER_PROVIDER || (process.env.IIIF_SERVER_PROVIDER === 'null'))
+            throw new Error('Provider is not defined');
+        return process.env.IIIF_SERVER_PROVIDER;
+    })(),
 
     imageServerUrl: (_ => {
         if (!process.env.IIIF_SERVER_IMAGE_SERVER_URL || (process.env.IIIF_SERVER_IMAGE_SERVER_URL === 'null'))

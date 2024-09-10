@@ -10,6 +10,7 @@ const prefixTextUrl = `${config.baseUrl}/text`;
 
 const annoType = (type?: string, language?: string | null) => type ? '/' + type + (language ? '/' + language : '') : '';
 
+export const providerUri = () => `${prefixPresentationUrl}/provider`;
 export const collectionUri = (id: string) => `${prefixPresentationUrl}/collection/${id}`;
 export const manifestUri = (id: string) => `${prefixPresentationUrl}/${id}/manifest`;
 export const canvasUri = (id: string, page: number) => `${prefixPresentationUrl}/${id}/canvas/${page}`;

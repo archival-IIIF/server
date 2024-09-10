@@ -285,8 +285,11 @@ async function getLogo(size = 'max'): Promise<Resource> {
 async function addDefaults(base: Base): Promise<void> {
     base.setContext();
 
+    // const provider = new Provider(providerUri(), config.provider);
+    // base.setProvider(provider);
+
     if (config.logoRelativePath)
-        base.setLogo(await getLogo());
+        base.setLogo(await getLogo()); // provider.setLogo(await getLogo());
 
     if (config.attribution)
         base.setAttribution(config.attribution);
