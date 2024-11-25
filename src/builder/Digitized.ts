@@ -115,7 +115,13 @@ export async function getAnnotationPage(item: RootItem, text: Text): Promise<Ann
                 const resource = Resource.createTextResource(word.content, text.language);
                 const annotation = new Annotation(annoUri(item.id, childItem.id, word.idx), resource, 'supplementing');
 
-                annotation.setTextGranularity('word');
+                if (word.content.split(/\s+/).filter(w => w.length > 0).length > 1){
+
+                    annotation.setTextGranularity('line');
+                }else{
+                    annotation.setTextGranularity('word');
+                }
+
                 annotation.setCanvas(canvas, {x: word.x, y: word.y, w: word.width, h: word.height});
 
                 annotations.push(annotation);
