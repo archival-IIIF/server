@@ -1,10 +1,10 @@
 import iconv from 'iconv-lite';
-import {join, extname} from 'path';
+import {join, extname} from 'node:path';
+import {readFile} from 'node:fs/promises';
 
 import config from '../lib/Config.js';
 import {indexText} from '../lib/Text.js';
 import {TextParams} from '../lib/ServiceTypes.js';
-import {readFileAsync} from '../lib/Promisified.js';
 
 import fixCommonUTF8Problems from './util/unicode_debug_mapping.js';
 import {getTextFromStructure, readAlto, TextStructure} from '../lib/TextStructure.js';
@@ -63,7 +63,7 @@ export async function getText(uri: string, encoding: string | null, structure: T
     if (structure)
         return getTextFromStructure(structure);
 
-    const textBuffer = await readFileAsync(uri);
+    const textBuffer = await readFile(uri);
     const encodedText = iconv.decode(textBuffer, encoding || 'utf8');
     const fixedText = encoding ? encodedText : fixCommonUTF8Problems(encodedText);
     return fixedText.normalize();

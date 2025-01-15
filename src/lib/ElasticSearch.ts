@@ -1,7 +1,4 @@
 import {Client} from '@elastic/elasticsearch';
-import {DiagnosticResult} from '@elastic/transport/lib/types.js';
-import {ResurrectEvent} from '@elastic/transport/lib/pool/index.js';
-import {ElasticsearchClientError} from '@elastic/transport/lib/errors.js';
 
 import config from './Config.js';
 import logger from './Logger.js';
@@ -18,9 +15,7 @@ const client = (config.elasticSearchUser && config.elasticSearchPassword)
 if (config.env !== 'test') {
     await client.ping();
 
-    const log = (phase: string, err: ElasticsearchClientError | null,
-                 result: DiagnosticResult | ResurrectEvent | null) => {
-        // @ts-ignore
+    const log = (phase: string, err: any, result: any) => {
         const {body, ...toDebugger} = result;
         logger.debug(`ElasticSearch '${phase}': ${JSON.stringify(toDebugger)}`);
         if (err)

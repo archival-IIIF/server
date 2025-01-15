@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import {parseXml, Element} from 'libxmljs2';
+import {readFileSync} from 'node:fs';
+import {XmlDocument} from 'libxml2-wasm';
 import logger from './Logger.js';
 
 export interface PronomInfo {
@@ -12,7 +12,7 @@ export interface PronomInfo {
 
 const cache: { [puid: string]: PronomInfo | null } = {};
 const ns = {'p': 'http://www.nationalarchives.gov.uk/pronom/SignatureFile'};
-const druid = parseXml(fs.readFileSync('src/lib/DROID_SignatureFile.xml', 'utf8'));
+const druid = XmlDocument.fromBuffer(readFileSync('src/lib/DROID_SignatureFile.xml'));
 
 export default function getPronomInfo(puid: string): PronomInfo | null {
     if (puid in cache && cache[puid] !== null)
@@ -20,7 +20,7 @@ export default function getPronomInfo(puid: string): PronomInfo | null {
 
     logger.debug(`Searching for PRONOM information by PUID ${puid}`);
 
-    const node = druid.get<Element>(`//p:FileFormatCollection/p:FileFormat[@PUID='${puid}']`, ns);
+    const node = druid.root.get(`//p:FileFormatCollection/p:FileFormat[@PUID='${puid}']`, ns);
 
     if (!node) {
         cache[puid] = null;
@@ -29,17 +29,16 @@ export default function getPronomInfo(puid: string): PronomInfo | null {
 
     logger.debug(`Caching PRONOM information by PUID ${puid}`);
 
-    const idAttr = node.attr('ID');
-    const nameAttr = node.attr('Name');
+    const idStr = node.get('@ID')?.content;
+    const name = node.get('@Name')?.content;
 
-    if (idAttr && idAttr.value() && nameAttr && nameAttr.value()) {
-        const id = parseInt(idAttr.value());
-        const name = nameAttr.value();
+    if (idStr && name) {
+        const id = parseInt(idStr);
         const url = `https://www.nationalarchives.gov.uk/PRONOM/Format/proFormatSearch.aspx?status=detailReport&id=${id}`;
-        const extensions = node.find<Element>('./p:Extension', ns).map(ext => ext.text());
+        const extensions = node.find('./p:Extension', ns).map(ext => ext.content);
 
-        const mimeType = node.attr('MIMEType');
-        const mimes = mimeType ? mimeType.value().split(',') : [];
+        const mimeType = node.get('@MIMEType')?.content;
+        const mimes = mimeType ? mimeType.split(',') : [];
 
         let mime: string | null = null;
         for (let curMime of mimes) {

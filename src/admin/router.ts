@@ -1,4 +1,4 @@
-import {existsSync} from 'fs';
+import {existsSync} from 'node:fs';
 import {DefaultState} from 'koa';
 import Router from '@koa/router';
 

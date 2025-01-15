@@ -1,12 +1,12 @@
-import {join} from 'path';
+import {join} from 'node:path';
 import readline from 'readline';
-import {parseXml, Element} from 'libxmljs2';
-import {createReadStream, existsSync} from 'fs';
+import {XmlDocument, XmlNode} from 'libxml2-wasm';
+import {createReadStream, existsSync} from 'node:fs';
+import {readFile} from 'node:fs/promises';
 
 import logger from '../../lib/Logger.js';
 import config from '../../lib/Config.js';
 import {MetadataParams} from '../../lib/ServiceTypes.js';
-import {readFileAsync} from '../../lib/Promisified.js';
 import {getChildItems, getItem, updateItems} from '../../lib/Item.js';
 import {Item, Metadata, MinimalItem} from '../../lib/ItemInterfaces.js';
 
@@ -77,10 +77,8 @@ async function updateWithMetadataId(metadataId: string): Promise<void> {
     if (!existsSync(path))
         throw new Error(`No metadata file ${metadataId}.xml found in ${path}`);
 
-    const cmdiXml = await readFileAsync(path, 'utf8');
-    const cmdi = parseXml(cmdiXml);
-
-    const eCodicesRoot = cmdi.get<Element>('//cmd:eCodices', ns);
+    using cmdi = XmlDocument.fromBuffer(await readFile(path));
+    const eCodicesRoot = cmdi.get('//cmd:eCodices', ns);
     if (!eCodicesRoot)
         throw new Error('Missing an eCodices root element!');
 
@@ -117,7 +115,7 @@ async function updateWithMetadataId(metadataId: string): Promise<void> {
     logger.debug(`Updated metadata for ${metadataId}`);
 }
 
-function extractMetadata(metadataId: string, parentId: string, collectionId: string, eCodicesRoot: Element): MinimalItem[] {
+function extractMetadata(metadataId: string, parentId: string, collectionId: string, eCodicesRoot: XmlNode): MinimalItem[] {
     const settlement = getTexts(eCodicesRoot, './cmd:Source/cmd:Identifier/cmd:Settlement/cmd:settlement', true)[0];
     const repository = getTexts(eCodicesRoot, './cmd:Source/cmd:Identifier/cmd:Repository/cmd:repository', true)[0];
 
@@ -129,7 +127,7 @@ function extractMetadata(metadataId: string, parentId: string, collectionId: str
     const formats = getTexts(eCodicesRoot, './cmd:Source/cmd:PhysDesc/cmd:ObjectDesc/cmd:form');
     const acquisitor = getTexts(eCodicesRoot, './cmd:Source/cmd:History/cmd:Acquisition/cmd:PersName/cmd:persName');
     const originDates = eCodicesRoot
-        .find<Element>('./cmd:Source/cmd:Head/cmd:OrigDate', ns)
+        .find('./cmd:Source/cmd:Head/cmd:OrigDate', ns)
         .map(origPlace => origPlace.get('./cmd:note', ns)
             ? `${getTexts(origPlace, './cmd:origDate').join(', ')} (${getTexts(origPlace, './cmd:note')})`
             : `${getTexts(origPlace, './cmd:origDate').join(', ')}`);
@@ -146,7 +144,7 @@ function extractMetadata(metadataId: string, parentId: string, collectionId: str
     addMetadata(recordMetadata, 'Contents', getTexts(eCodicesRoot, './cmd:Source/cmd:Identifier/cmd:Name'));
 
     addMetadata(recordMetadata, 'Place of origin', eCodicesRoot
-        .find<Element>('./cmd:Source/cmd:Head/cmd:OrigPlace', ns)
+        .find('./cmd:Source/cmd:Head/cmd:OrigPlace', ns)
         .map(origPlace => origPlace.get('./cmd:note', ns)
             ? `${getTexts(origPlace, './cmd:origPlace').join(', ')} (${getTexts(origPlace, './cmd:note')})`
             : `${getTexts(origPlace, './cmd:origPlace').join(', ')}`));
@@ -209,7 +207,7 @@ function extractMetadata(metadataId: string, parentId: string, collectionId: str
     return [collection, record];
 }
 
-function extractRanges(childItems: Item[], collectionId: string, eCodicesRoot: Element):
+function extractRanges(childItems: Item[], collectionId: string, eCodicesRoot: XmlNode):
     { items: MinimalItem[], ranges: MinimalItem[] } {
     const parentRangeId = `${collectionId}_Contents_Range`;
     const parentRange = {
@@ -227,7 +225,7 @@ function extractRanges(childItems: Item[], collectionId: string, eCodicesRoot: E
     const firstPageFileInfo = childsParsed.find(isPage);
     const lastPageFileInfo = [...childsParsed].reverse().find(isPage);
 
-    for (const itemElem of eCodicesRoot.find<Element>('./cmd:Source/cmd:Contents/cmd:Item', ns)) {
+    for (const itemElem of eCodicesRoot.find('./cmd:Source/cmd:Contents/cmd:Item', ns)) {
         const froms = getTexts(itemElem, './cmd:Locus/cmd:From/cmd:from');
         const tos = getTexts(itemElem, './cmd:Locus/cmd:To/cmd:to');
 
@@ -291,7 +289,7 @@ function extractRanges(childItems: Item[], collectionId: string, eCodicesRoot: E
     return {items, ranges};
 }
 
-function getIdentifier(root: Element): { parentId: string, collectionId: string } {
+function getIdentifier(root: XmlNode): { parentId: string, collectionId: string } {
     const identifier = getTexts(root, './cmd:Source/cmd:Identifier/cmd:Idno/cmd:idno', true);
     const identifierParts = identifier[0].split(' ');
     const parentId = identifierParts[0];
@@ -300,12 +298,12 @@ function getIdentifier(root: Element): { parentId: string, collectionId: string 
     return {parentId, collectionId};
 }
 
-function getTexts(root: Element, xpath: string, required: boolean = false): string[] {
-    const elements = root.find<Element>(xpath, ns);
+function getTexts(root: XmlNode, xpath: string, required: boolean = false): string[] {
+    const elements = root.find(xpath, ns);
     if (required && elements.length === 0)
         throw new Error(`Missing elements for ${xpath}`);
 
-    return elements.map(el => el.text().trim());
+    return elements.map(el => el.content.trim());
 }
 
 function addMetadata(metadata: Metadata[], label: string, value: string | string[]): void {

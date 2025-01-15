@@ -1,9 +1,9 @@
-import {join} from 'path';
-import {parseXml} from 'libxmljs2';
+import {join} from 'node:path';
+import {XmlDocument} from 'libxml2-wasm';
+
 import nock from 'nock';
 import {expect} from 'chai';
-
-import {readFileAsync} from '../../src/lib/Promisified.js';
+import {readFile} from 'node:fs/promises';
 
 import {
     getOAIIdentifier,
@@ -78,8 +78,7 @@ describe('iish_metadata', () => {
 
     describe('#updateEAD()', () => {
         it('should parse the metadata from an EAD description', async () => {
-            const eadXml = await readFileAsync(join(testRootDirectory, 'test-iish-metadata/ead.xml'), 'utf8');
-            const xml = parseXml(eadXml);
+            using xml = XmlDocument.fromBuffer(await readFile(join(testRootDirectory, 'test-iish-metadata/ead.xml')));
             const metadata = updateEAD(xml, 'oai:socialhistoryservices.org:10622/ARCH12345', 'ARCH12345.3');
 
             expect(metadata).to.deep.equal([
@@ -158,8 +157,7 @@ describe('iish_metadata', () => {
 
     describe('#updateMarc()', () => {
         it('should parse the metadata from an MARC XML description', async () => {
-            const marcXml = await readFileAsync(join(testRootDirectory, 'test-iish-metadata/marc.xml'), 'utf8');
-            const xml = parseXml(marcXml);
+            using xml = XmlDocument.fromBuffer(await readFile(join(testRootDirectory, 'test-iish-metadata/marc.xml')));
             const metadata = updateMarc(xml, 'oai:socialhistoryservices.org:12345', 'N12345');
 
             expect(metadata).to.deep.equal([

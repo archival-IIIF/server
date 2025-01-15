@@ -1,7 +1,7 @@
 import readline from 'readline';
 
-import {join} from 'path';
-import {createReadStream, existsSync} from 'fs';
+import {join} from 'node:path';
+import {createReadStream, existsSync} from 'node:fs';
 
 import config from '../../lib/Config.js';
 import logger from '../../lib/Logger.js';

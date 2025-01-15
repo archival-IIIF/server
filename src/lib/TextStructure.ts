@@ -1,5 +1,5 @@
-import {Element, parseXml} from 'libxmljs2';
-import {readFileAsync} from './Promisified.js';
+import {XmlDocument} from 'libxml2-wasm';
+import {readFile} from 'node:fs/promises';
 
 export interface TextStructure {
     blocks: TextBlock[];
@@ -37,22 +37,21 @@ export function getTextFromStructure(textStructure: TextStructure): string {
 }
 
 export async function readAlto(uri: string): Promise<TextStructure> {
-    const altoXml = await readFileAsync(uri, 'utf8');
-    const alto = parseXml(altoXml);
+    using alto = XmlDocument.fromBuffer(await readFile(uri));
 
     let i = 0;
-    const ns = {'alto': alto.root()?.namespaces().find(ns => ns.prefix() == null)?.href() || ''};
+    const ns = {'alto': Object.values(alto.root.namespaces).find(uri => uri) || ''};
 
     return {
-        blocks: alto.find<Element>('//alto:TextBlock | //TextBlock', ns).map(blockElem => ({
-            lines: blockElem.find<Element>('./alto:TextLine | ./TextLine', ns).map(lineElem => ({
-                words: lineElem.find<Element>('./alto:String | ./String', ns).reduce((acc, stringElem) => {
-                    const content = stringElem.attr('CONTENT')?.value();
+        blocks: alto.find('//alto:TextBlock | //TextBlock', ns).map(blockElem => ({
+            lines: blockElem.find('./alto:TextLine | ./TextLine', ns).map(lineElem => ({
+                words: lineElem.find('./alto:String | ./String', ns).reduce((acc, stringElem) => {
+                    const content = stringElem.get('@CONTENT')?.content;
                     if (content) {
-                        const x = stringElem.attr('HPOS')?.value();
-                        const y = stringElem.attr('VPOS')?.value();
-                        const width = stringElem.attr('WIDTH')?.value();
-                        const height = stringElem.attr('HEIGHT')?.value();
+                        const x = stringElem.get('@HPOS')?.content;
+                        const y = stringElem.get('@VPOS')?.content;
+                        const width = stringElem.get('@WIDTH')?.content;
+                        const height = stringElem.get('@HEIGHT')?.content;
 
                         acc.push({
                             idx: i++,
@@ -60,7 +59,7 @@ export async function readAlto(uri: string): Promise<TextStructure> {
                             y: (y && parseInt(y)) || undefined,
                             width: (width && parseInt(width)) || undefined,
                             height: (height && parseInt(height)) || undefined,
-                            isHyphenated: stringElem.attr('SUBS_TYPE')?.value() === 'HypPart1',
+                            isHyphenated: stringElem.get('@SUBS_TYPE')?.content === 'HypPart1',
                             content
                         });
                     }

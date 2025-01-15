@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {randomUUID} from 'crypto';
+import {randomUUID} from 'node:crypto';
 
 import {Token} from '../lib/Security.js';
 import HttpError from '../lib/HttpError.js';

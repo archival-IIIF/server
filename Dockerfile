@@ -1,7 +1,7 @@
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 # Install global NPM tooling
-RUN npm install typescript@5.4.5 -g
+RUN npm install typescript@5.7.3 -g
 
 # Copy the application
 RUN mkdir -p /opt/iiif-server
@@ -15,7 +15,7 @@ RUN npm install --omit=dev
 RUN tsc
 
 # Create the actual image
-FROM node:20-alpine
+FROM node:22-alpine
 
 # Install tooling
 RUN apk add --no-cache ghostscript ffmpeg

@@ -1,10 +1,11 @@
-import {dirname} from 'path';
+import {dirname} from 'node:path';
 import {ensureDir} from 'fs-extra';
+import {writeFile} from 'node:fs/promises';
 
 import logger from '../../lib/Logger.js';
 import {Item} from '../../lib/ItemInterfaces.js';
 import {DerivativeType} from '../../lib/Derivative.js';
-import {execAsync, writeFileAsync} from '../../lib/Promisified.js';
+import {execAsync} from '../../lib/Promisified.js';
 import {getFullPath, getFullDerivativePath} from '../../lib/Item.js';
 
 export async function createDerivativeWithCommand(item: Item, derivative: DerivativeType,
@@ -25,5 +26,5 @@ export async function createDerivativeWithBuffer(item: Item, derivative: Derivat
     logger.debug(`Write derivative file: "${output}"`);
 
     await ensureDir(dirname(output));
-    await writeFileAsync(output, buffer, {flag: 'w'});
+    await writeFile(output, buffer, {flag: 'w'});
 }

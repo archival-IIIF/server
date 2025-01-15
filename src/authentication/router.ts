@@ -1,5 +1,5 @@
 import {DefaultState} from 'koa';
-import {createReadStream} from 'fs';
+import {createReadStream} from 'node:fs';
 import Router from '@koa/router';
 
 import config from '../lib/Config.js';

@@ -2,8 +2,9 @@ import Router from '@koa/router';
 import {Context, DefaultState} from 'koa';
 
 import mime from 'mime-types';
-import {basename} from 'path';
-import {createReadStream, existsSync, Stats} from 'fs';
+import {basename} from 'node:path';
+import {createReadStream, existsSync, Stats} from 'node:fs';
+import {stat} from 'node:fs/promises';
 
 import config from '../lib/Config.js';
 import logger from '../lib/Logger.js';
@@ -11,7 +12,7 @@ import HttpError from '../lib/HttpError.js';
 import getPronomInfo from '../lib/Pronom.js';
 import derivatives from '../lib/Derivative.js';
 import {ExtendedContext} from '../lib/Koa.js';
-import {statAsync} from '../lib/Promisified.js';
+
 import {AccessState, hasAccess, hasAdminAccess} from '../lib/Security.js';
 import {getText, getFullPath as getFullTextPath} from '../lib/Text.js';
 import {determineItem, getFullPath, getPronom, getAvailableType, hasType, getFullDerivativePath} from '../lib/Item.js';
@@ -64,12 +65,12 @@ router.get('/:id/:type(original|access)?', async ctx => {
 
         const fullPath = getFullTextPath(text);
         const name = basename(fullPath);
-        const stat = await statAsync(fullPath);
+        const fileStat = await stat(fullPath);
 
         ctx.set('Content-Type', text.source === 'alto' ? 'application/xml' : 'text/plain');
-        ctx.set('Content-Length', String(stat.size));
+        ctx.set('Content-Length', String(fileStat.size));
         ctx.set('Content-Disposition', `inline; filename="${name}"`);
-        setBody(ctx, stat, fullPath);
+        setBody(ctx, fileStat, fullPath);
 
         logger.info(`Sending a text file with id ${ctx.params.id}`);
         return;
@@ -98,7 +99,7 @@ router.get('/:id/:type(original|access)?', async ctx => {
     const pronom = getPronom(item, type);
     const name = basename(fullPath);
     const pronomInfo = getPronomInfo(pronom);
-    const stat = await statAsync(fullPath);
+    const fileStat = await stat(fullPath);
     const contentType = (pronomInfo && pronomInfo.mime) ? pronomInfo.mime : mime.contentType(name);
 
     if (item.resolution)
@@ -107,9 +108,9 @@ router.get('/:id/:type(original|access)?', async ctx => {
     if (contentType)
         ctx.set('Content-Type', contentType);
 
-    ctx.set('Content-Length', String(stat.size));
+    ctx.set('Content-Length', String(fileStat.size));
     ctx.set('Content-Disposition', `inline; filename="${name}"`);
-    setBody(ctx, stat, fullPath);
+    setBody(ctx, fileStat, fullPath);
 
     logger.info(`Sending a file with id ${ctx.params.id}`);
 });
@@ -139,12 +140,12 @@ router.get('/:id/:derivative', async ctx => {
     if (!existsSync(fullPath))
         throw new HttpError(404, `No derivative found for id ${ctx.params.id} of type ${ctx.params.derivative}`);
 
-    const stat = await statAsync(fullPath);
+    const fileStat = await stat(fullPath);
 
     ctx.set('Content-Type', info.contentType);
-    ctx.set('Content-Length', String(stat.size));
+    ctx.set('Content-Length', String(fileStat.size));
     ctx.set('Content-Disposition', `inline; filename="${info.type}-${item.id}.${info.extension}"`);
-    setBody(ctx, stat, fullPath);
+    setBody(ctx, fileStat, fullPath);
 
     logger.info(`Sending a derivative with id ${ctx.params.id} of type ${ctx.params.derivative}`);
 });

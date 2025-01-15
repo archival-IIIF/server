@@ -1,7 +1,7 @@
-import {join} from 'path';
+import {join} from 'node:path';
 import {expect} from 'chai';
 
-import {parseXml, Element} from 'libxmljs2';
+import {XmlDocument, XmlNode} from 'libxml2-wasm';
 
 import {createItem} from '../../src/lib/Item.js';
 import {
@@ -668,10 +668,10 @@ describe('archivematica', () => {
                         type: parents[0].startsWith('translation_') ? 'translation' : 'transcription',
                         language: parents[0].startsWith('translation_') ? parents[0].split('_')[1] : null
                     }),
-                    withRootCustomForText: (rootCustom: Element, fileId: string) => {
-                        const fptrs = rootCustom.find<Element>(`./mets:div[@TYPE="page"]/mets:fptr[@FILEID="${fileId}"]/../mets:fptr`, ns);
+                    withRootCustomForText: (rootCustom: XmlNode, fileId: string) => {
+                        const fptrs = rootCustom.find(`./mets:div[@TYPE="page"]/mets:fptr[@FILEID="${fileId}"]/../mets:fptr`, ns);
                         return fptrs
-                            .map(fptrElem => fptrElem.attr('FILEID')?.value())
+                            .map(fptrElem => fptrElem.get('@FILEID')?.content)
                             .find(id => id && id !== fileId) as string;
                     },
                 });
@@ -978,7 +978,7 @@ describe('archivematica', () => {
 
     describe('#getIdentifier()', () => {
         it('should prefer the identifier of a handle over an UUID', () => {
-            const premisElem = parseXml(`
+            using premisElem = XmlDocument.fromString(`
                 <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
                 xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
                 version="2.2">
@@ -991,15 +991,15 @@ describe('archivematica', () => {
                         <premis:objectIdentifierValue>10622/12345</premis:objectIdentifierValue>
                     </premis:objectIdentifier>
                 </premis:object>
-            `).root() as Element;
+            `);
 
-            const identifier = getIdentifier(premisElem);
+            const identifier = getIdentifier(premisElem.root);
 
             expect(identifier).to.equal('12345');
         });
 
         it('should prefer the UUID identifier over anything else (if not a handle)', () => {
-            const premisElem = parseXml(`
+            using premisElem = XmlDocument.fromString(`
                 <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
                 xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
                 version="2.2">
@@ -1012,15 +1012,15 @@ describe('archivematica', () => {
                         <premis:objectIdentifierValue>abcdef</premis:objectIdentifierValue>
                     </premis:objectIdentifier>
                 </premis:object>
-            `).root() as Element;
+            `);
 
-            const identifier = getIdentifier(premisElem);
+            const identifier = getIdentifier(premisElem.root);
 
             expect(identifier).to.equal('cf34ab26-d4a2-4b73-99bf-9da8171084b0');
         });
 
         it('should fail to return an identifier if there is neither an UUID or handle', () => {
-            const premisElem = parseXml(`
+            using premisElem = XmlDocument.fromString(`
                 <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
                 xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
                 version="2.2">
@@ -1029,9 +1029,9 @@ describe('archivematica', () => {
                         <premis:objectIdentifierValue>abcdef</premis:objectIdentifierValue>
                     </premis:objectIdentifier>
                 </premis:object>
-            `).root() as Element;
+            `);
 
-            const identifier = getIdentifier(premisElem);
+            const identifier = getIdentifier(premisElem.root);
 
             expect(identifier).to.be.null;
         });
@@ -1039,7 +1039,7 @@ describe('archivematica', () => {
 
     describe('#determineResolution()', () => {
         it('should correctly obtain the resolution from MediaInfo', () => {
-            const objCharsExtElem = parseXml(`
+            using objCharsExtElem = XmlDocument.fromString(`
               <premis:objectCharacteristicsExtension>
                 <MediaInfo xmlns="https://mediaarea.net/mediainfo" xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd" version="2.0">
                   <creatingLibrary version="18.03" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
@@ -1118,15 +1118,15 @@ describe('archivematica', () => {
                   </media>
                 </MediaInfo>
               </premis:objectCharacteristicsExtension>
-            `).root() as Element;
+            `);
 
-            const resolution = determineResolution(objCharsExtElem);
+            const resolution = determineResolution(objCharsExtElem.root);
 
             expect(resolution).to.deep.equal({width: 720, height: 576});
         });
 
         it('should correctly obtain the resolution from FFprobe', () => {
-            const objCharsExtElem = parseXml(`
+            using objCharsExtElem = XmlDocument.fromString(`
               <premis:objectCharacteristicsExtension>
                 <ffprobe>
                   <program_version version="3.3.2-1~16.04.york2" copyright="Copyright (c) 2007-2017 the FFmpeg developers" compiler_ident="gcc 5.4.0 (Ubuntu 5.4.0-6ubuntu1~16.04.4) 20160609" configuration="--prefix=/usr --extra-version='1~16.04.york2' --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --enable-gpl --disable-stripping --enable-avresample --enable-avisynth --enable-gnutls --enable-ladspa --enable-libass --enable-libbluray --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libgme --enable-libgsm --enable-libmp3lame --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libpulse --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libssh --enable-libtheora --enable-libtwolame --enable-libvorbis --enable-libvpx --enable-libwavpack --enable-libwebp --enable-libx265 --enable-libxvid --enable-libzmq --enable-libzvbi --enable-omx --enable-openal --enable-opengl --enable-sdl2 --enable-libdc1394 --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-libopencv --enable-libx264 --enable-shared"/>
@@ -1152,15 +1152,15 @@ describe('archivematica', () => {
                   <format nb_streams="2" nb_programs="0" format_name="avi" format_long_name="AVI (Audio Video Interleaved)" start_time="0.000000" duration="573.960000" size="2176917504" bit_rate="30342428" probe_score="100"/>
                 </ffprobe>
               </premis:objectCharacteristicsExtension>
-            `).root() as Element;
+            `);
 
-            const resolution = determineResolution(objCharsExtElem);
+            const resolution = determineResolution(objCharsExtElem.root);
 
             expect(resolution).to.deep.equal({width: 720, height: 576});
         });
 
         it('should correctly obtain the resolution from the EXIF tool', () => {
-            const objCharsExtElem = parseXml(`
+            using objCharsExtElem = XmlDocument.fromString(`
               <premis:objectCharacteristicsExtension>
                 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
                   <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/" xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/" xmlns:File="http://ns.exiftool.ca/File/1.0/" xmlns:RIFF="http://ns.exiftool.ca/RIFF/RIFF/1.0/" xmlns:Composite="http://ns.exiftool.ca/Composite/1.0/" et:toolkit="Image::ExifTool 10.10">
@@ -1208,15 +1208,15 @@ describe('archivematica', () => {
                   </rdf:Description>
                 </rdf:RDF>
               </premis:objectCharacteristicsExtension>
-            `).root() as Element;
+            `);
 
-            const resolution = determineResolution(objCharsExtElem);
+            const resolution = determineResolution(objCharsExtElem.root);
 
             expect(resolution).to.deep.equal({width: 720, height: 576});
         });
 
         it('should correctly obtain the resolution from FITS (EXIF tool)', () => {
-            const objCharsExtElem = parseXml(`
+            using objCharsExtElem = XmlDocument.fromString(`
               <premis:objectCharacteristicsExtension>
                 <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output" xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd" version="0.8.4" timestamp="8/9/18 10:15 AM">
                   <identification>
@@ -1290,9 +1290,9 @@ describe('archivematica', () => {
                   </toolOutput>
                 </fits>
               </premis:objectCharacteristicsExtension>
-            `).root() as Element;
+            `);
 
-            const resolution = determineResolution(objCharsExtElem);
+            const resolution = determineResolution(objCharsExtElem.root);
 
             expect(resolution).to.deep.equal({width: 3648, height: 2736});
         });
@@ -1300,7 +1300,7 @@ describe('archivematica', () => {
 
     describe('#determineDpi()', () => {
         it('should correctly obtain the DPI from the EXIF tool', () => {
-            const objCharsExtElem = parseXml(`
+            using objCharsExtElem = XmlDocument.fromString(`
               <premis:objectCharacteristicsExtension>
                 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
                   <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/" xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/" xmlns:File="http://ns.exiftool.ca/File/1.0/" xmlns:IFD0="http://ns.exiftool.ca/EXIF/IFD0/1.0/" xmlns:ExifIFD="http://ns.exiftool.ca/EXIF/ExifIFD/1.0/" et:toolkit="Image::ExifTool 10.10">
@@ -1364,15 +1364,15 @@ describe('archivematica', () => {
                   </rdf:Description>
                 </rdf:RDF>
               </premis:objectCharacteristicsExtension>
-            `).root() as Element;
+            `);
 
-            const dpi = determineDpi(objCharsExtElem);
+            const dpi = determineDpi(objCharsExtElem.root);
 
             expect(dpi).to.equal(300);
         });
 
         it('should correctly obtain the DPI from FITS (EXIF tool)', () => {
-            const objCharsExtElem = parseXml(`
+            using objCharsExtElem = XmlDocument.fromString(`
               <premis:objectCharacteristicsExtension>
                 <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output" xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd" version="0.8.4" timestamp="8/9/18 10:15 AM">
                   <identification>
@@ -1446,9 +1446,9 @@ describe('archivematica', () => {
                   </toolOutput>
                 </fits>
               </premis:objectCharacteristicsExtension>
-            `).root() as Element;
+            `);
 
-            const dpi = determineDpi(objCharsExtElem);
+            const dpi = determineDpi(objCharsExtElem.root);
 
             expect(dpi).to.equal(72);
         });
@@ -1456,7 +1456,7 @@ describe('archivematica', () => {
 
     describe('#determineDuration()', () => {
         it('should correctly obtain the duration from MediaInfo', () => {
-            const objCharsExtElem = parseXml(`
+            using objCharsExtElem = XmlDocument.fromString(`
               <premis:objectCharacteristicsExtension>
                 <MediaInfo xmlns="https://mediaarea.net/mediainfo" xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd" version="2.0">
                   <creatingLibrary version="18.03" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
@@ -1535,15 +1535,15 @@ describe('archivematica', () => {
                   </media>
                 </MediaInfo>
               </premis:objectCharacteristicsExtension>
-            `).root() as Element;
+            `);
 
-            const duration = determineDuration(objCharsExtElem);
+            const duration = determineDuration(objCharsExtElem.root);
 
             expect(duration).to.equal(573.96);
         });
 
         it('should correctly obtain the duration from FFprobe', () => {
-            const objCharsExtElem = parseXml(`
+            using objCharsExtElem = XmlDocument.fromString(`
               <premis:objectCharacteristicsExtension>
                 <ffprobe>
                   <program_version version="3.3.2-1~16.04.york2" copyright="Copyright (c) 2007-2017 the FFmpeg developers" compiler_ident="gcc 5.4.0 (Ubuntu 5.4.0-6ubuntu1~16.04.4) 20160609" configuration="--prefix=/usr --extra-version='1~16.04.york2' --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --enable-gpl --disable-stripping --enable-avresample --enable-avisynth --enable-gnutls --enable-ladspa --enable-libass --enable-libbluray --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libgme --enable-libgsm --enable-libmp3lame --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libpulse --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libssh --enable-libtheora --enable-libtwolame --enable-libvorbis --enable-libvpx --enable-libwavpack --enable-libwebp --enable-libx265 --enable-libxvid --enable-libzmq --enable-libzvbi --enable-omx --enable-openal --enable-opengl --enable-sdl2 --enable-libdc1394 --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-libopencv --enable-libx264 --enable-shared"/>
@@ -1569,9 +1569,9 @@ describe('archivematica', () => {
                   <format nb_streams="2" nb_programs="0" format_name="avi" format_long_name="AVI (Audio Video Interleaved)" start_time="0.000000" duration="573.960000" size="2176917504" bit_rate="30342428" probe_score="100"/>
                 </ffprobe>
               </premis:objectCharacteristicsExtension>
-            `).root() as Element;
+            `);
 
-            const duration = determineDuration(objCharsExtElem);
+            const duration = determineDuration(objCharsExtElem.root);
 
             expect(duration).to.equal(573.96);
         });
@@ -1579,7 +1579,7 @@ describe('archivematica', () => {
 
     describe('#determineEncoding()', () => {
         it('should correctly obtain the duration from Fits / Tika', () => {
-            const objCharsExtElem = parseXml(`
+            using objCharsExtElem = XmlDocument.fromString(`
               <premis:objectCharacteristicsExtension>
                <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output" xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd" version="1.1.0">
                 <toolOutput>
@@ -1593,9 +1593,9 @@ describe('archivematica', () => {
                 </toolOutput>
                </fits>
               </premis:objectCharacteristicsExtension>
-            `).root() as Element;
+            `);
 
-            const encoding = determineEncoding(objCharsExtElem);
+            const encoding = determineEncoding(objCharsExtElem.root);
             expect(encoding).to.equal('ISO-8859-1');
         });
     });

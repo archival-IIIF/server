@@ -4,11 +4,6 @@ import {Item} from '../../lib/ItemInterfaces.js';
 import {EmptyParams, TopCollection} from '../../lib/ServiceTypes.js';
 import {createItem, getAllRootItems, getItems} from '../../lib/Item.js';
 
-import {
-    AggregationsMultiBucketAggregateBase,
-    AggregationsStringRareTermsBucketKeys,
-} from '@elastic/elasticsearch/lib/api/types.js';
-
 const fromParam = (param: string): string => param.replaceAll('_', ' ');
 const toParam = (param: string): string => param.replaceAll(' ', '_');
 const capitalizeFirst = (value: string): string => value.charAt(0).toUpperCase() + value.slice(1);
@@ -49,7 +44,7 @@ export default async function getTopCollections(noParams?: EmptyParams): Promise
 }
 
 async function* getFormats(): AsyncIterable<Item> {
-    const formats = await getClient().search<unknown, Record<'formats', AggregationsMultiBucketAggregateBase<AggregationsStringRareTermsBucketKeys>>>({
+    const formats = await getClient().search<unknown, Record<'formats', any>>({
         index: config.elasticSearchIndexItems,
         size: 0,
         aggs: {
@@ -62,7 +57,7 @@ async function* getFormats(): AsyncIterable<Item> {
         }
     });
 
-    const buckets: AggregationsStringRareTermsBucketKeys[] = (formats.aggregations?.formats?.buckets as AggregationsStringRareTermsBucketKeys[]) || [];
+    const buckets = (formats.aggregations?.formats?.buckets) || [];
     for (const bucket of buckets) {
         yield createItem({
             id: `format/${toParam(bucket.key)}`,

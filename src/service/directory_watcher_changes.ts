@@ -1,5 +1,5 @@
-import {existsSync} from 'fs';
-import {dirname, basename, resolve} from 'path';
+import {existsSync} from 'node:fs';
+import {dirname, basename, resolve} from 'node:path';
 
 import dayjs from 'dayjs';
 import {move} from 'fs-extra';

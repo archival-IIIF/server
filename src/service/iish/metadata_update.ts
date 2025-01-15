@@ -1,6 +1,6 @@
 import got from 'got';
 import dayjs from 'dayjs';
-import {parseXml, Element} from 'libxmljs2';
+import {XmlDocument} from 'libxml2-wasm';
 
 import config from '../../lib/Config.js';
 import logger from '../../lib/Logger.js';
@@ -31,7 +31,7 @@ export async function getOAIIdentifiersOfUpdated(fromDate: string, uri: string):
     let resumptionToken = null;
     while (resumptionToken !== false) {
         const response = await got(uri, {
-            https: {rejectUnauthorized: false}, resolveBodyOnly: true, searchParams: {
+            https: {rejectUnauthorized: false}, resolveBodyOnly: true, responseType: 'buffer', searchParams: {
                 verb: 'ListIdentifiers',
                 metadataPrefix: 'marcxml',
                 from: fromDate,
@@ -39,16 +39,15 @@ export async function getOAIIdentifiersOfUpdated(fromDate: string, uri: string):
             }
         });
 
-        const oaiResults = parseXml(response);
+        using oaiResults = XmlDocument.fromBuffer(response);
 
-        const resumptionTokenElem = oaiResults.get<Element>('//oai:resumptionToken', ns);
-        resumptionToken = resumptionTokenElem ? resumptionTokenElem.text() : false;
+        const resumptionTokenElem = oaiResults.get('//oai:resumptionToken', ns);
+        resumptionToken = resumptionTokenElem ? resumptionTokenElem.content : false;
 
-        const foundIdentifiers = (oaiResults.root() as Element)
-            .find<Element>('//oai:header', ns)
-            .map(headerElem => headerElem.get<Element>('./oai:identifier', ns))
-            .filter(identifierElem => identifierElem !== null)
-            .map(identifierElem => (identifierElem as Element).text());
+        const foundIdentifiers = oaiResults
+            .find('//oai:header', ns)
+            .map(headerElem => headerElem.get('./oai:identifier', ns)?.content)
+            .filter(identifierElem => identifierElem !== undefined);
 
         oaiIdentifiers.push(...foundIdentifiers);
     }

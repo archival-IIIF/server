@@ -1,4 +1,4 @@
-import {readFileSync} from 'fs';
+import {readFileSync} from 'node:fs';
 import Router from '@koa/router';
 import {DefaultState} from 'koa';
 

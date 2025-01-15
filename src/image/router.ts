@@ -1,4 +1,4 @@
-import {existsSync} from 'fs';
+import {existsSync} from 'node:fs';
 import {Image} from '@archival-iiif/presentation-builder/v2';
 
 import Router from '@koa/router';

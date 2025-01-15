@@ -1,4 +1,4 @@
-import {existsSync} from 'fs';
+import {existsSync} from 'node:fs';
 
 import {Text} from '../lib/Text.js';
 import config from '../lib/Config.js';

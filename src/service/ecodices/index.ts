@@ -1,4 +1,4 @@
-import {parse} from 'path';
+import {parse} from 'node:path';
 
 import logger from '../../lib/Logger.js';
 import {runTask} from '../../lib/Task.js';

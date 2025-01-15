@@ -1,5 +1,4 @@
-import * as path from 'path';
-import {ResponseError} from '@elastic/transport/lib/errors.js';
+import * as path from 'node:path';
 
 import config from './Config.js';
 import logger from './Logger.js';
@@ -44,7 +43,7 @@ export async function getText(id: string): Promise<Text | null> {
         return response._source || null;
     }
     catch (err: any) {
-        if (err instanceof ResponseError && err.statusCode === 404)
+        if (err.statusCode === 404)
             return null;
         throw err;
     }

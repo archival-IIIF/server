@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import * as path from 'path';
+import * as path from 'node:path';
 
 import {Base, Collection, Manifest, Resource} from '@archival-iiif/presentation-builder/v3';
 

@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
-import {existsSync} from 'fs';
-import {basename, extname, join} from 'path';
-import {parseXml, Element} from 'libxmljs2';
+import {existsSync} from 'node:fs';
+import {readdir, readFile} from 'fs/promises';
+import {basename, extname, join} from 'node:path';
+import {XmlDocument, XmlNode} from 'libxml2-wasm';
 
 import config from '../../lib/Config.js';
 import {createItem} from '../../lib/Item.js';
 import {TextItem} from '../../lib/ServiceTypes.js';
-import {readdirAsync, readFileAsync} from '../../lib/Promisified.js';
 import {MinimalItem, FolderItem, Item} from '../../lib/ItemInterfaces.js';
 
 import {getTypeForPronom, pronomByExtension} from './archivematica_pronom_data.js';
@@ -28,13 +28,13 @@ export interface Options {
     isFile?: (label: string, parents: string[]) => boolean,
     isText?: (label: string, parents: string[]) => boolean,
     getTypeAndLang?: (label: string, parents: string[]) => TextInfo,
-    withRootCustomForFile?: (rootCustom: Element, fileId: string) => object,
-    withRootCustomForText?: (rootCustom: Element, fileId: string) => string,
+    withRootCustomForFile?: (rootCustom: XmlNode, fileId: string) => object,
+    withRootCustomForText?: (rootCustom: XmlNode, fileId: string) => string,
 }
 
 interface Opts {
     type: 'root' | 'folder',
-    rootCustom: Element | null,
+    rootCustom: XmlNode | null,
     relativeRootPath: string;
     objects: string[],
     directoryMetadata: Map<string, Metadata>,
@@ -43,8 +43,8 @@ interface Opts {
     isFile?: (label: string, parents: string[]) => boolean,
     isText?: (label: string, parents: string[]) => boolean,
     getTypeAndLang?: (label: string, parents: string[]) => TextInfo,
-    withRootCustomForFile?: (rootCustom: Element, fileId: string) => object,
-    withRootCustomForText?: (rootCustom: Element, fileId: string) => string,
+    withRootCustomForFile?: (rootCustom: XmlNode, fileId: string) => object,
+    withRootCustomForText?: (rootCustom: XmlNode, fileId: string) => string,
 }
 
 interface TreeNode {
@@ -88,36 +88,35 @@ export const ns = {
 };
 
 export async function processCollection(collectionPath: string, options: Options): Promise<CollectionProcessingResult> {
-    const metsFile = (await readdirAsync(collectionPath)).find(file => file.startsWith('METS') && file.endsWith('xml'));
+    const metsFile = (await readdir(collectionPath)).find(file => file.startsWith('METS') && file.endsWith('xml'));
     if (!metsFile)
         throw new Error(`No METS file found in the collection ${collectionPath}`);
 
     const metsPath = join(collectionPath, metsFile);
-    const metsXml = await readFileAsync(metsPath, 'utf8');
+    using mets = XmlDocument.fromBuffer(await readFile(metsPath));
 
-    const mets = parseXml(metsXml);
-    const rootLogical = mets.get<Element>('/mets:mets/mets:structMap[@ID="structMap_2"]/mets:div/mets:div', ns);
-    const rootPhysical = mets.get<Element>('/mets:mets/mets:structMap[@TYPE="physical"]/mets:div/mets:div', ns);
-    const rootCustom = options.customStructMapId ? mets.get<Element>(
+    const rootLogical = mets.get('/mets:mets/mets:structMap[@ID="structMap_2"]/mets:div/mets:div', ns);
+    const rootPhysical = mets.get('/mets:mets/mets:structMap[@TYPE="physical"]/mets:div/mets:div', ns);
+    const rootCustom = options.customStructMapId ? mets.get(
         `/mets:mets/mets:structMap[@ID="${options.customStructMapId}"]/mets:div`, ns) : null;
     if (!rootPhysical)
         throw new Error('Could not find the physical structmap in the METS file');
 
     const objectsPath = join(collectionPath, 'objects');
-    const objects = existsSync(objectsPath) ? await readdirAsync(objectsPath) : [];
+    const objects = existsSync(objectsPath) ? await readdir(objectsPath) : [];
     const relativeRootPath = objectsPath
         .replace(`${config.dataRootPath}/${config.collectionsRelativePath}/`, '');
 
-    const directoryMetadata = createDirectoryMetadata(mets.root()!);
-    const objectsMetadata = createObjectsMetadata(mets.root()!);
-    const objectMapping = createObjectMapping(mets.root()!);
+    const directoryMetadata = createDirectoryMetadata(mets);
+    const objectsMetadata = createObjectsMetadata(mets);
+    const objectMapping = createObjectMapping(mets);
 
     const rootNode: TreeNode = {children: new Map()};
     rootLogical && createTreeLogical(rootNode, rootLogical);
     createTreePhysical(rootNode, rootPhysical);
 
     const type = options.type === 'root' || (options.type === 'custom' && rootCustom) ? 'root' : 'folder';
-    const rootItem = getRootItem(mets.root()!, directoryMetadata, type);
+    const rootItem = getRootItem(mets, directoryMetadata, type);
 
     const [childItems, textItems] = walkTree(rootNode, rootItem.id, {
         type,
@@ -136,43 +135,43 @@ export async function processCollection(collectionPath: string, options: Options
     return {rootItem, childItems, textItems};
 }
 
-function createTreeLogical(parent: TreeNode, curNode: Element) {
-    for (const node of curNode.find<Element>('./mets:div', ns)) {
+function createTreeLogical(parent: TreeNode, curNode: XmlNode) {
+    for (const node of curNode.find('./mets:div', ns)) {
         const current = withTreeNode(parent, node);
         if (current.isDirectory)
             createTreeLogical(current, node);
     }
 }
 
-function createTreePhysical(parent: TreeNode, curNode: Element) {
-    for (const node of curNode.find<Element>('./mets:div', ns)) {
+function createTreePhysical(parent: TreeNode, curNode: XmlNode) {
+    for (const node of curNode.find('./mets:div', ns)) {
         const current = withTreeNode(parent, node);
         if (current.isDirectory)
             createTreePhysical(current, node);
         else {
-            const fptrElem = node.get<Element>('mets:fptr', ns);
-            if (!fptrElem || !fptrElem.attr('FILEID'))
+            const fptrElem = node.get('mets:fptr', ns);
+            if (!fptrElem || !fptrElem.get('@FILEID'))
                 throw new Error(`Missing a fptr or file id for a file with the label ${current.label}`);
 
-            current.id = fptrElem.attr('FILEID')?.value();
+            current.id = fptrElem.get('@FILEID')?.content;
         }
     }
 }
 
-function withTreeNode(parent: TreeNode, node: Element): ChildTreeNode {
-    const label = node.attr('LABEL')?.value();
+function withTreeNode(parent: TreeNode, node: XmlNode): ChildTreeNode {
+    const label = node.get('@LABEL')?.content;
     if (!label)
         throw new Error('Expected to find a label for an element in the structmap');
 
     if (parent.children.has(label)) {
         const current = parent.children.get(label)!;
         if (current.isDirectory && !current.id)
-            current.id = node.attr('DMDID')?.value();
+            current.id = node.get('@DMDID')?.content;
         return current;
     }
 
-    const isDirectory = node.attr('TYPE')?.value() === 'Directory';
-    const id = isDirectory ? node.attr('DMDID')?.value() : undefined;
+    const isDirectory = node.get('@TYPE')?.content === 'Directory';
+    const id = isDirectory ? node.get('@DMDID')?.content : undefined;
 
     const current = {id, label, isDirectory, children: new Map()};
     parent.children.set(label, current);
@@ -180,15 +179,15 @@ function withTreeNode(parent: TreeNode, node: Element): ChildTreeNode {
     return current;
 }
 
-function createDirectoryMetadata(mets: Element): Map<string, Metadata> {
+function createDirectoryMetadata(mets: XmlDocument): Map<string, Metadata> {
     const metadata = new Map<string, Metadata>();
 
-    for (const node of mets.find<Element>('/mets:mets/mets:dmdSec', ns)) {
-        const dmdId = node.attr('ID')?.value();
+    for (const node of mets.find('/mets:mets/mets:dmdSec', ns)) {
+        const dmdId = node.get('@ID')?.content;
         if (!dmdId)
             throw new Error('A dmdSec is missing an ID');
 
-        const premisObj = node.get<Element>('./mets:mdWrap/mets:xmlData/premisv3:object', ns);
+        const premisObj = node.get('./mets:mdWrap/mets:xmlData/premisv3:object', ns);
         if (!premisObj)
             throw new Error(`No premis object found for DMD id ${dmdId}`);
 
@@ -198,37 +197,37 @@ function createDirectoryMetadata(mets: Element): Map<string, Metadata> {
     return metadata;
 }
 
-function createObjectsMetadata(mets: Element): Map<string, ObjectMetadata> {
+function createObjectsMetadata(mets: XmlDocument): Map<string, ObjectMetadata> {
     const metadata = new Map<string, ObjectMetadata>();
 
-    for (const node of mets.find<Element>('/mets:mets/mets:amdSec', ns)) {
-        const amdId = node.attr('ID')?.value();
+    for (const node of mets.find('/mets:mets/mets:amdSec', ns)) {
+        const amdId = node.get('@ID')?.content;
         if (!amdId)
             throw new Error('An amdSec is missing an ID');
 
         const premis = (['premisv3', 'premis'] as premis[])
-            .map<[premis, Element | null]>(premisNS =>
-                [premisNS, node.get<Element>(`./mets:techMD/mets:mdWrap/mets:xmlData/${premisNS}:object`, ns)])
-            .find(premis => premis[1]) as [premis, Element] | undefined;
+            .map<[premis, XmlNode | null]>(premisNS =>
+                [premisNS, node.get(`./mets:techMD/mets:mdWrap/mets:xmlData/${premisNS}:object`, ns)])
+            .find(premis => premis[1]) as [premis, XmlNode] | undefined;
         if (!premis)
             throw new Error(`No premis object found for AMD id ${amdId}`);
 
         const [premisNS, premisObj] = premis;
         const premisMetadata = getPremisMetadata(amdId, premisObj, premisNS);
 
-        const objCharacteristics = premisObj.get<Element>(`./${premisNS}:objectCharacteristics`, ns);
+        const objCharacteristics = premisObj.get(`./${premisNS}:objectCharacteristics`, ns);
         if (!objCharacteristics)
             throw new Error(`No object characteristics found for AMD id ${amdId}`);
 
-        const objCharacteristicsExt = objCharacteristics.get<Element>(`./${premisNS}:objectCharacteristicsExtension`, ns);
+        const objCharacteristicsExt = objCharacteristics.get(`./${premisNS}:objectCharacteristicsExtension`, ns);
 
-        const sizeText = objCharacteristics.get<Element>(`./${premisNS}:size`, ns)?.text();
+        const sizeText = objCharacteristics.get(`./${premisNS}:size`, ns)?.content;
         const size = sizeText ? parseInt(sizeText) : null;
 
-        const dateCreatedByAppText = objCharacteristics.get<Element>(`.//${premisNS}:creatingApplication/${premisNS}:dateCreatedByApplication`, ns)?.text();
+        const dateCreatedByAppText = objCharacteristics.get(`.//${premisNS}:creatingApplication/${premisNS}:dateCreatedByApplication`, ns)?.content;
         const creationDate = dateCreatedByAppText ? dayjs(dateCreatedByAppText, 'YYYY-MM-DD').toDate() : null;
 
-        const pronomKey = objCharacteristics.get<Element>(`./${premisNS}:format/${premisNS}:formatRegistry/${premisNS}:formatRegistryName[text()="PRONOM"]/../${premisNS}:formatRegistryKey`, ns)?.text() || null;
+        const pronomKey = objCharacteristics.get(`./${premisNS}:format/${premisNS}:formatRegistry/${premisNS}:formatRegistryName[text()="PRONOM"]/../${premisNS}:formatRegistryKey`, ns)?.content || null;
         const name = basename(premisMetadata.name);
         const type = getTypeForPronom(pronomKey);
 
@@ -260,12 +259,12 @@ function createObjectsMetadata(mets: Element): Map<string, ObjectMetadata> {
     return metadata;
 }
 
-function getPremisMetadata(nodeId: string, node: Element, premisNS: premis): Metadata {
-    const originalNameElem = node.get<Element>(`./${premisNS}:originalName`, ns);
+function getPremisMetadata(nodeId: string, node: XmlNode, premisNS: premis): Metadata {
+    const originalNameElem = node.get(`./${premisNS}:originalName`, ns);
     if (!originalNameElem)
         throw new Error(`No original name found for ${nodeId}`);
 
-    const originalName = originalNameElem.text();
+    const originalName = originalNameElem.content;
     const name = basename(originalName);
     const id = getIdentifier(node, premisNS);
     if (!id)
@@ -274,66 +273,66 @@ function getPremisMetadata(nodeId: string, node: Element, premisNS: premis): Met
     return {id, name};
 }
 
-export function getIdentifier(premisObj: Element, premisNS: premis = 'premis'): string | null {
-    const hdlObj = premisObj.get<Element>(`./${premisNS}:objectIdentifier/${premisNS}:objectIdentifierType[text()="hdl"]`, ns);
-    const uuidObj = premisObj.get<Element>(`./${premisNS}:objectIdentifier/${premisNS}:objectIdentifierType[text()="UUID"]`, ns);
+export function getIdentifier(premisObj: XmlNode, premisNS: premis = 'premis'): string | null {
+    const hdlObj = premisObj.get(`./${premisNS}:objectIdentifier/${premisNS}:objectIdentifierType[text()="hdl"]`, ns);
+    const uuidObj = premisObj.get(`./${premisNS}:objectIdentifier/${premisNS}:objectIdentifierType[text()="UUID"]`, ns);
 
     if (hdlObj) {
-        const objIdAttr = hdlObj.get<Element>(`./../${premisNS}:objectIdentifierValue`, ns);
+        const objIdAttr = hdlObj.get(`./../${premisNS}:objectIdentifierValue`, ns);
         if (objIdAttr)
-            return objIdAttr.text().split('/')[1];
+            return objIdAttr.content.split('/')[1];
     }
 
     if (uuidObj) {
-        const objIdAttr = uuidObj.get<Element>(`./../${premisNS}:objectIdentifierValue`, ns);
+        const objIdAttr = uuidObj.get(`./../${premisNS}:objectIdentifierValue`, ns);
         if (objIdAttr)
-            return objIdAttr.text();
+            return objIdAttr.content;
     }
 
     return null;
 }
 
-export function determineResolution(objCharacteristicsExt: Element): { width: number | null; height: number | null } {
-    const mediaInfo = objCharacteristicsExt.get<Element>('./mediainfo:MediaInfo/mediainfo:media/mediainfo:track[@type="Image" or @type="Video"]', ns);
+export function determineResolution(objCharacteristicsExt: XmlNode): { width: number | null; height: number | null } {
+    const mediaInfo = objCharacteristicsExt.get('./mediainfo:MediaInfo/mediainfo:media/mediainfo:track[@type="Image" or @type="Video"]', ns);
     if (mediaInfo) {
-        const widthElem = mediaInfo.get<Element>('./mediainfo:Width', ns);
-        const heightElem = mediaInfo.get<Element>('./mediainfo:Height', ns);
+        const widthElem = mediaInfo.get('./mediainfo:Width', ns);
+        const heightElem = mediaInfo.get('./mediainfo:Height', ns);
 
         if (widthElem && heightElem) {
-            const resolution = getResolution(widthElem.text(), heightElem.text());
+            const resolution = getResolution(widthElem.content, heightElem.content);
             if (resolution) return resolution;
         }
     }
 
-    const ffprobe = objCharacteristicsExt.get<Element>('./ffprobe/streams/stream[@codec_type="video"]', ns);
+    const ffprobe = objCharacteristicsExt.get('./ffprobe/streams/stream[@codec_type="video"]', ns);
     if (ffprobe) {
-        const widthAttr = ffprobe.attr('width');
-        const heightAttr = ffprobe.attr('height');
+        const widthAttr = ffprobe.get('@width');
+        const heightAttr = ffprobe.get('@height');
 
         if (widthAttr && heightAttr) {
-            const resolution = getResolution(widthAttr.value(), heightAttr.value());
+            const resolution = getResolution(widthAttr.content, heightAttr.content);
             if (resolution) return resolution;
         }
     }
 
-    const exifTool = objCharacteristicsExt.get<Element>('./rdf:RDF/rdf:Description', ns);
+    const exifTool = objCharacteristicsExt.get('./rdf:RDF/rdf:Description', ns);
     if (exifTool) {
-        const widthElem = exifTool.get<Element>('./File:ImageWidth', ns);
-        const heightElem = exifTool.get<Element>('./File:ImageHeight', ns);
+        const widthElem = exifTool.get('./File:ImageWidth', ns);
+        const heightElem = exifTool.get('./File:ImageHeight', ns);
 
         if (widthElem && heightElem) {
-            const resolution = getResolution(widthElem.text(), heightElem.text());
+            const resolution = getResolution(widthElem.content, heightElem.content);
             if (resolution) return resolution;
         }
     }
 
-    const fitsExifTool = objCharacteristicsExt.get<Element>('./fits:fits/fits:toolOutput/fits:tool[@name="Exiftool"]/exiftool', ns);
+    const fitsExifTool = objCharacteristicsExt.get('./fits:fits/fits:toolOutput/fits:tool[@name="Exiftool"]/exiftool', ns);
     if (fitsExifTool) {
-        const widthElem = fitsExifTool.get<Element>('./ImageWidth', ns);
-        const heightElem = fitsExifTool.get<Element>('./ImageHeight', ns);
+        const widthElem = fitsExifTool.get('./ImageWidth', ns);
+        const heightElem = fitsExifTool.get('./ImageHeight', ns);
 
         if (widthElem && heightElem) {
-            const resolution = getResolution(widthElem.text(), heightElem.text());
+            const resolution = getResolution(widthElem.content, heightElem.content);
             if (resolution) return resolution;
         }
     }
@@ -354,23 +353,23 @@ function getResolution(width: string | null, height: string | null): {
     return null;
 }
 
-export function determineDpi(objCharacteristicsExt: Element): number | null {
-    const exifTool = objCharacteristicsExt.get<Element>('./rdf:RDF/rdf:Description', ns);
+export function determineDpi(objCharacteristicsExt: XmlNode): number | null {
+    const exifTool = objCharacteristicsExt.get('./rdf:RDF/rdf:Description', ns);
     if (exifTool) {
-        const resolutionElem = exifTool.get<Element>('./IFD0:XResolution', ns);
+        const resolutionElem = exifTool.get('./IFD0:XResolution', ns);
 
         if (resolutionElem) {
-            const dpi = Number.parseInt(resolutionElem.text());
+            const dpi = Number.parseInt(resolutionElem.content);
             if (dpi) return dpi;
         }
     }
 
-    const fitsExifTool = objCharacteristicsExt.get<Element>('./fits:fits/fits:toolOutput/fits:tool[@name="Exiftool"]/exiftool', ns);
+    const fitsExifTool = objCharacteristicsExt.get('./fits:fits/fits:toolOutput/fits:tool[@name="Exiftool"]/exiftool', ns);
     if (fitsExifTool) {
-        const resolutionElem = fitsExifTool.get<Element>('./XResolution', ns);
+        const resolutionElem = fitsExifTool.get('./XResolution', ns);
 
         if (resolutionElem) {
-            const dpi = Number.parseInt(resolutionElem.text());
+            const dpi = Number.parseInt(resolutionElem.content);
             if (dpi) return dpi;
         }
     }
@@ -378,20 +377,20 @@ export function determineDpi(objCharacteristicsExt: Element): number | null {
     return null;
 }
 
-export function determineDuration(objCharacteristicsExt: Element): number | null {
-    const mediaInfo = objCharacteristicsExt.get<Element>('./mediainfo:MediaInfo/mediainfo:media/mediainfo:track[@type="General"]', ns);
+export function determineDuration(objCharacteristicsExt: XmlNode): number | null {
+    const mediaInfo = objCharacteristicsExt.get('./mediainfo:MediaInfo/mediainfo:media/mediainfo:track[@type="General"]', ns);
     if (mediaInfo) {
-        const durationElem = mediaInfo.get<Element>('./mediainfo:Duration', ns);
+        const durationElem = mediaInfo.get('./mediainfo:Duration', ns);
 
         if (durationElem) {
-            const duration = Number.parseFloat(durationElem.text());
+            const duration = Number.parseFloat(durationElem.content);
             if (duration) return duration;
         }
     }
 
     let duration: number | null = null;
-    for (const stream of objCharacteristicsExt.find<Element>('./ffprobe/streams/stream', ns)) {
-        const durationValue = stream.attr('duration')?.value();
+    for (const stream of objCharacteristicsExt.find('./ffprobe/streams/stream', ns)) {
+        const durationValue = stream.get('@duration')?.content;
         const curDuration = durationValue ? Number.parseFloat(durationValue) : null;
         if (curDuration && (duration === null || curDuration > duration))
             duration = curDuration;
@@ -401,36 +400,36 @@ export function determineDuration(objCharacteristicsExt: Element): number | null
     return null;
 }
 
-export function determineEncoding(objCharacteristicsExt: Element): string | null {
-    const md = objCharacteristicsExt.get<Element>('./fits:fits/fits:toolOutput/fits:tool[@name="Tika"]/metadata', ns);
+export function determineEncoding(objCharacteristicsExt: XmlNode): string | null {
+    const md = objCharacteristicsExt.get('./fits:fits/fits:toolOutput/fits:tool[@name="Tika"]/metadata', ns);
     if (md) {
-        const contentEncodingValueElem = md.get<Element>('./field[@name="Content-Encoding"]/value', ns);
+        const contentEncodingValueElem = md.get('./field[@name="Content-Encoding"]/value', ns);
         if (contentEncodingValueElem)
-            return contentEncodingValueElem.text().trim();
+            return contentEncodingValueElem.content.trim();
     }
 
     return null;
 }
 
-function createObjectMapping(mets: Element): Map<string, string> {
+function createObjectMapping(mets: XmlDocument): Map<string, string> {
     const mapping = new Map<string, string>();
 
-    for (const node of mets.find<Element>('/mets:mets/mets:fileSec/mets:fileGrp[@USE="original"]/mets:file', ns)) {
+    for (const node of mets.find('/mets:mets/mets:fileSec/mets:fileGrp[@USE="original"]/mets:file', ns)) {
         mapping.set(
-            node.attr('ID')?.value()!,
-            node.attr('ADMID')?.value()!
+            node.get('@ID')?.content!,
+            node.get('@ADMID')?.content!
         );
     }
 
     return mapping;
 }
 
-function getRootItem(mets: Element, directoryMetadata: Map<string, Metadata>, type: string): Item {
-    const rootDir = mets.get<Element>('//mets:structMap[@TYPE="physical"]/mets:div', ns);
+function getRootItem(mets: XmlDocument, directoryMetadata: Map<string, Metadata>, type: string): Item {
+    const rootDir = mets.get('//mets:structMap[@TYPE="physical"]/mets:div', ns);
     if (!rootDir)
         throw new Error('Could not find the physical structmap in the METS file');
 
-    const rootDmdId = rootDir.attr('DMDID')?.value();
+    const rootDmdId = rootDir.get('@DMDID')?.content;
     const metadata = directoryMetadata.get(rootDmdId!);
     if (!metadata)
         throw new Error(`Could not find the root metadata for DMD id ${rootDmdId}`);

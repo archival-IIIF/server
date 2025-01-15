@@ -3,7 +3,7 @@ import config from './Config.js';
 
 const stackTraceFormat = format(info => {
     if (info.err)
-        info.message = `${info.message}: ${info.err.stack}`;
+        info.message = `${info.message}: ${(info.err as Error).stack}`;
     return info;
 });
 
