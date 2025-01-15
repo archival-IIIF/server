@@ -24,7 +24,7 @@
     "chokidar": "4.0.3",
     "fs-extra": "11.2.0",
     "pdf-lib": "1.17.1",
-    "image-size": "1.2.0",
+    "mediainfo.js": "0.3.4",
     "dotenv": "16.4.7",
     "cacheable-lookup": "7.0.0",
     "@koa/router": "13.1.0",

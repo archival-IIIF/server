@@ -10,10 +10,13 @@ import {parseLabel} from './util/fileinfo.js'
 
 import {cleanup} from '../util/index_utils.js';
 import {processCollection} from '../util/archivematica.js';
+import {fixMissingMetadata} from '../util/fix_missing_metadata.js';
 
 export default async function processForIndex({collectionPath}: CollectionPathParams): Promise<void> {
     try {
         const {rootItem, childItems} = await processCollection(collectionPath, {type: 'root'});
+        await fixMissingMetadata(childItems);
+
         const rangeItems = processItems(rootItem.collection_id, childItems as ImageItem[]);
 
         logger.debug(`Collection ${collectionPath} processed; running cleanup and index`);

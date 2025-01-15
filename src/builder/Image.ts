@@ -2,8 +2,8 @@ import {AuthService, Image, AccessTier, ImageProfile} from '@archival-iiif/prese
 
 import config from '../lib/Config.js';
 import {Item} from '../lib/ItemInterfaces.js';
-import {sizeOf} from '../lib/Promisified.js';
 import {DerivativeType} from '../lib/Derivative.js';
+import {getImageMetadata} from '../lib/MediaInfo.js';
 import {getFullDerivativePath, getFullPathFor} from '../lib/Item.js';
 import {AccessState, getAuthTexts, getDefaultAccess} from '../lib/Security.js';
 
@@ -17,7 +17,7 @@ export async function getInfo(item: Item, derivative: DerivativeType | null,
     let height = item.height as number;
 
     if (derivative && (item.type === 'pdf' || derivative.type === 'video-mosaic')) {
-        const size = await sizeOf(getFullDerivativePath(item, derivative));
+        const size = await getImageMetadata(getFullDerivativePath(item, derivative));
         width = size?.width as number;
         height = size?.height as number;
     }
@@ -53,7 +53,7 @@ export async function getStaticImageInfo(type: 'logo' | 'audio', profile?: Image
         [width, height] = dimensions[type];
     else {
         const relativePath = type === 'logo' ? config.logoRelativePath : config.audioRelativePath;
-        const size = await sizeOf(getFullPathFor(relativePath!));
+        const size = await getImageMetadata(getFullPathFor(relativePath!));
         width = size?.width as number;
         height = size?.height as number;
         dimensions[type] = [width, height];

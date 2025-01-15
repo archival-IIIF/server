@@ -6,6 +6,7 @@ import {CollectionPathParams} from '../../lib/ServiceTypes.js';
 
 import {cleanup, runTasks} from '../util/index_utils.js';
 import {processCollection, ns} from '../util/archivematica.js';
+import {fixMissingMetadata} from '../util/fix_missing_metadata.js';
 
 export default async function processDip({collectionPath}: CollectionPathParams): Promise<void> {
     try {
@@ -31,6 +32,8 @@ export default async function processDip({collectionPath}: CollectionPathParams)
                     .find(id => id && id !== fileId) as string;
             },
         });
+
+        await fixMissingMetadata(childItems);
 
         logger.debug(`Collection ${collectionPath} processed; running cleanup and index`);
 

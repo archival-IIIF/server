@@ -1,9 +1,9 @@
-import crypto from 'crypto';
+import {promisify} from 'node:util'
+import {createHash} from 'node:crypto';
 import {RedisClientType} from 'redis';
 
 import config from './Config.js';
 import logger from './Logger.js';
-import {sleep} from './Promisified.js';
 import getEsClient from './ElasticSearch.js';
 import {allServices, workersRunning} from './Service.js';
 import registerGracefulShutdownHandler from './GracefulShutdown.js';
@@ -13,7 +13,9 @@ type WorkerStatus<T> = { waiting: T[], working: T[] };
 type WorkerStatusType<T> = { type: string } & WorkerStatus<T>;
 
 let shutdown = false;
-const createHash = (str: string): string => crypto.createHash('md5').update(str).digest('hex');
+const sleep = promisify(setTimeout);
+const md5Hash = createHash('md5');
+const hash = (str: string): string => md5Hash.update(str).digest('hex');
 
 export async function workerStatus(): Promise<{ [type: string]: WorkerStatus<any> }> {
     const client = getPersistentClient();
@@ -82,7 +84,7 @@ export async function moveExpiredTasksToQueue<A>(type: string, client: RedisClie
 
         const tasksInProgress = await client.lRange(nameProgressList, 0, -1);
         const expiredTasks = await Promise.all(tasksInProgress.map(async msg => {
-            const hasNotExpired = await client.get('tasks:' + type + ':' + createHash(msg));
+            const hasNotExpired = await client.get('tasks:' + type + ':' + hash(msg));
             return hasNotExpired ? null : msg;
         }));
 
@@ -111,7 +113,7 @@ export async function gracefulShutdown(type: string, tasksInProgress: string[],
 
             for (const task of tasksInProgress) {
                 multi = multi.lrem(nameProgressList, 1, task);
-                multi = multi.del(nameQueue + ':' + createHash(task));
+                multi = multi.del(nameQueue + ':' + hash(task));
             }
 
             await multi.exec();
@@ -160,9 +162,9 @@ export async function handleMessage<A, R>(type: string, msg: string, process: (a
         logger.debug(`Received a new task with type '${type}' and data ${msg}`);
 
         const nameProgressList = 'tasks:' + type + ':progress';
-        const nameExpiration = 'tasks:' + type + ':' + createHash(msg);
+        const nameExpiration = 'tasks:' + type + ':' + hash(msg);
 
-        await client.setEx(nameExpiration, 60 * 5, createHash(msg));
+        await client.setEx(nameExpiration, 60 * 5, hash(msg));
         await process(task);
 
         await client

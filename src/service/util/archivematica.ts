@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {existsSync} from 'node:fs';
-import {readdir, readFile} from 'fs/promises';
+import {readdir, readFile} from 'node:fs/promises';
 import {basename, extname, join} from 'node:path';
 import {XmlDocument, XmlNode} from 'libxml2-wasm';
 

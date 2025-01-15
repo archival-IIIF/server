@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import {createHash} from 'node:crypto';
 import {XmlDocument, XmlNode} from 'libxml2-wasm';
 
 export interface EADMetadata {
@@ -15,6 +15,7 @@ export interface EADMetadata {
 }
 
 const ns = {'ead': 'urn:isbn:1-931666-22-9'};
+const md5Hash = createHash('md5');
 
 export const EAD_OAI_PREFIX = 'oai:socialhistoryservices.org:10622/';
 
@@ -157,9 +158,7 @@ function extractUnitId(ead: XmlNode, metadata: EADMetadata, parentMetadata: EADM
     if (metadata.title) {
         const unitId = ead.get('./ead:did/ead:unitid', ns);
         metadata.unitIdIsInventoryNumber = !!unitId && parentMetadata !== null;
-        metadata.unitId = unitId
-            ? unitId.content.trim()
-            : crypto.createHash('md5').update(metadata.title).digest('hex');
+        metadata.unitId = unitId ? unitId.content.trim() : md5Hash.update(metadata.title).digest('hex');
     }
 }
 

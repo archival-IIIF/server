@@ -200,6 +200,7 @@ export function getItemsSearch(q: string, size = 10): Promise<Item[]> {
     }
 }
 
+
 export function getFullPath(item: Item, type: 'access' | 'original' | null = null): string {
     const relativePath = getRelativePath(item, type);
     return getFullPathFor(relativePath);
