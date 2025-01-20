@@ -9,9 +9,9 @@ import {stat} from 'node:fs/promises';
 import config from '../lib/Config.js';
 import logger from '../lib/Logger.js';
 import HttpError from '../lib/HttpError.js';
-import getPronomInfo from '../lib/Pronom.js';
 import derivatives from '../lib/Derivative.js';
 import {ExtendedContext} from '../lib/Koa.js';
+import fileFormatCollection from '../lib/Pronom.js';
 
 import {AccessState, hasAccess, hasAdminAccess} from '../lib/Security.js';
 import {getText, getFullPath as getFullTextPath} from '../lib/Text.js';
@@ -98,7 +98,7 @@ router.get('/:id/:type(original|access)?', async ctx => {
 
     const pronom = getPronom(item, type);
     const name = basename(fullPath);
-    const pronomInfo = getPronomInfo(pronom);
+    const pronomInfo = fileFormatCollection.get(pronom);
     const fileStat = await stat(fullPath);
     const contentType = (pronomInfo && pronomInfo.mime) ? pronomInfo.mime : mime.contentType(name);
 

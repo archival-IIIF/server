@@ -1,8 +1,8 @@
 import {expect} from 'chai';
-import getPronomInfo, {PronomInfo} from '../../src/lib/Pronom.js';
+import fileFormatCollection, {PronomInfo} from '../../src/lib/Pronom.js';
 
 describe('Pronom', () => {
-    describe('#getPronomInfo()', () => {
+    describe('#fileFormatCollection', () => {
         const pronomInfoObjects: { [puid: string]: PronomInfo } = {
             'fmt/19': {
                 id: 618, name: 'Acrobat PDF 1.5 - Portable Document Format',
@@ -28,14 +28,14 @@ describe('Pronom', () => {
 
         for (const puid of Object.keys(pronomInfoObjects)) {
             it(`should return the correct info for ${puid}`, () => {
-                const pronomInfo = getPronomInfo(puid);
+                const pronomInfo = fileFormatCollection.get(puid);
                 expect(pronomInfo).to.deep.equal(pronomInfoObjects[puid]);
             });
         }
 
         it('should return false for invalid puids', () => {
-            expect(getPronomInfo('')).to.equal(null);
-            expect(getPronomInfo('fmt/not-existing-one')).to.equal(null);
+            expect(fileFormatCollection.get('')).to.equal(undefined);
+            expect(fileFormatCollection.get('fmt/not-existing-one')).to.equal(undefined);
         });
     });
 });

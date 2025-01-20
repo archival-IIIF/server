@@ -3,8 +3,8 @@ import {existsSync} from 'node:fs';
 import {Text} from '../lib/Text.js';
 import config from '../lib/Config.js';
 import {runLib} from '../lib/Task.js';
-import getPronomInfo from '../lib/Pronom.js';
 import derivatives from '../lib/Derivative.js';
+import fileFormatCollection from '../lib/Pronom.js';
 import {getFullDerivativePath, getItem} from '../lib/Item.js';
 import {ItemParams, BasicIIIFMetadata, CanvasIIIFMetadata} from '../lib/ServiceTypes.js';
 import {getAuthTexts, requiresAuthentication} from '../lib/Security.js';
@@ -152,8 +152,8 @@ export async function getResource(item: FileItem, setAuth: boolean = false): Pro
     if (item.type === 'image')
         return getImageResource(item as ImageItem, 'full', setAuth);
 
-    const accessPronomData = item.access.puid ? getPronomInfo(item.access.puid) : null;
-    const originalPronomData = item.original.puid ? getPronomInfo(item.original.puid) : null;
+    const accessPronomData = item.access.puid ? fileFormatCollection.get(item.access.puid) : undefined;
+    const originalPronomData = item.original.puid ? fileFormatCollection.get(item.original.puid) : undefined;
     const defaultMime = accessPronomData?.mime || originalPronomData?.mime || 'application/octet-stream';
 
     const resource = Resource.createResource(fileUri(item.id), getType(item.type), defaultMime,

@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import {Base, Collection, Manifest, Resource} from '@archival-iiif/presentation-builder/v3';
 
 import {runLib} from '../lib/Task.js';
-import getPronomInfo from '../lib/Pronom.js';
+import fileFormatCollection from '../lib/Pronom.js';
 import {getChildItems} from '../lib/Item.js';
 import {iconsByExtension} from '../lib/FileIcon.js';
 import {Access, AccessState} from '../lib/Security.js';
@@ -62,8 +62,8 @@ export async function getManifest(item: FileItem, access: Access): Promise<Manif
         const canvas = await createCanvas(item, item);
         manifest.setItems(canvas);
 
-        const accessPronomData = item.access.puid ? getPronomInfo(item.access.puid) : null;
-        const originalPronomData = item.original.puid ? getPronomInfo(item.original.puid) : null;
+        const accessPronomData = item.access.puid ? fileFormatCollection.get(item.access.puid) : undefined;
+        const originalPronomData = item.original.puid ? fileFormatCollection.get(item.original.puid) : undefined;
 
         if (item.access.uri && accessPronomData)
             canvas.setRendering({
@@ -104,7 +104,7 @@ export async function getReference(item: Item): Promise<Collection | Manifest> {
 
 async function addMetadataDB(base: Base, root: Item, md: BasicIIIFMetadata): Promise<void> {
     if (root.original.puid) {
-        const pronomData = getPronomInfo(root.original.puid);
+        const pronomData = fileFormatCollection.get(root.original.puid);
         if (pronomData)
             base.setMetadata(
                 'Original file type',
@@ -113,7 +113,7 @@ async function addMetadataDB(base: Base, root: Item, md: BasicIIIFMetadata): Pro
     }
 
     if (root.access.puid && (root.type !== 'image')) {
-        const pronomData = getPronomInfo(root.access.puid);
+        const pronomData = fileFormatCollection.get(root.access.puid);
         if (pronomData)
             base.setMetadata(
                 'Access file type',
@@ -146,7 +146,7 @@ function getFileTypeThumbnail(pronom: string | null, fileExtension: string | nul
     let icon = (type === 'folder') ? defaultFolderIcon : defaultFileIcon;
 
     if (pronom && fileExtension) {
-        const pronomData = getPronomInfo(pronom);
+        const pronomData = fileFormatCollection.get(pronom);
         if (pronomData && pronomData.extensions) {
             const availableIcons = pronomData.extensions.filter(ext => iconsByExtension.includes(ext));
             if (availableIcons.length > 0)
