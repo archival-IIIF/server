@@ -14,8 +14,7 @@ type WorkerStatusType<T> = { type: string } & WorkerStatus<T>;
 
 let shutdown = false;
 const sleep = promisify(setTimeout);
-const md5Hash = createHash('md5');
-const hash = (str: string): string => md5Hash.update(str).digest('hex');
+const hash = (str: string): string => createHash('md5').update(str).digest('hex');
 
 export async function workerStatus(): Promise<{ [type: string]: WorkerStatus<any> }> {
     const client = getPersistentClient();
