@@ -12,7 +12,7 @@ export interface Text {
     type: 'transcription' | 'translation';
     language: string | null;
     uri: string;
-    source: 'plain' | 'alto';
+    source: 'plain' | 'alto' | 'vtt';
     text: string;
     structure: TextStructure | null;
 }

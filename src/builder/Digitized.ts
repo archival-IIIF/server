@@ -1,5 +1,5 @@
 import {runLib} from '../lib/Task.js';
-import {getWordsFromStructure} from '../lib/TextStructure.js';
+import {getBlocksFromStructure} from '../lib/TextStructure.js';
 import {Item, RootItem, FileItem} from '../lib/ItemInterfaces.js';
 import {BasicIIIFMetadata, ItemParams} from '../lib/ServiceTypes.js';
 import {getTextsForCollectionId, Text, withTexts} from '../lib/Text.js';
@@ -110,13 +110,13 @@ export async function getAnnotationPage(item: RootItem, text: Text): Promise<Ann
     if (text.structure) {
         const annotations: Annotation[] = [];
 
-        for (const word of getWordsFromStructure(text.structure)) {
-            if (word.x && word.y && word.width && word.height) {
-                const resource = Resource.createTextResource(word.content, text.language);
-                const annotation = new Annotation(annoUri(item.id, childItem.id, word.idx), resource, 'supplementing');
+        for (const block of getBlocksFromStructure(text.structure)) {
+            if (block.x && block.y && block.width && block.height) {
+                const resource = Resource.createTextResource(block.content, text.language);
+                const annotation = new Annotation(annoUri(item.id, childItem.id, block.idx), resource, 'supplementing');
 
-                annotation.setTextGranularity('word');
-                annotation.setCanvas(canvas, {x: word.x, y: word.y, w: word.width, h: word.height});
+                annotation.setTextGranularity(block.granularity);
+                annotation.setCanvas(canvas, {x: block.x, y: block.y, w: block.width, h: block.height});
 
                 annotations.push(annotation);
             }

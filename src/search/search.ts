@@ -1,7 +1,7 @@
 import {Text} from '../lib/Text.js';
 import config from '../lib/Config.js';
 import getClient from '../lib/ElasticSearch.js';
-import {getWordsFromStructure, TextWord} from '../lib/TextStructure.js';
+import {getBlocksFromStructure, TextWord} from '../lib/TextStructure.js';
 
 const PRE_TAG = '{{{', POST_TAG = '}}}';
 
@@ -133,7 +133,7 @@ async function autocomplete(query: string, filters: { [field: string]: string | 
 
 function mapMatches(text: Text, hl: string, matchExact: string | null): SearchResultMatch[] {
     const matches: SearchResultMatch[] = [];
-    const words = text.structure ? getWordsFromStructure(text.structure) : [];
+    const words = text.structure ? getBlocksFromStructure(text.structure) : [];
     const tokens = hl
         .split(/[\t\r\n\s]+/)
         .filter(token => token.length > 0);
