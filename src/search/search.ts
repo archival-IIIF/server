@@ -138,10 +138,21 @@ function mapMatches(text: Text, hl: string, matchExact: string | null): SearchRe
         .split(/[\t\r\n\s]+/)
         .filter(token => token.length > 0);
 
+    let id = 0;
+    const extractedWords: TextWord[] = [];
+    for (const word of words) {
+        const splitAttempt = word.content.split(/\s+/).filter(w => w.length > 0);
+        if (splitAttempt.length > 1) {
+            extractedWords.push(...splitAttempt.map(w => <TextWord>{ ...word, idx: id++, content: w, isHyphenated: false }));
+        } else {
+            extractedWords.push(<TextWord>{ ...word, idx: id++ });
+        }
+    }
+
     let tokenIdx = 0, wordIdx = 0, curMatch: SearchResultMatch | null = null;
     while (tokenIdx < tokens.length) {
         const token = tokens[tokenIdx];
-        const word = wordIdx < words.length ? words[wordIdx] : null;
+        const word = wordIdx < extractedWords.length ? extractedWords[wordIdx] : null;
 
         if (token.startsWith(PRE_TAG)) {
             if (curMatch == null)
@@ -159,7 +170,7 @@ function mapMatches(text: Text, hl: string, matchExact: string | null): SearchRe
 
         if (word?.isHyphenated) {
             wordIdx++;
-            curMatch?.words.push(words[wordIdx]);
+            curMatch?.words.push(extractedWords[wordIdx]);
         }
 
         if (curMatch && (!matchExact || matchExact === curMatch.match)) {
