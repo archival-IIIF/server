@@ -61,6 +61,8 @@ fileinfo of worker services:
   [ElasticSearch](https://www.elastic.co/webinars/getting-started-elasticsearch). Current implementations:
     - `iish-index`: A specific IISH implementation of the index worker. Indexes DIPs created by the
       Archivematica instance of the IISH.
+    - `niod-index`: A specific NIOD implementation of the index worker. Indexes DIPs created by the
+      Archivematica instance of the NIOD.
     - `ecodices-index`: A specific eCodices implementation of the index worker. Indexes DIPs created by the
       Archivematica instance of eCodices.
 - **Text index worker**: Gets a job with a collection id and a list of all transcriptions/transliterations to be indexed
@@ -494,8 +496,8 @@ The environment variables used to configure the application:
         - `pdf-image`: Runs a **worker** that creates images from pdf files
         - `video-image`: Runs a **worker** that creates images from video files
     - IISH specific services:
-        - `iish-archivematica-index`: Runs a **worker** that indexes IISH DIPs from Archivematica
-        - `iish-archivematica-reindex`: Runs a **worker** that reindexes IISH DIPs from Archivematica
+        - `iish-index`: Runs a **worker** that indexes IISH DIPs from Archivematica
+        - `iish-reindex`: Runs a **worker** that reindexes IISH DIPs from Archivematica
         - `iish-metadata`: Runs a **worker** that indexes IISH metadata (MARCXML / EAD)
         - `iish-metadata-update`: Runs a **cron job** that processes changes in the IISH metadata
         - `iish-access`: Loads a **library** that determines access to items for IISH collections
@@ -506,6 +508,7 @@ The environment variables used to configure the application:
           items from IISH collections
         - `iish-top-collections`: Loads a **library** that provides top IIIF collections for IISH collections
     - NIOD specific services:
+        - `niod-index`: Runs a **worker** that indexes NIOD DIPs from Archivematica
         - `niod-metadata`: Runs a **worker** that indexes NIOD metadata
         - `niod-access`: Loads a **library** that determines access to items for NIOD collections
     - eCodices specific servies:

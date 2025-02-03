@@ -27,6 +27,9 @@ export const allServices: Service[] = [{
         name: 'iish-index',
         loadService: async () => (await import('../service/iish/index.js')).default
     }, {
+        name: 'niod-index',
+        loadService: async () => (await import('../service/niod/index.js')).default
+    }, {
         name: 'ecodices-index',
         loadService: async () => (await import('../service/ecodices/index.js')).default
     }]
