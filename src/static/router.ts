@@ -21,10 +21,10 @@ router.get('/', async ctx => {
     await send(ctx, '/src/static/iiif-explorer.html');
 });
 
-router.get('/iiif-explorer:path(.*)?', async ctx => {
+router.get('/iiif-explorer{*path}', async ctx => {
     await send(ctx, ctx.params.path, {root: './node_modules/iiif-explorer/dist/iiif-explorer/'});
 });
 
-router.get('/file-icon:path(.*)', async ctx => {
+router.get('/file-icon*path', async ctx => {
     await send(ctx, ctx.params.path, {root: fileIconsPath});
 });

@@ -231,14 +231,11 @@ function createObjectsMetadata(mets: XmlDocument): Map<string, ObjectMetadata> {
         const name = basename(premisMetadata.name);
         const type = getTypeForPronom(pronomKey);
 
-        if (!objCharacteristicsExt && (type === 'image' || type === 'video' || type === 'audio'))
-            throw new Error(`No object characteristics extension found for AMD id ${amdId}`);
-
-        const {width, height} = (type === 'image' || type === 'video')
-            ? determineResolution(objCharacteristicsExt!)
+        const {width, height} = objCharacteristicsExt && (type === 'image' || type === 'video')
+            ? determineResolution(objCharacteristicsExt)
             : {width: null, height: null};
-        const resolution = (type === 'image') ? determineDpi(objCharacteristicsExt!) : null;
-        const duration = (type === 'video' || type === 'audio') ? determineDuration(objCharacteristicsExt!) : null;
+        const resolution = objCharacteristicsExt && type === 'image' ? determineDpi(objCharacteristicsExt) : null;
+        const duration = objCharacteristicsExt && (type === 'video' || type === 'audio') ? determineDuration(objCharacteristicsExt) : null;
         const encoding = objCharacteristicsExt ? determineEncoding(objCharacteristicsExt) : null;
 
         metadata.set(amdId, {

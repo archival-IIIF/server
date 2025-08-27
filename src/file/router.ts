@@ -54,100 +54,101 @@ router.use(async (ctx, next) => {
     }
 });
 
-router.get('/:id/:type(original|access)?', async ctx => {
-    logger.info(`Received a request for a file with id ${ctx.params.id}`);
+router.get('/:id{/:type}', async ctx => {
+    if (!ctx.params.type || ctx.params.type === 'original' || ctx.params.type === 'access') {
+        logger.info(`Received a request for a file with id ${ctx.params.id}`);
 
-    const item = await determineItem(ctx.params.id);
-    if (!item) {
-        const text = await getText(ctx.params.id);
-        if (!text)
-            throw new HttpError(404, `No file found with the id ${ctx.params.id}`);
+        const item = await determineItem(ctx.params.id);
+        if (!item) {
+            const text = await getText(ctx.params.id);
+            if (!text)
+                throw new HttpError(404, `No file found with the id ${ctx.params.id}`);
 
-        const fullPath = getFullTextPath(text);
+            const fullPath = getFullTextPath(text);
+            const name = basename(fullPath);
+            const fileStat = await stat(fullPath);
+
+            ctx.set('Content-Type', text.source === 'alto' ? 'application/xml' : 'text/plain');
+            ctx.set('Content-Length', String(fileStat.size));
+            ctx.set('Content-Disposition', `inline; filename="${name}"`);
+            setBody(ctx, fileStat, fullPath);
+
+            logger.info(`Sending a text file with id ${ctx.params.id}`);
+            return;
+        }
+
+        if (item.type === 'image' && !hasAdminAccess(ctx)) {
+            ctx.redirect(`/iiif/image/${item.id}/full/max/0/default.jpg`);
+            return;
+        }
+
+        const access = await hasAccess(ctx, item, false);
+        if (access.state !== AccessState.OPEN)
+            throw new HttpError(401, 'Access denied');
+
+        if (ctx.params.type && !['original', 'access'].includes(ctx.params.type))
+            throw new HttpError(400, 'You can only request an original or an access copy!');
+
+        if (ctx.params.type && !hasType(item, ctx.params.type as 'original' | 'access'))
+            throw new HttpError(400, `There is no ${ctx.params.type} copy for file with id ${ctx.params.id}`);
+
+        const type = (ctx.params.type || getAvailableType(item)) as 'original' | 'access';
+        const fullPath = getFullPath(item, type);
+        if (!fullPath)
+            throw new HttpError(404, `No file found for id ${ctx.params.id} and type ${type}`);
+
+        const pronom = getPronom(item, type);
         const name = basename(fullPath);
+        const pronomInfo = fileFormatCollection.get(pronom);
         const fileStat = await stat(fullPath);
+        const contentType = (pronomInfo && pronomInfo.mime) ? pronomInfo.mime : mime.contentType(name);
 
-        ctx.set('Content-Type', text.source === 'alto' ? 'application/xml' : 'text/plain');
+        if (item.resolution)
+            ctx.set('Content-Resolution', String(item.resolution));
+
+        if (contentType)
+            ctx.set('Content-Type', contentType);
+
         ctx.set('Content-Length', String(fileStat.size));
         ctx.set('Content-Disposition', `inline; filename="${name}"`);
         setBody(ctx, fileStat, fullPath);
 
-        logger.info(`Sending a text file with id ${ctx.params.id}`);
-        return;
+        logger.info(`Sending a file with id ${ctx.params.id}`);
     }
+    else {
+        logger.info(`Received a request for a file derivative with id ${ctx.params.id} of type ${ctx.params.type}`);
 
-    if (item.type === 'image' && !hasAdminAccess(ctx)) {
-        ctx.redirect(`/iiif/image/${item.id}/full/max/0/default.jpg`);
-        return;
+        if (!(ctx.params.type in derivatives))
+            throw new HttpError(404, `No derivative of type ${ctx.params.type}`);
+
+        const info = derivatives[ctx.params.type];
+        const item = await determineItem(ctx.params.id);
+        if (!item)
+            throw new HttpError(404, `No file found with the id ${ctx.params.id}`);
+
+        if (info.to === 'image' && !hasAdminAccess(ctx)) {
+            const tier = info.imageTier ? config.imageTierSeparator + info.imageTier : '';
+            ctx.redirect(`/iiif/image/${item.id}${tier}/full/max/0/default.jpg`);
+            return;
+        }
+
+        const access = await hasAccess(ctx, item, false);
+        if (access.state !== AccessState.OPEN)
+            throw new HttpError(401, 'Access denied');
+
+        const fullPath = getFullDerivativePath(item, info);
+        if (!existsSync(fullPath))
+            throw new HttpError(404, `No derivative found for id ${ctx.params.id} of type ${ctx.params.type}`);
+
+        const fileStat = await stat(fullPath);
+
+        ctx.set('Content-Type', info.contentType);
+        ctx.set('Content-Length', String(fileStat.size));
+        ctx.set('Content-Disposition', `inline; filename="${info.type}-${item.id}.${info.extension}"`);
+        setBody(ctx, fileStat, fullPath);
+
+        logger.info(`Sending a derivative with id ${ctx.params.id} of type ${ctx.params.type}`);
     }
-
-    const access = await hasAccess(ctx, item, false);
-    if (access.state !== AccessState.OPEN)
-        throw new HttpError(401, 'Access denied');
-
-    if (ctx.params.type && !['original', 'access'].includes(ctx.params.type))
-        throw new HttpError(400, 'You can only request an original or an access copy!');
-
-    if (ctx.params.type && !hasType(item, ctx.params.type as 'original' | 'access'))
-        throw new HttpError(400, `There is no ${ctx.params.type} copy for file with id ${ctx.params.id}`);
-
-    const type = (ctx.params.type || getAvailableType(item)) as 'original' | 'access';
-    const fullPath = getFullPath(item, type);
-    if (!fullPath)
-        throw new HttpError(404, `No file found for id ${ctx.params.id} and type ${type}`);
-
-    const pronom = getPronom(item, type);
-    const name = basename(fullPath);
-    const pronomInfo = fileFormatCollection.get(pronom);
-    const fileStat = await stat(fullPath);
-    const contentType = (pronomInfo && pronomInfo.mime) ? pronomInfo.mime : mime.contentType(name);
-
-    if (item.resolution)
-        ctx.set('Content-Resolution', String(item.resolution));
-
-    if (contentType)
-        ctx.set('Content-Type', contentType);
-
-    ctx.set('Content-Length', String(fileStat.size));
-    ctx.set('Content-Disposition', `inline; filename="${name}"`);
-    setBody(ctx, fileStat, fullPath);
-
-    logger.info(`Sending a file with id ${ctx.params.id}`);
-});
-
-router.get('/:id/:derivative', async ctx => {
-    logger.info(`Received a request for a file derivative with id ${ctx.params.id} of type ${ctx.params.derivative}`);
-
-    if (!(ctx.params.derivative in derivatives))
-        throw new HttpError(404, `No derivative of type ${ctx.params.derivative}`);
-
-    const info = derivatives[ctx.params.derivative];
-    const item = await determineItem(ctx.params.id);
-    if (!item)
-        throw new HttpError(404, `No file found with the id ${ctx.params.id}`);
-
-    if (info.to === 'image' && !hasAdminAccess(ctx)) {
-        const tier = info.imageTier ? config.imageTierSeparator + info.imageTier : '';
-        ctx.redirect(`/iiif/image/${item.id}${tier}/full/max/0/default.jpg`);
-        return;
-    }
-
-    const access = await hasAccess(ctx, item, false);
-    if (access.state !== AccessState.OPEN)
-        throw new HttpError(401, 'Access denied');
-
-    const fullPath = getFullDerivativePath(item, info);
-    if (!existsSync(fullPath))
-        throw new HttpError(404, `No derivative found for id ${ctx.params.id} of type ${ctx.params.derivative}`);
-
-    const fileStat = await stat(fullPath);
-
-    ctx.set('Content-Type', info.contentType);
-    ctx.set('Content-Length', String(fileStat.size));
-    ctx.set('Content-Disposition', `inline; filename="${info.type}-${item.id}.${info.extension}"`);
-    setBody(ctx, fileStat, fullPath);
-
-    logger.info(`Sending a derivative with id ${ctx.params.id} of type ${ctx.params.derivative}`);
 });
 
 function setBody(ctx: Context, stat: Stats, fullPath: string) {
