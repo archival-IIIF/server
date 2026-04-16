@@ -1,6 +1,7 @@
-import {Item} from '../../lib/ItemInterfaces.js';
-import {getFullPath} from '../../lib/Item.js';
-import {getAudioMetadata, getImageMetadata, getVideoMetadata} from '../../lib/MediaInfo.js';
+import {getFullPath} from '../../lib/Item.ts';
+import {getAudioMetadata, getImageMetadata, getVideoMetadata} from '../../lib/MediaInfo.ts';
+
+import type {Item} from '../../lib/ItemInterfaces.ts';
 
 export async function fixMissingMetadata(items: Item[]): Promise<void> {
     for (const item of items) {

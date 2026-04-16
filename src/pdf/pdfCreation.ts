@@ -1,11 +1,11 @@
 import {PDFDocument, PDFPage} from 'pdf-lib';
-import {AccessTier} from '@archival-iiif/presentation-builder/v2';
+import type {AccessTier} from '@archival-iiif/presentation-builder/v2';
 
-import config from '../lib/Config.js';
-import logger from '../lib/Logger.js';
-import {ImageItem, RootItem} from '../lib/ItemInterfaces.js';
+import config from '../lib/Config.ts';
+import logger from '../lib/Logger.ts';
+import type {ImageItem, RootItem} from '../lib/ItemInterfaces.ts';
 
-import {getImage} from '../image/imageServer.js';
+import {getImage} from '../image/imageServer.ts';
 
 export default async function createPDF(rootItem: RootItem, items: ImageItem[], tier?: AccessTier): Promise<Buffer> {
     const document = await PDFDocument.create();

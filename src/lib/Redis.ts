@@ -1,8 +1,9 @@
-import config from './Config.js';
-import logger from './Logger.js';
+import config from './Config.ts';
+import logger from './Logger.ts';
 
-import {createClient, RedisClientType} from 'redis';
-import {RedisSocketOptions} from '@redis/client/dist/lib/client/socket.js';
+import {createClient} from 'redis';
+import type {RedisClientType} from 'redis';
+import type {RedisSocketOptions} from '@redis/client/dist/lib/client/socket.ts';
 
 let testClient: RedisClientType | null = null;
 const volatileClient = (config.redisVolatile !== null && config.env !== 'test')

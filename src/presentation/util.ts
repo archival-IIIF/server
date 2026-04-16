@@ -1,5 +1,5 @@
-import {Context} from 'koa';
 import {Manifest, Collection, AnnotationPage} from '@archival-iiif/presentation-builder/v3';
+import type {Context} from 'koa';
 
 export function setContent(ctx: Context, jsonDoc: Manifest | Collection | AnnotationPage | null): void {
     if (jsonDoc === null)

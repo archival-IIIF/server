@@ -4,13 +4,15 @@ import {XmlDocument, XmlNode} from 'libxml2-wasm';
 import {createReadStream, existsSync} from 'node:fs';
 import {readFile} from 'node:fs/promises';
 
-import logger from '../../lib/Logger.js';
-import config from '../../lib/Config.js';
-import {MetadataParams} from '../../lib/ServiceTypes.js';
-import {getChildItems, getItem, updateItems} from '../../lib/Item.js';
-import {Item, Metadata, MinimalItem} from '../../lib/ItemInterfaces.js';
+import logger from '../../lib/Logger.ts';
+import config from '../../lib/Config.ts';
+import {getChildItems, getItem, updateItems} from '../../lib/Item.ts';
 
-import {parseLabel, parsePage, equalsPages, FileInfo} from './util/fileinfo.js';
+import type {MetadataParams} from '../../lib/ServiceTypes.ts';
+import type {Item, Metadata, MinimalItem} from '../../lib/ItemInterfaces.ts';
+
+import {parseLabel, parsePage, equalsPages} from './util/fileinfo.ts';
+import type {FileInfo} from './util/fileinfo.ts';
 
 const ns = {
     'cmd': 'http://www.clarin.eu/cmd/'
@@ -46,7 +48,7 @@ export default async function processMetadata({metadataId, collectionId}: Metada
 
 async function findMetadataIdByCollectionId(id: string): Promise<string | null> {
     const rl = readline.createInterface({
-        input: createReadStream(join(config.metadataPath as string, 'mapping.csv'))
+        input: createReadStream(join(config.metadataPath!, 'mapping.csv'))
     });
 
     for await (const line of rl) {
@@ -73,7 +75,7 @@ async function findMetadataIdByCollectionId(id: string): Promise<string | null> 
 }
 
 async function updateWithMetadataId(metadataId: string): Promise<void> {
-    const path = join(config.metadataPath as string, `${metadataId}.xml`);
+    const path = join(config.metadataPath!, `${metadataId}.xml`);
     if (!existsSync(path))
         throw new Error(`No metadata file ${metadataId}.xml found in ${path}`);
 

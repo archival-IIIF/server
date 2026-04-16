@@ -1,20 +1,17 @@
 {
   "compilerOptions": {
-    "strict": true,
-    "target": "ES2022",
     "lib": [
       "dom",
-      "ES2023"
+      "esnext"
     ],
-    "module": "node16",
-    "moduleResolution": "node16",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
+    "module": "nodenext",
+    "noEmit": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "sourceMap": true
-  },
-  "exclude": [
-    "node_modules"
-  ]
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "types": [
+      "mocha"
+    ]
+  }
 }

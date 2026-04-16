@@ -1,15 +1,15 @@
-import config from '../../lib/Config.js';
-import {Item} from '../../lib/ItemInterfaces.js';
-import {
+import config from '../../lib/Config.ts';
+import type {Item} from '../../lib/ItemInterfaces.ts';
+import type {
     ItemParams,
     BasicIIIFMetadata,
     IIIFMetadataHomepage,
     IIIFMetadataPairs,
     IIIFMetadataSeeAlso
-} from '../../lib/ServiceTypes.js';
+} from '../../lib/ServiceTypes.ts';
 
-import {EAD_OAI_PREFIX} from './util/EAD.js';
-import {MARC_OAI_PREFIX} from './util/MARCXML.js';
+import {EAD_OAI_PREFIX} from './util/EAD.ts';
+import {MARC_OAI_PREFIX} from './util/MARCXML.ts';
 
 export default async function getBasicIIIFMetadata({item}: ItemParams): Promise<BasicIIIFMetadata> {
     return {

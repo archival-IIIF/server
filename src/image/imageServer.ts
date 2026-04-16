@@ -1,12 +1,13 @@
-import got from 'got';
-import {ImageProfile} from '@archival-iiif/presentation-builder/v2';
+import {request} from 'undici';
+import type {ImageProfile} from '@archival-iiif/presentation-builder/v2';
 
-import {sharpProfile, lorisProfile} from './profiles.js';
+import {sharpProfile, lorisProfile} from './profiles.ts';
 
-import config from '../lib/Config.js';
-import {Item} from '../lib/ItemInterfaces.js';
-import {DerivativeType} from '../lib/Derivative.js';
-import {getRelativePath, getRelativeDerivativePath} from '../lib/Item.js';
+import config from '../lib/Config.ts';
+import {getRelativePath, getRelativeDerivativePath} from '../lib/Item.ts';
+
+import type {Item} from '../lib/ItemInterfaces.ts';
+import type {DerivativeType} from '../lib/Derivative.ts';
 
 export interface Size {
     width: number;
@@ -45,11 +46,11 @@ export async function getImage(item: Item, derivative: DerivativeType | null, ma
 }
 
 export async function getLogo(imageOptions: ImageOptions): Promise<ImageResult> {
-    return serveImage(config.logoRelativePath as string, null, imageOptions);
+    return serveImage(config.logoRelativePath!, null, imageOptions);
 }
 
 export async function getAudio(imageOptions: ImageOptions): Promise<ImageResult> {
-    return serveImage(config.audioRelativePath as string, null, imageOptions);
+    return serveImage(config.audioRelativePath!, null, imageOptions);
 }
 
 export function getProfile(): ImageProfile {
@@ -65,19 +66,16 @@ async function serveImage(relativePath: string, max: number | null,
 
     const encodedPath = encodeURIComponent(relativePath);
     const url = `${config.imageServerUrl}/${encodedPath}/${region}/${size}/${rotation}/${quality}.${format}`;
-    const response = await got(url, {
-        responseType: 'buffer',
-        throwHttpErrors: false,
-        timeout: {
-            request: 10000
-        },
-        searchParams: max ? {max} : {},
+    const {statusCode, headers, body} = await request(url, {
+        headersTimeout: 10000,
+        bodyTimeout: 10000,
+        query: max ? {max} : {},
     });
 
     return {
-        image: response.statusCode === 200 ? response.body : null,
-        status: response.statusCode,
-        contentType: response.statusCode === 200 ? response.headers['content-type'] as string : null,
-        contentLength: response.statusCode === 200 ? parseInt(response.headers['content-length'] as string) : null
+        image: statusCode === 200 ? Buffer.from(await body.bytes()) : null,
+        status: statusCode,
+        contentType: statusCode === 200 ? headers['content-type'] as string : null,
+        contentLength: statusCode === 200 ? parseInt(headers['content-length'] as string) : null
     };
 }

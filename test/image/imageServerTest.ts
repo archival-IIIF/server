@@ -1,13 +1,13 @@
 import {expect} from 'chai';
-import nock from 'nock';
 import {Buffer} from 'buffer';
-import {AccessTier} from '@archival-iiif/presentation-builder/v2';
+import {MockAgent, setGlobalDispatcher} from 'undici';
 
-import {setConfig} from '../../src/lib/Config.js';
-import {createItem} from '../../src/lib/Item.js';
-import {ImageItem} from '../../src/lib/ItemInterfaces.js';
+import {setConfig} from '../../src/lib/Config.ts';
+import {createItem} from '../../src/lib/Item.ts';
 
-import {getImage} from '../../src/image/imageServer.js';
+import type {ImageItem} from '../../src/lib/ItemInterfaces.ts';
+
+import {getImage} from '../../src/image/imageServer.ts';
 
 describe('imageServer', () => {
     const item = createItem({
@@ -27,20 +27,23 @@ describe('imageServer', () => {
         }
     }) as ImageItem;
 
-    const tier: AccessTier = {name: 'tierName', maxSize: 150};
-
     setConfig('collectionsRelativePath', 'collections');
 
     describe('#getImage()', () => {
         const image = Buffer.from('image');
 
         beforeEach(() => {
-            nock('http://localhost:8080')
-                .get(uri => uri.startsWith('/' + encodeURIComponent('collections/' + item.access.uri)))
-                .reply(200, image, {
+            const mockAgent = new MockAgent();
+            mockAgent.get('http://localhost:8080').intercept({
+                method: 'GET',
+                path: path => path.startsWith(`/${encodeURIComponent('collections/' + item.access.uri)}`),
+            }).reply(200, image, {
+                headers: {
                     'Content-Type': 'image/jpeg',
                     'Content-Length': '500'
-                });
+                }
+            });
+            setGlobalDispatcher(mockAgent);
         });
 
         it('should call an external IIIF image provider', async () => {

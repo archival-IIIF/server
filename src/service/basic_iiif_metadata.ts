@@ -1,4 +1,4 @@
-import {BasicIIIFMetadata, ItemParams} from '../lib/ServiceTypes.js';
+import type {BasicIIIFMetadata, ItemParams} from '../lib/ServiceTypes.ts';
 
 export default async function getBasicIIIFMetadata({item}: ItemParams): Promise<BasicIIIFMetadata> {
     return {

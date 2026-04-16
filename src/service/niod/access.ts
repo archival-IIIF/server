@@ -1,8 +1,10 @@
 import dayjs from 'dayjs';
 
-import {AccessParams} from '../../lib/ServiceTypes.js';
-import {AccessState, Access} from '../../lib/Security.js';
-import {getRootItemByCollectionId} from '../../lib/Item.js';
+import {AccessState} from '../../lib/Security.ts';
+import {getRootItemByCollectionId} from '../../lib/Item.ts';
+
+import type {Access} from '../../lib/Security.ts';
+import type {AccessParams} from '../../lib/ServiceTypes.ts';
 
 export default async function hasAccess({item, ip, identities = []}: AccessParams): Promise<Access> {
     if (item.collection_id === null || item.type === 'metadata')

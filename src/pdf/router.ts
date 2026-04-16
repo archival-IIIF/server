@@ -1,16 +1,17 @@
 import Router from '@koa/router';
-import {DefaultState} from 'koa';
+import type {DefaultState} from 'koa';
 
-import logger from '../lib/Logger.js';
-import config from '../lib/Config.js';
-import HttpError from '../lib/HttpError.js';
-import {ExtendedContext} from '../lib/Koa.js';
-import {getVolatileClient} from '../lib/Redis.js';
-import {ImageItem, RootItem} from '../lib/ItemInterfaces.js';
-import {getChildItems, getItem} from '../lib/Item.js';
-import {AccessState, hasAccess, getIpAddress, hasAdminAccess} from '../lib/Security.js';
+import logger from '../lib/Logger.ts';
+import config from '../lib/Config.ts';
+import HttpError from '../lib/HttpError.ts';
+import {getVolatileClient} from '../lib/Redis.ts';
+import {getChildItems, getItem} from '../lib/Item.ts';
+import {AccessState, hasAccess, getIpAddress, hasAdminAccess} from '../lib/Security.ts';
 
-import createPDF from './pdfCreation.js';
+import type {ExtendedContext} from '../lib/Koa.ts';
+import type {ImageItem, RootItem} from '../lib/ItemInterfaces.ts';
+
+import createPDF from './pdfCreation.ts';
 
 export const router = new Router<DefaultState, ExtendedContext>({prefix: '/pdf'});
 

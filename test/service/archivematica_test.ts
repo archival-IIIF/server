@@ -3,7 +3,7 @@ import {expect} from 'chai';
 
 import {XmlDocument, XmlNode} from 'libxml2-wasm';
 
-import {createItem} from '../../src/lib/Item.js';
+import {createItem} from '../../src/lib/Item.ts';
 import {
     processCollection,
     getIdentifier,
@@ -11,7 +11,7 @@ import {
     determineDpi,
     determineDuration,
     determineEncoding, ns,
-} from '../../src/service/util/archivematica.js';
+} from '../../src/service/util/archivematica.ts';
 
 const testRootDirectory = './test/service';
 const rej = (err: Error) => err;
@@ -672,7 +672,7 @@ describe('archivematica', () => {
                         const fptrs = rootCustom.find(`./mets:div[@TYPE="page"]/mets:fptr[@FILEID="${fileId}"]/../mets:fptr`, ns);
                         return fptrs
                             .map(fptrElem => fptrElem.get('@FILEID')?.content)
-                            .find(id => id && id !== fileId) as string;
+                            .find(id => id && id !== fileId)!;
                     },
                 });
 
@@ -979,9 +979,7 @@ describe('archivematica', () => {
     describe('#getIdentifier()', () => {
         it('should prefer the identifier of a handle over an UUID', () => {
             using premisElem = XmlDocument.fromString(`
-                <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
-                xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
-                version="2.2">
+                <premis:object xmlns:premis="info:lc/xmlns/premis-v2" version="2.2">
                     <premis:objectIdentifier>
                         <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
                         <premis:objectIdentifierValue>cf34ab26-d4a2-4b73-99bf-9da8171084b0</premis:objectIdentifierValue>
@@ -1000,9 +998,7 @@ describe('archivematica', () => {
 
         it('should prefer the UUID identifier over anything else (if not a handle)', () => {
             using premisElem = XmlDocument.fromString(`
-                <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
-                xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
-                version="2.2">
+                <premis:object xmlns:premis="info:lc/xmlns/premis-v2" version="2.2">
                     <premis:objectIdentifier>
                         <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
                         <premis:objectIdentifierValue>cf34ab26-d4a2-4b73-99bf-9da8171084b0</premis:objectIdentifierValue>
@@ -1021,9 +1017,7 @@ describe('archivematica', () => {
 
         it('should fail to return an identifier if there is neither an UUID or handle', () => {
             using premisElem = XmlDocument.fromString(`
-                <premis:object xmlns:premis="info:lc/xmlns/premis-v2" xsi:type="premis:file"
-                xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd"
-                version="2.2">
+                <premis:object xmlns:premis="info:lc/xmlns/premis-v2" version="2.2">
                     <premis:objectIdentifier>
                         <premis:objectIdentifierType>another-type-of-identifier</premis:objectIdentifierType>
                         <premis:objectIdentifierValue>abcdef</premis:objectIdentifierValue>
@@ -1040,8 +1034,8 @@ describe('archivematica', () => {
     describe('#determineResolution()', () => {
         it('should correctly obtain the resolution from MediaInfo', () => {
             using objCharsExtElem = XmlDocument.fromString(`
-              <premis:objectCharacteristicsExtension>
-                <MediaInfo xmlns="https://mediaarea.net/mediainfo" xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd" version="2.0">
+              <premis:objectCharacteristicsExtension xmlns:premis="info:lc/xmlns/premis-v2">
+                <MediaInfo xmlns="https://mediaarea.net/mediainfo" version="2.0">
                   <creatingLibrary version="18.03" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
                   <media>
                     <track type="General">
@@ -1127,7 +1121,7 @@ describe('archivematica', () => {
 
         it('should correctly obtain the resolution from FFprobe', () => {
             using objCharsExtElem = XmlDocument.fromString(`
-              <premis:objectCharacteristicsExtension>
+              <premis:objectCharacteristicsExtension xmlns:premis="info:lc/xmlns/premis-v2">
                 <ffprobe>
                   <program_version version="3.3.2-1~16.04.york2" copyright="Copyright (c) 2007-2017 the FFmpeg developers" compiler_ident="gcc 5.4.0 (Ubuntu 5.4.0-6ubuntu1~16.04.4) 20160609" configuration="--prefix=/usr --extra-version='1~16.04.york2' --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --enable-gpl --disable-stripping --enable-avresample --enable-avisynth --enable-gnutls --enable-ladspa --enable-libass --enable-libbluray --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libgme --enable-libgsm --enable-libmp3lame --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libpulse --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libssh --enable-libtheora --enable-libtwolame --enable-libvorbis --enable-libvpx --enable-libwavpack --enable-libwebp --enable-libx265 --enable-libxvid --enable-libzmq --enable-libzvbi --enable-omx --enable-openal --enable-opengl --enable-sdl2 --enable-libdc1394 --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-libopencv --enable-libx264 --enable-shared"/>
                   <library_versions>
@@ -1161,7 +1155,7 @@ describe('archivematica', () => {
 
         it('should correctly obtain the resolution from the EXIF tool', () => {
             using objCharsExtElem = XmlDocument.fromString(`
-              <premis:objectCharacteristicsExtension>
+              <premis:objectCharacteristicsExtension xmlns:premis="info:lc/xmlns/premis-v2">
                 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
                   <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/" xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/" xmlns:File="http://ns.exiftool.ca/File/1.0/" xmlns:RIFF="http://ns.exiftool.ca/RIFF/RIFF/1.0/" xmlns:Composite="http://ns.exiftool.ca/Composite/1.0/" et:toolkit="Image::ExifTool 10.10">
                     <ExifTool:ExifToolVersion>10.10</ExifTool:ExifToolVersion>
@@ -1217,8 +1211,8 @@ describe('archivematica', () => {
 
         it('should correctly obtain the resolution from FITS (EXIF tool)', () => {
             using objCharsExtElem = XmlDocument.fromString(`
-              <premis:objectCharacteristicsExtension>
-                <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output" xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd" version="0.8.4" timestamp="8/9/18 10:15 AM">
+              <premis:objectCharacteristicsExtension xmlns:premis="info:lc/xmlns/premis-v2">
+                <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output" version="0.8.4" timestamp="8/9/18 10:15 AM">
                   <identification>
                     <identity format="Exchangeable Image File Format" mimetype="image/jpeg" toolname="FITS" toolversion="0.8.4">
                       <tool toolname="Exiftool" toolversion="9.13"/>
@@ -1301,7 +1295,7 @@ describe('archivematica', () => {
     describe('#determineDpi()', () => {
         it('should correctly obtain the DPI from the EXIF tool', () => {
             using objCharsExtElem = XmlDocument.fromString(`
-              <premis:objectCharacteristicsExtension>
+              <premis:objectCharacteristicsExtension xmlns:premis="info:lc/xmlns/premis-v2">
                 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
                   <rdf:Description xmlns:et="http://ns.exiftool.ca/1.0/" xmlns:ExifTool="http://ns.exiftool.ca/ExifTool/1.0/" xmlns:File="http://ns.exiftool.ca/File/1.0/" xmlns:IFD0="http://ns.exiftool.ca/EXIF/IFD0/1.0/" xmlns:ExifIFD="http://ns.exiftool.ca/EXIF/ExifIFD/1.0/" et:toolkit="Image::ExifTool 10.10">
                     <ExifTool:ExifToolVersion>10.10</ExifTool:ExifToolVersion>
@@ -1373,8 +1367,8 @@ describe('archivematica', () => {
 
         it('should correctly obtain the DPI from FITS (EXIF tool)', () => {
             using objCharsExtElem = XmlDocument.fromString(`
-              <premis:objectCharacteristicsExtension>
-                <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output" xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd" version="0.8.4" timestamp="8/9/18 10:15 AM">
+              <premis:objectCharacteristicsExtension xmlns:premis="info:lc/xmlns/premis-v2">
+                <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output" version="0.8.4" timestamp="8/9/18 10:15 AM">
                   <identification>
                     <identity format="Exchangeable Image File Format" mimetype="image/jpeg" toolname="FITS" toolversion="0.8.4">
                       <tool toolname="Exiftool" toolversion="9.13"/>
@@ -1457,8 +1451,8 @@ describe('archivematica', () => {
     describe('#determineDuration()', () => {
         it('should correctly obtain the duration from MediaInfo', () => {
             using objCharsExtElem = XmlDocument.fromString(`
-              <premis:objectCharacteristicsExtension>
-                <MediaInfo xmlns="https://mediaarea.net/mediainfo" xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd" version="2.0">
+              <premis:objectCharacteristicsExtension xmlns:premis="info:lc/xmlns/premis-v2">
+                <MediaInfo xmlns="https://mediaarea.net/mediainfo" version="2.0">
                   <creatingLibrary version="18.03" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
                   <media>
                     <track type="General">
@@ -1544,7 +1538,7 @@ describe('archivematica', () => {
 
         it('should correctly obtain the duration from FFprobe', () => {
             using objCharsExtElem = XmlDocument.fromString(`
-              <premis:objectCharacteristicsExtension>
+              <premis:objectCharacteristicsExtension xmlns:premis="info:lc/xmlns/premis-v2">
                 <ffprobe>
                   <program_version version="3.3.2-1~16.04.york2" copyright="Copyright (c) 2007-2017 the FFmpeg developers" compiler_ident="gcc 5.4.0 (Ubuntu 5.4.0-6ubuntu1~16.04.4) 20160609" configuration="--prefix=/usr --extra-version='1~16.04.york2' --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --enable-gpl --disable-stripping --enable-avresample --enable-avisynth --enable-gnutls --enable-ladspa --enable-libass --enable-libbluray --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libgme --enable-libgsm --enable-libmp3lame --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libpulse --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libssh --enable-libtheora --enable-libtwolame --enable-libvorbis --enable-libvpx --enable-libwavpack --enable-libwebp --enable-libx265 --enable-libxvid --enable-libzmq --enable-libzvbi --enable-omx --enable-openal --enable-opengl --enable-sdl2 --enable-libdc1394 --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-libopencv --enable-libx264 --enable-shared"/>
                   <library_versions>
@@ -1580,8 +1574,8 @@ describe('archivematica', () => {
     describe('#determineEncoding()', () => {
         it('should correctly obtain the duration from Fits / Tika', () => {
             using objCharsExtElem = XmlDocument.fromString(`
-              <premis:objectCharacteristicsExtension>
-               <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output" xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd" version="1.1.0">
+              <premis:objectCharacteristicsExtension xmlns:premis="info:lc/xmlns/premis-v2">
+               <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output" version="1.1.0">
                 <toolOutput>
                   <tool name="Tika" version="1.10">
                     <metadata xmlns="">

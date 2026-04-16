@@ -1,5 +1,5 @@
-import {manifestUri} from '../../builder/UriHelper.js';
-import {ItemParams, BasicIIIFMetadata} from '../../lib/ServiceTypes.js';
+import {manifestUri} from '../../builder/UriHelper.ts';
+import type {ItemParams, BasicIIIFMetadata} from '../../lib/ServiceTypes.ts';
 
 export default async function getBasicIIIFMetadata({item}: ItemParams): Promise<BasicIIIFMetadata> {
     const miradorUrl = `https://projectmirador.org/embed/?iiif-content=${manifestUri(item.id)}`;

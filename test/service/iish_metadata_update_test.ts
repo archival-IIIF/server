@@ -1,19 +1,23 @@
-import nock from 'nock';
 import {expect} from 'chai';
+import {MockAgent, setGlobalDispatcher} from 'undici';
 
-import {getOAIIdentifiersOfUpdated} from '../../src/service/iish/metadata_update.js';
+import {getOAIIdentifiersOfUpdated} from '../../src/service/iish/metadata_update.ts';
 
 describe('iish_metadata_update', () => {
     describe('#getOAIIdentifiersOfUpdated()', () => {
         beforeEach(() => {
-            nock('http://api')
-                .get('/')
-                .query({
+            const mockAgent = new MockAgent();
+            const mockPool = mockAgent.get('http://api');
+
+            mockPool.intercept({
+                method: 'GET',
+                path: '/',
+                query: {
                     verb: 'ListIdentifiers',
                     metadataPrefix: 'marcxml',
                     from: '2019-01-01'
-                })
-                .reply(200, `<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+                }
+            }).reply(200, `<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
                              http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
@@ -29,15 +33,19 @@ describe('iish_metadata_update', () => {
                         </header>
                         <resumptionToken>resumptionToken1</resumptionToken>
                       </ListIdentifiers>
-                    </OAI-PMH>`)
-                .get('/')
-                .query({
+                    </OAI-PMH>`
+            );
+
+            mockPool.intercept({
+                method: 'GET',
+                path: '/',
+                query: {
                     verb: 'ListIdentifiers',
                     metadataPrefix: 'marcxml',
                     from: '2019-01-01',
                     resumptionToken: 'resumptionToken1'
-                })
-                .reply(200, `<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+                }
+            }).reply(200, `<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
                              http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
@@ -53,15 +61,19 @@ describe('iish_metadata_update', () => {
                         </header>
                         <resumptionToken>resumptionToken2</resumptionToken>
                       </ListIdentifiers>
-                    </OAI-PMH>`)
-                .get('/')
-                .query({
+                    </OAI-PMH>`
+            );
+
+            mockPool.intercept({
+                method: 'GET',
+                path: '/',
+                query: {
                     verb: 'ListIdentifiers',
                     metadataPrefix: 'marcxml',
                     from: '2019-01-01',
                     resumptionToken: 'resumptionToken2'
-                })
-                .reply(200, `<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+                }
+            }).reply(200, `<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
                              http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
@@ -70,7 +82,10 @@ describe('iish_metadata_update', () => {
                           <identifier>oai:socialhistoryservices.org:last-one</identifier>
                         </header>
                       </ListIdentifiers>
-                    </OAI-PMH>`);
+                    </OAI-PMH>`
+            );
+
+            setGlobalDispatcher(mockAgent);
         });
 
         it('should determine the OAI indentifier from an ARCH identifier', async () => {

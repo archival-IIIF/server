@@ -1,16 +1,17 @@
-import {DefaultState} from 'koa';
 import Router from '@koa/router';
+import type {DefaultState} from 'koa';
 
-import logger from '../lib/Logger.js';
-import {ExtendedContext} from '../lib/Koa.js';
-import {runLib} from '../lib/Task.js';
-import {createItem, withItems} from '../lib/Item.js';
-import {MetadataItem} from '../lib/ItemInterfaces.js';
-import {EmptyParams, TopCollection} from '../lib/ServiceTypes.js';
+import logger from '../lib/Logger.ts';
+import {runLib} from '../lib/Task.ts';
+import {createItem, withItems} from '../lib/Item.ts';
 
-import {getCollectionWithChildren} from '../builder/PresentationBuilder.js';
+import type {ExtendedContext} from '../lib/Koa.ts';
+import type {MetadataItem} from '../lib/ItemInterfaces.ts';
+import type {EmptyParams, TopCollection} from '../lib/ServiceTypes.ts';
 
-import {setContent} from './util.js';
+import {getCollectionWithChildren} from '../builder/PresentationBuilder.ts';
+
+import {setContent} from './util.ts';
 
 export const router = new Router<DefaultState, ExtendedContext>({prefix: '/collection'});
 

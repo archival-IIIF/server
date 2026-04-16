@@ -1,8 +1,9 @@
-import config from '../../lib/Config.js';
-import getClient from '../../lib/ElasticSearch.js';
-import {Item} from '../../lib/ItemInterfaces.js';
-import {EmptyParams, TopCollection} from '../../lib/ServiceTypes.js';
-import {createItem, getAllRootItems, getItems} from '../../lib/Item.js';
+import config from '../../lib/Config.ts';
+import getClient from '../../lib/ElasticSearch.ts';
+import {createItem, getAllRootItems, getItems} from '../../lib/Item.ts';
+
+import type {Item} from '../../lib/ItemInterfaces.ts';
+import type {EmptyParams, TopCollection} from '../../lib/ServiceTypes.ts';
 
 const fromParam = (param: string): string => param.replaceAll('_', ' ');
 const toParam = (param: string): string => param.replaceAll(' ', '_');

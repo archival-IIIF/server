@@ -1,18 +1,19 @@
 import {Manifest, Collection, AnnotationPage} from '@archival-iiif/presentation-builder/v3';
-import {TermList, Image, ImageProfile, AnnotationList} from '@archival-iiif/presentation-builder/v2';
+import {TermList, Image, AnnotationList} from '@archival-iiif/presentation-builder/v2';
+import type {ImageProfile} from '@archival-iiif/presentation-builder/v2';
 
-import {Text} from '../lib/Text.js';
-import {Access} from '../lib/Security.js';
-import {DerivativeType} from '../lib/Derivative.js';
-import {FileItem, FolderItem, Item, MetadataItem, RootItem} from '../lib/ItemInterfaces.js';
+import type {Text} from '../lib/Text.ts';
+import type {Access} from '../lib/Security.ts';
+import type {DerivativeType} from '../lib/Derivative.ts';
+import type {FileItem, FolderItem, Item, MetadataItem, RootItem} from '../lib/ItemInterfaces.ts';
 
-import {SearchResult} from '../search/search.js';
+import type {SearchResult} from '../search/search.ts';
 
-import * as Search from './Search.js';
-import * as Metadata from './Metadata.js';
-import * as Digitized from './Digitized.js';
-import * as DigitalBorn from './DigitalBorn.js';
-import * as ImageFunctions from './Image.js';
+import * as Search from './Search.ts';
+import * as Metadata from './Metadata.ts';
+import * as Digitized from './Digitized.ts';
+import * as DigitalBorn from './DigitalBorn.ts';
+import * as ImageFunctions from './Image.ts';
 
 export interface PresentationBuilder {
     isCollection: (item: Item | null) => boolean;

@@ -1,6 +1,6 @@
-import {Item, RootItem} from './ItemInterfaces.js';
-import {AuthTexts} from '@archival-iiif/presentation-builder/v2';
-import {ManifestBehavior, CanvasBehavior} from '@archival-iiif/presentation-builder/v3';
+import type {Item, RootItem} from './ItemInterfaces.ts';
+import type {AuthTexts} from '@archival-iiif/presentation-builder/v2';
+import type {ManifestBehavior, CanvasBehavior} from '@archival-iiif/presentation-builder/v3';
 
 export type EmptyParams = {};
 export type ItemParams = { item: Item };

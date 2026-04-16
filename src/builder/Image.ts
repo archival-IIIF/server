@@ -1,13 +1,15 @@
-import {AuthService, Image, AccessTier, ImageProfile} from '@archival-iiif/presentation-builder/v2';
+import {AuthService, Image} from '@archival-iiif/presentation-builder/v2';
+import type {AccessTier, ImageProfile} from '@archival-iiif/presentation-builder/v2';
 
-import config from '../lib/Config.js';
-import {Item} from '../lib/ItemInterfaces.js';
-import {DerivativeType} from '../lib/Derivative.js';
-import {getImageMetadata} from '../lib/MediaInfo.js';
-import {getFullDerivativePath, getFullPathFor} from '../lib/Item.js';
-import {AccessState, getAuthTexts, getDefaultAccess} from '../lib/Security.js';
+import config from '../lib/Config.ts';
+import {getImageMetadata} from '../lib/MediaInfo.ts';
+import {getFullDerivativePath, getFullPathFor} from '../lib/Item.ts';
+import {AccessState, getAuthTexts, getDefaultAccess} from '../lib/Security.ts';
 
-import {authUri, imageUri} from './UriHelper.js';
+import type {Item} from '../lib/ItemInterfaces.ts';
+import type {DerivativeType} from '../lib/Derivative.ts';
+
+import {authUri, imageUri} from './UriHelper.ts';
 
 const dimensions: { [type: string]: [number, number] } = {};
 

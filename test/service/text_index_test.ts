@@ -1,7 +1,7 @@
 import {join} from 'node:path';
 import {expect} from 'chai';
 
-import {getText, getTextStructure} from '../../src/service/text_index.js';
+import {getText, getTextStructure} from '../../src/service/text_index.ts';
 
 const testRootDirectory = './test/service';
 

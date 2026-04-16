@@ -1,14 +1,15 @@
 import {existsSync} from 'node:fs';
 
-import {Text} from '../lib/Text.js';
-import config from '../lib/Config.js';
-import {runLib} from '../lib/Task.js';
-import derivatives from '../lib/Derivative.js';
-import fileFormatCollection from '../lib/Pronom.js';
-import {getFullDerivativePath, getItem} from '../lib/Item.js';
-import {ItemParams, BasicIIIFMetadata, CanvasIIIFMetadata} from '../lib/ServiceTypes.js';
-import {getAuthTexts, requiresAuthentication} from '../lib/Security.js';
-import {Item, FileItem, ImageItem, RootItem, FolderItem, RangeItem} from '../lib/ItemInterfaces.js';
+import config from '../lib/Config.ts';
+import {runLib} from '../lib/Task.ts';
+import derivatives from '../lib/Derivative.ts';
+import fileFormatCollection from '../lib/Pronom.ts';
+import {getFullDerivativePath, getItem} from '../lib/Item.ts';
+import {getAuthTexts, requiresAuthentication} from '../lib/Security.ts';
+
+import type {Text} from '../lib/Text.ts';
+import type {ItemParams, BasicIIIFMetadata, CanvasIIIFMetadata} from '../lib/ServiceTypes.ts';
+import type {Item, FileItem, ImageItem, RootItem, FolderItem, RangeItem} from '../lib/ItemInterfaces.ts';
 
 import {
     Base, Manifest, Collection, AuthService, Range,
@@ -27,8 +28,8 @@ import {
     imageResourceUri,
     imageUri,
     manifestUri
-} from './UriHelper.js';
-import {getStaticImageInfo} from './Image.js';
+} from './UriHelper.ts';
+import {getStaticImageInfo} from './Image.ts';
 
 type HierarchyType = { range: RangeItem, children: HierarchyType[], items: Item[] };
 

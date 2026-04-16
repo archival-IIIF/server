@@ -1,18 +1,19 @@
 import Router from '@koa/router';
-import {DefaultState} from 'koa';
+import type {DefaultState} from 'koa';
 
-import logger from '../lib/Logger.js';
-import {cache} from '../lib/Cache.js';
-import {getItem} from '../lib/Item.js';
-import {getText} from '../lib/Text.js';
-import HttpError from '../lib/HttpError.js';
-import {ExtendedContext} from '../lib/Koa.js';
-import {AccessState, hasAccess} from '../lib/Security.js';
+import logger from '../lib/Logger.ts';
+import {cache} from '../lib/Cache.ts';
+import {getItem} from '../lib/Item.ts';
+import {getText} from '../lib/Text.ts';
+import HttpError from '../lib/HttpError.ts';
+import {AccessState, hasAccess} from '../lib/Security.ts';
 
-import {getAnnotationPage, getCollection, getManifest, isCollection, isManifest} from '../builder/PresentationBuilder.js';
+import type {ExtendedContext} from '../lib/Koa.ts';
 
-import {setContent} from './util.js';
-import {router as routerTop} from './router-top.js';
+import {getAnnotationPage, getCollection, getManifest, isCollection, isManifest} from '../builder/PresentationBuilder.ts';
+
+import {setContent} from './util.ts';
+import {router as routerTop} from './router-top.ts';
 
 export const router = new Router<DefaultState, ExtendedContext>({prefix: '/iiif/presentation'});
 

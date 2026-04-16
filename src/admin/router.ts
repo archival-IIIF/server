@@ -1,16 +1,24 @@
 import {existsSync} from 'node:fs';
-import {DefaultState} from 'koa';
 import Router from '@koa/router';
 
-import HttpError from '../lib/HttpError.js';
-import {runTask} from '../lib/Task.js';
-import {workerStatus} from '../lib/Worker.js';
-import {ExtendedContext} from '../lib/Koa.js';
-import {hasAdminAccess, getIpAddress} from '../lib/Security.js';
-import {EmptyParams, CollectionPathParams, MetadataParams, ProcessUpdateParams, ReindexParams} from '../lib/ServiceTypes.js';
+import type {DefaultState} from 'koa';
 
-import registerToken from './register_token.js';
-import indexCollection from './api_index.js';
+import HttpError from '../lib/HttpError.ts';
+import {runTask} from '../lib/Task.ts';
+import {workerStatus} from '../lib/Worker.ts';
+import {hasAdminAccess, getIpAddress} from '../lib/Security.ts';
+
+import type {ExtendedContext} from '../lib/Koa.ts';
+import type {
+    EmptyParams,
+    CollectionPathParams,
+    MetadataParams,
+    ProcessUpdateParams,
+    ReindexParams
+} from '../lib/ServiceTypes.ts';
+
+import registerToken from './register_token.ts';
+import indexCollection from './api_index.ts';
 
 export const router = new Router<DefaultState, ExtendedContext>({prefix: '/admin'});
 

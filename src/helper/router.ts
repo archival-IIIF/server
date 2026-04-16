@@ -1,8 +1,8 @@
 import Router from '@koa/router';
-import {DefaultState} from 'koa';
+import type {DefaultState} from 'koa';
 
-import config from '../lib/Config.js';
-import {ExtendedContext} from '../lib/Koa.js';
+import config from '../lib/Config.ts';
+import type {ExtendedContext} from '../lib/Koa.ts';
 
 export const router = new Router<DefaultState, ExtendedContext>({prefix: '/helper'});
 

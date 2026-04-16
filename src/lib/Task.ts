@@ -1,6 +1,6 @@
-import logger from './Logger.js';
-import {workersRunning, libsRunning} from './Service.js';
-import {getPersistentClient} from './Redis.js';
+import logger from './Logger.ts';
+import {workersRunning, libsRunning} from './Service.ts';
+import {getPersistentClient} from './Redis.ts';
 
 export function runTask<T>(type: string, task: T): void {
     if (type in workersRunning) {

@@ -1,28 +1,31 @@
 import {join} from 'node:path';
-import {XmlDocument} from 'libxml2-wasm';
-
-import nock from 'nock';
-import {expect} from 'chai';
 import {readFile} from 'node:fs/promises';
+import {expect} from 'chai';
+import {XmlDocument} from 'libxml2-wasm';
+import {MockAgent, setGlobalDispatcher} from 'undici';
 
 import {
     getOAIIdentifier,
     updateEAD,
     updateMarc
-} from '../../src/service/iish/metadata.js';
+} from '../../src/service/iish/metadata.ts';
 
 const testRootDirectory = './test/service';
 
 describe('iish_metadata', () => {
     describe('#getOAIIdentifier()', () => {
         beforeEach(() => {
-            nock('http://srw')
-                .get('/')
-                .query({
+            const mockAgent = new MockAgent();
+            const mockPool = mockAgent.get('http://srw');
+
+            mockPool.intercept({
+                method: 'GET',
+                path: '/',
+                query: {
                     operation: 'searchRetrieve',
                     query: 'marc.852$p="1234567890"'
-                })
-                .reply(200, `<?xml version="1.0" encoding="UTF-8"?>
+                }
+            }).reply(200, `<?xml version="1.0" encoding="UTF-8"?>
                 <searchRetrieveResponse xmlns="http://www.loc.gov/zing/srw/">
                   <version>1.1</version>
                   <numberOfRecords>1</numberOfRecords>
@@ -41,14 +44,24 @@ describe('iish_metadata', () => {
                       </recordData>
                     </record>
                   </records>
-                </searchRetrieveResponse>`)
-                .get('/')
-                .query(true)
-                .reply(200, `<?xml version="1.0" encoding="UTF-8"?>
+                </searchRetrieveResponse>`
+            );
+
+            mockPool.intercept({
+                method: 'GET',
+                path: '/',
+                query: {
+                    operation: 'searchRetrieve',
+                    query: 'marc.852$p="567890"'
+                }
+            }).reply(200, `<?xml version="1.0" encoding="UTF-8"?>
                 <searchRetrieveResponse xmlns="http://www.loc.gov/zing/srw/">
                   <version>1.1</version>
                   <numberOfRecords>0</numberOfRecords>
-                </searchRetrieveResponse>`);
+                </searchRetrieveResponse>`
+            );
+
+            setGlobalDispatcher(mockAgent);
         });
 
         it('should determine the OAI indentifier from an ARCH identifier', async () => {

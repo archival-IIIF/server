@@ -2,8 +2,8 @@ import sinon from 'sinon';
 import * as chai from 'chai';
 import sinonChai from 'sinon-chai';
 
-import {setRedisClient} from '../../src/lib/Redis.js';
-import {cache, evictCache} from '../../src/lib/Cache.js';
+import {setRedisClient} from '../../src/lib/Redis.ts';
+import {cache, evictCache} from '../../src/lib/Cache.ts';
 
 chai.use(sinonChai);
 const expect = chai.expect;

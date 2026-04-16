@@ -1,12 +1,12 @@
 import {XmlNode} from 'libxml2-wasm';
 
-import logger from '../../lib/Logger.js';
-import {indexItems} from '../../lib/Item.js';
-import {CollectionPathParams} from '../../lib/ServiceTypes.js';
+import logger from '../../lib/Logger.ts';
+import {indexItems} from '../../lib/Item.ts';
+import type {CollectionPathParams} from '../../lib/ServiceTypes.ts';
 
-import {cleanup, runTasks} from '../util/index_utils.js';
-import {processCollection, ns} from '../util/archivematica.js';
-import {fixMissingMetadata} from '../util/fix_missing_metadata.js';
+import {cleanup, runTasks} from '../util/index_utils.ts';
+import {processCollection, ns} from '../util/archivematica.ts';
+import {fixMissingMetadata} from '../util/fix_missing_metadata.ts';
 
 export default async function processDip({collectionPath}: CollectionPathParams): Promise<void> {
     try {
@@ -27,7 +27,7 @@ export default async function processDip({collectionPath}: CollectionPathParams)
                 const fptrs = rootCustom.find(`./mets:div[@TYPE="page"]/mets:fptr[@FILEID="${fileId}"]/../mets:fptr`, ns);
                 return fptrs
                     .map(fptrElem => fptrElem.get('@FILEID')?.content)
-                    .find(id => id && id !== fileId) as string;
+                    .find(id => id && id !== fileId)!;
             },
         });
 

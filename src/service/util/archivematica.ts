@@ -4,12 +4,13 @@ import {readdir, readFile} from 'node:fs/promises';
 import {basename, extname, join} from 'node:path';
 import {XmlDocument, XmlNode} from 'libxml2-wasm';
 
-import config from '../../lib/Config.js';
-import {createItem} from '../../lib/Item.js';
-import {TextItem} from '../../lib/ServiceTypes.js';
-import {MinimalItem, FolderItem, Item} from '../../lib/ItemInterfaces.js';
+import config from '../../lib/Config.ts';
+import {createItem} from '../../lib/Item.ts';
 
-import {getTypeForPronom, pronomByExtension} from './archivematica_pronom_data.js';
+import type {TextItem} from '../../lib/ServiceTypes.ts';
+import type {MinimalItem, FolderItem, Item} from '../../lib/ItemInterfaces.ts';
+
+import {getTypeForPronom, pronomByExtension} from './archivematica_pronom_data.ts';
 
 export interface CollectionProcessingResult {
     rootItem: Item,

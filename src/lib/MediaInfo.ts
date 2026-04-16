@@ -1,4 +1,6 @@
-import {open, FileHandle} from 'node:fs/promises';
+import {open} from 'node:fs/promises';
+import type {FileHandle} from 'node:fs/promises';
+
 import mediaInfoFactory from 'mediainfo.js';
 
 interface ImageMetadata {

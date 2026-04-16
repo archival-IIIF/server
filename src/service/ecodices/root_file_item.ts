@@ -1,6 +1,6 @@
-import {parseLabel} from './util/fileinfo.js';
-import {Item} from '../../lib/ItemInterfaces.js';
-import {RootItemChildItemsParams} from '../../lib/ServiceTypes.js';
+import {parseLabel} from './util/fileinfo.ts';
+import type {Item} from '../../lib/ItemInterfaces.ts';
+import type {RootItemChildItemsParams} from '../../lib/ServiceTypes.ts';
 
 export default async function getRootFileItem({rootItem, childItems}: RootItemChildItemsParams): Promise<Item> {
     const parsedChildItems = childItems.map(child => parseLabel(child.label));

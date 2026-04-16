@@ -1,8 +1,8 @@
-import derivatives from '../lib/Derivative.js';
-import {getChildItemsByType} from '../lib/Item.js';
-import {CollectionIdParams} from '../lib/ServiceTypes.js';
+import derivatives from '../lib/Derivative.ts';
+import {getChildItemsByType} from '../lib/Item.ts';
+import type {CollectionIdParams} from '../lib/ServiceTypes.ts';
 
-import {createDerivativeWithCommand} from './util/derivative_creation.js';
+import {createDerivativeWithCommand} from './util/derivative_creation.ts';
 
 export default async function processAudioItems({collectionId}: CollectionIdParams): Promise<void> {
     try {

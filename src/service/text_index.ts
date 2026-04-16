@@ -2,12 +2,13 @@ import iconv from 'iconv-lite';
 import {join, extname} from 'node:path';
 import {readFile} from 'node:fs/promises';
 
-import config from '../lib/Config.js';
-import {indexText} from '../lib/Text.js';
-import {TextParams} from '../lib/ServiceTypes.js';
+import config from '../lib/Config.ts';
+import {indexText} from '../lib/Text.ts';
+import type {TextParams} from '../lib/ServiceTypes.ts';
 
-import fixCommonUTF8Problems from './util/unicode_debug_mapping.js';
-import {getTextFromStructure, readAlto, TextStructure} from '../lib/TextStructure.js';
+import fixCommonUTF8Problems from './util/unicode_debug_mapping.ts';
+import {getTextFromStructure, readAlto} from '../lib/TextStructure.ts';
+import type {TextStructure} from '../lib/TextStructure.ts';
 
 export default async function processText({item}: TextParams) {
     try {

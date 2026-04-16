@@ -1,6 +1,8 @@
-import {AccessParams} from '../../lib/ServiceTypes.js';
-import {getRootItemByCollectionId} from '../../lib/Item.js';
-import {AccessState, isIpInRange, hasToken, Access} from '../../lib/Security.js';
+import {getRootItemByCollectionId} from '../../lib/Item.ts';
+import {AccessState, isIpInRange, hasToken} from '../../lib/Security.ts';
+
+import type {Access} from '../../lib/Security.ts';
+import type {AccessParams} from '../../lib/ServiceTypes.ts';
 
 export default async function hasAccess({item, ip, identities = []}: AccessParams): Promise<Access> {
     if (item.collection_id === null || item.type === 'metadata')

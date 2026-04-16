@@ -1,13 +1,14 @@
 import {dirname} from 'node:path';
-import {ensureDir} from 'fs-extra';
+import {existsSync} from 'node:fs';
 import {promisify} from 'node:util';
 import {exec} from 'node:child_process';
-import {writeFile} from 'node:fs/promises';
+import {writeFile, mkdir} from 'node:fs/promises';
 
-import logger from '../../lib/Logger.js';
-import {Item} from '../../lib/ItemInterfaces.js';
-import {DerivativeType} from '../../lib/Derivative.js';
-import {getFullPath, getFullDerivativePath} from '../../lib/Item.js';
+import logger from '../../lib/Logger.ts';
+import {getFullPath, getFullDerivativePath} from '../../lib/Item.ts';
+
+import type {Item} from '../../lib/ItemInterfaces.ts';
+import type {DerivativeType} from '../../lib/Derivative.ts';
 
 const execAsync = promisify(exec);
 
@@ -19,7 +20,9 @@ export async function createDerivativeWithCommand(item: Item, derivative: Deriva
 
     logger.debug(`Run derivative command: "${command}"`);
 
-    await ensureDir(dirname(output));
+    if (!existsSync(dirname(output)))
+        await mkdir(dirname(output));
+
     await execAsync(command);
 }
 
@@ -28,6 +31,8 @@ export async function createDerivativeWithBuffer(item: Item, derivative: Derivat
 
     logger.debug(`Write derivative file: "${output}"`);
 
-    await ensureDir(dirname(output));
+    if (!existsSync(dirname(output)))
+        await mkdir(dirname(output));
+
     await writeFile(output, buffer, {flag: 'w'});
 }

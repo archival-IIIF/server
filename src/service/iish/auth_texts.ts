@@ -3,8 +3,8 @@ import {
     isExternalEnabled,
     isIpAccessEnabled,
     isLoginEnabled
-} from '../../lib/Security.js';
-import {ItemParams, AuthTextsByType} from '../../lib/ServiceTypes.js';
+} from '../../lib/Security.ts';
+import type {ItemParams, AuthTextsByType} from '../../lib/ServiceTypes.ts';
 
 const logout = {
     label: 'Logout'

@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
 import {randomUUID} from 'node:crypto';
 
-import {Token} from '../lib/Security.js';
-import HttpError from '../lib/HttpError.js';
-import {getPersistentClient} from '../lib/Redis.js';
+import HttpError from '../lib/HttpError.ts';
+import {getPersistentClient} from '../lib/Redis.ts';
+import type {Token} from '../lib/Security.ts';
 
 export default async function registerToken(token?: string, id?: string,
                                             from?: dayjs.Dayjs | string, to?: dayjs.Dayjs | string): Promise<Token> {

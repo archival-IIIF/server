@@ -1,13 +1,13 @@
 import {promisify} from 'node:util'
 import {createHash} from 'node:crypto';
-import {RedisClientType} from 'redis';
+import type {RedisClientType} from 'redis';
 
-import config from './Config.js';
-import logger from './Logger.js';
-import getEsClient from './ElasticSearch.js';
-import {allServices, workersRunning} from './Service.js';
-import registerGracefulShutdownHandler from './GracefulShutdown.js';
-import {getPersistentClient, createNewPersistentClient} from './Redis.js';
+import config from './Config.ts';
+import logger from './Logger.ts';
+import getEsClient from './ElasticSearch.ts';
+import {allServices, workersRunning} from './Service.ts';
+import registerGracefulShutdownHandler from './GracefulShutdown.ts';
+import {getPersistentClient, createNewPersistentClient} from './Redis.ts';
 
 type WorkerStatus<T> = { waiting: T[], working: T[] };
 type WorkerStatusType<T> = { type: string } & WorkerStatus<T>;

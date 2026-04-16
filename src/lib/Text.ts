@@ -1,9 +1,10 @@
 import * as path from 'node:path';
 
-import config from './Config.js';
-import logger from './Logger.js';
-import getClient from './ElasticSearch.js';
-import {TextStructure} from './TextStructure.js';
+import config from './Config.ts';
+import logger from './Logger.ts';
+import getClient from './ElasticSearch.ts';
+
+import type {TextStructure} from './TextStructure.ts';
 
 export interface Text {
     id: string;

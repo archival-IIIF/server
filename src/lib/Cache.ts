@@ -1,5 +1,5 @@
-import logger from './Logger.js';
-import {getVolatileClient} from './Redis.js';
+import logger from './Logger.ts';
+import {getVolatileClient} from './Redis.ts';
 
 export async function cache<T>(type: string, group: string, id: string, content: () => Promise<T>,
                                secondsToExpire = 86400): Promise<T> {

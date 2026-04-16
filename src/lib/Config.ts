@@ -1,10 +1,3 @@
-if (process.env.NODE_ENV === 'test') {
-    const dotenv = await import('dotenv');
-    dotenv.config({path: '.test.env'});
-}
-else if (process.env.NODE_ENV !== 'production')
-    await import('dotenv/config');
-
 const isEnabled = (value?: string): boolean => !value || value === '1' || value.toLowerCase() === 'true';
 
 export interface Config {

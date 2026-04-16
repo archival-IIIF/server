@@ -1,5 +1,6 @@
 import {expect} from 'chai';
-import fileFormatCollection, {PronomInfo} from '../../src/lib/Pronom.js';
+import fileFormatCollection from '../../src/lib/Pronom.ts';
+import type {PronomInfo} from '../../src/lib/Pronom.ts';
 
 describe('Pronom', () => {
     describe('#fileFormatCollection', () => {

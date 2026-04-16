@@ -1,7 +1,9 @@
-import {Text} from '../lib/Text.js';
-import config from '../lib/Config.js';
-import getClient from '../lib/ElasticSearch.js';
-import {getWordsFromStructure, TextWord} from '../lib/TextStructure.js';
+import config from '../lib/Config.ts';
+import getClient from '../lib/ElasticSearch.ts';
+import {getWordsFromStructure} from '../lib/TextStructure.ts';
+
+import type {Text} from '../lib/Text.ts';
+import type {TextWord} from '../lib/TextStructure.ts';
 
 const PRE_TAG = '{{{', POST_TAG = '}}}';
 

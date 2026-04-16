@@ -1,12 +1,13 @@
 import * as path from 'node:path';
 
-import logger from './Logger.js';
-import config from './Config.js';
-import {runLib} from './Task.js';
-import getClient from './ElasticSearch.js';
-import {DerivativeType} from './Derivative.js';
-import {RootItemChildItemsParams} from './ServiceTypes.js';
-import {Item, MinimalItem, RangeItem, RootItem} from './ItemInterfaces.js';
+import logger from './Logger.ts';
+import config from './Config.ts';
+import {runLib} from './Task.ts';
+import getClient from './ElasticSearch.ts';
+
+import type {DerivativeType} from './Derivative.ts';
+import type {RootItemChildItemsParams} from './ServiceTypes.ts';
+import type {Item, MinimalItem, RangeItem, RootItem} from './ItemInterfaces.ts';
 
 export function createItem(obj: MinimalItem): Item {
     return {
@@ -155,7 +156,7 @@ export async function getRootItemByCollectionId(item: Item): Promise<Item | null
 
 export async function getCollectionsByMetadataId(id: string): Promise<string[]> {
     const items = await withItems(getItems(`metadata_id:"${id}" AND _exists_:collection_id`));
-    return Array.from(new Set(<string[]>items.map(item => item.collection_id)));
+    return Array.from(new Set(items.map(item => item.collection_id)));
 }
 
 export async function getCollectionIdsIndexed(ids: string | string[]): Promise<string[]> {
@@ -209,9 +210,9 @@ export function getRelativePath(item: Item, type: 'access' | 'original' | null =
     type = type || getAvailableType(item);
 
     if (type === 'access')
-        return path.join(config.collectionsRelativePath, item.access.uri as string);
+        return path.join(config.collectionsRelativePath, item.access.uri!);
 
-    return path.join(config.collectionsRelativePath, item.original.uri as string);
+    return path.join(config.collectionsRelativePath, item.original.uri!);
 }
 
 export function getFullDerivativePath(item: Item, derivative: DerivativeType): string {
@@ -232,9 +233,9 @@ export function getPronom(item: Item, type: 'access' | 'original' | null = null)
     type = type || getAvailableType(item);
 
     if (type === 'access')
-        return item.access.puid as string;
+        return item.access.puid!;
 
-    return item.original.puid as string;
+    return item.original.puid!;
 }
 
 export function getAvailableType(item: Item): 'access' | 'original' {

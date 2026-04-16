@@ -1,4 +1,4 @@
-import {FileType} from './ItemInterfaces.js';
+import type {FileType} from './ItemInterfaces.ts';
 
 export interface DerivativeType {
     type: string;

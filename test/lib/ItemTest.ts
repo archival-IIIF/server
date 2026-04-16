@@ -2,13 +2,13 @@ import sinon from 'sinon';
 import * as chai from 'chai';
 import sinonChai from 'sinon-chai';
 
-import {setConfig} from '../../src/lib/Config.js';
-import {setElasticSearchClient} from '../../src/lib/ElasticSearch.js';
+import {setConfig} from '../../src/lib/Config.ts';
+import {setElasticSearchClient} from '../../src/lib/ElasticSearch.ts';
 
 import {
     createItem, getAvailableType, getFullPath, getPronom, getRelativePath, indexItems, updateItems
-} from '../../src/lib/Item.js';
-import {Item, MinimalItem} from '../../src/lib/ItemInterfaces.js';
+} from '../../src/lib/Item.ts';
+import type {Item, MinimalItem} from '../../src/lib/ItemInterfaces.ts';
 
 chai.use(sinonChai);
 const expect = chai.expect;

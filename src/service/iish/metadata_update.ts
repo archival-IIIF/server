@@ -1,11 +1,11 @@
-import got from 'got';
 import dayjs from 'dayjs';
+import {request} from 'undici';
 import {XmlDocument} from 'libxml2-wasm';
 
-import config from '../../lib/Config.js';
-import logger from '../../lib/Logger.js';
-import {runTask} from '../../lib/Task.js';
-import {MetadataParams} from '../../lib/ServiceTypes.js';
+import config from '../../lib/Config.ts';
+import logger from '../../lib/Logger.ts';
+import {runTask} from '../../lib/Task.ts';
+import type {MetadataParams} from '../../lib/ServiceTypes.ts';
 
 const ns = {
     'oai': 'http://www.openarchives.org/OAI/2.0/'
@@ -19,8 +19,7 @@ export default async function updateMetadata(): Promise<void> {
         const fromDate = dayjs().subtract(5, 'day').format('YYYY-MM-DD');
         for (const oaiIdentifier of await getOAIIdentifiersOfUpdated(fromDate, config.metadataOaiUrl))
             runTask<MetadataParams>('metadata', {metadataId: oaiIdentifier});
-    }
-    catch (err: any) {
+    } catch (err: any) {
         logger.error(`Failed to run the recurring update metadata procedure: ${err.message}`, {err});
     }
 }
@@ -30,8 +29,8 @@ export async function getOAIIdentifiersOfUpdated(fromDate: string, uri: string):
 
     let resumptionToken = null;
     while (resumptionToken !== false) {
-        const response = await got(uri, {
-            https: {rejectUnauthorized: false}, resolveBodyOnly: true, responseType: 'buffer', searchParams: {
+        const {body} = await request(uri, {
+            query: {
                 verb: 'ListIdentifiers',
                 metadataPrefix: 'marcxml',
                 from: fromDate,
@@ -39,7 +38,7 @@ export async function getOAIIdentifiersOfUpdated(fromDate: string, uri: string):
             }
         });
 
-        using oaiResults = XmlDocument.fromBuffer(response);
+        using oaiResults = XmlDocument.fromBuffer(await body.bytes());
 
         const resumptionTokenElem = oaiResults.get('//oai:resumptionToken', ns);
         resumptionToken = resumptionTokenElem ? resumptionTokenElem.content : false;

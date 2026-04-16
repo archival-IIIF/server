@@ -1,10 +1,10 @@
 import Router from '@koa/router';
 import send from 'koa-send';
-import {DefaultState} from 'koa';
+import type {DefaultState} from 'koa';
 
-import HttpError from '../lib/HttpError.js';
-import {ExtendedContext} from '../lib/Koa.js';
-import {fileIconsPath} from '../lib/FileIcon.js';
+import HttpError from '../lib/HttpError.ts';
+import {fileIconsPath} from '../lib/FileIcon.ts';
+import type {ExtendedContext} from '../lib/Koa.ts';
 
 export const router = new Router<DefaultState, ExtendedContext>();
 

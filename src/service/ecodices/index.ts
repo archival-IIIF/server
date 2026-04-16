@@ -1,16 +1,17 @@
 import {parse} from 'node:path';
 
-import logger from '../../lib/Logger.js';
-import {runTask} from '../../lib/Task.js';
-import {createItem, indexItems} from '../../lib/Item.js';
-import {ImageItem, RangeItem} from '../../lib/ItemInterfaces.js';
-import {CollectionPathParams, MetadataParams} from '../../lib/ServiceTypes.js';
+import logger from '../../lib/Logger.ts';
+import {runTask} from '../../lib/Task.ts';
+import {createItem, indexItems} from '../../lib/Item.ts';
 
-import {parseLabel} from './util/fileinfo.js'
+import type {ImageItem, RangeItem} from '../../lib/ItemInterfaces.ts';
+import type {CollectionPathParams, MetadataParams} from '../../lib/ServiceTypes.ts';
 
-import {cleanup} from '../util/index_utils.js';
-import {processCollection} from '../util/archivematica.js';
-import {fixMissingMetadata} from '../util/fix_missing_metadata.js';
+import {parseLabel} from './util/fileinfo.ts';
+
+import {cleanup} from '../util/index_utils.ts';
+import {processCollection} from '../util/archivematica.ts';
+import {fixMissingMetadata} from '../util/fix_missing_metadata.ts';
 
 export default async function processForIndex({collectionPath}: CollectionPathParams): Promise<void> {
     try {

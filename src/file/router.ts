@@ -1,21 +1,21 @@
 import Router from '@koa/router';
-import {Context, DefaultState} from 'koa';
+import type {Context, DefaultState} from 'koa';
 
 import mime from 'mime-types';
 import {basename} from 'node:path';
 import {createReadStream, existsSync, Stats} from 'node:fs';
 import {stat} from 'node:fs/promises';
 
-import config from '../lib/Config.js';
-import logger from '../lib/Logger.js';
-import HttpError from '../lib/HttpError.js';
-import derivatives from '../lib/Derivative.js';
-import {ExtendedContext} from '../lib/Koa.js';
-import fileFormatCollection from '../lib/Pronom.js';
+import config from '../lib/Config.ts';
+import logger from '../lib/Logger.ts';
+import HttpError from '../lib/HttpError.ts';
+import derivatives from '../lib/Derivative.ts';
+import fileFormatCollection from '../lib/Pronom.ts';
+import type {ExtendedContext} from '../lib/Koa.ts';
 
-import {AccessState, hasAccess, hasAdminAccess} from '../lib/Security.js';
-import {getText, getFullPath as getFullTextPath} from '../lib/Text.js';
-import {determineItem, getFullPath, getPronom, getAvailableType, hasType, getFullDerivativePath} from '../lib/Item.js';
+import {AccessState, hasAccess, hasAdminAccess} from '../lib/Security.ts';
+import {getText, getFullPath as getFullTextPath} from '../lib/Text.ts';
+import {determineItem, getFullPath, getPronom, getAvailableType, hasType, getFullDerivativePath} from '../lib/Item.ts';
 
 export const router = new Router<DefaultState, ExtendedContext>({prefix: '/file'});
 

@@ -1,4 +1,4 @@
-import {ImageProfile} from '@archival-iiif/presentation-builder/v2';
+import type {ImageProfile} from '@archival-iiif/presentation-builder/v2';
 
 export const sharpProfile: ImageProfile = {
     formats: [

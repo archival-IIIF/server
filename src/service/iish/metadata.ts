@@ -1,14 +1,15 @@
-import got from 'got';
+import {request} from 'undici';
 import {XmlDocument} from 'libxml2-wasm';
 
-import config from '../../lib/Config.js';
-import logger from '../../lib/Logger.js';
-import {MinimalItem} from '../../lib/ItemInterfaces.js';
-import {MetadataParams} from '../../lib/ServiceTypes.js';
-import {updateItems, getCollectionsByMetadataId, getCollectionIdsIndexed} from '../../lib/Item.js';
+import config from '../../lib/Config.ts';
+import logger from '../../lib/Logger.ts';
+import {updateItems, getCollectionsByMetadataId, getCollectionIdsIndexed} from '../../lib/Item.ts';
 
-import * as EAD from './util/EAD.js';
-import * as MarcXML from './util/MARCXML.js';
+import type {MinimalItem} from '../../lib/ItemInterfaces.ts';
+import type {MetadataParams} from '../../lib/ServiceTypes.ts';
+
+import * as EAD from './util/EAD.ts';
+import * as MarcXML from './util/MARCXML.ts';
 
 const ns = {
     'marc': 'http://www.loc.gov/MARC21/slim'
@@ -40,27 +41,27 @@ export async function getOAIIdentifier(collectionId: string): Promise<string | n
     if (collectionId.includes('ARCH') || collectionId.includes('COLL'))
         return `${EAD.EAD_OAI_PREFIX}${rootId}`;
 
-    const marcSearchResult = await got(config.metadataSrwUrl as string, {
-        https: {rejectUnauthorized: false}, resolveBodyOnly: true, responseType: 'buffer', searchParams: {
+    const {body} = await request(config.metadataSrwUrl!, {
+        query: {
             operation: 'searchRetrieve',
             query: `marc.852$p="${collectionId}"`
         }
     });
 
-    using srwResults = XmlDocument.fromBuffer(marcSearchResult);
+    using srwResults = XmlDocument.fromBuffer(await body.bytes());
     const marcId = MarcXML.getId(srwResults);
     if (marcId)
         return `${MarcXML.MARC_OAI_PREFIX}${marcId}`;
 
     if (rootId !== collectionId) {
-        const marcRootSearchResult = await got(config.metadataSrwUrl as string, {
-            https: {rejectUnauthorized: false}, resolveBodyOnly: true, responseType: 'buffer', searchParams: {
+        const {body} = await request(config.metadataSrwUrl!, {
+            query: {
                 operation: 'searchRetrieve',
                 query: `marc.852$p="${rootId}"`
             }
         });
 
-        using srwResults = XmlDocument.fromBuffer(marcRootSearchResult);
+        using srwResults = XmlDocument.fromBuffer(await body.bytes());
         const marcLeader = srwResults.get('//marc:leader', ns);
         if (marcLeader) {
             const format = MarcXML.getFormat(marcLeader.content);
@@ -76,15 +77,15 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
     logger.debug(`Start metadata update using OAI identifier ${oaiIdentifier}`);
 
     const metadataPrefix = oaiIdentifier.startsWith(EAD.EAD_OAI_PREFIX) ? 'ead' : 'marcxml';
-    const xml = await got(config.metadataOaiUrl as string, {
-        https: {rejectUnauthorized: false}, resolveBodyOnly: true, responseType: 'buffer', searchParams: {
+    const {body} = await request(config.metadataOaiUrl!, {
+        query: {
             verb: 'GetRecord',
             identifier: oaiIdentifier,
             metadataPrefix
         }
     });
 
-    using xmlParsed = XmlDocument.fromBuffer(xml);
+    using xmlParsed = XmlDocument.fromBuffer(await body.bytes());
 
     const collections = new Set<string>();
     if (collectionId)
@@ -122,14 +123,14 @@ async function updateWithIdentifier(oaiIdentifier: string, collectionId?: string
     const access: { [id: string]: string } = {};
     for (const mdItem of allMetadata) {
         if (!mdItem.parent_id && !mdItem.iish) {
-            const marcRootSearchResult = await got(config.metadataSrwUrl as string, {
-                https: {rejectUnauthorized: false}, resolveBodyOnly: true, responseType: 'buffer', searchParams: {
+            const {body} = await request(config.metadataSrwUrl!, {
+                query: {
                     operation: 'searchRetrieve',
                     query: `marc.852$p="${mdItem.id}"`
                 }
             });
 
-            using rootMarcXml = XmlDocument.fromBuffer(marcRootSearchResult);
+            using rootMarcXml = XmlDocument.fromBuffer(await body.bytes());
             const marcLeader = rootMarcXml.get('//marc:leader', ns);
             if (marcLeader) {
                 const format = MarcXML.getFormat(marcLeader.content);

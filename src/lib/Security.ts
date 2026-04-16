@@ -1,23 +1,25 @@
 import dayjs from 'dayjs';
-import {Context} from 'koa';
 import {randomUUID} from 'crypto';
 import {inRange} from 'range_check';
-import {RedisClientType} from 'redis';
-import {AccessTier} from '@archival-iiif/presentation-builder/v2';
 
-import config from './Config.js';
-import logger from './Logger.js';
-import {runLib} from './Task.js';
-import {Item} from './ItemInterfaces.js';
-import {ExtendedContext} from './Koa.js';
-import {getPersistentClient} from './Redis.js';
-import {AccessParams, AuthTextsByType, ItemParams} from './ServiceTypes.js';
+import type {Context} from 'koa';
+import type {RedisClientType} from 'redis';
+import type {AccessTier} from '@archival-iiif/presentation-builder/v2';
+
+import config from './Config.ts';
+import logger from './Logger.ts';
+import {runLib} from './Task.ts';
+import {getPersistentClient} from './Redis.ts';
+
+import type {Item} from './ItemInterfaces.ts';
+import type {ExtendedContext} from './Koa.ts';
+import type {AccessParams, AuthTextsByType, ItemParams} from './ServiceTypes.ts';
 
 type AccessTokenBody = Record<'access_token', string | undefined>;
 
 export type Access =
-    { state: AccessState.OPEN | AccessState.CLOSED, tier?: undefined } |
-    { state: AccessState.TIERED, tier: AccessTier };
+    { state: 'open' | 'closed', tier?: undefined } |
+    { state: 'tiered', tier: AccessTier };
 
 export interface Token {
     token: string;
@@ -31,11 +33,13 @@ export const isExternalEnabled = () => config.externalEnabled;
 export const isIpAccessEnabled = () => config.internalIpAddresses.length > 0;
 export const isAuthenticationEnabled = () => isLoginEnabled() || isExternalEnabled() || isIpAccessEnabled();
 
-export enum AccessState {
-    OPEN = 'open',
-    CLOSED = 'closed',
-    TIERED = 'tiered'
-}
+export const AccessState = {
+    OPEN: 'open',
+    CLOSED: 'closed',
+    TIERED: 'tiered'
+} as const;
+
+export type AccessState = typeof AccessState[keyof typeof AccessState];
 
 export async function hasAccess(ctx: ExtendedContext, item: Item, acceptToken = false): Promise<Access> {
     if (hasAdminAccess(ctx))
@@ -138,13 +142,15 @@ export async function checkTokenDb(tokens: string[]): Promise<Token[]> {
                     return false;
                 return !(to && !now.isBefore(to));
             });
-    }
-    catch (err) {
+    } catch (err) {
         return [];
     }
 }
 
-async function getIdentitiesAndTokensForAccessId(accessId: string | null): Promise<{ identities: string[]; token: string; } | null> {
+async function getIdentitiesAndTokensForAccessId(accessId: string | null): Promise<{
+    identities: string[];
+    token: string;
+} | null> {
     const accessIdInfo = await getClient().get(`access-id:${accessId}`);
     return accessIdInfo ? JSON.parse(accessIdInfo) : null;
 }

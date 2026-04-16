@@ -1,6 +1,6 @@
 import {readFile} from 'node:fs/promises';
 import {XmlDocument} from 'libxml2-wasm';
-import logger from './Logger.js';
+import logger from './Logger.ts';
 
 export interface PronomInfo {
     id: number;

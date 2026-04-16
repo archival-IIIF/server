@@ -3,13 +3,14 @@ import * as path from 'node:path';
 
 import {Base, Collection, Manifest, Resource} from '@archival-iiif/presentation-builder/v3';
 
-import {runLib} from '../lib/Task.js';
-import fileFormatCollection from '../lib/Pronom.js';
-import {getChildItems} from '../lib/Item.js';
-import {iconsByExtension} from '../lib/FileIcon.js';
-import {Access, AccessState} from '../lib/Security.js';
-import {BasicIIIFMetadata, ItemParams} from '../lib/ServiceTypes.js';
-import {Item, FolderItem, FileItem, ImageItem} from '../lib/ItemInterfaces.js';
+import {runLib} from '../lib/Task.ts';
+import fileFormatCollection from '../lib/Pronom.ts';
+import {getChildItems} from '../lib/Item.ts';
+import {iconsByExtension} from '../lib/FileIcon.ts';
+
+import type {Access, AccessState} from '../lib/Security.ts';
+import type {BasicIIIFMetadata, ItemParams} from '../lib/ServiceTypes.ts';
+import type {Item, FolderItem, FileItem, ImageItem} from '../lib/ItemInterfaces.ts';
 
 import {
     createMinimalCollection,
@@ -21,22 +22,23 @@ import {
     addThumbnail,
     getType,
     setAuthServices
-} from './PresentationUtils.js';
-import {PresentationBuilder} from './PresentationBuilder.js';
-import {accessUri, iconUri, originalUri} from './UriHelper.js';
+} from './PresentationUtils.ts';
+import {accessUri, iconUri, originalUri} from './UriHelper.ts';
+
+import type {PresentationBuilder} from './PresentationBuilder.ts';
 
 const defaultFileIcon = 'blank';
 const defaultFolderIcon = 'folder';
 
 export async function getCollection(item: FolderItem, access: Access, builder: PresentationBuilder): Promise<Collection> {
     const md = await runLib<ItemParams, BasicIIIFMetadata>('basic-iiif-metadata', {item});
-    const label = ((access.state !== AccessState.CLOSED) || (item.collection_id === item.id))
+    const label = ((access.state !== 'closed') || (item.collection_id === item.id))
         ? item.label : 'Access denied';
     const collection = await createCollection(item, label);
 
     await addMetadataDB(collection, item, md);
 
-    if (access.state !== AccessState.CLOSED) {
+    if (access.state !== 'closed') {
         const children = await getChildItems(item);
         collection.setItems(await Promise.all(children.map(async child =>
             await builder.getReference(child) as Collection | Manifest)));
@@ -49,10 +51,10 @@ export async function getCollection(item: FolderItem, access: Access, builder: P
 }
 
 export async function getManifest(item: FileItem, access: Access): Promise<Manifest> {
-    const label = (access.state !== AccessState.CLOSED) ? item.label : 'Access denied';
+    const label = (access.state !== 'closed') ? item.label : 'Access denied';
     const manifest = await createManifest(item, label);
 
-    if (access.state !== AccessState.CLOSED) {
+    if (access.state !== 'closed') {
         const md = await runLib<ItemParams, BasicIIIFMetadata>('basic-iiif-metadata', {item});
 
         manifest.setBehavior('unordered');

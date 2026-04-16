@@ -1,7 +1,7 @@
 import {Client} from '@elastic/elasticsearch';
 
-import config from './Config.js';
-import logger from './Logger.js';
+import config from './Config.ts';
+import logger from './Logger.ts';
 
 let testClient: Client | null = null;
 const client = (config.elasticSearchUser && config.elasticSearchPassword)

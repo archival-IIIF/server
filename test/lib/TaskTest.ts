@@ -2,9 +2,9 @@ import sinon from 'sinon';
 import * as chai from 'chai';
 import sinonChai from 'sinon-chai';
 
-import {runTask} from '../../src/lib/Task.js';
-import {setRedisClient} from '../../src/lib/Redis.js';
-import {setWorkersRunning} from '../../src/lib/Service.js';
+import {runTask} from '../../src/lib/Task.ts';
+import {setRedisClient} from '../../src/lib/Redis.ts';
+import {setWorkersRunning} from '../../src/lib/Service.ts';
 
 chai.use(sinonChai);
 const expect = chai.expect;

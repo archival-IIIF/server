@@ -1,4 +1,4 @@
-import {FileItem, Item} from '../lib/ItemInterfaces.js';
+import type {FileItem, Item} from '../lib/ItemInterfaces.ts';
 
 import {
     Canvas,
@@ -9,8 +9,9 @@ import {
     TermList
 } from '@archival-iiif/presentation-builder/v2';
 
-import {SearchResult} from '../search/search.js';
-import {canvasUri, searchAnnoUri, searchUri, autocompleteUri} from './UriHelper.js';
+import type {SearchResult} from '../search/search.ts';
+
+import {canvasUri, searchAnnoUri, searchUri, autocompleteUri} from './UriHelper.ts';
 
 export function getAnnotationList(searchResults: SearchResult[], query: string, ignored: string[],
                                   items: Item[], id: string, type?: string, language?: string | null): AnnotationList {

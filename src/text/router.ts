@@ -1,11 +1,11 @@
 import {readFileSync} from 'node:fs';
 import Router from '@koa/router';
-import {DefaultState} from 'koa';
+import type {DefaultState} from 'koa';
 
-import {getText} from '../lib/Text.js';
-import logger from '../lib/Logger.js';
-import HttpError from '../lib/HttpError.js';
-import {ExtendedContext} from '../lib/Koa.js';
+import {getText} from '../lib/Text.ts';
+import logger from '../lib/Logger.ts';
+import HttpError from '../lib/HttpError.ts';
+import type {ExtendedContext} from '../lib/Koa.ts';
 
 const htmlTemplate = readFileSync('src/text/text.html', 'utf8');
 

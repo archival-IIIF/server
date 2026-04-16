@@ -2,22 +2,26 @@ import {existsSync} from 'node:fs';
 import {Image} from '@archival-iiif/presentation-builder/v2';
 
 import Router from '@koa/router';
-import {Context, DefaultState, ParameterizedContext} from 'koa';
+import type {Context, DefaultState, ParameterizedContext} from 'koa';
 
-import parseSize from './sizeParser.js';
-import {getImage, getLogo, getAudio, getProfile, ImageOptions} from './imageServer.js';
+import parseSize from './sizeParser.ts';
+import {getImage, getLogo, getAudio, getProfile} from './imageServer.ts';
+import type {ImageOptions} from './imageServer.ts';
 
-import logger from '../lib/Logger.js';
-import config from '../lib/Config.js';
-import {cache} from '../lib/Cache.js';
-import HttpError from '../lib/HttpError.js';
-import {ExtendedContext} from '../lib/Koa.js';
-import {ImageItem, Item} from '../lib/ItemInterfaces.js';
-import derivatives, {DerivativeType} from '../lib/Derivative.js';
-import {Access, AccessState, hasAccess} from '../lib/Security.js';
-import {determineItem, getFullDerivativePath} from '../lib/Item.js';
+import logger from '../lib/Logger.ts';
+import config from '../lib/Config.ts';
+import {cache} from '../lib/Cache.ts';
+import HttpError from '../lib/HttpError.ts';
+import derivatives from '../lib/Derivative.ts';
+import {hasAccess, AccessState} from '../lib/Security.ts';
+import {determineItem, getFullDerivativePath} from '../lib/Item.ts';
 
-import {getImageInfo, getStaticImageInfo} from '../builder/PresentationBuilder.js';
+import type {ExtendedContext} from '../lib/Koa.ts';
+import type {ImageItem, Item} from '../lib/ItemInterfaces.ts';
+import type {DerivativeType} from '../lib/Derivative.ts';
+import type {Access} from '../lib/Security.ts';
+
+import {getImageInfo, getStaticImageInfo} from '../builder/PresentationBuilder.ts';
 
 type ImageContext = ParameterizedContext<DefaultState, ExtendedContext & ImageOptions>;
 

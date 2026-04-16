@@ -1,16 +1,17 @@
-import {DefaultState} from 'koa';
 import {createReadStream} from 'node:fs';
 import Router from '@koa/router';
+import type {DefaultState} from 'koa';
 
-import config from '../lib/Config.js';
-import {ExtendedContext} from '../lib/Koa.js';
+import config from '../lib/Config.ts';
 import {
     checkTokenDb,
     getAccessIdFromRequest,
     removeAccessIdFromRequest,
     setAccessIdForIdentity,
     setAccessTokenForAccessId
-} from '../lib/Security.js';
+} from '../lib/Security.ts';
+
+import type {ExtendedContext} from '../lib/Koa.ts';
 
 type TokenBody = Record<'token', string | undefined>;
 

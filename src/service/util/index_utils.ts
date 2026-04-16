@@ -1,9 +1,10 @@
-import {runTask} from '../../lib/Task.js';
-import {evictCache} from '../../lib/Cache.js';
-import {deleteItems} from '../../lib/Item.js';
-import {Item} from '../../lib/ItemInterfaces.js';
-import {CollectionIdParams, MetadataParams, TextItem, TextParams} from '../../lib/ServiceTypes.js';
-import {deleteTexts} from '../../lib/Text.js';
+import {runTask} from '../../lib/Task.ts';
+import {evictCache} from '../../lib/Cache.ts';
+import {deleteItems} from '../../lib/Item.ts';
+import {deleteTexts} from '../../lib/Text.ts';
+
+import type {Item} from '../../lib/ItemInterfaces.ts';
+import type {CollectionIdParams, MetadataParams, TextItem, TextParams} from '../../lib/ServiceTypes.ts';
 
 export async function cleanup(id: string): Promise<void> {
     await Promise.all([

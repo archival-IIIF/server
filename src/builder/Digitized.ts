@@ -1,9 +1,11 @@
-import {runLib} from '../lib/Task.js';
-import {getWordsFromStructure} from '../lib/TextStructure.js';
-import {Item, RootItem, FileItem} from '../lib/ItemInterfaces.js';
-import {BasicIIIFMetadata, ItemParams} from '../lib/ServiceTypes.js';
-import {getTextsForCollectionId, Text, withTexts} from '../lib/Text.js';
-import {getChildItems, getRangeItemsByCollectionId} from '../lib/Item.js';
+import {runLib} from '../lib/Task.ts';
+import {getWordsFromStructure} from '../lib/TextStructure.ts';
+import {getTextsForCollectionId, withTexts} from '../lib/Text.ts';
+import {getChildItems, getRangeItemsByCollectionId} from '../lib/Item.ts';
+
+import type {Text} from '../lib/Text.ts';
+import type {Item, RootItem, FileItem} from '../lib/ItemInterfaces.ts';
+import type {BasicIIIFMetadata, ItemParams} from '../lib/ServiceTypes.ts';
 
 import {
     Base, Canvas, Service, Manifest, Resource,
@@ -18,7 +20,7 @@ import {
     addMetadata,
     addStructures,
     createAnnotationPage,
-} from './PresentationUtils.js';
+} from './PresentationUtils.ts';
 
 import {
     annoCollUri,
@@ -29,7 +31,7 @@ import {
     autocompleteUri,
     textUri,
     textPlainUri
-} from './UriHelper.js';
+} from './UriHelper.ts';
 
 export async function getManifest(parentItem: RootItem): Promise<Manifest> {
     const manifest = await createManifest(parentItem);
@@ -123,8 +125,7 @@ export async function getAnnotationPage(item: RootItem, text: Text): Promise<Ann
         }
 
         annoPage.setItems(annotations);
-    }
-    else {
+    } else {
         const resource = Resource.createTextResource(text.text, text.language);
         const annotation = new Annotation(annoUri(item.id, childItem.id), resource, 'supplementing');
 

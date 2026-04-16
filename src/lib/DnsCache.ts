@@ -2,7 +2,7 @@ import http from 'node:http';
 import https from 'node:https';
 import CacheableLookup from 'cacheable-lookup';
 
-import logger from './Logger.js';
+import logger from './Logger.ts';
 
 const cacheable = new CacheableLookup();
 

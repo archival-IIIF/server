@@ -19,7 +19,7 @@ export async function findAccessDate(collectionId: string, rl: readline.Interfac
     for await (const line of rl) {
         const split = line.split('=');
         if (split.length > 0) {
-            const key = (split.shift() as string).trim();
+            const key = (split.shift()!).trim();
             const value = split.join('=').trim();
 
             if (['gdt(1)', 'eb(1)', 'db(1)', 'vdb(1)', 'vb(1)', 'rub(1)', '%0(1)'].includes(key)) {

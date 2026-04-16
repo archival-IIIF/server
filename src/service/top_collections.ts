@@ -1,6 +1,6 @@
-import config from '../lib/Config.js';
-import {EmptyParams, TopCollection} from '../lib/ServiceTypes.js';
-import {createItem, getAllRootItems} from '../lib/Item.js';
+import config from '../lib/Config.ts';
+import {createItem, getAllRootItems} from '../lib/Item.ts';
+import type {EmptyParams, TopCollection} from '../lib/ServiceTypes.ts';
 
 export default async function getTopCollections(noParams?: EmptyParams): Promise<TopCollection[]> {
     return [{

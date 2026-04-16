@@ -2,17 +2,20 @@ import sinon from 'sinon';
 import * as chai from 'chai';
 import sinonChai from 'sinon-chai';
 
-import {createItem} from '../../src/lib/Item.js';
-import {setRedisClient} from '../../src/lib/Redis.js';
-import config, {setConfig} from '../../src/lib/Config.js';
-import {AccessParams} from '../../src/lib/ServiceTypes.js';
+import {createItem} from '../../src/lib/Item.ts';
+import {setRedisClient} from '../../src/lib/Redis.ts';
+import config, {setConfig} from '../../src/lib/Config.ts';
+import type {AccessParams} from '../../src/lib/ServiceTypes.ts';
 
 import {
-    Access, AccessState, hasAccess, hasAdminAccess, requiresAuthentication, isIpInRange,
+    AccessState, hasAccess, hasAdminAccess, requiresAuthentication, isIpInRange,
     setAccessIdForIdentity, setAccessTokenForAccessId, getAccessIdFromRequest, removeAccessIdFromRequest
-} from '../../src/lib/Security.js';
-import {setLibsRunning} from '../../src/lib/Service.js';
-import {extendContext, ExtendedContext} from '../../src/lib/Koa.js';
+} from '../../src/lib/Security.ts';
+import {setLibsRunning} from '../../src/lib/Service.ts';
+import {extendContext} from '../../src/lib/Koa.ts';
+
+import type {Access} from '../../src/lib/Security.ts';
+import type {ExtendedContext} from '../../src/lib/Koa.ts';
 
 chai.use(sinonChai);
 const expect = chai.expect;

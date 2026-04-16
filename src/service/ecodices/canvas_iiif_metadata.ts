@@ -1,5 +1,7 @@
-import {CanvasIIIFMetadata, ItemParams} from '../../lib/ServiceTypes.js';
-import {FileInfo, parseLabel} from './util/fileinfo.js'
+import {parseLabel} from './util/fileinfo.ts';
+
+import type {CanvasIIIFMetadata, ItemParams} from '../../lib/ServiceTypes.ts';
+import type {FileInfo} from './util/fileinfo.ts';
 
 export default async function getCanvasIIIFMetadata({item}: ItemParams): Promise<CanvasIIIFMetadata> {
     const fileInfo: FileInfo = parseLabel(item.label);

@@ -3,13 +3,14 @@ import readline from 'readline';
 import {join} from 'node:path';
 import {createReadStream, existsSync} from 'node:fs';
 
-import config from '../../lib/Config.js';
-import logger from '../../lib/Logger.js';
-import {MinimalItem} from '../../lib/ItemInterfaces.js';
-import {MetadataParams} from '../../lib/ServiceTypes.js';
-import {getCollectionIdsIndexed, updateItems} from '../../lib/Item.js';
+import config from '../../lib/Config.ts';
+import logger from '../../lib/Logger.ts';
+import {getCollectionIdsIndexed, updateItems} from '../../lib/Item.ts';
 
-import * as NIOD from './util/NIOD.js';
+import type {MinimalItem} from '../../lib/ItemInterfaces.ts';
+import type {MetadataParams} from '../../lib/ServiceTypes.ts';
+
+import * as NIOD from './util/NIOD.ts';
 
 export default async function processMetadata({metadataId, rootId, collectionId}: MetadataParams): Promise<void> {
     if (!config.metadataPath)
@@ -32,7 +33,7 @@ export default async function processMetadata({metadataId, rootId, collectionId}
 }
 
 async function updateWithRootId(rootId: string): Promise<void> {
-    const path = join(config.metadataPath as string, `${rootId}.txt`);
+    const path = join(config.metadataPath!, `${rootId}.txt`);
     if (!existsSync(path))
         throw new Error(`No metadata file found for ${rootId} in ${path}`);
 

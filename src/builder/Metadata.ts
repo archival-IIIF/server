@@ -1,12 +1,13 @@
 import {Manifest, Collection} from '@archival-iiif/presentation-builder/v3';
 
-import {getChildItems} from '../lib/Item.js';
-import {Item, MetadataItem} from '../lib/ItemInterfaces.js';
+import {getChildItems} from '../lib/Item.ts';
+import type {Item, MetadataItem} from '../lib/ItemInterfaces.ts';
 
-import {PresentationBuilder} from './PresentationBuilder.js';
-import {createMinimalCollection, createCollection, addMetadata} from './PresentationUtils.js';
-import {runLib} from '../lib/Task.js';
-import {BasicIIIFMetadata, ItemParams} from '../lib/ServiceTypes.js';
+import {createMinimalCollection, createCollection, addMetadata} from './PresentationUtils.ts';
+import {runLib} from '../lib/Task.ts';
+
+import type {BasicIIIFMetadata, ItemParams} from '../lib/ServiceTypes.ts';
+import type {PresentationBuilder} from './PresentationBuilder.ts';
 
 export async function getCollection(item: MetadataItem, builder: PresentationBuilder): Promise<Collection> {
     const collection = await createCollection(item);
