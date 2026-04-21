@@ -532,6 +532,7 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_ATTRIBUTION`: Attribution to add to the IIIF manifests
 - `IIIF_SERVER_BASE_URL`: The public base URL of the application
 - `IIIF_SERVER_VIEWER_URL`: The URL of the main IIIF viewer to use (the manifest URI will be added to this URL)
+- `IIIF_SERVER_SEARCH_MODE`: The search mode to use: `fuzzy` (default) for fuzzy matching or `phrase` for exact phrase matching
 - `IIIF_SERVER_HOT_FOLDER_PATH`: The path to the hot folder where new collections to be indexed are placed
 - `IIIF_SERVER_HOT_FOLDER_PATTERN`: The pattern of a file in the root of a new collection to trigger indexing
 - `IIIF_SERVER_DATA_ROOT_PATH`: The root path of the data storage

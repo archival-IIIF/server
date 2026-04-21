@@ -57,10 +57,10 @@ async function search(query: string, filters: { [field: string]: string | undefi
         query: {
             bool: {
                 must: {
-                    [isPhraseMatch ? 'match_phrase' : 'match']: {
+                    [isPhraseMatch || config.searchMode === 'phrase' ? 'match_phrase' : 'match']: {
                         text: {
                             query,
-                            fuzziness: !isPhraseMatch ? 'AUTO' : undefined
+                            fuzziness: !isPhraseMatch && config.searchMode === 'fuzzy' ? 'AUTO' : undefined
                         }
                     }
                 },

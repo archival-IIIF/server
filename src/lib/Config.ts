@@ -27,6 +27,7 @@ export interface Config {
     imageTierSeparator: string;
     maxTasksPerWorker: number;
     maxSearchResults: number;
+    searchMode: 'fuzzy' | 'phrase';
     services: string[];
     secret: string;
     accessToken: string;
@@ -152,6 +153,12 @@ const config: Config = {
         const maxSearchResults = process.env.IIIF_SERVER_MAX_SEARCH_RESULTS
             ? parseInt(process.env.IIIF_SERVER_MAX_SEARCH_RESULTS) : 0;
         return (maxSearchResults > 0) ? maxSearchResults : 5000;
+    })(),
+
+    searchMode: (_ => {
+        const mode = process.env.IIIF_SERVER_SEARCH_MODE?.toLowerCase();
+        if (mode === 'phrase') return 'phrase' as const;
+        return 'fuzzy' as const;
     })(),
 
     services: (_ => {
