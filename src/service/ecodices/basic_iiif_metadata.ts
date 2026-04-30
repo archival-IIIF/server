@@ -1,22 +1,16 @@
-import {manifestUri} from '../../builder/UriHelper.ts';
 import type {ItemParams, BasicIIIFMetadata} from '../../lib/ServiceTypes.ts';
 
 export default async function getBasicIIIFMetadata({item}: ItemParams): Promise<BasicIIIFMetadata> {
-    const miradorUrl = `https://projectmirador.org/embed/?iiif-content=${manifestUri(item.id)}`;
-
     return {
         rights: item.type === 'root'
-            ? (item.ecodices?.licence ? item.ecodices.licence : 'https://creativecommons.org/licences/by/4.0/')
+            ? (item.ecodices?.licence || 'https://creativecommons.org/licences/by/4.0/')
             : undefined,
         behavior: 'individuals',
         homepage: item.type === 'root' && item.metadata_id ? [{
             id: `https://db.ecodices.nl/detail/${item.metadata_id}/overview`,
             label: 'Homepage'
         }] : [],
-        metadata: item.type === 'root' ? [{
-            label: 'Open in Mirador',
-            value: `<a href="${miradorUrl}">${miradorUrl}</a>`
-        }] : [],
+        metadata: [],
         seeAlso: item.type === 'root' ? [{
             id: 'https://ecodices.nl', // TODO: Link to TEI record
             format: 'application/tei+xml',

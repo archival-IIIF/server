@@ -7,6 +7,11 @@ export interface Config {
     attribution?: string;
     hotFolderPath?: string;
     hotFolderPattern?: string;
+    metadataCmdiUrl?: string;
+    metadataCmdiApp?: string;
+    metadataCmdiProfile?: string;
+    metadataCmdiUsername?: string;
+    metadataCmdiPassword?: string;
     metadataOaiUrl?: string;
     metadataSrwUrl?: string;
     metadataPath?: string;
@@ -60,6 +65,11 @@ const config: Config = {
     attribution: process.env.IIIF_SERVER_ATTRIBUTION,
     hotFolderPath: process.env.IIIF_SERVER_HOT_FOLDER_PATH,
     hotFolderPattern: process.env.IIIF_SERVER_HOT_FOLDER_PATTERN,
+    metadataCmdiUrl: process.env.IIIF_SERVER_METADATA_CMDI_URL,
+    metadataCmdiApp: process.env.IIIF_SERVER_METADATA_CMDI_APP,
+    metadataCmdiProfile: process.env.IIIF_SERVER_METADATA_CMDI_PROFILE,
+    metadataCmdiUsername: process.env.IIIF_SERVER_METADATA_CMDI_USER,
+    metadataCmdiPassword: process.env.IIIF_SERVER_METADATA_CMDI_PASSWORD,
     metadataOaiUrl: process.env.IIIF_SERVER_METADATA_OAI_URL,
     metadataSrwUrl: process.env.IIIF_SERVER_METADATA_SRW_URL,
     metadataPath: process.env.IIIF_SERVER_METADATA_PATH,

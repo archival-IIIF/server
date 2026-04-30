@@ -524,6 +524,11 @@ The environment variables used to configure the application:
 - `IIIF_SERVER_ACCESS_TOKEN`: Access token for administrator access
 - `IIIF_SERVER_IMAGE_SERVER_URL`: URL of the external IIIF image server (such as Loris)
 - `IIIF_SERVER_IMAGE_SERVER_NAME`: Name of the image server (either 'loris' or 'sharp')
+- `IIIF_SERVER_METADATA_CMDI_URL`: URL of the CMDI metadata provider
+- `IIIF_SERVER_METADATA_CMDI_APP`: CMDI app name
+- `IIIF_SERVER_METADATA_CMDI_PROFILE`: CMDI profile
+- `IIIF_SERVER_METADATA_CMDI_USER`: Username for accessing CMDI metadata
+- `IIIF_SERVER_METADATA_CMDI_PASSWORD`: Password for accessing CMDI metadata
 - `IIIF_SERVER_METADATA_OAI_URL`: URL of the OAI metadata provider
 - `IIIF_SERVER_METADATA_SRW_URL`: URL of the SRW metadata provider
 - `IIIF_SERVER_IMAGE_TIER_SEPARATOR`: Separator character to separate between the image identifier and the image tier
