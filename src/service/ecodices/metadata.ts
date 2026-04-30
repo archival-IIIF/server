@@ -15,7 +15,7 @@ const ns = {
     'cmdp': 'http://www.clarin.eu/cmd/1/profiles/' + config.metadataCmdiProfile
 };
 
-const parents: Record<string, {settlement: string, repository: string}> = {
+const parents: Record<string, { settlement: string, repository: string }> = {
     'ABD': {settlement: 'Deventer', repository: 'Athenaeum Library'},
     'MMW': {settlement: 'Den Haag', repository: 'House of the Book'},
     'TRL': {settlement: 'Leeuwarden', repository: 'Tresoar'},
@@ -45,7 +45,7 @@ export default async function processMetadata({metadataId, collectionId}: Metada
     }
 }
 
-export async function findRecordIdByCollectionId(id: string): Promise<number | null> {
+async function findRecordIdByCollectionId(id: string): Promise<number | null> {
     const collectionId = id.replaceAll('_', ' ');
     const recordId = await getCmdiRecordId(collectionId);
     if (recordId)
@@ -75,17 +75,18 @@ async function updateWithRecordId(recordId: number): Promise<void> {
 
     const shelfmark = getTexts(eCodicesRoot, './cmdp:Source/cmdp:MsIdentifier/cmdp:shelfmark', true)[0];
 
-    let [parentId, ...rest] = shelfmark.split(' ');
-    let itemId = rest.join('_');
+    let parentId = shelfmark.split(' ')[0];
+    let itemId = shelfmark.replaceAll(' ', '_');
     let item = await getItem(itemId);
-
-    // TODO: Workaround by prefixing shelfmark with 'ABD', 'MMW', 'TRL' or 'TRL_PBF'
-    const orgItemId = itemId;
-    for (parentId of Object.keys(parents)) {
-        itemId = `${parentId}_${orgItemId}`;
-        item = await getItem(itemId);
-        if (item)
-            break;
+    if (!item) {
+        // TODO: Workaround by prefixing shelfmark with 'ABD', 'MMW', 'TRL' or 'TRL_PBF'
+        const orgItemId = itemId;
+        for (parentId of Object.keys(parents)) {
+            itemId = `${parentId}_${orgItemId}`;
+            item = await getItem(itemId);
+            if (item)
+                break;
+        }
     }
 
     if (!item || item.type !== 'root')
@@ -101,7 +102,7 @@ async function updateWithRecordId(recordId: number): Promise<void> {
     logger.debug(`Updated metadata for ${recordId}`);
 }
 
-export function extractMetadata(recordId: number, parentId: string, itemId: string, eCodicesRoot: XmlNode): MinimalItem[] {
+function extractMetadata(recordId: number, parentId: string, itemId: string, eCodicesRoot: XmlNode): MinimalItem[] {
     const settlement = getTexts(eCodicesRoot, './cmdp:Source/cmdp:MsIdentifier/cmdp:settlement', false, parents[parentId].settlement)[0];
     const repository = getTexts(eCodicesRoot, './cmdp:Source/cmdp:MsIdentifier/cmdp:repository', false, parents[parentId].repository)[0];
 
