@@ -11,11 +11,6 @@ export default async function getBasicIIIFMetadata({item}: ItemParams): Promise<
             label: 'Homepage'
         }] : [],
         metadata: [],
-        seeAlso: item.type === 'root' ? [{
-            id: 'https://ecodices.nl', // TODO: Link to TEI record
-            format: 'application/tei+xml',
-            profile: 'http://www.tei-c.org/ns/1.0',
-            label: 'TEI record'
-        }] : []
+        seeAlso: []
     };
 }

@@ -19,7 +19,6 @@ const parents: Record<string, { settlement: string, repository: string }> = {
     'ABD': {settlement: 'Deventer', repository: 'Athenaeum Library'},
     'MMW': {settlement: 'Den Haag', repository: 'House of the Book'},
     'TRL': {settlement: 'Leeuwarden', repository: 'Tresoar'},
-    'TRL_PBF': {settlement: 'Leeuwarden', repository: 'Tresoar'},
 }
 
 export default async function processMetadata({metadataId, collectionId}: MetadataParams): Promise<void> {
@@ -37,7 +36,7 @@ export default async function processMetadata({metadataId, collectionId}: Metada
             recordId = await findRecordIdByCollectionId(collectionId);
 
         if (recordId)
-            await updateWithRecordId(recordId);
+            await updateWithRecordId(recordId, collectionId);
     } catch (e: any) {
         const err = new Error(`Failed to process the metadata for ${metadataId}: ${e.message}`);
         err.stack = e.stack;
@@ -47,27 +46,18 @@ export default async function processMetadata({metadataId, collectionId}: Metada
 
 async function findRecordIdByCollectionId(id: string): Promise<number | null> {
     const collectionId = id.replaceAll('_', ' ');
-    const recordId = await getCmdiRecordId(collectionId);
+    let recordId = await getCmdiRecordId(collectionId.substring(4));
     if (recordId)
         return recordId;
 
-    // TODO: Workaround by prefixing (or removing) shelfmark with 'ABD', 'MMW', 'TRL' or 'TRL_PBF'
-    for (const prefix of Object.keys(parents)) {
-        if (collectionId.startsWith(prefix)) {
-            const recordId = await getCmdiRecordId(collectionId.replace(prefix, '').trim());
-            if (recordId)
-                return recordId;
-        }
-
-        const recordId = await getCmdiRecordId(`${prefix} ${collectionId}`);
-        if (recordId)
-            return recordId;
-    }
+    recordId = await getCmdiRecordId(collectionId);
+    if (recordId)
+        return recordId;
 
     return null;
 }
 
-async function updateWithRecordId(recordId: number): Promise<void> {
+async function updateWithRecordId(recordId: number, itemId?: string): Promise<void> {
     using cmdi = XmlDocument.fromBuffer(await getCmdi(recordId, 'xml'));
     const eCodicesRoot = cmdi.get('//cmdp:eCodices', ns);
     if (!eCodicesRoot)
@@ -75,11 +65,11 @@ async function updateWithRecordId(recordId: number): Promise<void> {
 
     const shelfmark = getTexts(eCodicesRoot, './cmdp:Source/cmdp:MsIdentifier/cmdp:shelfmark', true)[0];
 
-    let parentId = shelfmark.split(' ')[0];
-    let itemId = shelfmark.replaceAll(' ', '_');
+    let parentId = itemId ? itemId.substring(0, 3) : shelfmark.substring(0, 3);
+    itemId ??= shelfmark.replaceAll(' ', '_');
     let item = await getItem(itemId);
     if (!item) {
-        // TODO: Workaround by prefixing shelfmark with 'ABD', 'MMW', 'TRL' or 'TRL_PBF'
+        // TODO: Workaround by prefixing shelfmark with 'ABD', 'MMW' or 'TRL'
         const orgItemId = itemId;
         for (parentId of Object.keys(parents)) {
             itemId = `${parentId}_${orgItemId}`;
@@ -245,7 +235,7 @@ function extractRanges(childItems: Item[], shelfmark: string, eCodicesRoot: XmlN
     return {items, ranges};
 }
 
-function getTexts(root: XmlNode, xpath: string, required: boolean = false, defaultValue?: string): string[] {
+export function getTexts(root: XmlNode, xpath: string, required: boolean = false, defaultValue?: string): string[] {
     const elements = root.find(xpath, ns);
     if (required && elements.length === 0)
         throw new Error(`Missing elements for ${xpath}`);

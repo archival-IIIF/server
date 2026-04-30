@@ -15,6 +15,7 @@ export interface Config {
     metadataOaiUrl?: string;
     metadataSrwUrl?: string;
     metadataPath?: string;
+    autoMetadata: 'all' | 'none' | ('authors' | 'dates' | 'physical' | 'description')[];
     logoRelativePath?: string;
     audioRelativePath?: string;
     elasticSearchUser?: string;
@@ -87,6 +88,18 @@ const config: Config = {
         if (!process.env.IIIF_SERVER_PROVIDER || (process.env.IIIF_SERVER_PROVIDER === 'null'))
             throw new Error('Provider is not defined');
         return process.env.IIIF_SERVER_PROVIDER;
+    })(),
+
+    autoMetadata: (_ => {
+        if (process.env.IIIF_AUTO_METADATA) {
+            if (['all', 'none'].includes(process.env.IIIF_AUTO_METADATA))
+                return process.env.IIIF_AUTO_METADATA as 'all' | 'none';
+
+            return process.env.IIIF_AUTO_METADATA
+                .split(',')
+                .filter(v => ['authors', 'dates', 'physical', 'description'].includes(v)) as ('authors' | 'dates' | 'physical' | 'description')[] || 'all';
+        }
+        return 'all';
     })(),
 
     imageServerUrl: (_ => {

@@ -45,11 +45,15 @@ export async function getCmdiRecordId(identifier: string) {
     });
 
     const json = await body.json() as SuggestionsResponse;
-    if (json.suggestions.length === 1) {
-        const [identifier] = json.suggestions[0].data.uri.split('/').reverse();
-        const id = parseInt(identifier);
-        if (!isNaN(id))
-            return id;
+    if (json.suggestions.length > 0) {
+        for (const suggestion of json.suggestions) {
+            if (suggestion.value === identifier) {
+                const [identifier] = suggestion.data.uri.split('/').reverse();
+                const id = parseInt(identifier);
+                if (!isNaN(id))
+                    return id;
+            }
+        }
     }
 
     return null;

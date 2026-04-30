@@ -170,30 +170,32 @@ export async function addThumbnail(base: Base, item: RootItem | FileItem): Promi
 }
 
 export async function addMetadata(base: Base, root: Item, md?: BasicIIIFMetadata): Promise<void> {
-    if (root.authors.length > 0) {
-        const authors = root.authors.reduce((acc: { [type: string]: string[] }, author) => {
-            if (!acc[author.type])
-                acc[author.type] = [];
+    if (config.autoMetadata !== 'none') {
+        if ((config.autoMetadata === 'all' || config.autoMetadata.includes('authors')) && root.authors.length > 0) {
+            const authors = root.authors.reduce((acc: { [type: string]: string[] }, author) => {
+                if (!acc[author.type])
+                    acc[author.type] = [];
 
-            Array.isArray(author.name)
-                ? acc[author.type].push(...author.name)
-                : acc[author.type].push(author.name);
+                Array.isArray(author.name)
+                    ? acc[author.type].push(...author.name)
+                    : acc[author.type].push(author.name);
 
-            return acc;
-        }, {});
+                return acc;
+            }, {});
 
-        for (const type of Object.keys(authors))
-            base.setMetadata(type, authors[type]);
+            for (const type of Object.keys(authors))
+                base.setMetadata(type, authors[type]);
+        }
+
+        if ((config.autoMetadata === 'all' || config.autoMetadata.includes('dates')) && root.dates.length > 0)
+            base.setMetadata(root.dates.length > 1 ? 'Dates' : 'Date', root.dates);
+
+        if ((config.autoMetadata === 'all' || config.autoMetadata.includes('physical')) && root.physical)
+            base.setMetadata('Physical description', String(root.physical));
+
+        if ((config.autoMetadata === 'all' || config.autoMetadata.includes('description')) && root.description)
+            base.setMetadata('Description', root.description);
     }
-
-    if (root.dates.length > 0)
-        base.setMetadata(root.dates.length > 1 ? 'Dates' : 'Date', root.dates);
-
-    if (root.physical)
-        base.setMetadata('Physical description', String(root.physical));
-
-    if (root.description)
-        base.setMetadata('Description', root.description);
 
     for (const md of root.metadata)
         base.setMetadata(md.label, md.value);
