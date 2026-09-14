@@ -42,23 +42,19 @@ export function createItem(obj: MinimalItem): Item {
 }
 
 export async function indexItems(items: Item[]): Promise<void> {
-    try {
-        while (items.length > 0) {
-            const body = items
+    while (items.length > 0) {
+        const response = await getClient().bulk({
+            refresh: 'wait_for',
+            operations: items
                 .splice(0, 100)
-                .map(item => [
+                .flatMap(item => [
                     {index: {_index: config.elasticSearchIndexItems, _id: item.id}},
                     item
-                ]);
+                ])
+        });
 
-            await getClient().bulk({
-                refresh: 'wait_for',
-                operations: [].concat(...body as [])
-            });
-        }
-    }
-    catch (e) {
-        throw new Error('Failed to index the items!');
+        if (response.errors)
+            throw new Error('Failed to index (some of) the items!');
     }
 }
 
