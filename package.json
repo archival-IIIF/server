@@ -1,6 +1,6 @@
 {
   "name": "archival-iiif-server",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,10 +10,10 @@
   "dependencies": {
     "@archival-iiif/presentation-builder": "1.5.3",
     "@elastic/elasticsearch": "8.19.1",
-    "@koa/router": "15.4.0",
+    "@koa/router": "15.7.0",
     "@types/chai": "5.2.3",
     "@types/fs-extra": "11.0.4",
-    "@types/koa": "3.0.2",
+    "@types/koa": "3.0.3",
     "@types/koa__router": "12.0.5",
     "@types/koa-bodyparser": "4.3.13",
     "@types/koa-compress": "4.0.7",
@@ -22,30 +22,30 @@
     "@types/koa-send": "4.1.6",
     "@types/mime-types": "3.0.1",
     "@types/mocha": "10.0.10",
-    "@types/node": "24.12.2",
+    "@types/node": "24.13.4",
     "@types/node-cron": "3.0.11",
-    "@types/sinon": "21.0.1",
+    "@types/sinon": "22.0.0",
     "@types/sinon-chai": "4.0.0",
     "cacheable-lookup": "7.0.0",
     "chokidar": "5.0.0",
-    "dayjs": "1.11.20",
+    "dayjs": "1.11.23",
     "file-icon-vectors": "github:dmhendricks/file-icon-vectors",
-    "iconv-lite": "0.7.2",
+    "iconv-lite": "0.7.3",
     "iiif-explorer": "1.0.8",
-    "koa": "3.2.0",
+    "koa": "3.2.1",
     "koa-bodyparser": "4.4.1",
-    "koa-compress": "5.2.1",
+    "koa-compress": "5.2.2",
     "koa-json": "2.0.2",
     "koa-morgan": "1.0.1",
     "koa-send": "5.0.1",
-    "libxml2-wasm": "0.7.1",
+    "libxml2-wasm": "0.7.2",
     "mediainfo.js": "0.3.7",
     "mime-types": "3.0.2",
-    "node-cron": "4.2.1",
+    "node-cron": "4.6.0",
     "pdf-lib": "1.17.1",
     "range_check": "4.1.0",
     "redis": "5.12.1",
-    "undici": "8.1.0",
+    "undici": "8.10.2",
     "winston": "3.19.0"
   },
   "devDependencies": {
@@ -53,6 +53,6 @@
     "mocha": "11.7.5",
     "sinon": "21.1.2",
     "sinon-chai": "4.0.1",
-    "typescript": "6.0.2"
+    "typescript": "6.0.3"
   }
 }
