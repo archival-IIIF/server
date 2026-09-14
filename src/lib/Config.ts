@@ -15,7 +15,7 @@ export interface Config {
     metadataOaiUrl?: string;
     metadataSrwUrl?: string;
     metadataPath?: string;
-    autoMetadata: 'all' | 'none' | ('authors' | 'dates' | 'physical' | 'description')[];
+    autoMetadata: 'all' | 'none' | ('summary' | 'authors' | 'dates' | 'physical' | 'description')[];
     logoRelativePath?: string;
     audioRelativePath?: string;
     elasticSearchUser?: string;
@@ -97,7 +97,7 @@ const config: Config = {
 
             return process.env.IIIF_AUTO_METADATA
                 .split(',')
-                .filter(v => ['authors', 'dates', 'physical', 'description'].includes(v)) as ('authors' | 'dates' | 'physical' | 'description')[] || 'all';
+                .filter(v => ['summary', 'authors', 'dates', 'physical', 'description'].includes(v)) as ('summary' | 'authors' | 'dates' | 'physical' | 'description')[] || 'all';
         }
         return 'all';
     })(),
