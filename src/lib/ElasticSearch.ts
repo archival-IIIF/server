@@ -118,7 +118,7 @@ export function setElasticSearchClient(client: Client): void {
                             type: 'long'
                         },
                         order: {
-                            type: 'short',
+                            type: 'integer',
                         },
                         created_at: {
                             type: 'date'
